@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="theme-color" content="#087f5b">
 
-<title>raztara — Connect • Call • Share</title>
+<title>raztara | Connect • Call • Share</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -17,9 +17,9 @@
 }
 
 body{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  font-family:Arial,sans-serif;
   background:#f4f7f6;
-  color:#17201d;
+  color:#17211f;
 }
 
 button,input{
@@ -28,617 +28,714 @@ button,input{
 
 button{
   cursor:pointer;
-  border:0;
-}
-
-.app{
-  max-width:520px;
-  margin:auto;
-  min-height:100vh;
-  background:white;
-  position:relative;
-}
-
-/* AUTH */
-
-.auth{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:25px;
-  background:linear-gradient(145deg,#087f5b,#0ba36f);
-}
-
-.auth-box{
-  width:100%;
-  background:white;
-  border-radius:25px;
-  padding:30px 22px;
-  box-shadow:0 15px 50px #0002;
-}
-
-.logo{
-  text-align:center;
-  margin-bottom:25px;
-}
-
-.logo-icon{
-  width:70px;
-  height:70px;
-  border-radius:22px;
-  background:#087f5b;
-  color:white;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:32px;
-  margin:auto auto 12px;
-}
-
-.logo h1{
-  font-size:30px;
-  color:#087f5b;
-}
-
-.logo p{
-  color:#777;
-  margin-top:5px;
-}
-
-.field{
-  margin-bottom:15px;
-}
-
-.field label{
-  display:block;
-  font-size:14px;
-  color:#555;
-  margin-bottom:6px;
-}
-
-.field input{
-  width:100%;
-  padding:13px 14px;
-  border:1px solid #ddd;
-  border-radius:12px;
-  outline:none;
-}
-
-.field input:focus{
-  border-color:#087f5b;
-}
-
-.main-btn{
-  width:100%;
-  background:#087f5b;
-  color:white;
-  padding:14px;
-  border-radius:12px;
-  font-weight:600;
-  margin-top:5px;
-}
-
-.switch{
-  text-align:center;
-  margin-top:18px;
-  color:#666;
-  font-size:14px;
-}
-
-.switch span{
-  color:#087f5b;
-  font-weight:600;
-  cursor:pointer;
-}
-
-/* APP */
-
-.header{
-  height:65px;
-  padding:0 17px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  border-bottom:1px solid #eee;
-  position:sticky;
-  top:0;
-  background:white;
-  z-index:10;
-}
-
-.brand{
-  font-size:23px;
-  font-weight:800;
-  color:#087f5b;
-}
-
-.header-right{
-  display:flex;
-  gap:8px;
-}
-
-.icon-btn{
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  background:#f0f5f3;
-  font-size:19px;
-}
-
-.page{
-  padding:18px;
-  padding-bottom:90px;
-  min-height:calc(100vh - 65px);
-}
-
-.welcome{
-  background:#e9f7f1;
-  border-radius:18px;
-  padding:18px;
-  margin-bottom:18px;
-}
-
-.welcome h2{
-  font-size:20px;
-}
-
-.welcome p{
-  margin-top:5px;
-  color:#667;
-  font-size:14px;
-}
-
-.search{
-  position:relative;
-  margin-bottom:18px;
-}
-
-.search input{
-  width:100%;
-  border:0;
-  background:#f2f5f4;
-  padding:14px 15px 14px 43px;
-  border-radius:14px;
-  outline:none;
-}
-
-.search-icon{
-  position:absolute;
-  left:15px;
-  top:12px;
-}
-
-.section-title{
-  font-size:17px;
-  font-weight:700;
-  margin:17px 0 10px;
-}
-
-.user-card,
-.chat-card{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:13px 8px;
-  border-bottom:1px solid #eee;
-  cursor:pointer;
-}
-
-.avatar{
-  width:47px;
-  height:47px;
-  border-radius:50%;
-  background:#087f5b;
-  color:white;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:700;
-  flex-shrink:0;
-}
-
-.user-info{
-  flex:1;
-  min-width:0;
-}
-
-.user-info strong{
-  display:block;
-}
-
-.user-info small{
-  color:#777;
-}
-
-.empty{
-  text-align:center;
-  padding:40px 10px;
-  color:#888;
-}
-
-/* BOTTOM */
-
-.bottom{
-  position:fixed;
-  bottom:0;
-  left:50%;
-  transform:translateX(-50%);
-  width:100%;
-  max-width:520px;
-  height:70px;
-  background:white;
-  border-top:1px solid #eee;
-  display:flex;
-  z-index:20;
-}
-
-.nav{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:3px;
-  color:#777;
-  font-size:12px;
-}
-
-.nav.active{
-  color:#087f5b;
-  font-weight:600;
-}
-
-.nav span:first-child{
-  font-size:21px;
-}
-
-/* CHAT */
-
-.chat-screen{
-  position:fixed;
-  inset:0;
-  background:#f3f7f5;
-  z-index:50;
-  display:none;
-}
-
-.chat-head{
-  height:65px;
-  background:white;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:0 12px;
-  border-bottom:1px solid #ddd;
-}
-
-.back{
-  font-size:25px;
-  background:none;
-  width:38px;
-}
-
-.chat-person{
-  flex:1;
-}
-
-.chat-person strong{
-  display:block;
-}
-
-.chat-person small{
-  color:#087f5b;
-}
-
-.messages{
-  height:calc(100vh - 130px);
-  overflow-y:auto;
-  padding:15px;
-}
-
-.message{
-  max-width:78%;
-  padding:10px 13px;
-  margin-bottom:9px;
-  border-radius:16px;
-  font-size:15px;
-  line-height:1.4;
-  word-wrap:break-word;
-}
-
-.message.mine{
-  margin-left:auto;
-  background:#087f5b;
-  color:white;
-  border-bottom-right-radius:4px;
-}
-
-.message.other{
-  margin-right:auto;
-  background:white;
-  border-bottom-left-radius:4px;
-}
-
-.time{
-  display:block;
-  font-size:10px;
-  opacity:.7;
-  margin-top:4px;
-  text-align:right;
-}
-
-.chat-input{
-  position:absolute;
-  bottom:0;
-  left:0;
-  right:0;
-  height:65px;
-  background:white;
-  display:flex;
-  gap:8px;
-  padding:9px;
-  border-top:1px solid #ddd;
-}
-
-.chat-input input{
-  flex:1;
-  border:1px solid #ddd;
-  border-radius:25px;
-  padding:0 15px;
-  outline:none;
-}
-
-.send{
-  width:48px;
-  border-radius:50%;
-  background:#087f5b;
-  color:white;
-  font-size:19px;
-}
-
-/* PROFILE */
-
-.profile-box{
-  text-align:center;
-  padding:20px 0;
-}
-
-.profile-avatar{
-  width:90px;
-  height:90px;
-  border-radius:50%;
-  background:#087f5b;
-  color:white;
-  font-size:35px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin:auto auto 12px;
-}
-
-.profile-box h2{
-  font-size:21px;
-}
-
-.profile-box p{
-  color:#777;
-  margin-top:5px;
-}
-
-.profile-actions{
-  margin-top:25px;
-}
-
-.action{
-  width:100%;
-  padding:15px;
-  background:#f3f6f5;
-  margin-bottom:9px;
-  border-radius:13px;
-  text-align:left;
-}
-
-.logout{
-  color:#d22;
-}
-
-/* LOADING */
-
-.loading{
-  position:fixed;
-  inset:0;
-  background:#ffffffee;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:100;
-  font-weight:600;
-  color:#087f5b;
 }
 
 .hidden{
   display:none!important;
 }
 
+/* AUTH */
+
+#authScreen{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:linear-gradient(135deg,#087f5b,#075f47);
+}
+
+.authBox{
+  width:100%;
+  max-width:420px;
+  background:white;
+  border-radius:24px;
+  padding:30px 22px;
+  box-shadow:0 15px 50px rgba(0,0,0,.2);
+}
+
+.logo{
+  text-align:center;
+  font-size:36px;
+  font-weight:bold;
+  color:#087f5b;
+  margin-bottom:5px;
+}
+
+.tagline{
+  text-align:center;
+  color:#777;
+  margin-bottom:25px;
+}
+
+.authBox h2{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.input{
+  width:100%;
+  padding:14px;
+  border:1px solid #ddd;
+  border-radius:12px;
+  margin-bottom:12px;
+  outline:none;
+}
+
+.input:focus{
+  border-color:#087f5b;
+}
+
+.primary{
+  width:100%;
+  padding:14px;
+  border:0;
+  border-radius:12px;
+  background:#087f5b;
+  color:white;
+  font-weight:bold;
+  margin-top:5px;
+}
+
+.secondary{
+  width:100%;
+  padding:13px;
+  border:1px solid #087f5b;
+  border-radius:12px;
+  background:white;
+  color:#087f5b;
+  margin-top:10px;
+}
+
+.switchAuth{
+  text-align:center;
+  margin-top:18px;
+  color:#666;
+}
+
+.switchAuth button{
+  border:0;
+  background:none;
+  color:#087f5b;
+  font-weight:bold;
+}
+
+/* APP */
+
+#app{
+  min-height:100vh;
+}
+
+.topbar{
+  height:64px;
+  background:white;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 16px;
+  border-bottom:1px solid #e5e5e5;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+
+.brand{
+  color:#087f5b;
+  font-size:25px;
+  font-weight:bold;
+}
+
+.topProfile{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.avatar{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#087f5b;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  overflow:hidden;
+}
+
+.avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.main{
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+  padding-bottom:90px;
+}
+
+/* SEARCH */
+
+.searchBox{
+  background:white;
+  padding:12px;
+  border-radius:15px;
+  margin-bottom:15px;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+
+.searchBox input{
+  margin:0;
+}
+
+.userCard{
+  background:white;
+  padding:13px;
+  border-radius:15px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:8px;
+}
+
+.userInfo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.userName{
+  font-weight:bold;
+}
+
+.userUsername{
+  color:#777;
+  font-size:13px;
+}
+
+/* CHAT LIST */
+
+.sectionTitle{
+  font-size:21px;
+  font-weight:bold;
+  margin:10px 0 14px;
+}
+
+.chatItem{
+  background:white;
+  padding:14px;
+  border-radius:15px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:8px;
+  border:1px solid #eee;
+}
+
+.chatItem:hover{
+  background:#f5faf8;
+}
+
+/* CHAT */
+
+.chatScreen{
+  position:fixed;
+  inset:0;
+  background:#eef5f2;
+  z-index:100;
+  display:flex;
+  flex-direction:column;
+}
+
+.chatHeader{
+  height:64px;
+  background:white;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 12px;
+  border-bottom:1px solid #ddd;
+}
+
+.backBtn{
+  border:0;
+  background:none;
+  font-size:27px;
+}
+
+.chatHeaderName{
+  font-weight:bold;
+  flex:1;
+}
+
+.callBtn{
+  border:0;
+  background:#eaf7f2;
+  color:#087f5b;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+}
+
+.messages{
+  flex:1;
+  overflow-y:auto;
+  padding:15px;
+}
+
+.messageRow{
+  display:flex;
+  margin-bottom:8px;
+}
+
+.messageRow.mine{
+  justify-content:flex-end;
+}
+
+.message{
+  max-width:78%;
+  padding:9px 11px;
+  border-radius:14px;
+  background:white;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
+  overflow:hidden;
+}
+
+.mine .message{
+  background:#d9f5e9;
+}
+
+.messageText{
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+
+.messageTime{
+  font-size:10px;
+  color:#777;
+  text-align:right;
+  margin-top:4px;
+}
+
+.message img,
+.message video{
+  max-width:100%;
+  border-radius:10px;
+  display:block;
+}
+
+.fileMessage{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px;
+  background:#f4f7f6;
+  border-radius:10px;
+}
+
+.fileIcon{
+  font-size:28px;
+}
+
+.fileName{
+  font-size:13px;
+  word-break:break-all;
+}
+
+.fileOpen{
+  border:0;
+  background:#087f5b;
+  color:white;
+  padding:6px 9px;
+  border-radius:8px;
+  margin-top:5px;
+  font-size:12px;
+}
+
+audio{
+  max-width:100%;
+}
+
+/* COMPOSER */
+
+.composer{
+  background:white;
+  padding:8px;
+  border-top:1px solid #ddd;
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+
+.iconBtn{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:50%;
+  background:#edf5f2;
+  color:#087f5b;
+  font-size:20px;
+}
+
+.messageInput{
+  flex:1;
+  border:1px solid #ddd;
+  border-radius:22px;
+  padding:11px 14px;
+  outline:none;
+}
+
+.sendBtn{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:50%;
+  background:#087f5b;
+  color:white;
+  font-size:18px;
+}
+
+.recording{
+  background:#d62d2d!important;
+  color:white!important;
+  animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+  50%{opacity:.5}
+}
+
+/* PROFILE */
+
+.profileCard{
+  background:white;
+  border-radius:18px;
+  padding:22px;
+  text-align:center;
+}
+
+.profileBig{
+  width:90px;
+  height:90px;
+  margin:auto;
+  border-radius:50%;
+  background:#087f5b;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:32px;
+  font-weight:bold;
+  overflow:hidden;
+}
+
+.profileBig img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.profileCard h2{
+  margin-top:12px;
+}
+
+.profileCard p{
+  color:#777;
+  margin-top:5px;
+}
+
+.profileActions{
+  margin-top:20px;
+}
+
+/* BOTTOM */
+
+.bottomNav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:65px;
+  background:white;
+  border-top:1px solid #ddd;
+  display:flex;
+  justify-content:space-around;
+  z-index:30;
+}
+
+.navBtn{
+  flex:1;
+  border:0;
+  background:white;
+  color:#777;
+  font-size:12px;
+}
+
+.navBtn.active{
+  color:#087f5b;
+  font-weight:bold;
+}
+
+.navIcon{
+  display:block;
+  font-size:22px;
+  margin-bottom:2px;
+}
+
+/* PROFILE EDIT */
+
+.editBox{
+  background:white;
+  border-radius:18px;
+  padding:18px;
+}
+
+.editBox label{
+  display:block;
+  margin:10px 0 6px;
+  font-weight:bold;
+  font-size:14px;
+}
+
+/* LOADING */
+
+.loading{
+  text-align:center;
+  padding:30px;
+  color:#777;
+}
+
+.empty{
+  text-align:center;
+  color:#777;
+  padding:30px;
+}
+
+/* TOAST */
+
 .toast{
   position:fixed;
-  bottom:85px;
+  bottom:80px;
   left:50%;
   transform:translateX(-50%);
   background:#222;
   color:white;
   padding:11px 17px;
-  border-radius:10px;
-  z-index:200;
+  border-radius:20px;
+  z-index:999;
   display:none;
-  font-size:14px;
+  font-size:13px;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+  .main{
+    padding:10px;
+    padding-bottom:85px;
+  }
+
+  .message{
+    max-width:86%;
+  }
+
+  .brand{
+    font-size:22px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div id="loading" class="loading">
-  raztara চালু হচ্ছে...
-</div>
-
 <!-- AUTH -->
-<div id="auth" class="auth hidden">
-  <div class="auth-box">
 
-    <div class="logo">
-      <div class="logo-icon">💬</div>
-      <h1>raztara</h1>
-      <p>Connect • Call • Share</p>
-    </div>
+<section id="authScreen">
+
+  <div class="authBox">
+
+    <div class="logo">raztara</div>
+    <div class="tagline">Connect • Call • Share</div>
+
+    <h2 id="authTitle">Login</h2>
 
     <div id="signupFields" class="hidden">
 
-      <div class="field">
-        <label>আপনার নাম</label>
-        <input id="signupName" type="text" placeholder="নাম লিখুন">
-      </div>
+      <input
+        id="fullName"
+        class="input"
+        placeholder="আপনার নাম"
+      >
 
-      <div class="field">
-        <label>Username</label>
-        <input id="signupUsername" type="text" placeholder="যেমন: raju123">
-      </div>
+      <input
+        id="username"
+        class="input"
+        placeholder="Username"
+      >
 
     </div>
 
-    <div class="field">
-      <label>Email</label>
-      <input id="email" type="email" placeholder="আপনার Email">
-    </div>
+    <input
+      id="email"
+      type="email"
+      class="input"
+      placeholder="Email"
+    >
 
-    <div class="field">
-      <label>Password</label>
-      <input id="password" type="password" placeholder="কমপক্ষে ৬ অক্ষর">
-    </div>
+    <input
+      id="password"
+      type="password"
+      class="input"
+      placeholder="Password"
+    >
 
-    <button id="authBtn" class="main-btn">
+    <button
+      id="authButton"
+      class="primary"
+      onclick="handleAuth()"
+    >
       Login
     </button>
 
-    <div class="switch">
+    <div class="switchAuth">
+
       <span id="switchText">
         নতুন account খুলবেন?
       </span>
-      <span id="switchBtn">
-        Sign Up
-      </span>
+
+      <button onclick="toggleAuth()">
+        <span id="switchButton">Sign Up</span>
+      </button>
+
     </div>
 
   </div>
-</div>
+
+</section>
 
 
-<!-- MAIN APP -->
-<div id="app" class="app hidden">
+<!-- APP -->
 
-  <header class="header">
+<section id="app" class="hidden">
 
-    <div class="brand">raztara</div>
+  <header class="topbar">
 
-    <div class="header-right">
-      <button class="icon-btn" onclick="showToast('Call feature পরের version-এ আসছে')">📞</button>
-      <button class="icon-btn" onclick="showToast('Notifications পরের version-এ আসছে')">🔔</button>
+    <div class="brand">
+      raztara
+    </div>
+
+    <div class="topProfile">
+
+      <span id="topName"></span>
+
+      <div
+        id="topAvatar"
+        class="avatar"
+      >
+        R
+      </div>
+
     </div>
 
   </header>
 
-  <!-- HOME -->
-  <main id="homePage" class="page">
 
-    <div class="welcome">
-      <h2 id="welcomeName">স্বাগতম 👋</h2>
-      <p>raztara-তে বন্ধুদের খুঁজুন এবং কথা বলুন।</p>
+  <main class="main">
+
+    <!-- CHATS PAGE -->
+
+    <div id="chatsPage">
+
+      <div class="searchBox">
+
+        <input
+          id="searchInput"
+          class="input"
+          placeholder="Username বা নাম দিয়ে খুঁজুন..."
+          oninput="searchUsers()"
+        >
+
+        <div id="searchResults"></div>
+
+      </div>
+
+      <div class="sectionTitle">
+        💬 Chats
+      </div>
+
+      <div id="chatList">
+        <div class="loading">
+          Loading...
+        </div>
+      </div>
+
     </div>
 
-    <div class="search">
-      <span class="search-icon">🔎</span>
-      <input id="userSearch" type="search"
-             placeholder="নাম বা username দিয়ে খুঁজুন">
-    </div>
 
-    <div id="searchResults"></div>
+    <!-- CALLS PAGE -->
 
-    <div class="section-title">
-      💬 আপনার Chat
-    </div>
+    <div id="callsPage" class="hidden">
 
-    <div id="chatList">
+      <div class="sectionTitle">
+        📞 Calls
+      </div>
+
       <div class="empty">
-        এখনো কোনো chat নেই।<br>
-        উপরে user search করে chat শুরু করুন।
-      </div>
-    </div>
-
-  </main>
-
-
-  <!-- CALLS -->
-  <main id="callsPage" class="page hidden">
-
-    <div class="section-title">
-      📞 Calls
-    </div>
-
-    <div class="empty">
-      <div style="font-size:45px">📞</div>
-      <p style="margin-top:10px">
-        Audio এবং Video Call খুব শিগগিরই যোগ হবে।
-      </p>
-    </div>
-
-  </main>
-
-
-  <!-- PROFILE -->
-  <main id="profilePage" class="page hidden">
-
-    <div class="profile-box">
-
-      <div id="profileAvatar" class="profile-avatar">
-        R
+        Audio এবং Video Call এখানে দেখা যাবে।
+        <br><br>
+        পরবর্তী Version-এ real calling system যোগ করা হবে।
       </div>
 
-      <h2 id="profileName">
-        User
-      </h2>
-
-      <p id="profileUsername">
-        @username
-      </p>
-
-      <p id="profileEmail">
-        email
-      </p>
-
     </div>
 
-    <div class="profile-actions">
 
-      <button class="action"
-        onclick="editProfile()">
-        ✏️ Edit Profile
-      </button>
+    <!-- PROFILE PAGE -->
 
-      <button class="action"
-        onclick="showToast('Privacy settings পরের version-এ আসবে')">
-        🔒 Privacy
-      </button>
+    <div id="profilePage" class="hidden">
 
-      <button class="action"
-        onclick="showToast('Blocked users পরের version-এ আসবে')">
-        🚫 Blocked Users
-      </button>
+      <div class="profileCard">
 
-      <button class="action logout"
-        onclick="logout()">
-        🚪 Logout
-      </button>
+        <div
+          id="profileAvatar"
+          class="profileBig"
+        >
+          R
+        </div>
+
+        <h2 id="profileName">
+          User
+        </h2>
+
+        <p id="profileUsername">
+          @username
+        </p>
+
+        <p id="profileBio">
+          raztara user
+        </p>
+
+        <div class="profileActions">
+
+          <button
+            class="secondary"
+            onclick="editProfile()"
+          >
+            ✏️ Edit Profile
+          </button>
+
+          <button
+            class="secondary"
+            onclick="logout()"
+          >
+            🚪 Logout
+          </button>
+
+        </div>
+
+      </div>
 
     </div>
 
@@ -647,85 +744,138 @@ button{
 
   <!-- BOTTOM NAV -->
 
-  <nav class="bottom">
+  <nav class="bottomNav">
 
-    <button id="homeNav"
-      class="nav active"
-      onclick="changePage('home')">
-      <span>💬</span>
+    <button
+      id="navChats"
+      class="navBtn active"
+      onclick="changePage('chats')"
+    >
+      <span class="navIcon">💬</span>
       Chats
     </button>
 
-    <button id="callsNav"
-      class="nav"
-      onclick="changePage('calls')">
-      <span>📞</span>
+    <button
+      id="navCalls"
+      class="navBtn"
+      onclick="changePage('calls')"
+    >
+      <span class="navIcon">📞</span>
       Calls
     </button>
 
-    <button id="profileNav"
-      class="nav"
-      onclick="changePage('profile')">
-      <span>👤</span>
+    <button
+      id="navProfile"
+      class="navBtn"
+      onclick="changePage('profile')"
+    >
+      <span class="navIcon">👤</span>
       Profile
     </button>
 
   </nav>
 
-</div>
+</section>
 
 
 <!-- CHAT SCREEN -->
 
-<div id="chatScreen" class="chat-screen">
+<section
+  id="chatScreen"
+  class="chatScreen hidden"
+>
 
-  <div class="chat-head">
+  <header class="chatHeader">
 
-    <button class="back" onclick="closeChat()">
+    <button
+      class="backBtn"
+      onclick="closeChat()"
+    >
       ‹
     </button>
 
-    <div id="chatAvatar" class="avatar">
+    <div
+      id="chatAvatar"
+      class="avatar"
+    >
       U
     </div>
 
-    <div class="chat-person">
-      <strong id="chatName">User</strong>
-      <small id="chatUsername">@user</small>
+    <div
+      id="chatHeaderName"
+      class="chatHeaderName"
+    >
+      User
     </div>
 
-    <button class="icon-btn"
-      onclick="showToast('Audio Call পরের version-এ আসবে')">
+    <button
+      class="callBtn"
+      onclick="startAudioCall()"
+    >
       📞
     </button>
 
-    <button class="icon-btn"
-      onclick="showToast('Video Call পরের version-এ আসবে')">
-      📹
+    <button
+      class="callBtn"
+      onclick="startVideoCall()"
+    >
+      🎥
     </button>
 
+  </header>
+
+
+  <div
+    id="messages"
+    class="messages"
+  >
   </div>
 
-  <div id="messages" class="messages"></div>
 
-  <div class="chat-input">
+  <div class="composer">
+
+    <button
+      class="iconBtn"
+      onclick="chooseFile()"
+      title="Photo / Video / File"
+    >
+      ＋
+    </button>
+
+    <input
+      id="fileInput"
+      type="file"
+      hidden
+      accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip"
+      onchange="uploadSelectedFile(event)"
+    >
 
     <input
       id="messageInput"
-      type="text"
-      placeholder="Message লিখুন..."
-      autocomplete="off"
+      class="messageInput"
+      placeholder="Message..."
+      onkeydown="messageKeyDown(event)"
     >
 
     <button
-      class="send"
-      onclick="sendMessage()">
+      id="recordBtn"
+      class="iconBtn"
+      onclick="toggleRecording()"
+      title="Voice message"
+    >
+      🎤
+    </button>
+
+    <button
+      class="sendBtn"
+      onclick="sendMessage()"
+    >
       ➤
     </button>
 
   </div>
 
-</div>
+</section>
 
 
 <div id="toast" class="toast"></div>
@@ -733,9 +883,9 @@ button{
 
 <script>
 
-/* ===========================
+/* =========================================================
    SUPABASE
-=========================== */
+========================================================= */
 
 const SUPABASE_URL =
 "https://pqyicaqpmojijjskpzcp.supabase.co";
@@ -750,34 +900,40 @@ window.supabase.createClient(
 );
 
 
-/* ===========================
+/* =========================================================
    GLOBAL
-=========================== */
+========================================================= */
 
 let currentUser = null;
 let currentProfile = null;
+
 let currentConversation = null;
-let chatRealtime = null;
-let isSignup = false;
+let currentTarget = null;
+
+let messageSubscription = null;
+
+let recording = false;
+let mediaRecorder = null;
+let audioChunks = [];
 
 
-/* ===========================
+/* =========================================================
    START
-=========================== */
+========================================================= */
 
 async function start(){
 
   const {
-    data:{session}
+    data:{
+      session
+    }
   } = await db.auth.getSession();
 
   if(session){
 
     currentUser = session.user;
 
-    await loadProfile();
-
-    showApp();
+    await showApp();
 
   }else{
 
@@ -788,251 +944,304 @@ async function start(){
   db.auth.onAuthStateChange(
     async(event,session)=>{
 
-      if(session && !currentUser){
+      if(session){
 
         currentUser = session.user;
 
-        setTimeout(async()=>{
+        await showApp();
 
-          await loadProfile();
-          showApp();
+      }else{
 
-        },0);
+        currentUser = null;
+        currentProfile = null;
+
+        showAuth();
 
       }
 
     }
   );
 
-  document
-    .getElementById("loading")
-    .classList.add("hidden");
 }
 
 
-/* ===========================
-   AUTH UI
-=========================== */
+/* =========================================================
+   AUTH SCREEN
+========================================================= */
 
 function showAuth(){
 
   document
-    .getElementById("auth")
+    .getElementById("authScreen")
     .classList.remove("hidden");
 
   document
     .getElementById("app")
     .classList.add("hidden");
-}
-
-
-function showApp(){
 
   document
-    .getElementById("auth")
+    .getElementById("chatScreen")
     .classList.add("hidden");
 
-  document
-    .getElementById("app")
-    .classList.remove("hidden");
-
-  updateProfileUI();
-
-  loadChatList();
 }
 
 
-/* ===========================
-   LOGIN / SIGNUP SWITCH
-=========================== */
-
-document
-.getElementById("switchBtn")
-.addEventListener("click",()=>{
-
-  isSignup = !isSignup;
-
-  document
-    .getElementById("signupFields")
-    .classList.toggle("hidden",!isSignup);
-
-  document
-    .getElementById("authBtn")
-    .textContent =
-      isSignup ? "Create Account" : "Login";
-
-  document
-    .getElementById("switchText")
-    .textContent =
-      isSignup
-      ? "আগে থেকেই account আছে?"
-      : "নতুন account খুলবেন?";
-
-  document
-    .getElementById("switchBtn")
-    .textContent =
-      isSignup ? "Login" : "Sign Up";
-
-});
+let signupMode = false;
 
 
-/* ===========================
-   AUTH
-=========================== */
+function toggleAuth(){
 
-document
-.getElementById("authBtn")
-.addEventListener("click",handleAuth);
+  signupMode = !signupMode;
 
+  const fields =
+    document.getElementById("signupFields");
+
+  const title =
+    document.getElementById("authTitle");
+
+  const button =
+    document.getElementById("authButton");
+
+  const switchText =
+    document.getElementById("switchText");
+
+  const switchButton =
+    document.getElementById("switchButton");
+
+
+  if(signupMode){
+
+    fields.classList.remove("hidden");
+
+    title.textContent =
+      "Create Account";
+
+    button.textContent =
+      "Sign Up";
+
+    switchText.textContent =
+      "আগে থেকেই account আছে?";
+
+    switchButton.textContent =
+      "Login";
+
+  }else{
+
+    fields.classList.add("hidden");
+
+    title.textContent =
+      "Login";
+
+    button.textContent =
+      "Login";
+
+    switchText.textContent =
+      "নতুন account খুলবেন?";
+
+    switchButton.textContent =
+      "Sign Up";
+
+  }
+
+}
+
+
+/* =========================================================
+   LOGIN / SIGNUP
+========================================================= */
 
 async function handleAuth(){
 
   const email =
     document.getElementById("email")
-      .value.trim();
+    .value
+    .trim();
 
   const password =
     document.getElementById("password")
-      .value;
+    .value;
 
   if(!email || !password){
 
-    showToast("Email এবং Password দিন");
-    return;
-  }
+    toast("Email এবং Password দিন");
 
-  if(password.length < 6){
-
-    showToast("Password কমপক্ষে ৬ অক্ষরের হতে হবে");
     return;
+
   }
 
 
-  if(isSignup){
+  if(signupMode){
 
-    const name =
-      document.getElementById("signupName")
-        .value.trim();
+    const fullName =
+      document.getElementById("fullName")
+      .value
+      .trim();
 
-    let username =
-      document.getElementById("signupUsername")
-        .value.trim()
-        .toLowerCase();
+    const username =
+      document.getElementById("username")
+      .value
+      .trim()
+      .toLowerCase();
 
-    if(!name || !username){
 
-      showToast("নাম এবং Username দিন");
+    if(!fullName || !username){
+
+      toast("নাম এবং Username দিন");
+
       return;
+
     }
 
-    username =
-      username.replace(/[^a-z0-9_]/g,"");
 
+    const {
+      data,
+      error
+    } =
+    await db.auth.signUp({
 
-    const {data,error} =
-      await db.auth.signUp({
+      email,
+      password,
 
-        email,
-        password,
-
-        options:{
-          data:{
-            full_name:name,
-            username:username
-          }
+      options:{
+        data:{
+          full_name:fullName,
+          username:username
         }
+      }
 
-      });
+    });
 
 
     if(error){
 
-      showToast(error.message);
+      toast(error.message);
+
       return;
+
     }
 
 
-    if(data.session){
+    if(!data.session){
 
-      currentUser =
-        data.user;
-
-      await loadProfile();
-
-      showApp();
-
-    }else{
-
-      showToast(
-        "Account তৈরি হয়েছে। Email confirmation প্রয়োজন হতে পারে।"
+      toast(
+        "Account তৈরি হয়েছে। Email verification প্রয়োজন হলে email check করুন।"
       );
 
-      isSignup=false;
+      toggleAuth();
 
-      document
-        .getElementById("signupFields")
-        .classList.add("hidden");
-
-      document
-        .getElementById("authBtn")
-        .textContent="Login";
-
-    }
-
-  }else{
-
-    const {data,error} =
-      await db.auth.signInWithPassword({
-
-        email,
-        password
-
-      });
-
-
-    if(error){
-
-      showToast(error.message);
       return;
+
     }
+
 
     currentUser =
       data.user;
 
-    await loadProfile();
+    await showApp();
 
-    showApp();
+
+  }else{
+
+
+    const {
+      data,
+      error
+    } =
+    await db.auth.signInWithPassword({
+
+      email,
+      password
+
+    });
+
+
+    if(error){
+
+      toast(error.message);
+
+      return;
+
+    }
+
+
+    currentUser =
+      data.user;
+
+    await showApp();
 
   }
 
 }
 
 
-/* ===========================
+/* =========================================================
+   APP
+========================================================= */
+
+async function showApp(){
+
+  document
+    .getElementById("authScreen")
+    .classList.add("hidden");
+
+  document
+    .getElementById("app")
+    .classList.remove("hidden");
+
+
+  await loadProfile();
+
+  updateProfileUI();
+
+  await loadChatList();
+
+}
+
+
+/* =========================================================
    PROFILE
-=========================== */
+========================================================= */
 
 async function loadProfile(){
 
   if(!currentUser) return;
 
 
-  const {data,error} =
-    await db
-      .from("profiles")
-      .select("*")
-      .eq("id",currentUser.id)
-      .maybeSingle();
+  const {
+    data,
+    error
+  } =
+  await db
+    .from("profiles")
+    .select("*")
+    .eq("id",currentUser.id)
+    .single();
 
 
   if(error){
 
-    console.error(error);
+    console.log(error);
+
     return;
+
   }
 
 
-  currentProfile = data;
+  currentProfile =
+    data;
+
+}
+
+
+function initials(name){
+
+  if(!name) return "R";
+
+  return name
+    .trim()
+    .charAt(0)
+    .toUpperCase();
+
 }
 
 
@@ -1046,15 +1255,11 @@ function updateProfileUI(){
     currentProfile.username ||
     "User";
 
-  const username =
-    currentProfile.username ||
-    "user";
-
 
   document
-    .getElementById("welcomeName")
+    .getElementById("topName")
     .textContent =
-      "স্বাগতম, "+name+" 👋";
+      name;
 
 
   document
@@ -1066,328 +1271,480 @@ function updateProfileUI(){
   document
     .getElementById("profileUsername")
     .textContent =
-      "@"+username;
+      "@" +
+      (
+        currentProfile.username ||
+        "user"
+      );
 
 
   document
-    .getElementById("profileEmail")
+    .getElementById("profileBio")
     .textContent =
-      currentUser.email || "";
+      currentProfile.bio ||
+      "raztara user";
 
 
-  const first =
-    name.charAt(0).toUpperCase();
+  setAvatar(
+    document.getElementById("topAvatar"),
+    currentProfile,
+    40
+  );
 
 
-  document
-    .getElementById("profileAvatar")
-    .textContent =
-      first;
+  setAvatar(
+    document.getElementById("profileAvatar"),
+    currentProfile,
+    90
+  );
 
 }
 
 
-/* ===========================
+function setAvatar(element,profile,size){
+
+  element.innerHTML = "";
+
+  if(profile && profile.avatar_url){
+
+    const img =
+      document.createElement("img");
+
+    img.src =
+      profile.avatar_url;
+
+    img.alt =
+      "Profile";
+
+    element.appendChild(img);
+
+  }else{
+
+    element.textContent =
+      initials(
+        profile?.full_name ||
+        profile?.username
+      );
+
+  }
+
+}
+
+
+/* =========================================================
    SEARCH USERS
-=========================== */
+========================================================= */
 
-let searchTimer;
+let searchTimer = null;
 
 
-document
-.getElementById("userSearch")
-.addEventListener("input",function(){
+function searchUsers(){
 
   clearTimeout(searchTimer);
 
-  const value =
-    this.value.trim();
-
   searchTimer =
     setTimeout(
-      ()=>searchUsers(value),
+      performUserSearch,
       300
     );
 
-});
+}
 
 
-async function searchUsers(value){
+async function performUserSearch(){
+
+  const input =
+    document
+      .getElementById("searchInput")
+      .value
+      .trim();
+
 
   const box =
     document.getElementById("searchResults");
 
-  if(!value){
 
-    box.innerHTML="";
+  if(input.length < 2){
+
+    box.innerHTML = "";
+
     return;
+
   }
 
 
-  const {data,error} =
-    await db
-      .from("profiles")
-      .select("id,username,full_name,avatar_url")
-      .neq("id",currentUser.id)
-      .or(
-        `username.ilike.%${value}%,full_name.ilike.%${value}%`
-      )
-      .limit(20);
+  const {
+    data,
+    error
+  } =
+  await db
+    .from("profiles")
+    .select("*")
+    .or(
+      `username.ilike.%${escapeQuery(input)}%,full_name.ilike.%${escapeQuery(input)}%`
+    )
+    .neq("id",currentUser.id)
+    .limit(10);
 
 
   if(error){
 
-    console.error(error);
+    box.innerHTML =
+      `<div class="empty">${escapeHtml(error.message)}</div>`;
+
     return;
+
   }
 
 
-  if(!data || data.length===0){
+  if(!data || !data.length){
 
     box.innerHTML =
-      `<div class="empty">
-        কোনো user পাওয়া যায়নি।
-      </div>`;
+      `<div class="empty">কোনো user পাওয়া যায়নি</div>`;
 
     return;
+
   }
 
 
-  box.innerHTML =
-    `<div class="section-title">👤 Users</div>` +
-    data.map(user=>`
+  box.innerHTML = "";
 
-      <div class="user-card"
-           onclick='startChat(${JSON.stringify(user)})'>
 
-        <div class="avatar">
-          ${getInitial(user.full_name || user.username)}
-        </div>
+  data.forEach(user=>{
 
-        <div class="user-info">
+    const div =
+      document.createElement("div");
 
-          <strong>
-            ${escapeHtml(user.full_name || user.username)}
-          </strong>
+    div.className =
+      "userCard";
 
-          <small>
-            @${escapeHtml(user.username || "")}
-          </small>
 
-        </div>
+    const left =
+      document.createElement("div");
 
-        <div>
-          💬
-        </div>
+    left.className =
+      "userInfo";
 
-      </div>
 
-    `).join("");
+    const av =
+      document.createElement("div");
+
+    av.className =
+      "avatar";
+
+
+    setAvatar(
+      av,
+      user,
+      40
+    );
+
+
+    const info =
+      document.createElement("div");
+
+
+    const name =
+      document.createElement("div");
+
+    name.className =
+      "userName";
+
+    name.textContent =
+      user.full_name ||
+      user.username ||
+      "User";
+
+
+    const uname =
+      document.createElement("div");
+
+    uname.className =
+      "userUsername";
+
+    uname.textContent =
+      "@" +
+      (
+        user.username ||
+        ""
+      );
+
+
+    info.appendChild(name);
+    info.appendChild(uname);
+
+    left.appendChild(av);
+    left.appendChild(info);
+
+
+    const button =
+      document.createElement("button");
+
+    button.className =
+      "primary";
+
+    button.style.width =
+      "auto";
+
+    button.style.padding =
+      "9px 13px";
+
+    button.textContent =
+      "Chat";
+
+
+    button.onclick =
+      ()=>startChat(user);
+
+
+    div.appendChild(left);
+    div.appendChild(button);
+
+    box.appendChild(div);
+
+  });
 
 }
 
 
-/* ===========================
+function escapeQuery(value){
+
+  return value
+    .replace(/,/g,"")
+    .replace(/%/g,"");
+
+}
+
+
+/* =========================================================
    START CHAT
-=========================== */
+========================================================= */
 
 async function startChat(target){
 
-  if(!target || !currentUser) return;
+  if(!currentUser) return;
 
 
-  showToast("Chat তৈরি হচ্ছে...");
+  toast("Chat তৈরি হচ্ছে...");
 
 
-  const {data:myMemberships,error:myError} =
-    await db
-      .from("conversation_members")
-      .select("conversation_id")
-      .eq("user_id",currentUser.id);
+  /*
+    প্রথমে current user-এর conversations বের করি।
+  */
+
+  const {
+    data:myMemberships,
+    error:myError
+  } =
+  await db
+    .from("conversation_members")
+    .select("conversation_id")
+    .eq(
+      "user_id",
+      currentUser.id
+    );
 
 
   if(myError){
 
-    showToast(myError.message);
+    toast(myError.message);
+
     return;
+
   }
 
 
-  /*
-    Existing direct conversation খুঁজে দেখা
-  */
-
-  let existingId=null;
+  let conversationId = null;
 
 
-  for(const member of (myMemberships || [])){
+  if(myMemberships?.length){
 
-    const {data:otherMember} =
-      await db
-        .from("conversation_members")
-        .select("conversation_id")
-        .eq(
-          "conversation_id",
-          member.conversation_id
-        )
-        .eq(
-          "user_id",
-          target.id
-        )
-        .maybeSingle();
+    const ids =
+      myMemberships.map(
+        x=>x.conversation_id
+      );
 
-    if(otherMember){
 
-      const {data:conversation} =
-        await db
-          .from("conversations")
-          .select("*")
-          .eq(
-            "id",
-            member.conversation_id
-          )
-          .eq("is_group",false)
-          .maybeSingle();
+    const {
+      data:targetMemberships
+    } =
+    await db
+      .from("conversation_members")
+      .select("conversation_id")
+      .in(
+        "conversation_id",
+        ids
+      )
+      .eq(
+        "user_id",
+        target.id
+      );
 
-      if(conversation){
 
-        existingId =
-          conversation.id;
+    if(targetMemberships?.length){
 
-        break;
-      }
+      conversationId =
+        targetMemberships[0]
+          .conversation_id;
 
     }
 
   }
 
 
-  if(existingId){
-
-    openChat(
-      existingId,
-      target
-    );
-
-    return;
-  }
-
-
   /*
-    New conversation
+    যদি chat না থাকে,
+    নতুন conversation বানাই।
   */
 
-  const {data:conversation,error} =
+  if(!conversationId){
+
+    const {
+      data:conversation,
+      error
+    } =
     await db
       .from("conversations")
       .insert({
 
         is_group:false,
-        created_by:currentUser.id
+
+        name:
+          target.full_name ||
+          target.username,
+
+        created_by:
+          currentUser.id
 
       })
       .select()
       .single();
 
 
-  if(error){
+    if(error){
 
-    showToast(error.message);
-    return;
-  }
+      toast(error.message);
+
+      return;
+
+    }
 
 
-  /*
-    Add current user
-  */
+    conversationId =
+      conversation.id;
 
-  let result =
+
+    /*
+      Current user membership
+    */
+
+    const {
+      error:myMemberError
+    } =
     await db
       .from("conversation_members")
       .insert({
 
-        conversation_id:conversation.id,
-        user_id:currentUser.id
+        conversation_id:
+          conversationId,
+
+        user_id:
+          currentUser.id
 
       });
 
 
-  if(result.error){
+    if(myMemberError){
 
-    showToast(result.error.message);
-    return;
-  }
+      toast(myMemberError.message);
+
+      return;
+
+    }
 
 
-  /*
-    Add target user
-  */
+    /*
+      Target user membership
+    */
 
-  result =
+    const {
+      error:targetMemberError
+    } =
     await db
       .from("conversation_members")
       .insert({
 
-        conversation_id:conversation.id,
-        user_id:target.id
+        conversation_id:
+          conversationId,
+
+        user_id:
+          target.id
 
       });
 
 
-  if(result.error){
+    if(targetMemberError){
 
-    showToast(result.error.message);
-    return;
+      toast(targetMemberError.message);
+
+      return;
+
+    }
+
   }
 
 
-  openChat(
-    conversation.id,
+  document
+    .getElementById("searchInput")
+    .value = "";
+
+  document
+    .getElementById("searchResults")
+    .innerHTML = "";
+
+
+  await openChat(
+    conversationId,
     target
   );
 
 }
 
 
-/* ===========================
+/* =========================================================
    OPEN CHAT
-=========================== */
+========================================================= */
 
-async function openChat(conversationId,target){
+async function openChat(
+  conversationId,
+  target
+){
 
-  currentConversation = {
+  currentConversation =
+    conversationId;
 
-    id:conversationId,
-    user:target
-
-  };
-
-
-  document
-    .getElementById("chatName")
-    .textContent =
-      target.full_name ||
-      target.username;
-
-
-  document
-    .getElementById("chatUsername")
-    .textContent =
-      "@"+(target.username || "");
-
-
-  document
-    .getElementById("chatAvatar")
-    .textContent =
-      getInitial(
-        target.full_name ||
-        target.username
-      );
+  currentTarget =
+    target;
 
 
   document
     .getElementById("chatScreen")
-    .style.display="block";
+    .classList.remove("hidden");
+
+
+  document
+    .getElementById("chatHeaderName")
+    .textContent =
+      target.full_name ||
+      target.username ||
+      "User";
+
+
+  setAvatar(
+    document.getElementById("chatAvatar"),
+    target,
+    40
+  );
 
 
   await loadMessages();
@@ -1397,9 +1754,9 @@ async function openChat(conversationId,target){
 }
 
 
-/* ===========================
+/* =========================================================
    LOAD MESSAGES
-=========================== */
+========================================================= */
 
 async function loadMessages(){
 
@@ -1408,74 +1765,77 @@ async function loadMessages(){
 
 
   box.innerHTML =
-    `<div class="empty">
-      Messages load হচ্ছে...
-    </div>`;
+    `<div class="loading">Loading...</div>`;
 
 
-  const {data,error} =
-    await db
-      .from("messages")
-      .select("*")
-      .eq(
-        "conversation_id",
-        currentConversation.id
-      )
-      .order("created_at",{ascending:true});
+  const {
+    data,
+    error
+  } =
+  await db
+    .from("messages")
+    .select("*")
+    .eq(
+      "conversation_id",
+      currentConversation
+    )
+    .order(
+      "created_at",
+      {
+        ascending:true
+      }
+    );
 
 
   if(error){
 
     box.innerHTML =
-      `<div class="empty">
-        ${escapeHtml(error.message)}
-      </div>`;
+      `<div class="empty">${escapeHtml(error.message)}</div>`;
 
     return;
+
   }
 
 
-  box.innerHTML="";
+  box.innerHTML = "";
 
 
-  if(!data || data.length===0){
+  for(const message of data){
 
-    box.innerHTML =
-      `<div class="empty">
-        👋 প্রথম Message আপনিই পাঠান।
-      </div>`;
+    await renderMessage(
+      message,
+      false
+    );
 
-    return;
   }
 
-
-  data.forEach(renderMessage);
 
   scrollMessages();
 
 }
 
 
-/* ===========================
+/* =========================================================
    REALTIME
-=========================== */
+========================================================= */
 
 function subscribeMessages(){
 
-  if(chatRealtime){
+  if(messageSubscription){
 
-    db.removeChannel(chatRealtime);
+    db.removeChannel(
+      messageSubscription
+    );
 
-    chatRealtime=null;
   }
 
 
-  chatRealtime =
+  messageSubscription =
     db
       .channel(
-        "raztara-chat-"+currentConversation.id
+        "messages-" +
+        currentConversation
       )
-
       .on(
         "postgres_changes",
         {
@@ -1483,492 +1843,1438 @@ function subscribeMessages(){
           schema:"public",
           table:"messages",
           filter:
-            "conversation_id=eq."+
-            currentConversation.id
+            "conversation_id=eq." +
+            currentConversation
         },
+        async payload=>{
 
-        payload=>{
-
-          renderMessage(payload.new);
+          await renderMessage(
+            payload.new,
+            true
+          );
 
           scrollMessages();
 
         }
-
       )
-
       .subscribe();
 
 }
 
 
-/* ===========================
-   SEND MESSAGE
-=========================== */
-
-async function sendMessage(){
-
-  if(!currentConversation) return;
-
-
-  const input =
-    document.getElementById("messageInput");
-
-  const content =
-    input.value.trim();
-
-
-  if(!content) return;
-
-
-  input.value="";
-
-
-  const {error} =
-    await db
-      .from("messages")
-      .insert({
-
-        conversation_id:
-          currentConversation.id,
-
-        sender_id:
-          currentUser.id,
-
-        content:content,
-
-        message_type:"text"
-
-      });
-
-
-  if(error){
-
-    showToast(error.message);
-
-    input.value=content;
-
-  }
-
-}
-
-
-document
-.getElementById("messageInput")
-.addEventListener("keydown",function(e){
-
-  if(e.key==="Enter"){
-
-    e.preventDefault();
-
-    sendMessage();
-
-  }
-
-});
-
-
-/* ===========================
+/* =========================================================
    RENDER MESSAGE
-=========================== */
+========================================================= */
 
-function renderMessage(message){
+async function renderMessage(
+  message,
+  append
+){
 
   const box =
     document.getElementById("messages");
 
 
-  /*
-    Empty welcome message সরানো
-  */
+  const row =
+    document.createElement("div");
 
-  const empty =
-    box.querySelector(".empty");
+  row.className =
+    "messageRow";
 
-  if(empty){
-    empty.remove();
+
+  if(message.sender_id === currentUser.id){
+
+    row.classList.add("mine");
+
   }
 
 
-  const div =
+  const bubble =
     document.createElement("div");
 
+  bubble.className =
+    "message";
 
-  const mine =
-    message.sender_id === currentUser.id;
+
+  /*
+    TEXT
+  */
+
+  if(message.message_type === "text"){
+
+    const text =
+      document.createElement("div");
+
+    text.className =
+      "messageText";
+
+    text.textContent =
+      message.content || "";
+
+    bubble.appendChild(text);
+
+  }
 
 
-  div.className =
-    "message "+(mine ? "mine" : "other");
+  /*
+    MEDIA
+  */
+
+  else if(
+    message.message_type === "image" ||
+    message.message_type === "video" ||
+    message.message_type === "audio" ||
+    message.message_type === "file"
+  ){
+
+    const signedUrl =
+      await getSignedUrl(
+        message.file_url
+      );
+
+
+    if(!signedUrl){
+
+      bubble.textContent =
+        "File unavailable";
+
+    }else{
+
+      if(
+        message.message_type === "image"
+      ){
+
+        const img =
+          document.createElement("img");
+
+        img.src =
+          signedUrl;
+
+        img.loading =
+          "lazy";
+
+        bubble.appendChild(img);
+
+
+      }else if(
+        message.message_type === "video"
+      ){
+
+        const video =
+          document.createElement("video");
+
+        video.src =
+          signedUrl;
+
+        video.controls =
+          true;
+
+        video.playsInline =
+          true;
+
+        bubble.appendChild(video);
+
+
+      }else if(
+        message.message_type === "audio"
+      ){
+
+        const audio =
+          document.createElement("audio");
+
+        audio.src =
+          signedUrl;
+
+        audio.controls =
+          true;
+
+        bubble.appendChild(audio);
+
+
+      }else{
+
+        const fileBox =
+          document.createElement("div");
+
+        fileBox.className =
+          "fileMessage";
+
+
+        const icon =
+          document.createElement("div");
+
+        icon.className =
+          "fileIcon";
+
+        icon.textContent =
+          "📄";
+
+
+        const info =
+          document.createElement("div");
+
+        info.style.flex =
+          "1";
+
+
+        const name =
+          document.createElement("div");
+
+        name.className =
+          "fileName";
+
+        name.textContent =
+          message.content ||
+          "File";
+
+
+        const open =
+          document.createElement("button");
+
+        open.className =
+          "fileOpen";
+
+        open.textContent =
+          "Open";
+
+
+        open.onclick =
+          ()=>{
+            window.open(
+              signedUrl,
+              "_blank"
+            );
+          };
+
+
+        info.appendChild(name);
+        info.appendChild(open);
+
+        fileBox.appendChild(icon);
+        fileBox.appendChild(info);
+
+        bubble.appendChild(fileBox);
+
+      }
+
+    }
+
+  }
+
+
+  /*
+    LOCATION
+  */
+
+  else if(
+    message.message_type === "location"
+  ){
+
+    const button =
+      document.createElement("button");
+
+    button.className =
+      "primary";
+
+    button.textContent =
+      "📍 Open Location";
+
+    button.onclick =
+      ()=>{
+        window.open(
+          message.content,
+          "_blank"
+        );
+      };
+
+    bubble.appendChild(button);
+
+  }
 
 
   const time =
-    new Date(
+    document.createElement("div");
+
+  time.className =
+    "messageTime";
+
+  time.textContent =
+    formatTime(
       message.created_at
-    ).toLocaleTimeString(
-      "bn-BD",
-      {
-        hour:"2-digit",
-        minute:"2-digit"
-      }
     );
 
 
-  div.innerHTML =
-    escapeHtml(message.content || "")+
-    `<span class="time">${time}</span>`;
+  bubble.appendChild(time);
+
+  row.appendChild(bubble);
+
+  box.appendChild(row);
+
+}
 
 
-  /*
-    Realtime duplicate protection
-  */
+/* =========================================================
+   SEND TEXT
+========================================================= */
 
-  if(
-    [...box.children].some(
-      x=>x.dataset.messageId===message.id
-    )
-  ){
+async function sendMessage(){
+
+  const input =
+    document.getElementById(
+      "messageInput"
+    );
+
+
+  const text =
+    input.value.trim();
+
+
+  if(!text || !currentConversation){
 
     return;
-  }
-
-
-  div.dataset.messageId =
-    message.id;
-
-
-  box.appendChild(div);
-
-}
-
-
-/* ===========================
-   CLOSE CHAT
-=========================== */
-
-function closeChat(){
-
-  document
-    .getElementById("chatScreen")
-    .style.display="none";
-
-
-  if(chatRealtime){
-
-    db.removeChannel(chatRealtime);
-
-    chatRealtime=null;
 
   }
 
 
-  currentConversation=null;
-
-}
+  input.value = "";
 
 
-/* ===========================
-   CHAT LIST
-=========================== */
+  const {
+    error
+  } =
+  await db
+    .from("messages")
+    .insert({
 
-async function loadChatList(){
+      conversation_id:
+        currentConversation,
 
-  const box =
-    document.getElementById("chatList");
+      sender_id:
+        currentUser.id,
 
+      content:
+        text,
 
-  if(!currentUser) return;
+      message_type:
+        "text"
 
-
-  const {data,error} =
-    await db
-      .from("conversation_members")
-      .select(`
-        conversation_id,
-        conversations(
-          id,
-          is_group,
-          name,
-          created_at
-        )
-      `)
-      .eq("user_id",currentUser.id);
+    });
 
 
   if(error){
 
-    console.error(error);
+    toast(error.message);
+
+    input.value =
+      text;
+
+  }
+
+}
+
+
+function messageKeyDown(event){
+
+  if(
+    event.key === "Enter" &&
+    !event.shiftKey
+  ){
+
+    event.preventDefault();
+
+    sendMessage();
+
+  }
+
+}
+
+
+/* =========================================================
+   FILE PICKER
+========================================================= */
+
+function chooseFile(){
+
+  document
+    .getElementById("fileInput")
+    .click();
+
+}
+
+
+/* =========================================================
+   UPLOAD FILE
+========================================================= */
+
+async function uploadSelectedFile(event){
+
+  const file =
+    event.target.files[0];
+
+
+  event.target.value = "";
+
+
+  if(!file) return;
+
+
+  if(!currentConversation){
+
+    toast("আগে একটি chat খুলুন");
+
     return;
+
   }
 
 
-  if(!data || data.length===0){
+  /*
+    Client-side size limit
+    50 MB
+  */
+
+  if(
+    file.size >
+    50 * 1024 * 1024
+  ){
+
+    toast(
+      "ফাইল 50 MB-এর বেশি হতে পারবে না"
+    );
+
+    return;
+
+  }
+
+
+  toast("Uploading...");
+
+
+  let messageType =
+    "file";
+
+
+  if(
+    file.type.startsWith("image/")
+  ){
+
+    messageType =
+      "image";
+
+  }else if(
+    file.type.startsWith("video/")
+  ){
+
+    messageType =
+      "video";
+
+  }
+
+
+  const safeName =
+    file.name
+      .replace(
+        /[^a-zA-Z0-9._-]/g,
+        "_"
+      );
+
+
+  const random =
+    crypto.randomUUID();
+
+
+  /*
+    Path:
+    userId/conversationId/random-filename
+  */
+
+  const path =
+    currentUser.id +
+    "/" +
+    currentConversation +
+    "/" +
+    random +
+    "-" +
+    safeName;
+
+
+  const {
+    data,
+    error
+  } =
+  await db.storage
+    .from("raztara-media")
+    .upload(
+      path,
+      file,
+      {
+        contentType:
+          file.type ||
+          "application/octet-stream",
+
+        upsert:false
+      }
+    );
+
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+
+  }
+
+
+  const {
+    error:messageError
+  } =
+  await db
+    .from("messages")
+    .insert({
+
+      conversation_id:
+        currentConversation,
+
+      sender_id:
+        currentUser.id,
+
+      content:
+        file.name,
+
+      message_type:
+        messageType,
+
+      file_url:
+        data.path
+
+    });
+
+
+  if(messageError){
+
+    /*
+      Message তৈরি না হলে
+      uploaded file delete করার চেষ্টা।
+    */
+
+    await db.storage
+      .from("raztara-media")
+      .remove([data.path]);
+
+
+    toast(
+      messageError.message
+    );
+
+    return;
+
+  }
+
+
+  toast("Sent ✓");
+
+}
+
+
+/* =========================================================
+   SIGNED URL
+========================================================= */
+
+async function getSignedUrl(path){
+
+  if(!path) return null;
+
+
+  /*
+    যদি পুরোনো data তে সরাসরি URL থাকে
+  */
+
+  if(
+    path.startsWith("http://") ||
+    path.startsWith("https://")
+  ){
+
+    return path;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+  await db.storage
+    .from("raztara-media")
+    .createSignedUrl(
+      path,
+      60 * 60
+    );
+
+
+  if(error){
+
+    console.log(error);
+
+    return null;
+
+  }
+
+
+  return data.signedUrl;
+
+}
+
+
+/* =========================================================
+   VOICE MESSAGE
+========================================================= */
+
+async function toggleRecording(){
+
+  if(recording){
+
+    stopRecording();
+
+  }else{
+
+    startRecording();
+
+  }
+
+}
+
+
+async function startRecording(){
+
+  if(!currentConversation){
+
+    toast("আগে একটি chat খুলুন");
+
+    return;
+
+  }
+
+
+  if(
+    !navigator.mediaDevices ||
+    !navigator.mediaDevices.getUserMedia
+  ){
+
+    toast(
+      "এই browser-এ microphone recording support নেই"
+    );
+
+    return;
+
+  }
+
+
+  try{
+
+    const stream =
+      await navigator
+        .mediaDevices
+        .getUserMedia({
+          audio:true
+        });
+
+
+    audioChunks = [];
+
+
+    let options = {};
+
+    if(
+      MediaRecorder.isTypeSupported(
+        "audio/webm;codecs=opus"
+      )
+    ){
+
+      options.mimeType =
+        "audio/webm;codecs=opus";
+
+    }
+
+
+    mediaRecorder =
+      new MediaRecorder(
+        stream,
+        options
+      );
+
+
+    mediaRecorder.ondataavailable =
+      event=>{
+
+        if(
+          event.data &&
+          event.data.size > 0
+        ){
+
+          audioChunks.push(
+            event.data
+          );
+
+        }
+
+      };
+
+
+    mediaRecorder.onstop =
+      async()=>{
+
+        stream
+          .getTracks()
+          .forEach(
+            track=>track.stop()
+          );
+
+
+        const blob =
+          new Blob(
+            audioChunks,
+            {
+              type:
+                mediaRecorder.mimeType ||
+                "audio/webm"
+            }
+          );
+
+
+        await uploadVoice(
+          blob
+        );
+
+      };
+
+
+    mediaRecorder.start();
+
+    recording = true;
+
+
+    const btn =
+      document.getElementById(
+        "recordBtn"
+      );
+
+    btn.classList.add(
+      "recording"
+    );
+
+    btn.textContent =
+      "⏹";
+
+
+    toast(
+      "Recording চলছে..."
+    );
+
+
+  }catch(error){
+
+    console.log(error);
+
+    toast(
+      "Microphone permission দিন"
+    );
+
+  }
+
+}
+
+
+function stopRecording(){
+
+  if(
+    mediaRecorder &&
+    recording
+  ){
+
+    mediaRecorder.stop();
+
+  }
+
+
+  recording = false;
+
+
+  const btn =
+    document.getElementById(
+      "recordBtn"
+    );
+
+  btn.classList.remove(
+    "recording"
+  );
+
+  btn.textContent =
+    "🎤";
+
+}
+
+
+async function uploadVoice(blob){
+
+  toast(
+    "Voice upload হচ্ছে..."
+  );
+
+
+  const ext =
+    blob.type.includes("ogg")
+      ? "ogg"
+      : "webm";
+
+
+  const path =
+    currentUser.id +
+    "/" +
+    currentConversation +
+    "/" +
+    crypto.randomUUID() +
+    "." +
+    ext;
+
+
+  const {
+    data,
+    error
+  } =
+  await db.storage
+    .from("raztara-media")
+    .upload(
+      path,
+      blob,
+      {
+        contentType:
+          blob.type ||
+          "audio/webm",
+
+        upsert:false
+      }
+    );
+
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+
+  }
+
+
+  const {
+    error:messageError
+  } =
+  await db
+    .from("messages")
+    .insert({
+
+      conversation_id:
+        currentConversation,
+
+      sender_id:
+        currentUser.id,
+
+      content:
+        "Voice message",
+
+      message_type:
+        "audio",
+
+      file_url:
+        data.path
+
+    });
+
+
+  if(messageError){
+
+    await db.storage
+      .from("raztara-media")
+      .remove([
+        data.path
+      ]);
+
+
+    toast(
+      messageError.message
+    );
+
+    return;
+
+  }
+
+
+  toast("Voice sent ✓");
+
+}
+
+
+/* =========================================================
+   LOCATION
+========================================================= */
+
+async function sendLocation(){
+
+  if(!navigator.geolocation){
+
+    toast(
+      "Location support নেই"
+    );
+
+    return;
+
+  }
+
+
+  navigator.geolocation.getCurrentPosition(
+
+    async position=>{
+
+      const lat =
+        position.coords.latitude;
+
+      const lng =
+        position.coords.longitude;
+
+
+      const mapUrl =
+        "https://www.google.com/maps?q=" +
+        lat +
+        "," +
+        lng;
+
+
+      const {
+        error
+      } =
+      await db
+        .from("messages")
+        .insert({
+
+          conversation_id:
+            currentConversation,
+
+          sender_id:
+            currentUser.id,
+
+          content:
+            mapUrl,
+
+          message_type:
+            "location"
+
+        });
+
+
+      if(error){
+
+        toast(error.message);
+
+      }
+
+    },
+
+    ()=>{
+      toast(
+        "Location permission দিন"
+      );
+    }
+
+  );
+
+}
+
+
+/* =========================================================
+   CHAT CLOSE
+========================================================= */
+
+function closeChat(){
+
+  if(messageSubscription){
+
+    db.removeChannel(
+      messageSubscription
+    );
+
+    messageSubscription =
+      null;
+
+  }
+
+
+  currentConversation =
+    null;
+
+  currentTarget =
+    null;
+
+
+  document
+    .getElementById("chatScreen")
+    .classList.add("hidden");
+
+
+  loadChatList();
+
+}
+
+
+/* =========================================================
+   CHAT LIST
+========================================================= */
+
+async function loadChatList(){
+
+  const box =
+    document.getElementById(
+      "chatList"
+    );
+
+
+  if(!currentUser){
+
+    return;
+
+  }
+
+
+  const {
+    data:members,
+    error
+  } =
+  await db
+    .from("conversation_members")
+    .select(
+      "conversation_id"
+    )
+    .eq(
+      "user_id",
+      currentUser.id
+    );
+
+
+  if(error){
+
+    box.innerHTML =
+      `<div class="empty">${escapeHtml(error.message)}</div>`;
+
+    return;
+
+  }
+
+
+  if(!members?.length){
 
     box.innerHTML =
       `<div class="empty">
-        এখনো কোনো chat নেই।
+        এখনো কোনো chat নেই।<br><br>
+        উপরের search box দিয়ে user খুঁজে chat শুরু করুন।
       </div>`;
 
     return;
+
   }
 
 
-  box.innerHTML="";
+  const ids =
+    members.map(
+      x=>x.conversation_id
+    );
 
 
-  for(const item of data){
+  const {
+    data:conversations
+  } =
+  await db
+    .from("conversations")
+    .select("*")
+    .in(
+      "id",
+      ids
+    )
+    .order(
+      "created_at",
+      {
+        ascending:false
+      }
+    );
 
-    const conversation =
-      item.conversations;
+
+  box.innerHTML = "";
 
 
-    if(!conversation) continue;
+  for(
+    const conversation
+    of conversations || []
+  ){
+
+    const {
+      data:otherMembers
+    } =
+    await db
+      .from("conversation_members")
+      .select(
+        "user_id"
+      )
+      .eq(
+        "conversation_id",
+        conversation.id
+      )
+      .neq(
+        "user_id",
+        currentUser.id
+      )
+      .limit(1);
 
 
-    /*
-      Group chat পরে যোগ হবে।
-    */
-
-    if(conversation.is_group) continue;
+    let target = null;
 
 
-    const {data:members} =
+    if(
+      otherMembers &&
+      otherMembers.length
+    ){
+
+      const {
+        data:user
+      } =
       await db
-        .from("conversation_members")
-        .select(`
-          user_id,
-          profiles(
-            id,
-            username,
-            full_name,
-            avatar_url
-          )
-        `)
+        .from("profiles")
+        .select("*")
         .eq(
-          "conversation_id",
-          conversation.id
-        );
+          "id",
+          otherMembers[0].user_id
+        )
+        .single();
 
 
-    const other =
-      (members || [])
-        .map(x=>x.profiles)
-        .find(
-          x=>x && x.id!==currentUser.id
-        );
+      target =
+        user;
+
+    }
 
 
-    if(!other) continue;
+    if(!target){
+
+      continue;
+
+    }
 
 
-    const div =
+    const item =
+      document.createElement("div");
+
+    item.className =
+      "chatItem";
+
+
+    const av =
+      document.createElement("div");
+
+    av.className =
+      "avatar";
+
+
+    setAvatar(
+      av,
+      target,
+      40
+    );
+
+
+    const info =
       document.createElement("div");
 
 
-    div.className="chat-card";
+    const name =
+      document.createElement("div");
+
+    name.className =
+      "userName";
+
+    name.textContent =
+      target.full_name ||
+      target.username ||
+      "User";
 
 
-    div.onclick=()=>{
+    const uname =
+      document.createElement("div");
 
-      openChat(
-        conversation.id,
-        other
+    uname.className =
+      "userUsername";
+
+    uname.textContent =
+      "@" +
+      (
+        target.username ||
+        ""
       );
 
-    };
+
+    info.appendChild(name);
+    info.appendChild(uname);
 
 
-    div.innerHTML=`
-
-      <div class="avatar">
-        ${getInitial(
-          other.full_name ||
-          other.username
-        )}
-      </div>
-
-      <div class="user-info">
-
-        <strong>
-          ${escapeHtml(
-            other.full_name ||
-            other.username
-          )}
-        </strong>
-
-        <small>
-          @${escapeHtml(
-            other.username || ""
-          )}
-        </small>
-
-      </div>
-
-      <div>
-        💬
-      </div>
-
-    `;
+    item.appendChild(av);
+    item.appendChild(info);
 
 
-    box.appendChild(div);
+    item.onclick =
+      ()=>openChat(
+        conversation.id,
+        target
+      );
+
+
+    box.appendChild(item);
+
+  }
+
+
+  if(!box.children.length){
+
+    box.innerHTML =
+      `<div class="empty">
+        কোনো chat পাওয়া যায়নি।
+      </div>`;
 
   }
 
 }
 
 
-/* ===========================
-   PAGE CHANGE
-=========================== */
-
-function changePage(page){
-
-  const pages =
-    ["home","calls","profile"];
-
-
-  pages.forEach(p=>{
-
-    document
-      .getElementById(p+"Page")
-      .classList.toggle(
-        "hidden",
-        p!==page
-      );
-
-
-    document
-      .getElementById(p+"Nav")
-      .classList.toggle(
-        "active",
-        p===page
-      );
-
-  });
-
-}
-
-
-/* ===========================
-   EDIT PROFILE
-=========================== */
+/* =========================================================
+   PROFILE EDIT
+========================================================= */
 
 async function editProfile(){
-
-  if(!currentProfile) return;
-
 
   const name =
     prompt(
       "আপনার নাম:",
-      currentProfile.full_name || ""
+      currentProfile?.full_name || ""
     );
 
 
-  if(name===null) return;
+  if(name === null) return;
 
 
   const username =
     prompt(
       "Username:",
-      currentProfile.username || ""
+      currentProfile?.username || ""
     );
 
 
-  if(username===null) return;
+  if(username === null) return;
 
 
-  const cleanUsername =
-    username
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9_]/g,"");
+  const bio =
+    prompt(
+      "Bio:",
+      currentProfile?.bio || ""
+    );
 
 
-  if(!cleanUsername){
-
-    showToast("Username সঠিক নয়");
-    return;
-  }
+  if(bio === null) return;
 
 
-  const {data,error} =
-    await db
-      .from("profiles")
-      .update({
+  const {
+    data,
+    error
+  } =
+  await db
+    .from("profiles")
+    .update({
 
-        full_name:name.trim(),
-        username:cleanUsername
+      full_name:
+        name.trim(),
 
-      })
-      .eq("id",currentUser.id)
-      .select()
-      .single();
+      username:
+        username.trim()
+          .toLowerCase(),
+
+      bio:
+        bio.trim(),
+
+      updated_at:
+        new Date().toISOString()
+
+    })
+    .eq(
+      "id",
+      currentUser.id
+    )
+    .select()
+    .single();
 
 
   if(error){
 
-    showToast(error.message);
+    toast(error.message);
+
     return;
+
   }
 
 
-  currentProfile=data;
+  currentProfile =
+    data;
+
 
   updateProfileUI();
 
-  showToast("Profile update হয়েছে");
+  toast(
+    "Profile updated ✓"
+  );
 
 }
 
 
-/* ===========================
-   LOGOUT
-=========================== */
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
-async function logout(){
-
-  if(chatRealtime){
-
-    db.removeChannel(chatRealtime);
-
-    chatRealtime=null;
-
-  }
-
-
-  await db.auth.signOut();
-
-
-  currentUser=null;
-  currentProfile=null;
-
+function changePage(page){
 
   document
-    .getElementById("app")
+    .getElementById("chatsPage")
+    .classList.add("hidden");
+
+  document
+    .getElementById("callsPage")
+    .classList.add("hidden");
+
+  document
+    .getElementById("profilePage")
     .classList.add("hidden");
 
 
   document
-    .getElementById("auth")
-    .classList.remove("hidden");
+    .getElementById("navChats")
+    .classList.remove("active");
+
+  document
+    .getElementById("navCalls")
+    .classList.remove("active");
+
+  document
+    .getElementById("navProfile")
+    .classList.remove("active");
+
+
+  if(page === "chats"){
+
+    document
+      .getElementById("chatsPage")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("navChats")
+      .classList.add("active");
+
+
+    loadChatList();
+
+  }
+
+
+  if(page === "calls"){
+
+    document
+      .getElementById("callsPage")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("navCalls")
+      .classList.add("active");
+
+  }
+
+
+  if(page === "profile"){
+
+    document
+      .getElementById("profilePage")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("navProfile")
+      .classList.add("active");
+
+    updateProfileUI();
+
+  }
 
 }
 
 
-/* ===========================
+/* =========================================================
+   AUDIO / VIDEO CALL PLACEHOLDER
+========================================================= */
+
+function startAudioCall(){
+
+  toast(
+    "Audio Call system পরবর্তী ধাপে যোগ হবে।"
+  );
+
+}
+
+
+function startVideoCall(){
+
+  toast(
+    "Video Call system পরবর্তী ধাপে যোগ হবে।"
+  );
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logout(){
+
+  await db.auth.signOut();
+
+}
+
+
+/* =========================================================
    HELPERS
-=========================== */
+========================================================= */
 
-function getInitial(name){
+function scrollMessages(){
 
-  if(!name) return "U";
+  const box =
+    document.getElementById(
+      "messages"
+    );
 
-  return name
-    .trim()
-    .charAt(0)
-    .toUpperCase();
+  box.scrollTop =
+    box.scrollHeight;
+
+}
+
+
+function formatTime(date){
+
+  return new Date(date)
+    .toLocaleTimeString(
+      "bn-BD",
+      {
+        hour:"numeric",
+        minute:"2-digit"
+      }
+    );
 
 }
 
@@ -1976,57 +3282,64 @@ function getInitial(name){
 function escapeHtml(value){
 
   return String(value || "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
 
 }
 
 
-function scrollMessages(){
+function toast(message){
 
   const box =
-    document.getElementById("messages");
+    document.getElementById(
+      "toast"
+    );
 
-  setTimeout(()=>{
+  box.textContent =
+    message;
 
-    box.scrollTop =
-      box.scrollHeight;
-
-  },50);
-
-}
-
-
-function showToast(message){
-
-  const toast =
-    document.getElementById("toast");
+  box.style.display =
+    "block";
 
 
-  toast.textContent=message;
-
-  toast.style.display="block";
-
-
-  clearTimeout(window.toastTimer);
+  clearTimeout(
+    window.toastTimer
+  );
 
 
   window.toastTimer =
-    setTimeout(()=>{
-
-      toast.style.display="none";
-
-    },3000);
+    setTimeout(
+      ()=>{
+        box.style.display =
+          "none";
+      },
+      3000
+    );
 
 }
 
 
-/* ===========================
-   RUN
-=========================== */
+/* =========================================================
+   START APP
+========================================================= */
 
 start();
 
