@@ -683,77 +683,59 @@ async function saveProfile(){
     if(!currentUser){
 
         showMessage(
-            "User session পাওয়া যায়নি। আবার Login করুন।",
+            "Login session পাওয়া যায়নি। আবার Login করুন।",
             "error"
         );
 
         return;
     }
 
-
     const saveBtn =
         document.getElementById("saveBtn");
 
-
     saveBtn.disabled = true;
-
-    saveBtn.textContent =
-        "Saving...";
-
+    saveBtn.textContent = "Saving...";
 
     try{
 
-        /*
-         * আবার authenticated user যাচাই
-         */
-
+        /* বর্তমান authenticated user নিশ্চিত করা */
         const {
             data: userData,
             error: userError
-        } =
-        await supabaseClient.auth.getUser();
-
+        } = await supabaseClient.auth.getUser();
 
         if(userError){
             throw userError;
         }
 
-
         if(!userData || !userData.user){
-
             throw new Error(
                 "Login session পাওয়া যায়নি।"
             );
         }
 
-
-        currentUser =
-            userData.user;
+        currentUser = userData.user;
 
 
-        /*
-         * Form values
-         */
+        /* Form data */
 
         const fullName =
             document.getElementById("fullName")
-                .value
-                .trim();
+            .value
+            .trim();
 
         const username =
             document.getElementById("username")
-                .value
-                .trim();
+            .value
+            .trim();
 
         const bio =
             document.getElementById("bio")
-                .value
-                .trim();
+            .value
+            .trim();
 
 
-        /*
-         * নতুন ছবি থাকলে আগে upload
-         */
+        /* নতুন ছবি থাকলে upload */
 
         let avatarUrl = null;
 
@@ -764,29 +746,7 @@ async function saveProfile(){
         }
 
 
-        /*
-         * Profile row আছে কি না পরীক্ষা
-         */
-
-        const {
-            data: existingProfile,
-            error: checkError
-        } =
-        await supabaseClient
-            .from("profiles")
-            .select("id")
-            .eq("id", currentUser.id)
-            .maybeSingle();
-
-
-        if(checkError){
-            throw checkError;
-        }
-
-
-        /*
-         * Update করার data
-         */
+        /* শুধুমাত্র UPDATE */
 
         const updateData = {
 
@@ -811,75 +771,21 @@ async function saveProfile(){
         }
 
 
-        /*
-         * Profile থাকলে UPDATE
-         */
-
-        if(existingProfile){
-
-            const {
-                error: updateError
-            } =
-            await supabaseClient
-                .from("profiles")
-                .update(updateData)
-                .eq("id", currentUser.id);
+        const {
+            error: updateError
+        } =
+        await supabaseClient
+            .from("profiles")
+            .update(updateData)
+            .eq("id", currentUser.id);
 
 
-            if(updateError){
-                throw updateError;
-            }
-
-
-        }else{
-
-            /*
-             * Profile না থাকলে INSERT
-             */
-
-            const insertData = {
-
-                id:
-                    currentUser.id,
-
-                full_name:
-                    fullName || null,
-
-                username:
-                    username || null,
-
-                bio:
-                    bio || null,
-
-                updated_at:
-                    new Date().toISOString()
-            };
-
-
-            if(avatarUrl){
-
-                insertData.avatar_url =
-                    avatarUrl;
-            }
-
-
-            const {
-                error: insertError
-            } =
-            await supabaseClient
-                .from("profiles")
-                .insert(insertData);
-
-
-            if(insertError){
-                throw insertError;
-            }
+        if(updateError){
+            throw updateError;
         }
 
 
-        /*
-         * Photo selection reset
-         */
+        /* Photo reset */
 
         selectedPhoto = null;
 
@@ -887,15 +793,13 @@ async function saveProfile(){
             .value = "";
 
 
-        /*
-         * নতুন data আবার load
-         */
+        /* আবার Profile load */
 
         await loadProfile();
 
 
         showMessage(
-            "✅ Profile সফলভাবে Save হয়েছে।",
+            "✅ Profile সফলভাবে Update হয়েছে।",
             "success"
         );
 
@@ -903,41 +807,19 @@ async function saveProfile(){
     }catch(error){
 
         console.error(
-            "Profile save error:",
+            "Profile update error:",
             error
         );
 
-
-        let message =
-            error.message ||
-            "Unknown error";
-
-
-        /*
-         * Username duplicate হলে সহজ message
-         */
-
-        if(
-            message.includes("duplicate") ||
-            message.includes("unique")
-        ){
-
-            message =
-                "এই Username আগে থেকেই ব্যবহার করা হয়েছে। অন্য Username দিন।";
-        }
-
-
         showMessage(
-            "Profile Save করতে সমস্যা হয়েছে: " +
-            message,
+            "Profile Update করতে সমস্যা হয়েছে: " +
+            (error.message || "Unknown error"),
             "error"
         );
-
 
     }finally{
 
         saveBtn.disabled = false;
-
         saveBtn.textContent =
             "💾 Save / Update";
     }
