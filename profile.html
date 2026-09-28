@@ -16,7 +16,7 @@
 }
 
 body{
-    font-family:Arial, sans-serif;
+    font-family:Arial,sans-serif;
     background:#f5f7f9;
     color:#222;
 }
@@ -34,7 +34,6 @@ body{
     color:white;
     text-decoration:none;
     font-size:34px;
-    line-height:1;
 }
 
 .header-title{
@@ -47,10 +46,10 @@ body{
 .container{
     max-width:500px;
     margin:auto;
-    padding:25px 18px 40px;
+    padding:25px 16px 40px;
 }
 
-.profile-card{
+.card{
     background:white;
     border-radius:18px;
     padding:25px 20px;
@@ -63,8 +62,8 @@ body{
 }
 
 .avatar{
-    width:120px;
-    height:120px;
+    width:125px;
+    height:125px;
     border-radius:50%;
     object-fit:cover;
     border:4px solid #075e54;
@@ -72,30 +71,96 @@ body{
 }
 
 .default-avatar{
-    width:120px;
-    height:120px;
+    width:125px;
+    height:125px;
     border-radius:50%;
     background:#075e54;
     color:white;
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    font-size:50px;
+    font-size:52px;
     border:4px solid #075e54;
 }
 
-.change-photo{
-    display:inline-block;
-    margin-top:12px;
-    background:#075e54;
-    color:white;
-    padding:10px 18px;
-    border-radius:25px;
-    cursor:pointer;
-    font-size:14px;
+/* PROFILE VIEW */
+
+.profile-info{
+    margin-top:10px;
 }
 
-#photoInput{
+.info-row{
+    padding:14px 0;
+    border-bottom:1px solid #eee;
+}
+
+.info-label{
+    color:#777;
+    font-size:13px;
+    margin-bottom:5px;
+}
+
+.info-value{
+    font-size:16px;
+    font-weight:500;
+    word-break:break-word;
+}
+
+.bio-box{
+    margin-top:18px;
+    padding:15px;
+    background:#f5f7f9;
+    border-radius:12px;
+}
+
+.bio-label{
+    color:#777;
+    font-size:13px;
+    margin-bottom:7px;
+}
+
+.bio-text{
+    font-size:15px;
+    line-height:1.6;
+    white-space:pre-wrap;
+}
+
+/* BUTTON */
+
+.edit-btn,
+.save-btn{
+    width:100%;
+    border:0;
+    background:#075e54;
+    color:white;
+    padding:14px;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:20px;
+}
+
+.edit-btn{
+    background:#075e54;
+}
+
+.cancel-btn{
+    width:100%;
+    border:1px solid #ccc;
+    background:white;
+    color:#444;
+    padding:13px;
+    border-radius:10px;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+/* EDIT FORM */
+
+.edit-form{
     display:none;
 }
 
@@ -136,20 +201,19 @@ textarea{
     resize:vertical;
 }
 
-.save-btn{
-    width:100%;
-    border:0;
+.change-photo{
+    display:inline-block;
+    margin-top:12px;
     background:#075e54;
     color:white;
-    padding:14px;
-    border-radius:10px;
-    font-size:16px;
-    font-weight:bold;
+    padding:10px 18px;
+    border-radius:25px;
     cursor:pointer;
+    font-size:14px;
 }
 
-.save-btn:disabled{
-    opacity:.6;
+#photoInput{
+    display:none;
 }
 
 .logout-btn{
@@ -183,10 +247,17 @@ textarea{
 <body>
 
 <div class="header">
+
     <a class="back" href="index.html">‹</a>
-    <div class="header-title">My Profile</div>
+
+    <div class="header-title">
+        My Profile
+    </div>
+
     <div style="width:30px;"></div>
+
 </div>
+
 
 <div class="container">
 
@@ -194,93 +265,247 @@ textarea{
         Profile লোড হচ্ছে...
     </div>
 
-    <div id="profileCard" class="profile-card" style="display:none;">
 
-        <div class="avatar-box">
+    <div id="profileCard" class="card" style="display:none;">
 
-            <img
-                id="avatarImage"
-                class="avatar"
-                style="display:none;"
-                alt="Profile Photo"
-            >
+        <!-- =========================
+             PROFILE VIEW
+        ========================== -->
 
-            <div
-                id="defaultAvatar"
-                class="default-avatar"
-            >
-                👤
+        <div id="profileView">
+
+            <div class="avatar-box">
+
+                <img
+                    id="viewAvatar"
+                    class="avatar"
+                    style="display:none;"
+                    alt="Profile Photo"
+                >
+
+                <div
+                    id="viewDefaultAvatar"
+                    class="default-avatar"
+                >
+                    👤
+                </div>
+
             </div>
 
-            <br>
 
-            <label for="photoInput" class="change-photo">
-                🖼️ Change Photo
-            </label>
+            <div class="profile-info">
 
-            <input
-                type="file"
-                id="photoInput"
-                accept="image/*"
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Name
+                    </div>
+
+                    <div
+                        id="viewName"
+                        class="info-value"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Username
+                    </div>
+
+                    <div
+                        id="viewUsername"
+                        class="info-value"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Email
+                    </div>
+
+                    <div
+                        id="viewEmail"
+                        class="info-value"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+
+                <div class="bio-box">
+
+                    <div class="bio-label">
+                        Bio
+                    </div>
+
+                    <div
+                        id="viewBio"
+                        class="bio-text"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="edit-btn"
+                onclick="openEdit()"
             >
+                ✏️ Edit Profile
+            </button>
 
-        </div>
 
-        <div class="field">
-            <label>Name</label>
-            <input
-                type="text"
-                id="nameInput"
-                placeholder="আপনার নাম"
+            <button
+                class="logout-btn"
+                onclick="logout()"
             >
+                🚪 Logout
+            </button>
+
         </div>
 
-        <div class="field">
-            <label>Username</label>
-            <input
-                type="text"
-                id="usernameInput"
-                placeholder="Username"
+
+        <!-- =========================
+             EDIT PROFILE
+        ========================== -->
+
+        <div id="editForm" class="edit-form">
+
+            <div class="avatar-box">
+
+                <img
+                    id="editAvatar"
+                    class="avatar"
+                    style="display:none;"
+                    alt="Profile Photo"
+                >
+
+                <div
+                    id="editDefaultAvatar"
+                    class="default-avatar"
+                >
+                    👤
+                </div>
+
+                <br>
+
+                <label
+                    for="photoInput"
+                    class="change-photo"
+                >
+                    🖼️ Change Photo
+                </label>
+
+                <input
+                    type="file"
+                    id="photoInput"
+                    accept="image/*"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Name
+                </label>
+
+                <input
+                    type="text"
+                    id="nameInput"
+                    placeholder="আপনার নাম"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="usernameInput"
+                    placeholder="Username"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="emailInput"
+                    disabled
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Bio
+                </label>
+
+                <textarea
+                    id="bioInput"
+                    placeholder="আপনার সম্পর্কে কিছু লিখুন..."
+                ></textarea>
+
+            </div>
+
+
+            <button
+                id="saveButton"
+                class="save-btn"
+                onclick="saveProfile()"
             >
-        </div>
+                💾 Save / Update
+            </button>
 
-        <div class="field">
-            <label>Email</label>
-            <input
-                type="email"
-                id="emailInput"
-                disabled
+
+            <button
+                class="cancel-btn"
+                onclick="closeEdit()"
             >
+                Cancel
+            </button>
+
+
+            <div
+                id="status"
+                class="status"
+            ></div>
+
         </div>
-
-        <div class="field">
-            <label>Bio</label>
-            <textarea
-                id="bioInput"
-                placeholder="আপনার সম্পর্কে কিছু লিখুন..."
-            ></textarea>
-        </div>
-
-        <button
-            id="saveButton"
-            class="save-btn"
-            onclick="saveProfile()"
-        >
-            💾 Save / Update
-        </button>
-
-        <button
-            class="logout-btn"
-            onclick="logout()"
-        >
-            🚪 Logout
-        </button>
-
-        <div id="status" class="status"></div>
 
     </div>
 
 </div>
+
 
 <script>
 
@@ -301,11 +526,8 @@ const supabaseClient =
     );
 
 
-/* ===============================
-   GLOBAL USER
-================================ */
-
 let currentUser = null;
+let currentProfile = null;
 let selectedPhoto = null;
 
 
@@ -313,7 +535,10 @@ let selectedPhoto = null;
    START
 ================================ */
 
-window.addEventListener("load", loadProfile);
+window.addEventListener(
+    "load",
+    loadProfile
+);
 
 
 /* ===============================
@@ -329,32 +554,36 @@ async function loadProfile(){
             error
         } = await supabaseClient.auth.getUser();
 
+
         if(error){
             throw error;
         }
 
+
         currentUser = data.user;
+
 
         if(!currentUser){
 
-            window.location.href = "index.html";
+            window.location.href =
+                "index.html";
+
             return;
         }
 
-
-        /*
-         * IMPORTANT:
-         * এখানে শুধু SELECT হচ্ছে।
-         * INSERT / UPSERT কিছুই নেই।
-         */
 
         const {
             data: profile,
             error: profileError
         } = await supabaseClient
             .from("profiles")
-            .select("id, username, full_name, avatar_url, bio")
-            .eq("id", currentUser.id)
+            .select(
+                "id, username, full_name, avatar_url, bio"
+            )
+            .eq(
+                "id",
+                currentUser.id
+            )
             .maybeSingle();
 
 
@@ -363,11 +592,6 @@ async function loadProfile(){
         }
 
 
-        /*
-         * Profile row না থাকলে
-         * এখন আমরা INSERT করব না।
-         */
-
         if(!profile){
 
             showStatus(
@@ -375,68 +599,106 @@ async function loadProfile(){
                 "red"
             );
 
-            document.getElementById("loadingBox").style.display =
-                "none";
-
-            document.getElementById("profileCard").style.display =
-                "block";
-
-            document.getElementById("emailInput").value =
-                currentUser.email || "";
-
             return;
         }
 
 
-        /* Fill profile */
+        currentProfile = profile;
 
-        document.getElementById("nameInput").value =
+
+        /* VIEW */
+
+        document.getElementById(
+            "viewName"
+        ).innerText =
+            profile.full_name ||
+            "নাম দেওয়া হয়নি";
+
+
+        document.getElementById(
+            "viewUsername"
+        ).innerText =
+            profile.username
+            ? "@" + profile.username
+            : "Username দেওয়া হয়নি";
+
+
+        document.getElementById(
+            "viewEmail"
+        ).innerText =
+            currentUser.email ||
+            "";
+
+
+        document.getElementById(
+            "viewBio"
+        ).innerText =
+            profile.bio ||
+            "কোনো Bio দেওয়া হয়নি";
+
+
+        /* EDIT FORM */
+
+        document.getElementById(
+            "nameInput"
+        ).value =
             profile.full_name || "";
 
-        document.getElementById("usernameInput").value =
+
+        document.getElementById(
+            "usernameInput"
+        ).value =
             profile.username || "";
 
-        document.getElementById("emailInput").value =
+
+        document.getElementById(
+            "emailInput"
+        ).value =
             currentUser.email || "";
 
-        document.getElementById("bioInput").value =
+
+        document.getElementById(
+            "bioInput"
+        ).value =
             profile.bio || "";
 
 
-        /* Avatar */
-
-        if(profile.avatar_url){
-
-            document.getElementById("avatarImage").src =
-                profile.avatar_url;
-
-            document.getElementById("avatarImage").style.display =
-                "inline-block";
-
-            document.getElementById("defaultAvatar").style.display =
-                "none";
-
-        }else{
-
-            document.getElementById("avatarImage").style.display =
-                "none";
-
-            document.getElementById("defaultAvatar").style.display =
-                "inline-flex";
-        }
+        setAvatar(
+            "viewAvatar",
+            "viewDefaultAvatar",
+            profile.avatar_url
+        );
 
 
-        document.getElementById("loadingBox").style.display =
+        setAvatar(
+            "editAvatar",
+            "editDefaultAvatar",
+            profile.avatar_url
+        );
+
+
+        document.getElementById(
+            "loadingBox"
+        ).style.display =
             "none";
 
-        document.getElementById("profileCard").style.display =
+
+        document.getElementById(
+            "profileCard"
+        ).style.display =
             "block";
+
 
     }catch(error){
 
-        console.error("PROFILE LOAD ERROR:", error);
+        console.error(
+            "PROFILE LOAD ERROR:",
+            error
+        );
 
-        document.getElementById("loadingBox").innerHTML =
+        document.getElementById(
+            "loadingBox"
+        ).innerHTML =
             "Profile লোড করতে সমস্যা হয়েছে:<br>" +
             error.message;
     }
@@ -444,67 +706,162 @@ async function loadProfile(){
 
 
 /* ===============================
+   AVATAR
+================================ */
+
+function setAvatar(
+    imageId,
+    defaultId,
+    url
+){
+
+    const image =
+        document.getElementById(imageId);
+
+    const defaultAvatar =
+        document.getElementById(defaultId);
+
+
+    if(url){
+
+        image.src = url;
+
+        image.style.display =
+            "inline-block";
+
+        defaultAvatar.style.display =
+            "none";
+
+    }else{
+
+        image.style.display =
+            "none";
+
+        defaultAvatar.style.display =
+            "inline-flex";
+    }
+}
+
+
+/* ===============================
+   OPEN EDIT
+================================ */
+
+function openEdit(){
+
+    document.getElementById(
+        "profileView"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "editForm"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "status"
+    ).innerText =
+        "";
+}
+
+
+/* ===============================
+   CLOSE EDIT
+================================ */
+
+function closeEdit(){
+
+    document.getElementById(
+        "editForm"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "profileView"
+    ).style.display =
+        "block";
+
+
+    selectedPhoto = null;
+
+    document.getElementById(
+        "photoInput"
+    ).value = "";
+}
+
+
+/* ===============================
    PHOTO SELECT
 ================================ */
 
-document.getElementById("photoInput")
-.addEventListener("change", function(event){
+document.getElementById(
+    "photoInput"
+).addEventListener(
+    "change",
+    function(event){
 
-    const file = event.target.files[0];
+        const file =
+            event.target.files[0];
 
-    if(!file){
-        selectedPhoto = null;
-        return;
-    }
 
-    if(!file.type.startsWith("image/")){
+        if(!file){
+            selectedPhoto = null;
+            return;
+        }
 
-        showStatus(
-            "শুধু ছবি নির্বাচন করুন।",
-            "red"
+
+        if(!file.type.startsWith("image/")){
+
+            showStatus(
+                "শুধু ছবি নির্বাচন করুন।",
+                "red"
+            );
+
+            event.target.value = "";
+
+            selectedPhoto = null;
+
+            return;
+        }
+
+
+        if(
+            file.size >
+            6 * 1024 * 1024
+        ){
+
+            showStatus(
+                "ছবির সাইজ ৬ MB-এর বেশি হতে পারবে না।",
+                "red"
+            );
+
+            event.target.value = "";
+
+            selectedPhoto = null;
+
+            return;
+        }
+
+
+        selectedPhoto = file;
+
+
+        const previewURL =
+            URL.createObjectURL(file);
+
+
+        setAvatar(
+            "editAvatar",
+            "editDefaultAvatar",
+            previewURL
         );
 
-        event.target.value = "";
-        selectedPhoto = null;
-
-        return;
     }
-
-
-    /* 6 MB limit */
-
-    if(file.size > 6 * 1024 * 1024){
-
-        showStatus(
-            "ছবির সাইজ ৬ MB-এর বেশি হতে পারবে না।",
-            "red"
-        );
-
-        event.target.value = "";
-        selectedPhoto = null;
-
-        return;
-    }
-
-
-    selectedPhoto = file;
-
-
-    /* Preview */
-
-    const previewURL =
-        URL.createObjectURL(file);
-
-    document.getElementById("avatarImage").src =
-        previewURL;
-
-    document.getElementById("avatarImage").style.display =
-        "inline-block";
-
-    document.getElementById("defaultAvatar").style.display =
-        "none";
-
-});
+);
 
 
 /* ===============================
@@ -525,9 +882,14 @@ async function saveProfile(){
 
 
     const saveButton =
-        document.getElementById("saveButton");
+        document.getElementById(
+            "saveButton"
+        );
 
-    saveButton.disabled = true;
+
+    saveButton.disabled =
+        true;
+
 
     saveButton.innerText =
         "Saving...";
@@ -536,27 +898,34 @@ async function saveProfile(){
     try{
 
         const fullName =
-            document.getElementById("nameInput")
-            .value
-            .trim();
+            document.getElementById(
+                "nameInput"
+            ).value.trim();
+
 
         const username =
-            document.getElementById("usernameInput")
-            .value
-            .trim();
+            document.getElementById(
+                "usernameInput"
+            ).value.trim();
+
 
         const bio =
-            document.getElementById("bioInput")
-            .value
-            .trim();
+            document.getElementById(
+                "bioInput"
+            ).value.trim();
 
 
-        let avatarURL = null;
+        let avatarURL =
+            currentProfile.avatar_url ||
+            null;
 
 
-        /* =================================
+        /* =========================
            PHOTO UPLOAD
-        ================================= */
+           
+           নতুন file name ব্যবহার করছি।
+           upsert ব্যবহার করছি না।
+        ========================== */
 
         if(selectedPhoto){
 
@@ -566,9 +935,12 @@ async function saveProfile(){
                 .pop()
                 .toLowerCase();
 
+
             const filePath =
                 currentUser.id +
-                "/profile." +
+                "/profile-" +
+                Date.now() +
+                "." +
                 extension;
 
 
@@ -581,8 +953,8 @@ async function saveProfile(){
                     filePath,
                     selectedPhoto,
                     {
-                        upsert: true,
-                        contentType: selectedPhoto.type
+                        contentType:
+                            selectedPhoto.type
                     }
                 );
 
@@ -594,32 +966,28 @@ async function saveProfile(){
 
             const {
                 data: publicData
-            } = supabaseClient
+            } =
+                supabaseClient
                 .storage
                 .from("avatars")
-                .getPublicUrl(filePath);
+                .getPublicUrl(
+                    filePath
+                );
 
 
             avatarURL =
-                publicData.publicUrl +
-                "?t=" +
-                Date.now();
+                publicData.publicUrl;
         }
 
 
-        /* =================================
-           UPDATE DATA
-           
-           IMPORTANT:
-           এখানে INSERT নেই।
-           UPSERT নেই।
-           
-           শুধু UPDATE।
-        ================================= */
+        /* =========================
+           PROFILE UPDATE ONLY
+        ========================== */
 
         const updateData = {
 
-            full_name: fullName,
+            full_name:
+                fullName,
 
             username:
                 username || null,
@@ -639,21 +1007,19 @@ async function saveProfile(){
         }
 
 
-        console.log(
-            "PROFILE UPDATE ONLY",
-            currentUser.id,
-            updateData
-        );
-
-
         const {
             data: updatedProfile,
             error: updateError
         } = await supabaseClient
             .from("profiles")
             .update(updateData)
-            .eq("id", currentUser.id)
-            .select("id, username, full_name, avatar_url, bio")
+            .eq(
+                "id",
+                currentUser.id
+            )
+            .select(
+                "id, username, full_name, avatar_url, bio"
+            )
             .single();
 
 
@@ -662,48 +1028,73 @@ async function saveProfile(){
         }
 
 
-        if(!updatedProfile){
-
-            throw new Error(
-                "Profile update হয়েছে বলে কোনো row পাওয়া যায়নি।"
-            );
-        }
+        currentProfile =
+            updatedProfile;
 
 
-        /* Update screen */
+        /* =========================
+           UPDATE VIEW
+        ========================== */
 
-        document.getElementById("nameInput").value =
-            updatedProfile.full_name || "";
-
-        document.getElementById("usernameInput").value =
-            updatedProfile.username || "";
-
-        document.getElementById("bioInput").value =
-            updatedProfile.bio || "";
+        document.getElementById(
+            "viewName"
+        ).innerText =
+            updatedProfile.full_name ||
+            "নাম দেওয়া হয়নি";
 
 
-        if(updatedProfile.avatar_url){
+        document.getElementById(
+            "viewUsername"
+        ).innerText =
+            updatedProfile.username
+            ? "@" +
+              updatedProfile.username
+            : "Username দেওয়া হয়নি";
 
-            document.getElementById("avatarImage").src =
-                updatedProfile.avatar_url;
 
-            document.getElementById("avatarImage").style.display =
-                "inline-block";
+        document.getElementById(
+            "viewBio"
+        ).innerText =
+            updatedProfile.bio ||
+            "কোনো Bio দেওয়া হয়নি";
 
-            document.getElementById("defaultAvatar").style.display =
-                "none";
-        }
+
+        setAvatar(
+            "viewAvatar",
+            "viewDefaultAvatar",
+            updatedProfile.avatar_url
+        );
+
+
+        setAvatar(
+            "editAvatar",
+            "editDefaultAvatar",
+            updatedProfile.avatar_url
+        );
 
 
         selectedPhoto = null;
 
-        document.getElementById("photoInput").value = "";
+
+        document.getElementById(
+            "photoInput"
+        ).value = "";
 
 
-        showStatus(
-            "✅ Profile সফলভাবে Update হয়েছে।",
-            "green"
-        );
+        /* =========================
+           SAVE SUCCESS
+        ========================== */
+
+        document.getElementById(
+            "editForm"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "profileView"
+        ).style.display =
+            "block";
 
 
     }catch(error){
@@ -713,15 +1104,17 @@ async function saveProfile(){
             error
         );
 
+
         showStatus(
-            "❌ Profile Save করতে সমস্যা হয়েছে: " +
+            "❌ Profile Update করতে সমস্যা হয়েছে: " +
             error.message,
             "red"
         );
 
     }finally{
 
-        saveButton.disabled = false;
+        saveButton.disabled =
+            false;
 
         saveButton.innerText =
             "💾 Save / Update";
@@ -733,13 +1126,20 @@ async function saveProfile(){
    STATUS
 ================================ */
 
-function showStatus(message, color){
+function showStatus(
+    message,
+    color
+){
 
     const status =
-        document.getElementById("status");
+        document.getElementById(
+            "status"
+        );
+
 
     status.innerText =
         message;
+
 
     status.style.color =
         color === "green"
@@ -756,18 +1156,20 @@ async function logout(){
 
     const {
         error
-    } = await supabaseClient.auth.signOut();
+    } =
+        await supabaseClient.auth.signOut();
+
 
     if(error){
 
-        showStatus(
+        alert(
             "Logout করতে সমস্যা হয়েছে: " +
-            error.message,
-            "red"
+            error.message
         );
 
         return;
     }
+
 
     window.location.href =
         "index.html";
