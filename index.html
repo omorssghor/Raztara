@@ -1,20 +1,13 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>RAZTARA | Connect • Call • Share</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAZTARA</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
 *{
     box-sizing:border-box;
     margin:0;
@@ -22,720 +15,629 @@
 }
 
 body{
-    font-family:Arial,sans-serif;
-    background:#f5f5f5;
-    color:#222;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+    background:#07131a;
+    color:#fff;
+    min-height:100vh;
 }
 
+button,input{
+    font:inherit;
+}
 
-/* =========================
-   LOGIN SCREEN
-========================= */
+button{
+    cursor:pointer;
+}
+
+/* ================= LOGIN ================= */
 
 #loginScreen{
     min-height:100vh;
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:20px;
-    background:#f5f5f5;
+    padding:25px 18px;
+    background:
+        radial-gradient(circle at top,#123b48 0%,#07131a 45%,#050b0f 100%);
 }
 
-.login-box{
+.loginBox{
     width:100%;
-    max-width:400px;
-    background:white;
-    padding:30px 22px;
-    border-radius:16px;
-    box-shadow:0 4px 18px rgba(0,0,0,.12);
+    max-width:410px;
+    padding:34px 24px 28px;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:28px;
+    background:rgba(10,27,35,.92);
+    box-shadow:0 25px 70px rgba(0,0,0,.45);
 }
 
-.login-logo{
+.logo{
     text-align:center;
-    color:#075e54;
-    font-size:31px;
-    font-weight:bold;
-    margin-bottom:7px;
+    margin-bottom:34px;
 }
 
-.login-subtitle{
-    text-align:center;
-    color:#777;
-    margin-bottom:25px;
+.logoIcon{
+    width:76px;
+    height:76px;
+    margin:auto;
+    border-radius:24px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:38px;
+    background:linear-gradient(135deg,#00d4a5,#008fa8);
+    box-shadow:0 12px 30px rgba(0,212,165,.25);
 }
 
-.input-box{
-    margin-bottom:15px;
+.logo h1{
+    margin-top:17px;
+    font-size:30px;
+    letter-spacing:3px;
 }
 
-.input-box input{
-    width:100%;
-    padding:14px;
-    border:1px solid #ddd;
-    border-radius:9px;
-    outline:none;
-    font-size:15px;
+.logo p{
+    margin-top:7px;
+    color:#8fa7af;
+    font-size:13px;
 }
 
-.input-box input:focus{
-    border-color:#075e54;
+.inputGroup{
+    margin-bottom:17px;
 }
 
-.password-box{
+.inputGroup label{
+    display:block;
+    margin-bottom:8px;
+    color:#b9cbd0;
+    font-size:13px;
+}
+
+.inputBox{
     position:relative;
 }
 
-.password-box input{
-    padding-right:48px;
+.inputBox input{
+    width:100%;
+    height:54px;
+    padding:0 48px 0 16px;
+    border:none;
+    outline:none;
+    border-radius:15px;
+    color:#fff;
+    background:#10252e;
+    border:1px solid #203b45;
 }
 
-.show-password{
+.inputBox input:focus{
+    border-color:#00cda6;
+    box-shadow:0 0 0 3px rgba(0,205,166,.10);
+}
+
+.eye{
     position:absolute;
     right:14px;
     top:50%;
     transform:translateY(-50%);
-    cursor:pointer;
-    font-size:18px;
-}
-
-.login-button{
-    width:100%;
-    padding:14px;
     border:0;
-    border-radius:9px;
-    background:#075e54;
-    color:white;
-    font-size:16px;
-    font-weight:bold;
-    cursor:pointer;
+    background:none;
+    color:#8fa7af;
+    font-size:20px;
 }
 
-.login-button:disabled{
-    opacity:.6;
-}
-
-.login-links{
-    display:flex;
-    justify-content:space-between;
-    margin-top:16px;
-}
-
-.login-links a{
-    color:#075e54;
+.forgot{
+    display:block;
+    text-align:right;
+    margin:3px 2px 20px;
+    color:#00d4a5;
     text-decoration:none;
-    font-size:14px;
+    font-size:13px;
 }
 
-.register-button{
+.loginBtn{
     width:100%;
-    margin-top:18px;
-    padding:13px;
-    border:1px solid #075e54;
-    border-radius:9px;
-    background:white;
-    color:#075e54;
-    font-size:15px;
-    font-weight:bold;
-    cursor:pointer;
+    height:54px;
+    border:0;
+    border-radius:15px;
+    color:#001510;
+    font-weight:800;
+    background:linear-gradient(135deg,#00e0ad,#00aebd);
+    box-shadow:0 12px 25px rgba(0,212,165,.18);
 }
 
-.login-message{
-    text-align:center;
-    margin-top:14px;
-    font-size:14px;
+.loginBtn:disabled{
+    opacity:.55;
+    cursor:not-allowed;
 }
 
+.divider{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin:25px 0;
+    color:#66808a;
+    font-size:12px;
+}
 
-/* =========================
-   APP SCREEN
-========================= */
+.divider::before,
+.divider::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:#20343c;
+}
+
+.createBtn{
+    width:100%;
+    height:52px;
+    border-radius:15px;
+    border:1px solid #00b998;
+    background:transparent;
+    color:#00d4a5;
+    font-weight:700;
+}
+
+.message{
+    display:none;
+    margin-bottom:16px;
+    padding:12px 14px;
+    border-radius:12px;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.error{
+    background:rgba(255,70,70,.10);
+    border:1px solid rgba(255,70,70,.25);
+    color:#ff9c9c;
+}
+
+.success{
+    background:rgba(0,212,165,.10);
+    border:1px solid rgba(0,212,165,.25);
+    color:#72f1d2;
+}
+
+/* ================= APP ================= */
 
 #appScreen{
     display:none;
     min-height:100vh;
+    background:#07131a;
 }
 
-
-/* HEADER */
-
-.header{
-    height:60px;
-    background:#075e54;
-    color:white;
-
+.appHeader{
+    height:68px;
     display:flex;
     align-items:center;
     justify-content:space-between;
-
-    padding:0 14px;
-
-    position:fixed;
+    padding:0 17px;
+    border-bottom:1px solid #193039;
+    background:#0a1b23;
+    position:sticky;
     top:0;
-    left:0;
-    right:0;
-
-    z-index:20;
+    z-index:10;
 }
 
-.menu-button{
+.menuBtn,
+.profileBtn{
     width:42px;
     height:42px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    font-size:27px;
-    cursor:pointer;
-}
-
-.header-logo{
-    font-size:22px;
-    font-weight:bold;
-}
-
-.profile-button{
-    width:40px;
-    height:40px;
-    border-radius:50%;
-
-    background:#ddd;
-    color:#555;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    font-size:20px;
-    cursor:pointer;
-}
-
-
-/* CONTENT */
-
-.content{
-    max-width:600px;
-    margin:auto;
-
-    padding:74px 12px 82px;
-}
-
-
-/* SEARCH */
-
-.search-box{
-    width:100%;
-    padding:13px 17px;
-
     border:0;
-    border-radius:25px;
-
-    background:white;
-
-    box-shadow:0 1px 6px rgba(0,0,0,.10);
-
-    outline:none;
-    font-size:15px;
-
-    margin-bottom:12px;
+    border-radius:50%;
+    background:#102b34;
+    color:#fff;
+    font-size:21px;
 }
 
+.appTitle{
+    font-size:21px;
+    letter-spacing:2px;
+    font-weight:800;
+}
 
-/* CHAT LIST */
+.search{
+    margin:16px;
+}
 
-.chat-list{
-    background:white;
-    border-radius:11px;
-    overflow:hidden;
+.search input{
+    width:100%;
+    height:48px;
+    border:1px solid #1c3741;
+    outline:none;
+    border-radius:15px;
+    padding:0 16px;
+    color:#fff;
+    background:#0d222b;
+}
+
+.chatList{
+    padding:0 10px 90px;
 }
 
 .chat{
     display:flex;
     align-items:center;
-
-    padding:14px;
-
-    border-bottom:1px solid #eee;
-
-    cursor:pointer;
+    gap:13px;
+    padding:14px 8px;
+    border-bottom:1px solid #142b33;
 }
 
-.chat:last-child{
-    border-bottom:none;
-}
-
-.chat-avatar{
-    width:50px;
-    height:50px;
-
+.avatar{
+    width:52px;
+    height:52px;
+    flex:none;
     border-radius:50%;
-
-    background:#ddd;
-
     display:flex;
     align-items:center;
     justify-content:center;
-
-    font-size:22px;
-
-    margin-right:12px;
+    background:linear-gradient(135deg,#00cda6,#087d99);
+    font-weight:800;
 }
 
-.chat-info{
+.chatInfo{
     flex:1;
+    min-width:0;
 }
 
-.chat-name{
-    font-size:16px;
-    font-weight:bold;
-    margin-bottom:5px;
+.chatTop{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
 }
 
-.chat-message{
-    color:#777;
-    font-size:14px;
+.chatName{
+    font-weight:700;
 }
 
+.chatTime{
+    color:#718b94;
+    font-size:11px;
+}
 
-/* BOTTOM NAV */
+.lastMessage{
+    margin-top:5px;
+    color:#78919a;
+    font-size:13px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
 
-.bottom-nav{
-    height:65px;
+.badge{
+    min-width:20px;
+    height:20px;
+    padding:0 6px;
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#00cda6;
+    color:#001510;
+    font-size:11px;
+    font-weight:800;
+}
 
+.bottomNav{
     position:fixed;
-    bottom:0;
     left:0;
     right:0;
-
-    background:white;
-
-    border-top:1px solid #ddd;
-
+    bottom:0;
+    height:72px;
     display:flex;
     justify-content:space-around;
     align-items:center;
-
-    z-index:20;
+    background:#091a22;
+    border-top:1px solid #1b343d;
 }
 
-.nav-button{
+.navBtn{
     border:0;
     background:none;
-
-    color:#444;
-
-    font-size:13px;
-
-    cursor:pointer;
-
+    color:#718b94;
     text-align:center;
+    font-size:12px;
 }
 
-.nav-icon{
+.navBtn span{
     display:block;
     font-size:23px;
     margin-bottom:3px;
 }
 
+.navBtn.active{
+    color:#00d4a5;
+}
 
-/* SIDE MENU */
+/* ================= SIDE MENU ================= */
 
-.overlay{
+#sideMenu{
+    display:none;
     position:fixed;
     inset:0;
-
-    background:rgba(0,0,0,.4);
-
-    z-index:30;
-
-    display:none;
+    z-index:100;
+    background:rgba(0,0,0,.6);
 }
 
-.overlay.active{
-    display:block;
+.menuPanel{
+    width:285px;
+    height:100%;
+    background:#0a1c24;
+    padding:22px 16px;
+    box-shadow:10px 0 40px rgba(0,0,0,.35);
 }
 
-.side-menu{
-    position:fixed;
-
-    top:0;
-    left:-280px;
-
-    width:280px;
-    height:100vh;
-
-    background:white;
-
-    z-index:40;
-
-    box-shadow:3px 0 12px rgba(0,0,0,.2);
-
-    transition:.25s;
-
-    padding-top:70px;
+.menuLogo{
+    font-size:24px;
+    font-weight:800;
+    margin-bottom:28px;
+    color:#00d4a5;
 }
 
-.side-menu.active{
-    left:0;
+.menuItem{
+    width:100%;
+    padding:15px 12px;
+    border:0;
+    border-radius:12px;
+    background:transparent;
+    color:#fff;
+    text-align:left;
+    margin-bottom:5px;
 }
 
-.menu-item{
-    padding:17px 20px;
-
-    border-bottom:1px solid #eee;
-
-    cursor:pointer;
-
-    font-size:16px;
+.menuItem:hover{
+    background:#102b34;
 }
 
-.menu-item:hover{
-    background:#f5f5f5;
+.logout{
+    margin-top:20px;
+    color:#ff8585;
 }
 
+@media(max-width:360px){
+    .loginBox{
+        padding:28px 18px 24px;
+    }
+
+    .logo h1{
+        font-size:26px;
+    }
+}
 </style>
-
 </head>
-
 
 <body>
 
+<!-- ================= LOGIN SCREEN ================= -->
 
-<!-- ==================================================
-     LOGIN SCREEN
-================================================== -->
+<section id="loginScreen">
 
-<div id="loginScreen">
+    <div class="loginBox">
 
-    <div class="login-box">
-
-        <div class="login-logo">
-            RAZTARA
+        <div class="logo">
+            <div class="logoIcon">R</div>
+            <h1>RAZTARA</h1>
+            <p>Connect • Call • Share</p>
         </div>
 
-        <div class="login-subtitle">
-            Connect • Call • Share
+        <div id="message" class="message"></div>
+
+        <div class="inputGroup">
+            <label>Email</label>
+            <div class="inputBox">
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="আপনার Email লিখুন"
+                    autocomplete="email"
+                >
+            </div>
         </div>
 
+        <div class="inputGroup">
+            <label>Password</label>
+            <div class="inputBox">
+                <input
+                    id="password"
+                    type="password"
+                    placeholder="আপনার Password লিখুন"
+                    autocomplete="current-password"
+                >
 
-        <div class="input-box">
-
-            <input
-                type="email"
-                id="loginEmail"
-                placeholder="Email"
-                autocomplete="email"
-            >
-
+                <button
+                    class="eye"
+                    type="button"
+                    onclick="togglePassword()"
+                    id="eyeBtn"
+                >👁️</button>
+            </div>
         </div>
 
-
-        <div class="input-box password-box">
-
-            <input
-                type="password"
-                id="loginPassword"
-                placeholder="Password"
-                autocomplete="current-password"
-            >
-
-            <span
-                class="show-password"
-                onclick="togglePassword()"
-            >
-                👁️
-            </span>
-
-        </div>
-
+        <a href="forgot-password.html" class="forgot">
+            Forgot Password?
+        </a>
 
         <button
-            class="login-button"
-            id="loginButton"
+            class="loginBtn"
+            id="loginBtn"
             onclick="loginUser()"
         >
             LOGIN
         </button>
 
-
-        <div class="login-links">
-
-            <a href="forgot-password.html">
-                Forgot Password?
-            </a>
-
-        </div>
-
+        <div class="divider">অথবা</div>
 
         <button
-            class="register-button"
+            class="createBtn"
             onclick="goRegistration()"
         >
-            CREATE ACCOUNT
+            ✚ Create Account
         </button>
-
-
-        <div
-            class="login-message"
-            id="loginMessage"
-        ></div>
 
     </div>
 
-</div>
+</section>
 
 
+<!-- ================= APP SCREEN ================= -->
 
-<!-- ==================================================
-     RAZTARA APP SCREEN
-================================================== -->
+<section id="appScreen">
 
-<div id="appScreen">
+    <header class="appHeader">
 
-
-    <!-- HEADER -->
-
-    <div class="header">
-
-        <div
-            class="menu-button"
-            onclick="openMenu()"
-        >
+        <button class="menuBtn" onclick="openMenu()">
             ☰
-        </div>
+        </button>
 
-
-        <div class="header-logo">
+        <div class="appTitle">
             RAZTARA
         </div>
 
-
-        <div
-            class="profile-button"
-            onclick="openProfile()"
-        >
+        <button class="profileBtn">
             👤
-        </div>
+        </button>
 
-    </div>
+    </header>
 
-
-
-    <!-- MAIN -->
-
-    <div class="content">
-
-
+    <div class="search">
         <input
-            type="text"
-            class="search-box"
-            id="searchBox"
-            placeholder="Search people..."
-            oninput="searchPeople()"
+            type="search"
+            placeholder="🔍 Search people or chats"
         >
+    </div>
 
+    <div class="chatList">
 
-        <div
-            class="chat-list"
-            id="chatList"
-        >
+        <div class="chat">
+            <div class="avatar">R</div>
 
-
-            <div
-                class="chat"
-                onclick="openChat()"
-            >
-
-                <div class="chat-avatar">
-                    👤
+            <div class="chatInfo">
+                <div class="chatTop">
+                    <div class="chatName">Rahim</div>
+                    <div class="chatTime">10:25</div>
                 </div>
 
-                <div class="chat-info">
-
-                    <div class="chat-name">
-                        Rahim
-                    </div>
-
-                    <div class="chat-message">
-                        Hello...
-                    </div>
-
+                <div class="lastMessage">
+                    Assalamu Alaikum...
                 </div>
-
             </div>
 
+            <div class="badge">2</div>
+        </div>
 
-            <div
-                class="chat"
-                onclick="openChat()"
-            >
 
-                <div class="chat-avatar">
-                    👤
+        <div class="chat">
+            <div class="avatar">K</div>
+
+            <div class="chatInfo">
+                <div class="chatTop">
+                    <div class="chatName">Karim</div>
+                    <div class="chatTime">9:48</div>
                 </div>
 
-                <div class="chat-info">
-
-                    <div class="chat-name">
-                        Karim
-                    </div>
-
-                    <div class="chat-message">
-                        Hi
-                    </div>
-
+                <div class="lastMessage">
+                    📷 Photo
                 </div>
-
             </div>
+        </div>
 
 
-            <div
-                class="chat"
-                onclick="openChat()"
-            >
+        <div class="chat">
+            <div class="avatar">H</div>
 
-                <div class="chat-avatar">
-                    👤
+            <div class="chatInfo">
+                <div class="chatTop">
+                    <div class="chatName">Hasan</div>
+                    <div class="chatTime">8:30</div>
                 </div>
 
-                <div class="chat-info">
-
-                    <div class="chat-name">
-                        Sumaiya
-                    </div>
-
-                    <div class="chat-message">
-                        How are you?
-                    </div>
-
+                <div class="lastMessage">
+                    Are you there?
                 </div>
-
             </div>
+        </div>
 
 
-            <div
-                class="chat"
-                onclick="openChat()"
-            >
+        <div class="chat">
+            <div class="avatar">S</div>
 
-                <div class="chat-avatar">
-                    👤
+            <div class="chatInfo">
+                <div class="chatTop">
+                    <div class="chatName">Sakib</div>
+                    <div class="chatTime">7:15</div>
                 </div>
 
-                <div class="chat-info">
-
-                    <div class="chat-name">
-                        Hasan
-                    </div>
-
-                    <div class="chat-message">
-                        Good morning
-                    </div>
-
+                <div class="lastMessage">
+                    🎙️ Voice message
                 </div>
-
             </div>
-
-
         </div>
 
     </div>
 
 
+    <nav class="bottomNav">
 
-    <!-- SIDE MENU OVERLAY -->
-
-    <div
-        class="overlay"
-        id="overlay"
-        onclick="closeMenu()"
-    ></div>
-
-
-    <!-- SIDE MENU -->
-
-    <div
-        class="side-menu"
-        id="sideMenu"
-    >
-
-        <div
-            class="menu-item"
-            onclick="openProfile()"
-        >
-            👤 Profile
-        </div>
-
-
-        <div
-            class="menu-item"
-            onclick="openCalls()"
-        >
-            📞 Calls
-        </div>
-
-
-        <div
-            class="menu-item"
-            onclick="openSettings()"
-        >
-            ⚙️ Settings
-        </div>
-
-
-        <div
-            class="menu-item"
-            onclick="logout()"
-        >
-            🚪 Logout
-        </div>
-
-    </div>
-
-
-
-    <!-- BOTTOM NAV -->
-
-    <div class="bottom-nav">
-
-        <button
-            class="nav-button"
-            onclick="goChats()"
-        >
-            <span class="nav-icon">💬</span>
+        <button class="navBtn active">
+            <span>💬</span>
             Chats
         </button>
 
-
-        <button
-            class="nav-button"
-            onclick="goCalls()"
-        >
-            <span class="nav-icon">📞</span>
+        <button class="navBtn">
+            <span>📞</span>
             Calls
         </button>
 
+        <button class="navBtn">
+            <span>👤</span>
+            Profile
+        </button>
+
+    </nav>
+
+</section>
+
+
+<!-- ================= SIDE MENU ================= -->
+
+<div id="sideMenu" onclick="closeMenu(event)">
+
+    <div class="menuPanel" onclick="event.stopPropagation()">
+
+        <div class="menuLogo">
+            RAZTARA
+        </div>
+
+        <button class="menuItem">
+            👤 Profile
+        </button>
+
+        <button class="menuItem">
+            💬 Chats
+        </button>
+
+        <button class="menuItem">
+            📞 Calls
+        </button>
+
+        <button class="menuItem">
+            ⚙️ Settings
+        </button>
 
         <button
-            class="nav-button"
-            onclick="openProfile()"
+            class="menuItem logout"
+            onclick="logout()"
         >
-            <span class="nav-icon">👤</span>
-            Profile
+            🚪 Logout
         </button>
 
     </div>
 
-
 </div>
-
 
 
 <script>
 
-/* ==================================================
-   SUPABASE
-================================================== */
+/* ================= SUPABASE ================= */
 
 const SUPABASE_URL =
 "https://pqyicaqpmojijjskpzcp.supabase.co";
@@ -744,23 +646,241 @@ const SUPABASE_KEY =
 "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
 
 const supabaseClient =
-supabase.createClient(
+window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
 
 
-/* ==================================================
-   START
-================================================== */
+/* ================= ELEMENTS ================= */
+
+const loginScreen =
+document.getElementById("loginScreen");
+
+const appScreen =
+document.getElementById("appScreen");
+
+const emailInput =
+document.getElementById("email");
+
+const passwordInput =
+document.getElementById("password");
+
+const loginBtn =
+document.getElementById("loginBtn");
+
+const messageBox =
+document.getElementById("message");
+
+
+/* ================= MESSAGE ================= */
+
+function showMessage(text,type="error"){
+
+    messageBox.textContent = text;
+
+    messageBox.className =
+        "message " + type;
+
+    messageBox.style.display = "block";
+}
+
+function hideMessage(){
+
+    messageBox.style.display = "none";
+}
+
+
+/* ================= PASSWORD ================= */
+
+function togglePassword(){
+
+    if(passwordInput.type === "password"){
+
+        passwordInput.type = "text";
+
+        document.getElementById("eyeBtn").textContent = "🙈";
+
+    }else{
+
+        passwordInput.type = "password";
+
+        document.getElementById("eyeBtn").textContent = "👁️";
+    }
+}
+
+
+/* ================= SHOW LOGIN ================= */
+
+function showLogin(){
+
+    loginScreen.style.display = "flex";
+
+    appScreen.style.display = "none";
+}
+
+
+/* ================= SHOW APP ================= */
+
+function showApp(){
+
+    loginScreen.style.display = "none";
+
+    appScreen.style.display = "block";
+}
+
+
+/* ================= LOGIN ================= */
+
+async function loginUser(){
+
+    hideMessage();
+
+    const email =
+        emailInput.value.trim();
+
+    const password =
+        passwordInput.value;
+
+    if(!email){
+
+        showMessage("Email লিখুন।");
+
+        emailInput.focus();
+
+        return;
+    }
+
+    if(!password){
+
+        showMessage("Password লিখুন।");
+
+        passwordInput.focus();
+
+        return;
+    }
+
+    loginBtn.disabled = true;
+
+    loginBtn.textContent = "LOGIN হচ্ছে...";
+
+    const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+
+    if(error){
+
+        loginBtn.disabled = false;
+
+        loginBtn.textContent = "LOGIN";
+
+        showMessage(
+            getLoginError(error.message)
+        );
+
+        return;
+    }
+
+    if(data.session){
+
+        loginBtn.disabled = false;
+
+        loginBtn.textContent = "LOGIN";
+
+        showApp();
+    }
+}
+
+
+/* ================= ERROR ================= */
+
+function getLoginError(error){
+
+    const text =
+        String(error || "").toLowerCase();
+
+    if(text.includes("invalid login credentials")){
+
+        return "Email অথবা Password সঠিক নয়।";
+    }
+
+    if(text.includes("email not confirmed")){
+
+        return "আপনার Email এখনো verify করা হয়নি।";
+    }
+
+    if(text.includes("too many requests")){
+
+        return "অনেকবার চেষ্টা হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।";
+    }
+
+    return error || "Login করা যায়নি। আবার চেষ্টা করুন।";
+}
+
+
+/* ================= REGISTRATION ================= */
+
+function goRegistration(){
+
+    window.location.href =
+        "registration.html";
+}
+
+
+/* ================= LOGOUT ================= */
+
+async function logout(){
+
+    await supabaseClient.auth.signOut();
+
+    closeMenu();
+
+    emailInput.value = "";
+
+    passwordInput.value = "";
+
+    showLogin();
+
+    showMessage(
+        "আপনি Logout করেছেন।",
+        "success"
+    );
+}
+
+
+/* ================= MENU ================= */
+
+function openMenu(){
+
+    document.getElementById(
+        "sideMenu"
+    ).style.display = "block";
+}
+
+function closeMenu(event){
+
+    if(
+        event &&
+        event.target !==
+        document.getElementById("sideMenu")
+    ){
+        return;
+    }
+
+    document.getElementById(
+        "sideMenu"
+    ).style.display = "none";
+}
+
+
+/* ================= SESSION ================= */
 
 async function startApp(){
 
-    const {
-        data,
-        error
-    } = await supabaseClient.auth.getSession();
-
+    const { data } =
+        await supabaseClient.auth.getSession();
 
     if(data && data.session){
 
@@ -769,370 +889,14 @@ async function startApp(){
     }else{
 
         showLogin();
-
     }
-
 }
 
 
-/* ==================================================
-   SHOW LOGIN
-================================================== */
-
-function showLogin(){
-
-    document
-        .getElementById("loginScreen")
-        .style.display = "flex";
-
-    document
-        .getElementById("appScreen")
-        .style.display = "none";
-
-}
-
-
-/* ==================================================
-   SHOW APP
-================================================== */
-
-function showApp(){
-
-    document
-        .getElementById("loginScreen")
-        .style.display = "none";
-
-    document
-        .getElementById("appScreen")
-        .style.display = "block";
-
-}
-
-
-/* ==================================================
-   LOGIN
-================================================== */
-
-async function loginUser(){
-
-    const email =
-        document
-        .getElementById("loginEmail")
-        .value
-        .trim();
-
-
-    const password =
-        document
-        .getElementById("loginPassword")
-        .value;
-
-
-    const message =
-        document
-        .getElementById("loginMessage");
-
-
-    const button =
-        document
-        .getElementById("loginButton");
-
-
-    if(!email || !password){
-
-        message.style.color = "red";
-
-        message.innerText =
-            "Email এবং Password দিন।";
-
-        return;
-
-    }
-
-
-    button.disabled = true;
-
-    button.innerText =
-        "LOGGING IN...";
-
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient.auth.signInWithPassword({
-
-        email: email,
-
-        password: password
-
-    });
-
-
-    if(error){
-
-        message.style.color = "red";
-
-        message.innerText =
-            error.message;
-
-        button.disabled = false;
-
-        button.innerText =
-            "LOGIN";
-
-        return;
-
-    }
-
-
-    message.innerText = "";
-
-    showApp();
-
-
-    button.disabled = false;
-
-    button.innerText =
-        "LOGIN";
-
-}
-
-
-/* ==================================================
-   PASSWORD SHOW / HIDE
-================================================== */
-
-function togglePassword(){
-
-    const password =
-        document
-        .getElementById("loginPassword");
-
-
-    if(password.type === "password"){
-
-        password.type = "text";
-
-    }else{
-
-        password.type = "password";
-
-    }
-
-}
-
-
-/* ==================================================
-   REGISTRATION
-================================================== */
-
-function goRegistration(){
-
-    window.location.href =
-        "registration.html";
-
-}
-
-
-/* ==================================================
-   FORGOT PASSWORD
-================================================== */
-
-function goForgotPassword(){
-
-    window.location.href =
-        "forgot-password.html";
-
-}
-
-
-/* ==================================================
-   MENU
-================================================== */
-
-function openMenu(){
-
-    document
-        .getElementById("sideMenu")
-        .classList.add("active");
-
-    document
-        .getElementById("overlay")
-        .classList.add("active");
-
-}
-
-
-function closeMenu(){
-
-    document
-        .getElementById("sideMenu")
-        .classList.remove("active");
-
-    document
-        .getElementById("overlay")
-        .classList.remove("active");
-
-}
-
-
-/* ==================================================
-   SEARCH
-================================================== */
-
-function searchPeople(){
-
-    const value =
-        document
-        .getElementById("searchBox")
-        .value
-        .toLowerCase();
-
-
-    const chats =
-        document.querySelectorAll(".chat");
-
-
-    chats.forEach(function(chat){
-
-        const name =
-            chat
-            .querySelector(".chat-name")
-            .innerText
-            .toLowerCase();
-
-
-        if(name.includes(value)){
-
-            chat.style.display =
-                "flex";
-
-        }else{
-
-            chat.style.display =
-                "none";
-
-        }
-
-    });
-
-}
-
-
-/* ==================================================
-   FUTURE PAGES
-================================================== */
-
-function openChat(){
-
-    alert(
-        "Chat page আমরা পরের ধাপে তৈরি করব।"
-    );
-
-}
-
-
-function openCalls(){
-
-    closeMenu();
-
-    alert(
-        "Calls page আমরা পরের ধাপে তৈরি করব।"
-    );
-
-}
-
-
-function goCalls(){
-
-    alert(
-        "Calls page আমরা পরের ধাপে তৈরি করব।"
-    );
-
-}
-
-
-function openProfile(){
-
-    closeMenu();
-
-    alert(
-        "Profile page আমরা পরের ধাপে তৈরি করব।"
-    );
-
-}
-
-
-function openSettings(){
-
-    closeMenu();
-
-    alert(
-        "Settings page আমরা পরের ধাপে তৈরি করব।"
-    );
-
-}
-
-
-function goChats(){
-
-    closeMenu();
-
-}
-
-
-/* ==================================================
-   LOGOUT
-================================================== */
-
-async function logout(){
-
-    closeMenu();
-
-
-    const confirmLogout =
-        confirm(
-            "Are you sure you want to logout?"
-        );
-
-
-    if(!confirmLogout){
-
-        return;
-
-    }
-
-
-    const {
-        error
-    } =
-    await supabaseClient.auth.signOut();
-
-
-    if(error){
-
-        alert(
-            "Logout failed: " +
-            error.message
-        );
-
-        return;
-
-    }
-
-
-    showLogin();
-
-}
-
-
-/* ==================================================
-   AUTH STATE
-================================================== */
+/* ================= AUTH LISTENER ================= */
 
 supabaseClient.auth.onAuthStateChange(
-    function(event, session){
+    (event, session) => {
 
         if(session){
 
@@ -1141,14 +905,12 @@ supabaseClient.auth.onAuthStateChange(
         }else{
 
             showLogin();
-
         }
-
     }
 );
 
 
-/* START */
+/* ================= START ================= */
 
 startApp();
 
