@@ -1,1250 +1,347 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1.0"
->
-
-<meta
-  name="theme-color"
-  content="#087f5b"
->
-
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#087f5b">
 <title>raztara | Connect • Call • Share</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-html,
+*{box-sizing:border-box;margin:0;padding:0}
 body{
-  width:100%;
-  height:100%;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Arial,
-    sans-serif;
-  background:#f4f7f6;
-  color:#17201d;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:#f4f7f6;color:#17221e;
 }
-
-button,
-input,
-textarea{
-  font:inherit;
-}
-
-button{
-  border:0;
-  cursor:pointer;
-}
-
-.hidden{
-  display:none !important;
-}
-
-/* AUTH */
+button,input,textarea{font:inherit}
+button{cursor:pointer;border:0}
+.hidden{display:none!important}
 
 #authScreen{
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:20px;
-  background:
-    linear-gradient(
-      145deg,
-      #087f5b,
-      #065c43
-    );
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:20px;background:linear-gradient(135deg,#087f5b,#0b9b70);
 }
-
 .authBox{
-  width:100%;
-  max-width:420px;
-  background:#fff;
-  border-radius:24px;
-  padding:28px;
-  box-shadow:
-    0 20px 60px rgba(0,0,0,.18);
+  width:100%;max-width:420px;background:white;border-radius:24px;
+  padding:28px;box-shadow:0 15px 45px #0003;
 }
-
-.logoText{
-  text-align:center;
-  font-size:34px;
-  font-weight:800;
-  color:#087f5b;
-  margin-bottom:6px;
+.logo{
+  width:70px;height:70px;border-radius:20px;background:#087f5b;
+  color:white;display:flex;align-items:center;justify-content:center;
+  font-size:34px;margin:0 auto 15px;
 }
-
-.authSub{
-  text-align:center;
-  color:#6c7773;
-  margin-bottom:25px;
+.authBox h1{text-align:center;color:#087f5b}
+.authBox p{text-align:center;color:#777;margin:6px 0 22px}
+.field{margin-bottom:12px}
+.field input,.field textarea{
+  width:100%;padding:14px;border:1px solid #ddd;border-radius:13px;
+  outline:none;background:#fafafa;
 }
-
-.authBox input{
-  width:100%;
-  padding:14px;
-  margin-bottom:12px;
-  border:1px solid #dce5e1;
-  border-radius:12px;
-  outline:none;
+.primary{
+  width:100%;padding:14px;border-radius:13px;
+  background:#087f5b;color:white;font-weight:700;
 }
-
-.authBox input:focus{
-  border-color:#087f5b;
+.switch{
+  text-align:center;margin-top:18px;color:#666;
 }
+.switch button{background:none;color:#087f5b;font-weight:700}
 
-.primaryBtn{
-  width:100%;
-  padding:14px;
-  border-radius:12px;
-  background:#087f5b;
-  color:#fff;
-  font-weight:700;
+#app{min-height:100vh}
+.topbar{
+  position:sticky;top:0;z-index:10;height:64px;background:white;
+  border-bottom:1px solid #e5e5e5;display:flex;align-items:center;
+  justify-content:space-between;padding:0 16px;
 }
-
-.secondaryBtn{
-  width:100%;
-  padding:13px;
-  margin-top:10px;
-  border-radius:12px;
-  background:#e8f3ef;
-  color:#087f5b;
-  font-weight:700;
-}
-
-.switchText{
-  text-align:center;
-  margin-top:18px;
-  color:#68736f;
-}
-
-#switchButton{
-  background:none;
-  color:#087f5b;
-  font-weight:700;
-}
-
-/* APP */
-
-#app{
-  width:100%;
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  background:#f5f7f6;
-}
-
-.topBar{
-  height:62px;
-  flex-shrink:0;
-  background:#fff;
-  border-bottom:1px solid #e5ebe8;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 16px;
-}
-
-.topUser{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
+.brand{font-size:21px;font-weight:800;color:#087f5b}
+.topUser{display:flex;align-items:center;gap:9px}
 .avatar{
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  object-fit:cover;
-  background:#dff0e9;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#087f5b;
-  font-weight:800;
+  width:42px;height:42px;border-radius:50%;object-fit:cover;
+  background:#087f5b;color:white;display:flex;align-items:center;
+  justify-content:center;font-weight:700;
 }
-
-.topName{
-  font-weight:700;
-}
-
-.main{
-  flex:1;
-  min-height:0;
-  overflow:hidden;
-}
-
-.page{
-  height:100%;
-  overflow-y:auto;
-  padding:15px;
-}
-
-.pageTitle{
-  font-size:24px;
-  font-weight:800;
-  margin-bottom:14px;
-}
-
-/* SEARCH */
+.page{display:none;padding:16px 16px 90px;max-width:800px;margin:auto}
+.page.active{display:block}
 
 .searchBox{
-  position:relative;
-  margin-bottom:12px;
+  display:flex;gap:8px;background:white;padding:10px;
+  border-radius:15px;border:1px solid #e5e5e5;margin-bottom:12px;
+}
+.searchBox input{border:0;outline:0;flex:1;padding:6px;background:transparent}
+
+.userCard,.chatItem,.callItem{
+  background:white;border-radius:16px;padding:13px;margin-bottom:9px;
+  display:flex;align-items:center;gap:12px;border:1px solid #eee;
+}
+.userInfo{flex:1;min-width:0}
+.userInfo strong{display:block}
+.userInfo small{color:#777}
+.cardBtn{
+  background:#087f5b;color:white;padding:9px 13px;border-radius:10px;
 }
 
-.searchBox input{
-  width:100%;
-  border:0;
-  outline:0;
-  background:#fff;
-  border-radius:14px;
-  padding:14px 16px 14px 42px;
-  box-shadow:0 1px 4px rgba(0,0,0,.05);
-}
-
-.searchIcon{
-  position:absolute;
-  left:15px;
-  top:13px;
-  color:#7b8782;
-}
-
-.searchResults{
-  margin-bottom:10px;
-}
-
-.searchUser{
-  background:#fff;
-  border-radius:14px;
-  padding:11px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:7px;
-  border:1px solid #e6ece9;
-}
-
-.searchUserInfo{
-  flex:1;
-}
-
-.searchUserName{
-  font-weight:700;
-}
-
-.searchUsername{
-  color:#7a8581;
-  font-size:13px;
-}
-
-/* CHAT LIST */
-
-.chatItem{
-  background:#fff;
-  border-radius:15px;
-  padding:12px;
-  display:flex;
-  gap:11px;
-  align-items:center;
-  margin-bottom:8px;
-  border:1px solid #e9eeec;
-}
-
-.chatItem:active{
-  transform:scale(.99);
-}
-
-.chatInfo{
-  flex:1;
-  min-width:0;
-}
-
-.chatName{
-  font-weight:700;
-  margin-bottom:4px;
-}
-
-.chatLast{
-  color:#7b8581;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  font-size:14px;
-}
-
-/* EMPTY */
-
-.empty{
-  text-align:center;
-  padding:50px 20px;
-  color:#7b8581;
-}
-
-/* BOTTOM NAV */
+.empty{text-align:center;color:#888;padding:40px 10px}
+.sectionTitle{font-size:21px;font-weight:800;margin:10px 0 15px}
 
 .bottomNav{
-  height:65px;
-  flex-shrink:0;
-  background:#fff;
-  border-top:1px solid #e3e9e6;
-  display:flex;
-  align-items:center;
-  justify-content:space-around;
+  position:fixed;bottom:0;left:0;right:0;height:68px;background:white;
+  border-top:1px solid #ddd;display:flex;z-index:20;
 }
-
-.navBtn{
-  flex:1;
-  height:100%;
-  background:none;
-  color:#7c8883;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  gap:4px;
-  font-size:12px;
+.bottomNav button{
+  flex:1;background:white;color:#777;font-size:12px;
 }
+.bottomNav button.active{color:#087f5b;font-weight:800}
+.bottomNav span{display:block;font-size:23px;margin-bottom:2px}
 
-.navBtn.active{
-  color:#087f5b;
-  font-weight:700;
+.profileBox{
+  background:white;border-radius:20px;padding:22px;text-align:center;
 }
-
-.navIcon{
-  font-size:21px;
+.profileLarge{
+  width:95px;height:95px;border-radius:50%;object-fit:cover;
+  background:#087f5b;color:white;margin:auto;display:flex;
+  align-items:center;justify-content:center;font-size:30px;font-weight:800;
 }
-
-/* PROFILE */
-
-.profileCard{
-  background:#fff;
-  border-radius:20px;
-  padding:24px;
-  text-align:center;
-}
-
-.profileBigAvatar{
-  width:95px;
-  height:95px;
-  border-radius:50%;
-  object-fit:cover;
-  background:#dff0e9;
-  margin:auto;
-}
-
-.profileName{
-  margin-top:12px;
-  font-size:22px;
-  font-weight:800;
-}
-
-.profileUsername{
-  color:#75807c;
-  margin-top:3px;
-}
-
-.profileBio{
-  margin-top:12px;
-  color:#5e6965;
-}
-
-.profileActions{
-  margin-top:20px;
-}
-
-.profileActions button{
-  width:100%;
-  padding:13px;
+.profileBox input,.profileBox textarea{
+  width:100%;margin-top:10px;padding:13px;border:1px solid #ddd;
   border-radius:12px;
-  margin-top:8px;
-  background:#e8f3ef;
-  color:#087f5b;
-  font-weight:700;
 }
-
-/* CALLS */
-
-.callCard{
-  background:#fff;
-  border-radius:15px;
-  padding:15px;
-  margin-bottom:9px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.callInfo{
-  flex:1;
-}
-
-.callType{
-  font-size:13px;
-  color:#7a8581;
-}
-
-.callEmpty{
-  text-align:center;
-  padding:50px 20px;
-  color:#7a8581;
-}
-
-/* CHAT SCREEN */
 
 #chatScreen{
-  position:fixed;
-  inset:0;
-  background:#f1f5f3;
-  z-index:50;
-  display:flex;
+  position:fixed;inset:0;background:#f3f6f5;z-index:50;display:none;
   flex-direction:column;
 }
-
-.chatTop{
-  height:62px;
-  flex-shrink:0;
-  background:#fff;
-  border-bottom:1px solid #e2e8e5;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:0 10px;
+.chatHeader{
+  height:64px;background:white;border-bottom:1px solid #ddd;
+  display:flex;align-items:center;gap:10px;padding:0 10px;
 }
-
-.backBtn{
-  width:40px;
-  height:40px;
-  background:none;
-  font-size:24px;
+.chatHeader .info{flex:1}
+.chatHeader .info strong{display:block}
+.chatHeader .info small{color:#777}
+.iconBtn{
+  width:40px;height:40px;border-radius:50%;background:#eef5f2;
+  color:#087f5b;font-size:19px;
 }
-
-.chatHeaderInfo{
-  flex:1;
+.messages{
+  flex:1;overflow:auto;padding:14px;
 }
-
-.chatHeaderName{
-  font-weight:800;
-}
-
-.chatHeaderStatus{
-  font-size:12px;
-  color:#75817c;
-}
-
-.chatCallBtns{
-  display:flex;
-  gap:5px;
-}
-
-.chatCallBtn{
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  background:#e8f3ef;
-  color:#087f5b;
-  font-size:18px;
-}
-
-#messages{
-  flex:1;
-  overflow-y:auto;
-  padding:15px;
-}
-
-.messageRow{
-  display:flex;
-  margin-bottom:8px;
-}
-
-.messageRow.mine{
-  justify-content:flex-end;
-}
-
-.messageBubble{
-  max-width:78%;
-  padding:10px 12px;
-  border-radius:16px;
-  background:#fff;
-  box-shadow:0 1px 2px rgba(0,0,0,.05);
+.msg{
+  max-width:78%;padding:10px 12px;border-radius:16px;margin:5px 0;
   word-break:break-word;
 }
-
-.mine .messageBubble{
-  background:#087f5b;
-  color:#fff;
-  border-bottom-right-radius:5px;
+.msg.me{
+  margin-left:auto;background:#087f5b;color:white;border-bottom-right-radius:4px;
 }
-
-.messageTime{
-  font-size:10px;
-  opacity:.6;
-  margin-top:4px;
+.msg.other{
+  background:white;border-bottom-left-radius:4px;
 }
-
-.messageFile{
-  display:block;
-  margin-top:5px;
-  text-decoration:none;
-  color:inherit;
+.msg small{display:block;font-size:10px;opacity:.65;margin-top:4px}
+.msg img,.msg video{max-width:100%;border-radius:10px}
+.msg audio{max-width:100%}
+.chatComposer{
+  background:white;border-top:1px solid #ddd;padding:8px;
+  display:flex;align-items:center;gap:6px;
 }
-
-.messageImage{
-  max-width:220px;
-  max-height:280px;
-  border-radius:12px;
-  display:block;
+.chatComposer input{
+  flex:1;border:0;background:#f1f3f2;border-radius:20px;
+  padding:11px 14px;outline:none;
 }
-
-.messageAudio{
-  width:220px;
+.chatComposer button{
+  width:40px;height:40px;border-radius:50%;background:#087f5b;color:white;
 }
+.chatTools{display:flex;gap:4px}
+.chatTools button{background:#eef5f2;color:#087f5b}
 
-.locationBtn{
-  display:inline-block;
-  padding:8px 12px;
-  border-radius:10px;
-  background:rgba(255,255,255,.18);
-  color:inherit;
-  text-decoration:none;
+.callOverlay{
+  position:fixed;inset:0;background:#101514;z-index:100;
+  display:none;color:white;flex-direction:column;
 }
-
-/* COMPOSER */
-
-.composer{
-  flex-shrink:0;
-  background:#fff;
-  border-top:1px solid #e1e7e4;
-  padding:8px;
-  display:flex;
-  align-items:center;
-  gap:7px;
-}
-
-.composerInput{
-  flex:1;
-  border:0;
-  outline:0;
-  background:#f1f4f3;
-  border-radius:22px;
-  padding:12px 15px;
-  max-height:100px;
-  resize:none;
-}
-
-.composerBtn{
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  background:#e8f3ef;
-  color:#087f5b;
-  font-size:18px;
-}
-
-.sendBtn{
-  background:#087f5b;
-  color:#fff;
-}
-
-/* CALL OVERLAY */
-
-#callOverlay{
-  position:fixed;
-  inset:0;
-  background:#0c1512;
-  z-index:200;
-  color:#fff;
-  display:none;
-  flex-direction:column;
-}
-
-#callOverlay.show{
-  display:flex;
-}
-
-.callTop{
-  padding:18px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-.callTopInfo{
-  flex:1;
-}
-
-#callTitle{
-  font-size:19px;
-  font-weight:800;
-}
-
-#callStatus{
-  font-size:13px;
-  opacity:.75;
-  margin-top:3px;
-}
-
+.callTop{text-align:center;padding:25px}
+.callTop .avatar{margin:auto;width:80px;height:80px}
+.callTop h2{margin-top:10px}
+.callTop p{color:#bfc8c5;margin-top:5px}
 .callVideos{
-  flex:1;
-  position:relative;
-  background:#101917;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
+  flex:1;position:relative;overflow:hidden;background:#080a09;
 }
-
 #callRemoteVideo{
-  width:100%;
-  height:100%;
-  object-fit:cover;
+  width:100%;height:100%;object-fit:cover;background:#080a09;
 }
-
 #callLocalVideo{
-  position:absolute;
-  right:15px;
-  top:15px;
-  width:115px;
-  height:160px;
-  object-fit:cover;
-  border-radius:14px;
-  background:#000;
+  position:absolute;right:15px;top:15px;width:120px;height:170px;
+  object-fit:cover;border-radius:14px;border:2px solid white;background:#222;
 }
-
-.callAudioAvatar{
-  width:100px;
-  height:100px;
-  border-radius:50%;
-  background:#087f5b;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:40px;
+.callControls{
+  min-height:100px;display:flex;justify-content:center;align-items:center;
+  gap:15px;background:#111;padding:20px;
 }
-
-.callActions{
-  min-height:90px;
-  padding:15px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:14px;
+.callControls button{
+  width:58px;height:58px;border-radius:50%;background:#333;color:white;font-size:22px;
 }
+.callControls .danger{background:#d92d3b}
+.callControls .accept{background:#087f5b}
 
-.callAction{
-  width:55px;
-  height:55px;
-  border-radius:50%;
-  background:#25312d;
-  color:#fff;
-  font-size:22px;
+.callItem{align-items:flex-start}
+.callIcon{font-size:25px}
+.callText{flex:1}
+.callText strong{display:block}
+.callText small{color:#777}
+.callStatus{font-size:12px;color:#087f5b}
+
+.toast{
+  position:fixed;left:50%;bottom:82px;transform:translateX(-50%);
+  background:#17221e;color:white;padding:11px 17px;border-radius:12px;
+  z-index:200;display:none;max-width:90%;text-align:center;
 }
-
-.callAction.red{
-  background:#d63d3d;
-}
-
-.callAction.green{
-  background:#087f5b;
-}
-
-/* TOAST */
-
-#toast{
-  position:fixed;
-  left:50%;
-  bottom:85px;
-  transform:translateX(-50%);
-  background:#17201d;
-  color:#fff;
-  padding:11px 16px;
-  border-radius:12px;
-  z-index:500;
-  display:none;
-  max-width:90%;
-  text-align:center;
-}
-
-#toast.show{
-  display:block;
-}
-
-/* MODAL */
-
-.modal{
-  position:fixed;
-  inset:0;
-  z-index:300;
-  background:rgba(0,0,0,.5);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-}
-
-.modalBox{
-  width:100%;
-  max-width:420px;
-  background:#fff;
-  border-radius:20px;
-  padding:20px;
-}
-
-.modalBox h3{
-  margin-bottom:15px;
-}
-
-.modalBox input,
-.modalBox textarea{
-  width:100%;
-  border:1px solid #dce5e1;
-  border-radius:11px;
-  padding:12px;
-  margin-bottom:10px;
-  outline:0;
-}
-
-.modalActions{
-  display:flex;
-  gap:8px;
-}
-
-.modalActions button{
-  flex:1;
-  padding:12px;
-  border-radius:10px;
-  font-weight:700;
-}
-
-@media(max-width:500px){
-
-  .messageBubble{
-    max-width:85%;
-  }
-
-}
-
 </style>
-
 </head>
 
 <body>
 
-<!-- AUTH -->
-
 <div id="authScreen">
-
   <div class="authBox">
+    <div class="logo">R</div>
+    <h1>raztara</h1>
+    <p>Connect • Call • Share</p>
 
-    <div class="logoText">
-      raztara
+    <div id="nameField" class="field">
+      <input id="fullName" placeholder="আপনার নাম">
     </div>
 
-    <div class="authSub">
-      Connect • Call • Share
+    <div id="usernameField" class="field">
+      <input id="username" placeholder="Username">
     </div>
 
-    <div id="signupFields" class="hidden">
-
-      <input
-        id="fullName"
-        type="text"
-        placeholder="আপনার নাম"
-      >
-
-      <input
-        id="username"
-        type="text"
-        placeholder="Username"
-      >
-
+    <div class="field">
+      <input id="email" type="email" placeholder="Email">
     </div>
 
-    <input
-      id="email"
-      type="email"
-      placeholder="Email"
-    >
-
-    <input
-      id="password"
-      type="password"
-      placeholder="Password"
-    >
-
-    <button
-      id="authButton"
-      class="primaryBtn"
-    >
-      Login
-    </button>
-
-    <div class="switchText">
-
-      <span id="switchLabel">
-        নতুন account খুলবেন?
-      </span>
-
-      <button id="switchButton">
-        Sign Up
-      </button>
-
+    <div class="field">
+      <input id="password" type="password" placeholder="Password">
     </div>
 
+    <button id="authButton" class="primary">Sign Up</button>
+
+    <div class="switch">
+      <span id="switchText">Already have an account?</span>
+      <button id="switchButton">Login</button>
+    </div>
   </div>
-
 </div>
-
-
-<!-- APP -->
 
 <div id="app" class="hidden">
 
-  <div class="topBar">
-
+  <div class="topbar">
+    <div class="brand">raztara</div>
     <div class="topUser">
+      <span id="topName"></span>
+      <div id="topAvatar" class="avatar">R</div>
+    </div>
+  </div>
 
-      <img
-        id="topAvatar"
-        class="avatar"
-        src=""
-        alt=""
-      >
+  <section id="chatsPage" class="page active">
+    <div class="sectionTitle">💬 Chats</div>
 
-      <div id="topName">
-        raztara
-      </div>
-
+    <div class="searchBox">
+      <input id="searchInput" placeholder="Username বা নাম খুঁজুন">
     </div>
 
-  </div>
+    <div id="searchResults"></div>
+    <div id="chatList"></div>
+  </section>
 
+  <section id="callsPage" class="page">
+    <div class="sectionTitle">📞 Calls</div>
+    <div id="callsList"></div>
+  </section>
 
-  <div class="main">
+  <section id="profilePage" class="page">
+    <div class="sectionTitle">👤 Profile</div>
 
-    <!-- CHATS -->
+    <div class="profileBox">
+      <div id="profileAvatar" class="profileLarge">R</div>
 
-    <section
-      id="chatsPage"
-      class="page"
-    >
+      <input id="editName" placeholder="নাম">
+      <input id="editUsername" placeholder="Username">
+      <textarea id="editBio" rows="3" placeholder="Bio"></textarea>
 
-      <div class="pageTitle">
-        Chats
-      </div>
-
-      <div class="searchBox">
-
-        <span class="searchIcon">
-          🔎
-        </span>
-
-        <input
-          id="searchInput"
-          type="text"
-          placeholder="User খুঁজুন..."
-        >
-
-      </div>
-
-      <div id="searchResults"></div>
-
-      <div id="chatList"></div>
-
-    </section>
-
-
-    <!-- CALLS -->
-
-    <section
-      id="callsPage"
-      class="page hidden"
-    >
-
-      <div class="pageTitle">
-        Calls
-      </div>
-
-      <div id="callsList">
-
-        <div class="callEmpty">
-          এখনো কোনো call নেই
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- PROFILE -->
-
-    <section
-      id="profilePage"
-      class="page hidden"
-    >
-
-      <div class="pageTitle">
-        Profile
-      </div>
-
-      <div class="profileCard">
-
-        <img
-          id="profileAvatar"
-          class="profileBigAvatar"
-          src=""
-          alt=""
-        >
-
-        <div
-          id="profileName"
-          class="profileName"
-        >
-          -
-        </div>
-
-        <div
-          id="profileUsername"
-          class="profileUsername"
-        >
-          -
-        </div>
-
-        <div
-          id="profileBio"
-          class="profileBio"
-        >
-        </div>
-
-        <div class="profileActions">
-
-          <button id="editProfileBtn">
-            ✏️ Edit Profile
-          </button>
-
-          <button id="logoutBtn">
-            🚪 Logout
-          </button>
-
-        </div>
-
-      </div>
-
-    </section>
-
-  </div>
-
-
-  <!-- NAV -->
-
-  <div class="bottomNav">
-
-    <button
-      id="navChats"
-      class="navBtn active"
-    >
-      <span class="navIcon">💬</span>
-      Chats
-    </button>
-
-    <button
-      id="navCalls"
-      class="navBtn"
-    >
-      <span class="navIcon">📞</span>
-      Calls
-    </button>
-
-    <button
-      id="navProfile"
-      class="navBtn"
-    >
-      <span class="navIcon">👤</span>
-      Profile
-    </button>
-
-  </div>
-
-</div>
-
-
-<!-- CHAT SCREEN -->
-
-<div
-  id="chatScreen"
-  class="hidden"
->
-
-  <div class="chatTop">
-
-    <button
-      id="closeChatBtn"
-      class="backBtn"
-    >
-      ‹
-    </button>
-
-    <img
-      id="chatAvatar"
-      class="avatar"
-      src=""
-      alt=""
-    >
-
-    <div class="chatHeaderInfo">
-
-      <div id="chatHeaderName">
-        -
-      </div>
-
-      <div
-        id="chatHeaderStatus"
-        class="chatHeaderStatus"
-      >
-        Online
-      </div>
-
-    </div>
-
-    <div class="chatCallBtns">
-
-      <button
-        id="audioCallBtn"
-        class="chatCallBtn"
-      >
-        📞
+      <button id="saveProfileBtn" class="primary" style="margin-top:12px">
+        Save Profile
       </button>
 
-      <button
-        id="videoCallBtn"
-        class="chatCallBtn"
-      >
-        🎥
+      <button id="logoutBtn"
+        style="width:100%;margin-top:10px;padding:13px;border-radius:12px;background:#eee">
+        Logout
       </button>
-
     </div>
+  </section>
 
-  </div>
-
-
-  <div id="messages"></div>
-
-
-  <div class="composer">
-
-    <button
-      id="fileBtn"
-      class="composerBtn"
-    >
-      📎
+  <nav class="bottomNav">
+    <button id="navChats" class="active">
+      <span>💬</span>Chats
     </button>
-
-    <button
-      id="locationBtn"
-      class="composerBtn"
-    >
-      📍
+    <button id="navCalls">
+      <span>📞</span>Calls
     </button>
-
-    <button
-      id="recordBtn"
-      class="composerBtn"
-    >
-      🎙️
+    <button id="navProfile">
+      <span>👤</span>Profile
     </button>
-
-    <textarea
-      id="messageInput"
-      class="composerInput"
-      rows="1"
-      placeholder="Message..."
-    ></textarea>
-
-    <button
-      id="sendBtn"
-      class="composerBtn sendBtn"
-    >
-      ➤
-    </button>
-
-    <input
-      id="fileInput"
-      type="file"
-      class="hidden"
-    >
-
-  </div>
-
+  </nav>
 </div>
 
+<div id="chatScreen">
+  <div class="chatHeader">
+    <button id="chatBackBtn" class="iconBtn">‹</button>
 
-<!-- CALL OVERLAY -->
+    <div id="chatAvatar" class="avatar">R</div>
 
-<div id="callOverlay">
+    <div class="info">
+      <strong id="chatHeaderName">User</strong>
+      <small id="chatHeaderUsername">@user</small>
+    </div>
+
+    <button id="audioCallBtn" class="iconBtn">📞</button>
+    <button id="videoCallBtn" class="iconBtn">🎥</button>
+  </div>
+
+  <div id="messages" class="messages"></div>
+
+  <div class="chatComposer">
+    <div class="chatTools">
+      <button id="fileBtn">＋</button>
+      <button id="locationBtn">📍</button>
+      <button id="recordBtn">🎙️</button>
+    </div>
+
+    <input id="messageInput" placeholder="Message...">
+
+    <button id="sendBtn">➤</button>
+  </div>
+
+  <input id="fileInput" type="file" hidden>
+</div>
+
+<div id="callOverlay" class="callOverlay">
 
   <div class="callTop">
-
-    <div
-      id="callIncomingAvatar"
-      class="avatar"
-    >
-      👤
-    </div>
-
-    <div class="callTopInfo">
-
-      <div id="callTitle">
-        Call
-      </div>
-
-      <div id="callStatus">
-        Connecting...
-      </div>
-
-    </div>
-
+    <div id="callIncomingAvatar" class="avatar">R</div>
+    <h2 id="callTitle">Calling...</h2>
+    <p id="callStatus">Connecting...</p>
   </div>
-
 
   <div class="callVideos">
-
-    <div
-      id="callAudioAvatar"
-      class="callAudioAvatar"
-    >
-      👤
-    </div>
-
-    <video
-      id="callRemoteVideo"
-      autoplay
-      playsinline
-    ></video>
-
-    <video
-      id="callLocalVideo"
-      autoplay
-      muted
-      playsinline
-    ></video>
-
+    <video id="callRemoteVideo" autoplay playsinline></video>
+    <video id="callLocalVideo" autoplay muted playsinline></video>
   </div>
 
-
-  <div class="callActions">
-
-    <button
-      id="acceptCallBtn"
-      class="callAction green"
-    >
-      ✓
-    </button>
-
-    <button
-      id="rejectCallBtn"
-      class="callAction red"
-    >
-      ✕
-    </button>
-
-    <button
-      id="endCallBtn"
-      class="callAction red hidden"
-    >
-      ☎
-    </button>
-
+  <div class="callControls">
+    <button id="acceptCallBtn" class="accept">✓</button>
+    <button id="rejectCallBtn" class="danger">✕</button>
+    <button id="endCallBtn" class="danger">☎</button>
   </div>
-
 </div>
 
-
-<!-- TOAST -->
-
-<div id="toast"></div>
-
-
-<!-- PROFILE MODAL -->
-
-<div
-  id="profileModal"
-  class="modal hidden"
->
-
-  <div class="modalBox">
-
-    <h3>
-      Edit Profile
-    </h3>
-
-    <input
-      id="editFullName"
-      type="text"
-      placeholder="নাম"
-    >
-
-    <input
-      id="editUsername"
-      type="text"
-      placeholder="Username"
-    >
-
-    <textarea
-      id="editBio"
-      rows="3"
-      placeholder="Bio"
-    ></textarea>
-
-    <div class="modalActions">
-
-      <button
-        id="cancelProfileBtn"
-        style="background:#eee"
-      >
-        Cancel
-      </button>
-
-      <button
-        id="saveProfileBtn"
-        style="background:#087f5b;color:#fff"
-      >
-        Save
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
+<div id="toast" class="toast"></div>
 
 <script>
-  /* =========================================================
-   RAZTARA
-   PART 2
-   SUPABASE + AUTH + PROFILE + CHAT + MESSAGES
-   ========================================================= */
-
-
-/* =========================
-   SUPABASE
-   ========================= */
-
 const SUPABASE_URL =
   "https://pqyicaqpmojijjskpzcp.supabase.co";
 
@@ -1252,1852 +349,803 @@ const SUPABASE_KEY =
   "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
 
 const supabaseClient =
-  window.supabase.createClient(
+  supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
   );
 
-
-/* =========================
-   GLOBALS
-   ========================= */
+const $ = id => document.getElementById(id);
 
 let currentUser = null;
-
 let currentProfile = null;
 
+let currentChatUser = null;
 let currentConversationId = null;
 
-let currentChatUserId = null;
-
-let currentChatProfile = null;
-
-let messageSubscription = null;
-
-let chatListSubscription = null;
-
-let searchTimer = null;
+let messageChannel = null;
+let memberChannel = null;
+let callChannel = null;
+let callsChannel = null;
 
 let mediaRecorder = null;
-
 let audioChunks = [];
+let recording = false;
 
-let isRecording = false;
+let currentPage = "chats";
 
+function toast(message){
 
-/* =========================
-   HELPERS
-   ========================= */
+  $("toast").textContent = message;
+  $("toast").style.display = "block";
 
-function $(id){
-  return document.getElementById(id);
+  clearTimeout(window.toastTimer);
+
+  window.toastTimer =
+    setTimeout(() => {
+      $("toast").style.display = "none";
+    }, 2500);
 }
 
+function initials(name){
 
-function showToast(message){
+  if(!name) return "R";
 
-  const toast = $("toast");
-
-  toast.textContent = message;
-
-  toast.classList.add("show");
-
-  clearTimeout(
-    showToast.timer
-  );
-
-  showToast.timer =
-    setTimeout(
-      ()=>{
-        toast.classList.remove("show");
-      },
-      2500
-    );
-
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0,2)
+    .map(x => x[0])
+    .join("")
+    .toUpperCase();
 }
 
+function setAvatar(element,url,name){
 
-function escapeHtml(value){
-
-  if(value === null || value === undefined){
-    return "";
-  }
-
-  return String(value)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
-}
-
-
-function avatarUrl(profile){
-
-  if(
-    profile &&
-    profile.avatar_url
-  ){
-    return profile.avatar_url;
-  }
-
-  return "";
-}
-
-
-function avatarHtml(profile,className="avatar"){
-
-  const url =
-    avatarUrl(profile);
+  if(!element) return;
 
   if(url){
 
-    return `
-      <img
-        class="${className}"
-        src="${escapeHtml(url)}"
-        alt=""
-      >
-    `;
+    element.innerHTML =
+      `<img src="${url}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`;
 
+  }else{
+
+    element.textContent =
+      initials(name);
   }
-
-  const name =
-    profile?.full_name ||
-    profile?.username ||
-    "U";
-
-  return `
-    <div class="${className}">
-      ${escapeHtml(
-        name
-          .trim()
-          .charAt(0)
-          .toUpperCase()
-      )}
-    </div>
-  `;
-
 }
-
-
-function formatTime(date){
-
-  if(!date){
-    return "";
-  }
-
-  return new Date(date)
-    .toLocaleTimeString(
-      "bn-BD",
-      {
-        hour:"2-digit",
-        minute:"2-digit"
-      }
-    );
-
-}
-
 
 /* =========================
-   AUTH UI
-   ========================= */
+AUTH
+========================= */
 
-let isSignup = false;
+let loginMode = false;
 
+$("switchButton").onclick = () => {
 
-$("switchButton").addEventListener(
-  "click",
-  ()=>{
-    isSignup =
-      !isSignup;
+  loginMode = !loginMode;
 
-    $("signupFields")
-      .classList.toggle(
-        "hidden",
-        !isSignup
-      );
+  $("nameField").classList.toggle(
+    "hidden",
+    loginMode
+  );
 
-    $("authButton")
-      .textContent =
-      isSignup
-        ? "Sign Up"
-        : "Login";
+  $("usernameField").classList.toggle(
+    "hidden",
+    loginMode
+  );
 
-    $("switchButton")
-      .textContent =
-      isSignup
-        ? "Login"
-        : "Sign Up";
+  $("authButton").textContent =
+    loginMode ? "Login" : "Sign Up";
 
-    $("switchLabel")
-      .textContent =
-      isSignup
-        ? "আগে account আছে?"
-        : "নতুন account খুলবেন?";
-  }
-);
+  $("switchText").textContent =
+    loginMode
+      ? "Don't have an account?"
+      : "Already have an account?";
 
+  $("switchButton").textContent =
+    loginMode ? "Sign Up" : "Login";
+};
 
-$("authButton").addEventListener(
-  "click",
-  async ()=>{
+$("authButton").onclick = async () => {
 
-    const email =
-      $("email").value.trim();
+  const email =
+    $("email").value.trim();
 
-    const password =
-      $("password").value;
+  const password =
+    $("password").value;
 
-    if(!email || !password){
+  if(!email || !password){
 
-      showToast(
-        "Email ও Password দিন"
-      );
-
-      return;
-    }
-
-
-    try{
-
-      $("authButton")
-        .disabled = true;
-
-
-      if(isSignup){
-
-        const fullName =
-          $("fullName")
-            .value
-            .trim();
-
-        const username =
-          $("username")
-            .value
-            .trim()
-            .toLowerCase();
-
-
-        if(!fullName || !username){
-
-          showToast(
-            "নাম ও Username দিন"
-          );
-
-          return;
-        }
-
-
-        const {
-          data,
-          error
-        } =
-        await supabaseClient
-          .auth
-          .signUp({
-            email,
-            password,
-            options:{
-              data:{
-                full_name:
-                  fullName,
-
-                username:
-                  username
-              }
-            }
-          });
-
-
-        if(error){
-          throw error;
-        }
-
-
-        if(
-          data.user &&
-          data.session
-        ){
-
-          await ensureProfile(
-            data.user
-          );
-
-          showToast(
-            "Account তৈরি হয়েছে"
-          );
-
-        }else{
-
-          showToast(
-            "Email verification প্রয়োজন হতে পারে"
-          );
-
-        }
-
-      }else{
-
-        const {
-          data,
-          error
-        } =
-        await supabaseClient
-          .auth
-          .signInWithPassword({
-            email,
-            password
-          });
-
-        if(error){
-          throw error;
-        }
-
-        await initializeApp(
-          data.user
-        );
-
-      }
-
-    }catch(error){
-
-      console.error(
-        "Auth error:",
-        error
-      );
-
-      showToast(
-        error.message ||
-        "Login সমস্যা হয়েছে"
-      );
-
-    }finally{
-
-      $("authButton")
-        .disabled = false;
-
-    }
-
-  }
-);
-
-
-/* =========================
-   PROFILE
-   ========================= */
-
-async function ensureProfile(user){
-
-  const {
-    data:existing,
-    error:selectError
-  } =
-  await supabaseClient
-    .from("profiles")
-    .select("*")
-    .eq(
-      "id",
-      user.id
-    )
-    .maybeSingle();
-
-  if(selectError){
-    throw selectError;
-  }
-
-
-  if(existing){
-
-    currentProfile =
-      existing;
-
-    return existing;
-
-  }
-
-
-  const metadata =
-    user.user_metadata || {};
-
-
-  const baseUsername =
-    metadata.username ||
-    (
-      user.email
-        ?.split("@")[0] ||
-      "user"
-    );
-
-
-  const username =
-    baseUsername
-      .toLowerCase()
-      .replace(
-        /[^a-z0-9_]/g,
-        ""
-      )
-      .slice(0,25) ||
-    "user";
-
-
-  const {
-    data,
-    error
-  } =
-  await supabaseClient
-    .from("profiles")
-    .insert({
-      id:user.id,
-
-      username:
-
-        username,
-
-      full_name:
-        metadata.full_name ||
-        "Raztara User",
-
-      bio:""
-
-    })
-    .select()
-    .single();
-
-
-  if(error){
-
-    /*
-      Username duplicate হলে অন্য username
-      দিয়ে আবার চেষ্টা
-    */
-
-    if(error.code === "23505"){
-
-      const randomUsername =
-        username +
-        Math.floor(
-          Math.random()*9999
-        );
-
-      const retry =
-        await supabaseClient
-          .from("profiles")
-          .insert({
-            id:user.id,
-
-            username:
-              randomUsername,
-
-            full_name:
-              metadata.full_name ||
-              "Raztara User",
-
-            bio:""
-          })
-          .select()
-          .single();
-
-      if(retry.error){
-        throw retry.error;
-      }
-
-      currentProfile =
-        retry.data;
-
-      return retry.data;
-
-    }
-
-    throw error;
-  }
-
-
-  currentProfile =
-    data;
-
-  return data;
-
-}
-
-
-async function loadMyProfile(){
-
-  if(!currentUser){
-    return null;
-  }
-
-  const {
-    data,
-    error
-  } =
-  await supabaseClient
-    .from("profiles")
-    .select("*")
-    .eq(
-      "id",
-      currentUser.id
-    )
-    .single();
-
-
-  if(error){
-    throw error;
-  }
-
-  currentProfile =
-    data;
-
-  return data;
-
-}
-
-
-function renderProfile(){
-
-  if(!currentProfile){
+    toast("Email এবং password দিন");
     return;
   }
-
-  const name =
-    currentProfile.full_name ||
-    currentProfile.username ||
-    "User";
-
-  const username =
-    currentProfile.username
-      ? "@" +
-        currentProfile.username
-      : "";
-
-  $("profileName")
-    .textContent =
-    name;
-
-  $("profileUsername")
-    .textContent =
-    username;
-
-  $("profileBio")
-    .textContent =
-    currentProfile.bio ||
-    "";
-
-  $("topName")
-    .textContent =
-    name;
-
-
-  const url =
-    avatarUrl(
-      currentProfile
-    );
-
-
-  $("topAvatar").src =
-    url;
-
-  $("profileAvatar").src =
-    url;
-
-}
-
-
-/* =========================
-   APP INITIALIZE
-   ========================= */
-
-async function initializeApp(user){
-
-  currentUser =
-    user;
-
-  await ensureProfile(
-    user
-  );
-
-  await loadMyProfile();
-
-  renderProfile();
-
-  $("authScreen")
-    .classList.add("hidden");
-
-  $("app")
-    .classList.remove("hidden");
-
-  showPage(
-    "chats"
-  );
-
-  await loadChatList();
-
-  subscribeChatList();
-
-}
-
-
-async function checkSession(){
-
-  const {
-    data,
-    error
-  } =
-  await supabaseClient
-    .auth
-    .getSession();
-
-  if(error){
-
-    console.error(
-      error
-    );
-
-    return;
-
-  }
-
-
-  if(
-    data.session &&
-    data.session.user
-  ){
-
-    try{
-
-      await initializeApp(
-        data.session.user
-      );
-
-    }catch(error){
-
-      console.error(
-        error
-      );
-
-      showToast(
-        error.message ||
-        "App load হয়নি"
-      );
-
-    }
-
-  }
-
-}
-
-
-supabaseClient
-  .auth
-  .onAuthStateChange(
-    async (
-      event,
-      session
-    )=>{
-
-      if(
-        event ===
-        "SIGNED_OUT"
-      ){
-
-        currentUser =
-          null;
-
-        currentProfile =
-          null;
-
-        $("app")
-          .classList.add(
-            "hidden"
-          );
-
-        $("authScreen")
-          .classList.remove(
-            "hidden"
-          );
-
-        return;
-
-      }
-
-
-      if(
-        session &&
-        session.user
-      ){
-
-        if(
-          !currentUser
-        ){
-
-          try{
-
-            await initializeApp(
-              session.user
-            );
-
-          }catch(error){
-
-            console.error(
-              error
-            );
-
-          }
-
-        }
-
-      }
-
-    }
-  );
-
-
-/* =========================
-   PAGE NAVIGATION
-   ========================= */
-
-function showPage(page){
-
-  $("chatsPage")
-    .classList.add(
-      "hidden"
-    );
-
-  $("callsPage")
-    .classList.add(
-      "hidden"
-    );
-
-  $("profilePage")
-    .classList.add(
-      "hidden"
-    );
-
-
-  $("navChats")
-    .classList.remove(
-      "active"
-    );
-
-  $("navCalls")
-    .classList.remove(
-      "active"
-    );
-
-  $("navProfile")
-    .classList.remove(
-      "active"
-    );
-
-
-  if(page === "chats"){
-
-    $("chatsPage")
-      .classList.remove(
-        "hidden"
-      );
-
-    $("navChats")
-      .classList.add(
-        "active"
-      );
-
-  }
-
-
-  if(page === "calls"){
-
-    $("callsPage")
-      .classList.remove(
-        "hidden"
-      );
-
-    $("navCalls")
-      .classList.add(
-        "active"
-      );
-
-  }
-
-
-  if(page === "profile"){
-
-    $("profilePage")
-      .classList.remove(
-        "hidden"
-      );
-
-    $("navProfile")
-      .classList.add(
-        "active"
-      );
-
-    renderProfile();
-
-  }
-
-}
-
-
-$("navChats")
-  .addEventListener(
-    "click",
-    ()=>{
-      showPage("chats");
-    }
-  );
-
-
-$("navCalls")
-  .addEventListener(
-    "click",
-    ()=>{
-      showPage("calls");
-    }
-  );
-
-
-$("navProfile")
-  .addEventListener(
-    "click",
-    ()=>{
-      showPage("profile");
-    }
-  );
-
-
-/* =========================
-   SEARCH USERS
-   ========================= */
-
-$("searchInput")
-  .addEventListener(
-    "input",
-    ()=>{
-
-      clearTimeout(
-        searchTimer
-      );
-
-      const value =
-        $("searchInput")
-          .value
-          .trim();
-
-      if(!value){
-
-        $("searchResults")
-          .innerHTML = "";
-
-        return;
-
-      }
-
-
-      searchTimer =
-        setTimeout(
-          ()=>{
-            searchUsers(
-              value
-            );
-          },
-          350
-        );
-
-    }
-  );
-
-
-async function searchUsers(query){
-
-  if(!currentUser){
-    return;
-  }
-
-
-  const clean =
-    query
-      .replace(/%/g,"")
-      .replace(/,/g,"")
-      .trim();
-
-
-  if(!clean){
-    return;
-  }
-
 
   try{
 
-    const {
-      data,
-      error
-    } =
-    await supabaseClient
-      .from("profiles")
-      .select("*")
-      .or(
-        `username.ilike.%${clean}%,full_name.ilike.%${clean}%`
-      )
-      .neq(
-        "id",
-        currentUser.id
-      )
-      .limit(15);
+    $("authButton").disabled = true;
 
+    if(loginMode){
 
-    if(error){
-      throw error;
+      const {data,error} =
+        await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+      if(error) throw error;
+
+      currentUser = data.user;
+
+    }else{
+
+      const fullName =
+        $("fullName").value.trim();
+
+      const username =
+        $("username").value.trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9_]/g,"");
+
+      if(!fullName || !username){
+
+        toast("নাম ও username দিন");
+        return;
+      }
+
+      const {data,error} =
+        await supabaseClient.auth.signUp({
+          email,
+          password
+        });
+
+      if(error) throw error;
+
+      if(!data.user){
+
+        toast("Account তৈরি হয়েছে। Email verify করুন।");
+        return;
+      }
+
+      currentUser = data.user;
+
+      const {error:profileError} =
+        await supabaseClient
+          .from("profiles")
+          .upsert({
+            id:data.user.id,
+            full_name:fullName,
+            username:username
+          });
+
+      if(profileError) throw profileError;
+
+      toast("Account তৈরি হয়েছে");
     }
 
-
-    if(!data || !data.length){
-
-      $("searchResults")
-        .innerHTML = `
-          <div class="empty">
-            কোনো user পাওয়া যায়নি
-          </div>
-        `;
-
-      return;
-
-    }
-
-
-    $("searchResults")
-      .innerHTML =
-      data.map(
-        user=>`
-
-          <div
-            class="searchUser"
-          >
-
-            ${avatarHtml(
-              user
-            )}
-
-            <div
-              class="searchUserInfo"
-            >
-
-              <div
-                class="searchUserName"
-              >
-                ${escapeHtml(
-                  user.full_name ||
-                  user.username
-                )}
-              </div>
-
-              <div
-                class="searchUsername"
-              >
-                @${escapeHtml(
-                  user.username ||
-                  ""
-                )}
-              </div>
-
-            </div>
-
-            <button
-              class="primaryBtn"
-              style="
-                width:auto;
-                padding:9px 13px;
-              "
-              onclick="
-                openChatWithUser(
-                  '${user.id}'
-                )
-              "
-            >
-              Chat
-            </button>
-
-          </div>
-
-        `
-      )
-      .join("");
+    await initializeApp();
 
   }catch(error){
 
-    console.error(
-      "Search error:",
-      error
+    console.error(error);
+
+    toast(
+      error.message ||
+      "Login/Signup সমস্যা হয়েছে"
     );
 
-    showToast(
-      "User search সমস্যা"
-    );
+  }finally{
 
+    $("authButton").disabled = false;
   }
-
-}
-
+};
 
 /* =========================
-   GET PROFILE
-   ========================= */
+PROFILE
+========================= */
 
-async function getProfileById(
-  userId
-){
+async function loadProfile(){
 
-  const {
-    data,
-    error
-  } =
-  await supabaseClient
-    .from("profiles")
-    .select("*")
-    .eq(
-      "id",
-      userId
-    )
-    .single();
+  const {data,error} =
+    await supabaseClient
+      .from("profiles")
+      .select("*")
+      .eq("id",currentUser.id)
+      .maybeSingle();
 
+  if(error) throw error;
+
+  if(!data){
+
+    const username =
+      "user_" +
+      currentUser.id
+        .replace(/-/g,"")
+        .slice(0,8);
+
+    const {data:newProfile,error:createError} =
+      await supabaseClient
+        .from("profiles")
+        .insert({
+          id:currentUser.id,
+          full_name:
+            currentUser.email?.split("@")[0] ||
+            "User",
+          username
+        })
+        .select()
+        .single();
+
+    if(createError) throw createError;
+
+    currentProfile = newProfile;
+
+  }else{
+
+    currentProfile = data;
+  }
+
+  renderProfile();
+}
+
+function renderProfile(){
+
+  if(!currentProfile) return;
+
+  $("topName").textContent =
+    currentProfile.full_name ||
+    currentProfile.username ||
+    "";
+
+  setAvatar(
+    $("topAvatar"),
+    currentProfile.avatar_url,
+    currentProfile.full_name
+  );
+
+  setAvatar(
+    $("profileAvatar"),
+    currentProfile.avatar_url,
+    currentProfile.full_name
+  );
+
+  $("editName").value =
+    currentProfile.full_name || "";
+
+  $("editUsername").value =
+    currentProfile.username || "";
+
+  $("editBio").value =
+    currentProfile.bio || "";
+}
+
+$("saveProfileBtn").onclick = async () => {
+
+  try{
+
+    const username =
+      $("editUsername").value
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9_]/g,"");
+
+    if(!username){
+
+      toast("Username দিন");
+      return;
+    }
+
+    const {data,error} =
+      await supabaseClient
+        .from("profiles")
+        .update({
+          full_name:
+            $("editName").value.trim(),
+          username,
+          bio:
+            $("editBio").value.trim(),
+          updated_at:
+            new Date().toISOString()
+        })
+        .eq("id",currentUser.id)
+        .select()
+        .single();
+
+    if(error) throw error;
+
+    currentProfile = data;
+
+    renderProfile();
+
+    toast("Profile saved");
+
+  }catch(error){
+
+    console.error(error);
+    toast(error.message);
+  }
+};
+
+/* =========================
+PAGES
+========================= */
+
+function showPage(page){
+
+  currentPage = page;
+
+  ["chatsPage","callsPage","profilePage"]
+    .forEach(id => $(id).classList.remove("active"));
+
+  ["navChats","navCalls","navProfile"]
+    .forEach(id => $(id).classList.remove("active"));
+
+  if(page === "chats"){
+
+    $("chatsPage").classList.add("active");
+    $("navChats").classList.add("active");
+
+  }else if(page === "calls"){
+
+    $("callsPage").classList.add("active");
+    $("navCalls").classList.add("active");
+
+    loadCallsList();
+
+  }else{
+
+    $("profilePage").classList.add("active");
+    $("navProfile").classList.add("active");
+  }
+}
+
+$("navChats").onclick =
+  () => showPage("chats");
+
+$("navCalls").onclick =
+  () => showPage("calls");
+
+$("navProfile").onclick =
+  () => showPage("profile");
+
+/* =========================
+SEARCH USERS
+========================= */
+
+let searchTimer;
+
+$("searchInput").oninput = () => {
+
+  clearTimeout(searchTimer);
+
+  searchTimer =
+    setTimeout(searchUsers,300);
+};
+
+async function searchUsers(){
+
+  const q =
+    $("searchInput").value.trim();
+
+  if(!q){
+
+    $("searchResults").innerHTML = "";
+    return;
+  }
+
+  const {data,error} =
+    await supabaseClient
+      .from("profiles")
+      .select("*")
+      .neq("id",currentUser.id)
+      .or(
+        `username.ilike.%${q}%,full_name.ilike.%${q}%`
+      )
+      .limit(15);
 
   if(error){
-    throw error;
+
+    console.error(error);
+    return;
   }
 
-  return data;
+  $("searchResults").innerHTML =
+    (data || []).map(user => `
 
+      <div class="userCard">
+
+        <div class="avatar">
+          ${
+            user.avatar_url
+            ? `<img src="${user.avatar_url}"
+                 style="width:100%;height:100%;border-radius:50%;object-fit:cover">`
+            : initials(user.full_name)
+          }
+        </div>
+
+        <div class="userInfo">
+          <strong>${escapeHtml(user.full_name || "User")}</strong>
+          <small>@${escapeHtml(user.username || "")}</small>
+        </div>
+
+        <button class="cardBtn"
+          onclick="openChatByUser('${user.id}')">
+          Chat
+        </button>
+
+      </div>
+    `).join("");
 }
 
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
 
 /* =========================
-   CONVERSATION
-   ========================= */
+CONVERSATION
+========================= */
 
 async function getOrCreateConversation(
   otherUserId
 ){
 
-  if(
-    !currentUser ||
-    !otherUserId
-  ){
-    return null;
-  }
+  if(!currentUser) return null;
 
-
-  /*
-    প্রথমে আমার conversation বের করি
-  */
-
-  const {
-    data:myMemberships,
-    error
-  } =
-  await supabaseClient
-    .from("conversation_members")
-    .select(
-      "conversation_id"
-    )
-    .eq(
-      "user_id",
-      currentUser.id
-    );
-
-
-  if(error){
-    throw error;
-  }
-
-
-  const conversationIds =
-    (myMemberships || [])
-      .map(
-        item =>
-          item.conversation_id
-      );
-
-
-  /*
-    Existing conversation আছে কি না
-  */
-
-  if(
-    conversationIds.length
-  ){
-
-    const {
-      data:matches,
-      error:matchError
-    } =
+  const {data:myMemberships,error} =
     await supabaseClient
       .from("conversation_members")
-      .select(
-        "conversation_id,user_id"
-      )
-      .in(
-        "conversation_id",
-        conversationIds
-      )
-      .eq(
-        "user_id",
-        otherUserId
-      );
+      .select("conversation_id")
+      .eq("user_id",currentUser.id);
 
+  if(error) throw error;
 
-    if(matchError){
-      throw matchError;
+  const ids =
+    (myMemberships || [])
+      .map(x => x.conversation_id);
+
+  if(ids.length){
+
+    const {data:matches,error:matchError} =
+      await supabaseClient
+        .from("conversation_members")
+        .select("conversation_id,user_id")
+        .in("conversation_id",ids)
+        .eq("user_id",otherUserId);
+
+    if(matchError) throw matchError;
+
+    if(matches?.length){
+
+      return matches[0].conversation_id;
     }
-
-
-    if(
-      matches &&
-      matches.length
-    ){
-
-      return
-        matches[0]
-          .conversation_id;
-
-    }
-
   }
 
+  const {data:conversation,error:createError} =
+    await supabaseClient
+      .from("conversations")
+      .insert({
+        created_by:currentUser.id,
+        is_group:false
+      })
+      .select()
+      .single();
 
-  /*
-    নতুন conversation
-  */
-
-  const {
-    data:conversation,
-    error:createError
-  } =
-  await supabaseClient
-    .from("conversations")
-    .insert({
-      created_by:
-        currentUser.id,
-
-      is_group:
-        false
-    })
-    .select()
-    .single();
-
-
-  if(createError){
-    throw createError;
-  }
-
+  if(createError) throw createError;
 
   const conversationId =
     conversation.id;
 
+  const {error:memberError} =
+    await supabaseClient
+      .from("conversation_members")
+      .insert([
+        {
+          conversation_id:conversationId,
+          user_id:currentUser.id
+        },
+        {
+          conversation_id:conversationId,
+          user_id:otherUserId
+        }
+      ]);
 
-  /*
-    দুইজনকে member করি
-  */
-
-  const {
-    error:memberError
-  } =
-  await supabaseClient
-    .from("conversation_members")
-    .insert([
-
-      {
-        conversation_id:
-          conversationId,
-
-        user_id:
-          currentUser.id
-      },
-
-      {
-        conversation_id:
-          conversationId,
-
-        user_id:
-          otherUserId
-      }
-
-    ]);
-
-
-  if(memberError){
-
-    console.error(
-      "Member error:",
-      memberError
-    );
-
-    throw memberError;
-
-  }
-
+  if(memberError) throw memberError;
 
   return conversationId;
-
 }
 
+async function openChatByUser(userId){
 
-/* =========================
-   OPEN CHAT
-   ========================= */
-
-async function openChatWithUser(
-  userId
-){
-
-  try{
-
-    currentChatUserId =
-      userId;
-
-    currentChatProfile =
-      await getProfileById(
-        userId
-      );
-
-    currentConversationId =
-      await getOrCreateConversation(
-        userId
-      );
-
-
-    $("chatHeaderName")
-      .textContent =
-      currentChatProfile
-        .full_name ||
-      currentChatProfile
-        .username ||
-      "User";
-
-
-    $("chatAvatar")
-      .src =
-      avatarUrl(
-        currentChatProfile
-      );
-
-
-    $("chatScreen")
-      .classList.remove(
-        "hidden"
-      );
-
-
-    $("messages")
-      .innerHTML = "";
-
-
-    await loadMessages();
-
-    subscribeMessages();
-
-    await loadChatList();
-
-  }catch(error){
-
-    console.error(
-      "Open chat error:",
-      error
-    );
-
-    showToast(
-      error.message ||
-      "Chat খুলতে সমস্যা হয়েছে"
-    );
-
-  }
-
-}
-
-
-$("closeChatBtn")
-  .addEventListener(
-    "click",
-    closeChat
-  );
-
-
-function closeChat(){
-
-  if(messageSubscription){
-
-    supabaseClient
-      .removeChannel(
-        messageSubscription
-      );
-
-    messageSubscription =
-      null;
-
-  }
-
-
-  $("chatScreen")
-    .classList.add(
-      "hidden"
-    );
-
-
-  currentConversationId =
-    null;
-
-  currentChatUserId =
-    null;
-
-  currentChatProfile =
-    null;
-
-}
-
-
-/* =========================
-   CHAT LIST
-   ========================= */
-
-async function loadChatList(){
-
-  if(!currentUser){
-    return;
-  }
-
-
-  try{
-
-    const {
-      data:myMemberships,
-      error
-    } =
-    await supabaseClient
-      .from("conversation_members")
-      .select(
-        "conversation_id"
-      )
-      .eq(
-        "user_id",
-        currentUser.id
-      );
-
-
-    if(error){
-      throw error;
-    }
-
-
-    if(
-      !myMemberships ||
-      !myMemberships.length
-    ){
-
-      $("chatList")
-        .innerHTML = `
-          <div class="empty">
-            এখনো কোনো chat নেই
-          </div>
-        `;
-
-      return;
-
-    }
-
-
-    const ids =
-      myMemberships
-        .map(
-          x =>
-            x.conversation_id
-        );
-
-
-    const {
-      data:members,
-      error:memberError
-    } =
-    await supabaseClient
-      .from("conversation_members")
-      .select(
-        "conversation_id,user_id"
-      )
-      .in(
-        "conversation_id",
-        ids
-      );
-
-
-    if(memberError){
-      throw memberError;
-    }
-
-
-    const otherIds =
-      [
-        ...new Set(
-          (members || [])
-            .filter(
-              m =>
-                m.user_id !==
-                currentUser.id
-            )
-            .map(
-              m =>
-                m.user_id
-            )
-        )
-      ];
-
-
-    if(!otherIds.length){
-
-      $("chatList")
-        .innerHTML = `
-          <div class="empty">
-            কোনো user পাওয়া যায়নি
-          </div>
-        `;
-
-      return;
-
-    }
-
-
-    const {
-      data:profiles,
-      error:profileError
-    } =
+  const {data:user,error} =
     await supabaseClient
       .from("profiles")
       .select("*")
-      .in(
-        "id",
-        otherIds
-      );
+      .eq("id",userId)
+      .single();
 
+  if(error){
 
-    if(profileError){
-      throw profileError;
-    }
+    toast(error.message);
+    return;
+  }
 
+  const conversationId =
+    await getOrCreateConversation(userId);
 
-    const profileMap =
-      new Map(
-        (profiles || [])
-          .map(
-            p =>
-              [p.id,p]
-          )
-      );
+  await openChat(
+    user,
+    conversationId
+  );
+}
 
+async function openChat(
+  user,
+  conversationId
+){
 
-    const conversationMap =
-      new Map();
+  currentChatUser = user;
+  currentConversationId =
+    conversationId;
 
+  $("chatScreen").style.display =
+    "flex";
 
-    (members || [])
-      .forEach(
-        m=>{
+  $("chatHeaderName").textContent =
+    user.full_name || "User";
 
-          if(
-            m.user_id !==
-            currentUser.id
-          ){
+  $("chatHeaderUsername").textContent =
+    "@" + (user.username || "");
 
-            conversationMap.set(
-              m.user_id,
-              m.conversation_id
-            );
+  setAvatar(
+    $("chatAvatar"),
+    user.avatar_url,
+    user.full_name
+  );
 
-          }
+  await loadMessages();
 
-        }
-      );
+  subscribeToMessages();
+}
 
+$("chatBackBtn").onclick =
+  closeChat;
 
-    $("chatList")
-      .innerHTML =
-      (profiles || [])
-        .map(
-          profile=>`
+function closeChat(){
 
-            <div
-              class="chatItem"
-              onclick="
-                openChatWithUser(
-                  '${profile.id}'
-                )
-              "
-            >
+  $("chatScreen").style.display =
+    "none";
 
-              ${avatarHtml(
-                profile
-              )}
+  currentChatUser = null;
+  currentConversationId = null;
 
-              <div
-                class="chatInfo"
-              >
+  if(messageChannel){
 
-                <div
-                  class="chatName"
-                >
-                  ${escapeHtml(
-                    profile.full_name ||
-                    profile.username ||
-                    "User"
-                  )}
-                </div>
-
-                <div
-                  class="chatLast"
-                >
-                  @${escapeHtml(
-                    profile.username ||
-                    ""
-                  )}
-                </div>
-
-              </div>
-
-            </div>
-
-          `
-        )
-        .join("");
-
-
-  }catch(error){
-
-    console.error(
-      "Chat list error:",
-      error
+    supabaseClient.removeChannel(
+      messageChannel
     );
 
-    $("chatList")
-      .innerHTML = `
-        <div class="empty">
-          Chat list load করতে সমস্যা হয়েছে
+    messageChannel = null;
+  }
+}
+
+/* =========================
+CHAT LIST
+========================= */
+
+async function loadChatList(){
+
+  const {data:members,error} =
+    await supabaseClient
+      .from("conversation_members")
+      .select("conversation_id,user_id,joined_at")
+      .eq("user_id",currentUser.id)
+      .order("joined_at",{ascending:false});
+
+  if(error){
+
+    console.error(error);
+    $("chatList").innerHTML =
+      `<div class="empty">Chat list load করতে সমস্যা হয়েছে</div>`;
+    return;
+  }
+
+  if(!members?.length){
+
+    $("chatList").innerHTML =
+      `<div class="empty">
+        এখনো কোনো chat নেই
+      </div>`;
+
+    return;
+  }
+
+  const html = [];
+
+  for(const member of members){
+
+    const {data:others} =
+      await supabaseClient
+        .from("conversation_members")
+        .select("user_id")
+        .eq("conversation_id",member.conversation_id)
+        .neq("user_id",currentUser.id)
+        .limit(1);
+
+    const otherId =
+      others?.[0]?.user_id;
+
+    if(!otherId) continue;
+
+    const {data:user} =
+      await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("id",otherId)
+        .single();
+
+    if(!user) continue;
+
+    html.push(`
+      <div class="chatItem"
+        onclick="openChatByUser('${user.id}')">
+
+        <div class="avatar">
+          ${
+            user.avatar_url
+            ? `<img src="${user.avatar_url}"
+              style="width:100%;height:100%;border-radius:50%;object-fit:cover">`
+            : initials(user.full_name)
+          }
         </div>
-      `;
 
+        <div class="userInfo">
+          <strong>${escapeHtml(user.full_name || "User")}</strong>
+          <small>@${escapeHtml(user.username || "")}</small>
+        </div>
+
+        <span>›</span>
+      </div>
+    `);
   }
 
+  $("chatList").innerHTML =
+    html.join("");
 }
 
-
 /* =========================
-   CHAT LIST REALTIME
-   ========================= */
-
-function subscribeChatList(){
-
-  if(chatListSubscription){
-
-    supabaseClient
-      .removeChannel(
-        chatListSubscription
-      );
-
-  }
-
-
-  chatListSubscription =
-    supabaseClient
-      .channel(
-        "raztara-chat-list-" +
-        currentUser.id
-      )
-      .on(
-        "postgres_changes",
-        {
-          event:"*",
-          schema:"public",
-          table:
-            "conversation_members"
-        },
-        async ()=>{
-          await loadChatList();
-        }
-      )
-      .on(
-        "postgres_changes",
-        {
-          event:"*",
-          schema:"public",
-          table:"messages"
-        },
-        async ()=>{
-          await loadChatList();
-        }
-      )
-      .subscribe();
-
-}
-
-
-/* =========================
-   MESSAGES
-   ========================= */
+MESSAGES
+========================= */
 
 async function loadMessages(){
 
-  if(
-    !currentConversationId
-  ){
+  const {data,error} =
+    await supabaseClient
+      .from("messages")
+      .select("*")
+      .eq(
+        "conversation_id",
+        currentConversationId
+      )
+      .order("created_at",{ascending:true});
+
+  if(error){
+
+    console.error(error);
+    toast("Messages load করতে সমস্যা");
     return;
   }
 
+  $("messages").innerHTML = "";
 
-  const {
-    data,
-    error
-  } =
-  await supabaseClient
-    .from("messages")
-    .select("*")
-    .eq(
-      "conversation_id",
-      currentConversationId
-    )
-    .order(
-      "created_at",
-      {
-        ascending:true
-      }
-    );
-
-
-  if(error){
-    throw error;
-  }
-
-
-  $("messages")
-    .innerHTML = "";
-
-
-  (data || [])
-    .forEach(
-      message =>
-        renderMessage(
-          message
-        )
-    );
-
+  (data || []).forEach(renderMessage);
 
   scrollMessages();
-
 }
 
+function renderMessage(message){
+
+  if(
+    document.querySelector(
+      `[data-message-id="${message.id}"]`
+    )
+  ) return;
+
+  const div =
+    document.createElement("div");
+
+  div.className =
+    "msg " +
+    (
+      message.sender_id === currentUser.id
+      ? "me"
+      : "other"
+    );
+
+  div.dataset.messageId =
+    message.id;
+
+  let content = "";
+
+  if(message.message_type === "image"){
+
+    content =
+      `<img src="${escapeHtml(message.file_url)}">`;
+
+  }else if(message.message_type === "video"){
+
+    content =
+      `<video src="${escapeHtml(message.file_url)}"
+        controls playsinline></video>`;
+
+  }else if(message.message_type === "audio"){
+
+    content =
+      `<audio src="${escapeHtml(message.file_url)}"
+        controls></audio>`;
+
+  }else if(message.message_type === "file"){
+
+    content =
+      `<a href="${escapeHtml(message.file_url)}"
+        target="_blank"
+        style="color:inherit">
+        📎 ${escapeHtml(message.content || "File")}
+      </a>`;
+
+  }else if(message.message_type === "location"){
+
+    content =
+      `<a href="${escapeHtml(message.file_url)}"
+        target="_blank"
+        style="color:inherit">
+        📍 Location খুলুন
+      </a>`;
+
+  }else{
+
+    content =
+      escapeHtml(message.content || "");
+  }
+
+  const time =
+    new Date(message.created_at)
+      .toLocaleTimeString([],{
+        hour:"2-digit",
+        minute:"2-digit"
+      });
+
+  div.innerHTML =
+    `${content}<small>${time}</small>`;
+
+  $("messages").appendChild(div);
+}
 
 function scrollMessages(){
 
-  const box =
-    $("messages");
-
-  box.scrollTop =
-    box.scrollHeight;
-
+  $("messages").scrollTop =
+    $("messages").scrollHeight;
 }
 
+function subscribeToMessages(){
 
-function renderMessage(
-  message
-){
+  if(messageChannel){
 
-  const mine =
-    message.sender_id ===
-    currentUser.id;
-
-
-  const row =
-    document.createElement(
-      "div"
+    supabaseClient.removeChannel(
+      messageChannel
     );
-
-  row.className =
-    "messageRow " +
-    (
-      mine
-        ? "mine"
-        : ""
-    );
-
-
-  const bubble =
-    document.createElement(
-      "div"
-    );
-
-  bubble.className =
-    "messageBubble";
-
-
-  let body = "";
-
-
-  if(
-    message.message_type ===
-    "image"
-  ){
-
-    body = `
-      <img
-        class="messageImage"
-        src="${escapeHtml(
-          message.file_url
-        )}"
-        alt="image"
-      >
-    `;
-
-  }
-  else if(
-    message.message_type ===
-    "audio"
-  ){
-
-    body = `
-      <audio
-        class="messageAudio"
-        controls
-        src="${escapeHtml(
-          message.file_url
-        )}"
-      ></audio>
-    `;
-
-  }
-  else if(
-    message.message_type ===
-    "video"
-  ){
-
-    body = `
-      <video
-        controls
-        style="
-          max-width:230px;
-          border-radius:12px;
-        "
-        src="${escapeHtml(
-          message.file_url
-        )}"
-      ></video>
-    `;
-
-  }
-  else if(
-    message.message_type ===
-    "file"
-  ){
-
-    body = `
-      <a
-        class="messageFile"
-        href="${escapeHtml(
-          message.file_url
-        )}"
-        target="_blank"
-        rel="noopener"
-      >
-        📎
-        ${escapeHtml(
-          message.content ||
-          "File"
-        )}
-      </a>
-    `;
-
-  }
-  else if(
-    message.message_type ===
-    "location"
-  ){
-
-    body = `
-      <a
-        class="locationBtn"
-        href="${escapeHtml(
-          message.content
-        )}"
-        target="_blank"
-        rel="noopener"
-      >
-        📍 Location খুলুন
-      </a>
-    `;
-
-  }
-  else{
-
-    body =
-      escapeHtml(
-        message.content
-      )
-      .replace(
-        /\n/g,
-        "<br>"
-      );
-
   }
 
-
-  bubble.innerHTML =
-    `
-      <div>
-        ${body}
-      </div>
-
-      <div class="messageTime">
-        ${formatTime(
-          message.created_at
-        )}
-      </div>
-    `;
-
-
-  row.appendChild(
-    bubble
-  );
-
-
-  $("messages")
-    .appendChild(
-      row
-    );
-
-}
-
-
-function subscribeMessages(){
-
-  if(messageSubscription){
-
-    supabaseClient
-      .removeChannel(
-        messageSubscription
-      );
-
-  }
-
-
-  if(
-    !currentConversationId
-  ){
-    return;
-  }
-
-
-  const conversationId =
-    currentConversationId;
-
-
-  messageSubscription =
+  messageChannel =
     supabaseClient
       .channel(
-        "raztara-messages-" +
-        conversationId
+        "messages-" +
+        currentConversationId
       )
       .on(
         "postgres_changes",
@@ -3106,349 +1154,183 @@ function subscribeMessages(){
           schema:"public",
           table:"messages",
           filter:
-            "conversation_id=eq." +
-            conversationId
+            `conversation_id=eq.${currentConversationId}`
         },
-        payload=>{
+        payload => {
 
           renderMessage(
             payload.new
           );
 
           scrollMessages();
-
         }
       )
       .subscribe();
-
 }
 
-
 /* =========================
-   SEND TEXT
-   ========================= */
-
-$("sendBtn")
-  .addEventListener(
-    "click",
-    sendTextMessage
-  );
-
-
-$("messageInput")
-  .addEventListener(
-    "keydown",
-    event=>{
-
-      if(
-        event.key ===
-        "Enter" &&
-        !event.shiftKey
-      ){
-
-        event.preventDefault();
-
-        sendTextMessage();
-
-      }
-
-    }
-  );
-
-
-async function sendTextMessage(){
-
-  if(
-    !currentUser ||
-    !currentConversationId
-  ){
-    return;
-  }
-
-
-  const input =
-    $("messageInput");
-
-  const content =
-    input.value.trim();
-
-
-  if(!content){
-    return;
-  }
-
-
-  try{
-
-    input.value = "";
-
-
-    const {
-      error
-    } =
-    await supabaseClient
-      .from("messages")
-      .insert({
-        conversation_id:
-          currentConversationId,
-
-        sender_id:
-          currentUser.id,
-
-        content:
-          content,
-
-        message_type:
-          "text"
-      });
-
-
-    if(error){
-      throw error;
-    }
-
-  }catch(error){
-
-    console.error(
-      error
-    );
-
-    input.value =
-      content;
-
-    showToast(
-      "Message পাঠানো যায়নি"
-    );
-
-  }
-
-}
-
-
-/* =========================
-   FILE UPLOAD
-   ========================= */
-
-$("fileBtn")
-  .addEventListener(
-    "click",
-    ()=>{
-      $("fileInput")
-        .click();
-    }
-  );
-
-
-$("fileInput")
-  .addEventListener(
-    "change",
-    async event=>{
-
-      const file =
-        event.target.files[0];
-
-      if(!file){
-        return;
-      }
-
-
-      await uploadMessageFile(
-        file
-      );
-
-
-      event.target.value =
-        "";
-
-    }
-  );
-
-
-async function uploadMessageFile(
-  file
-){
-
-  if(
-    !currentUser ||
-    !currentConversationId
-  ){
-    return;
-  }
-
-
-  if(
-    file.size >
-    6 * 1024 * 1024
-  ){
-
-    showToast(
-      "File সর্বোচ্চ 6 MB হতে পারবে"
-    );
-
-    return;
-
-  }
-
-
-  try{
-
-    showToast(
-      "File upload হচ্ছে..."
-    );
-
-
-    const extension =
-      file.name
-        .split(".")
-        .pop()
-        .toLowerCase();
-
-
-    const path =
-      currentUser.id +
-      "/" +
-      Date.now() +
-      "-" +
-      Math.random()
-        .toString(36)
-        .slice(2) +
-      "." +
-      extension;
-
-
-    const {
-      error:uploadError
-    } =
-    await supabaseClient
-      .storage
-      .from("post-images")
-      .upload(
-        path,
-        file,
-        {
-          upsert:false,
-          contentType:
-            file.type
-        }
-      );
-
-
-    if(uploadError){
-      throw uploadError;
-    }
-
-
-    const {
-      data:urlData
-    } =
-    supabaseClient
-      .storage
-      .from("post-images")
-      .getPublicUrl(
-        path
-      );
-
-
-    const url =
-      urlData.publicUrl;
-
-
-    let messageType =
-      "file";
-
+SEND TEXT
+========================= */
+
+$("sendBtn").onclick =
+  sendText;
+
+$("messageInput").addEventListener(
+  "keydown",
+  e => {
 
     if(
-      file.type.startsWith(
-        "image/"
-      )
+      e.key === "Enter" &&
+      !e.shiftKey
     ){
 
-      messageType =
-        "image";
-
+      e.preventDefault();
+      sendText();
     }
-    else if(
-      file.type.startsWith(
-        "video/"
-      )
-    ){
+  }
+);
 
-      messageType =
-        "video";
+async function sendText(){
 
-    }
+  const content =
+    $("messageInput").value.trim();
 
+  if(!content ||
+     !currentConversationId) return;
 
-    const {
-      error:messageError
-    } =
+  $("messageInput").value = "";
+
+  const {error} =
     await supabaseClient
       .from("messages")
       .insert({
         conversation_id:
           currentConversationId,
-
         sender_id:
           currentUser.id,
-
-        content:
-          file.name,
-
-        message_type:
-          messageType,
-
-        file_url:
-          url
+        content,
+        message_type:"text"
       });
 
+  if(error){
 
-    if(messageError){
-      throw messageError;
-    }
+    console.error(error);
+    toast("Message পাঠানো যায়নি");
+  }
+}
 
+/* =========================
+FILE UPLOAD
+========================= */
 
-    showToast(
-      "File পাঠানো হয়েছে"
-    );
+$("fileBtn").onclick =
+  () => $("fileInput").click();
+
+$("fileInput").onchange =
+  async () => {
+
+    const file =
+      $("fileInput").files[0];
+
+    if(!file) return;
+
+    await uploadChatFile(file);
+
+    $("fileInput").value = "";
+  };
+
+async function uploadChatFile(file){
+
+  if(!currentConversationId) return;
+
+  if(file.size > 20 * 1024 * 1024){
+
+    toast("File সর্বোচ্চ 20 MB");
+    return;
+  }
+
+  try{
+
+    const ext =
+      file.name.includes(".")
+      ? file.name.split(".").pop()
+      : "bin";
+
+    const path =
+      `${currentUser.id}/${currentConversationId}/${crypto.randomUUID()}.${ext}`;
+
+    const {error:uploadError} =
+      await supabaseClient
+        .storage
+        .from("chat-files")
+        .upload(path,file,{
+          upsert:false
+        });
+
+    if(uploadError) throw uploadError;
+
+    const {data:signed,error:signedError} =
+      await supabaseClient
+        .storage
+        .from("chat-files")
+        .createSignedUrl(
+          path,
+          60 * 60 * 24 * 7
+        );
+
+    if(signedError) throw signedError;
+
+    let type = "file";
+
+    if(file.type.startsWith("image/"))
+      type = "image";
+
+    else if(file.type.startsWith("video/"))
+      type = "video";
+
+    const {error:messageError} =
+      await supabaseClient
+        .from("messages")
+        .insert({
+          conversation_id:
+            currentConversationId,
+          sender_id:
+            currentUser.id,
+          content:file.name,
+          message_type:type,
+          file_url:signed.signedUrl
+        });
+
+    if(messageError) throw messageError;
 
   }catch(error){
 
-    console.error(
-      "Upload error:",
-      error
-    );
-
-    showToast(
+    console.error(error);
+    toast(
       error.message ||
-      "File upload হয়নি"
+      "File পাঠানো যায়নি"
     );
-
   }
-
 }
 
-
 /* =========================
-   VOICE RECORDING
-   ========================= */
+VOICE MESSAGE
+========================= */
 
-$("recordBtn")
-  .addEventListener(
-    "click",
-    toggleRecording
-  );
-
+$("recordBtn").onclick =
+  toggleRecording;
 
 async function toggleRecording(){
 
-  if(isRecording){
+  if(recording){
 
-    stopRecording();
+    mediaRecorder.stop();
+    recording = false;
+
+    $("recordBtn").textContent = "🎙️";
 
     return;
-
   }
-
 
   try{
 
@@ -3458,1055 +1340,451 @@ async function toggleRecording(){
           audio:true
         });
 
-
     audioChunks = [];
 
-
     mediaRecorder =
-      new MediaRecorder(
-        stream
-      );
+      new MediaRecorder(stream);
 
+    mediaRecorder.ondataavailable =
+      e => {
 
-    mediaRecorder
-      .ondataavailable =
-      event=>{
-
-        if(
-          event.data &&
-          event.data.size
-        ){
-
-          audioChunks.push(
-            event.data
-          );
-
-        }
-
+        if(e.data.size > 0)
+          audioChunks.push(e.data);
       };
 
+    mediaRecorder.onstop =
+      async () => {
 
-    mediaRecorder
-      .onstop =
-      async ()=>{
-
-        stream
-          .getTracks()
-          .forEach(
-            track =>
-              track.stop()
-          );
-
+        stream.getTracks()
+          .forEach(t => t.stop());
 
         const blob =
           new Blob(
             audioChunks,
-            {
-              type:
-                "audio/webm"
-            }
+            {type:"audio/webm"}
           );
 
+        const file =
+          new File(
+            [blob],
+            `voice-${Date.now()}.webm`,
+            {type:"audio/webm"}
+          );
 
-        await uploadVoice(
-          blob
-        );
-
+        await uploadChatFile(file);
       };
-
 
     mediaRecorder.start();
 
-    isRecording =
-      true;
+    recording = true;
 
-    $("recordBtn")
-      .textContent =
+    $("recordBtn").textContent =
       "⏹️";
 
-    showToast(
-      "Recording চলছে..."
-    );
+    toast("Voice recording চলছে");
 
   }catch(error){
 
-    console.error(
-      error
-    );
-
-    showToast(
-      "Microphone permission দিন"
-    );
-
+    console.error(error);
+    toast("Microphone permission দিন");
   }
-
 }
-
-
-function stopRecording(){
-
-  if(
-    mediaRecorder &&
-    isRecording
-  ){
-
-    mediaRecorder.stop();
-
-    isRecording =
-      false;
-
-    $("recordBtn")
-      .textContent =
-      "🎙️";
-
-  }
-
-}
-
-
-async function uploadVoice(
-  blob
-){
-
-  try{
-
-    const path =
-      currentUser.id +
-      "/voice-" +
-      Date.now() +
-      ".webm";
-
-
-    const {
-      error:uploadError
-    } =
-    await supabaseClient
-      .storage
-      .from("post-images")
-      .upload(
-        path,
-        blob,
-        {
-          upsert:false,
-          contentType:
-            "audio/webm"
-        }
-      );
-
-
-    if(uploadError){
-      throw uploadError;
-    }
-
-
-    const {
-      data
-    } =
-    supabaseClient
-      .storage
-      .from("post-images")
-      .getPublicUrl(
-        path
-      );
-
-
-    const {
-      error
-    } =
-    await supabaseClient
-      .from("messages")
-      .insert({
-        conversation_id:
-          currentConversationId,
-
-        sender_id:
-          currentUser.id,
-
-        content:
-          "Voice message",
-
-        message_type:
-          "audio",
-
-        file_url:
-          data.publicUrl
-      });
-
-
-    if(error){
-      throw error;
-    }
-
-
-    showToast(
-      "Voice message পাঠানো হয়েছে"
-    );
-
-  }catch(error){
-
-    console.error(
-      error
-    );
-
-    showToast(
-      error.message ||
-      "Voice পাঠানো যায়নি"
-    );
-
-  }
-
-}
-
 
 /* =========================
-   LOCATION
-   ========================= */
+LOCATION
+========================= */
 
-$("locationBtn")
-  .addEventListener(
-    "click",
-    shareLocation
-  );
-
+$("locationBtn").onclick =
+  shareLocation;
 
 function shareLocation(){
 
-  if(
-    !navigator.geolocation
-  ){
+  if(!navigator.geolocation){
 
-    showToast(
-      "Location support নেই"
-    );
-
+    toast("Location support নেই");
     return;
-
   }
 
+  navigator.geolocation.getCurrentPosition(
+    async position => {
 
-  navigator.geolocation
-    .getCurrentPosition(
-      async position=>{
+      const lat =
+        position.coords.latitude;
 
-        const lat =
-          position.coords.latitude;
+      const lng =
+        position.coords.longitude;
 
-        const lng =
-          position.coords.longitude;
+      const url =
+        `https://www.google.com/maps?q=${lat},${lng}`;
 
+      const {error} =
+        await supabaseClient
+          .from("messages")
+          .insert({
+            conversation_id:
+              currentConversationId,
+            sender_id:
+              currentUser.id,
+            content:
+              `${lat}, ${lng}`,
+            message_type:"location",
+            file_url:url
+          });
 
-        const url =
-          "https://www.google.com/maps?q=" +
-          lat +
-          "," +
-          lng;
+      if(error){
 
-
-        try{
-
-          const {
-            error
-          } =
-          await supabaseClient
-            .from("messages")
-            .insert({
-              conversation_id:
-                currentConversationId,
-
-              sender_id:
-                currentUser.id,
-
-              content:
-                url,
-
-              message_type:
-                "location"
-            });
-
-
-          if(error){
-            throw error;
-          }
-
-
-        }catch(error){
-
-          console.error(
-            error
-          );
-
-          showToast(
-            "Location পাঠানো যায়নি"
-          );
-
-        }
-
-      },
-      ()=>{
-        showToast(
-          "Location permission দিন"
-        );
+        console.error(error);
+        toast("Location পাঠানো যায়নি");
       }
-    );
+    },
+    () => {
 
+      toast("Location permission দিন");
+    },
+    {
+      enableHighAccuracy:true,
+      timeout:10000
+    }
+  );
 }
 
-
 /* =========================
-   EDIT PROFILE
-   ========================= */
+REAL CALL HISTORY
+========================= */
 
-$("editProfileBtn")
-  .addEventListener(
-    "click",
-    ()=>{
+async function loadCallsList(){
 
-      if(!currentProfile){
-        return;
-      }
+  if(!currentUser) return;
 
+  const {data,error} =
+    await supabaseClient
+      .from("calls")
+      .select("*")
+      .or(
+        `caller_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`
+      )
+      .order(
+        "started_at",
+        {ascending:false}
+      )
+      .limit(100);
 
-      $("editFullName")
-        .value =
-        currentProfile.full_name ||
-        "";
+  if(error){
 
-      $("editUsername")
-        .value =
-        currentProfile.username ||
-        "";
+    console.error(error);
 
-      $("editBio")
-        .value =
-        currentProfile.bio ||
-        "";
+    $("callsList").innerHTML =
+      `<div class="empty">
+        Call history load করতে সমস্যা হয়েছে
+      </div>`;
 
-      $("profileModal")
-        .classList.remove(
-          "hidden"
-        );
-
-    }
-  );
-
-
-$("cancelProfileBtn")
-  .addEventListener(
-    "click",
-    ()=>{
-      $("profileModal")
-        .classList.add(
-          "hidden"
-        );
-    }
-  );
-
-
-$("saveProfileBtn")
-  .addEventListener(
-    "click",
-    saveProfile
-  );
-
-
-async function saveProfile(){
-
-  if(!currentUser){
     return;
   }
 
+  if(!data?.length){
 
-  const fullName =
-    $("editFullName")
-      .value
-      .trim();
+    $("callsList").innerHTML =
+      `<div class="empty">
+        এখনো কোনো call history নেই
+      </div>`;
 
-  const username =
-    $("editUsername")
-      .value
-      .trim()
-      .toLowerCase();
+    return;
+  }
 
-  const bio =
-    $("editBio")
-      .value
-      .trim();
+  const otherIds =
+    [...new Set(
+      data.map(call =>
+        call.caller_id === currentUser.id
+          ? call.receiver_id
+          : call.caller_id
+      )
+    )];
 
+  let profiles = [];
 
-  if(!fullName || !username){
+  if(otherIds.length){
 
-    showToast(
-      "নাম ও Username দিন"
+    const result =
+      await supabaseClient
+        .from("profiles")
+        .select("*")
+        .in("id",otherIds);
+
+    profiles =
+      result.data || [];
+  }
+
+  const map =
+    new Map(
+      profiles.map(x => [x.id,x])
     );
 
-    return;
+  $("callsList").innerHTML =
+    data.map(call => {
 
+      const otherId =
+        call.caller_id === currentUser.id
+          ? call.receiver_id
+          : call.caller_id;
+
+      const user =
+        map.get(otherId);
+
+      const outgoing =
+        call.caller_id === currentUser.id;
+
+      const icon =
+        call.call_type === "video"
+          ? "🎥"
+          : "📞";
+
+      const statusText =
+        call.status === "answered"
+          ? "Answered"
+          : call.status === "missed"
+          ? "Missed"
+          : call.status === "rejected"
+          ? "Rejected"
+          : call.status === "busy"
+          ? "Busy"
+          : call.status === "ended"
+          ? "Ended"
+          : call.status;
+
+      const date =
+        new Date(call.started_at)
+          .toLocaleString();
+
+      return `
+        <div class="callItem">
+
+          <div class="callIcon">${icon}</div>
+
+          <div class="callText">
+
+            <strong>
+              ${escapeHtml(
+                user?.full_name || "Unknown user"
+              )}
+            </strong>
+
+            <small>
+              ${outgoing ? "↗ Outgoing" : "↙ Incoming"}
+              · ${date}
+            </small>
+
+            <div class="callStatus">
+              ${statusText}
+              ${
+                call.duration_seconds
+                ? ` · ${formatDuration(call.duration_seconds)}`
+                : ""
+              }
+            </div>
+
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+}
+
+function formatDuration(seconds){
+
+  seconds =
+    Number(seconds) || 0;
+
+  const m =
+    Math.floor(seconds / 60);
+
+  const s =
+    seconds % 60;
+
+  return `${m}:${String(s).padStart(2,"0")}`;
+}
+
+function subscribeToCalls(){
+
+  if(callsChannel){
+
+    supabaseClient.removeChannel(
+      callsChannel
+    );
   }
 
-
-  try{
-
-    const {
-      data,
-      error
-    } =
-    await supabaseClient
-      .from("profiles")
-      .update({
-        full_name:
-          fullName,
-
-        username:
-          username,
-
-        bio:
-          bio,
-
-        updated_at:
-          new Date()
-            .toISOString()
-      })
-      .eq(
-        "id",
+  callsChannel =
+    supabaseClient
+      .channel(
+        "call-history-" +
         currentUser.id
       )
-      .select()
-      .single();
+      .on(
+        "postgres_changes",
+        {
+          event:"*",
+          schema:"public",
+          table:"calls"
+        },
+        payload => {
 
+          const row =
+            payload.new || payload.old;
 
-    if(error){
-      throw error;
-    }
+          if(
+            row &&
+            (
+              row.caller_id === currentUser.id ||
+              row.receiver_id === currentUser.id
+            )
+          ){
 
-
-    currentProfile =
-      data;
-
-    renderProfile();
-
-
-    $("profileModal")
-      .classList.add(
-        "hidden"
-      );
-
-
-    showToast(
-      "Profile update হয়েছে"
-    );
-
-  }catch(error){
-
-    console.error(
-      error
-    );
-
-    showToast(
-      error.message ||
-      "Profile update হয়নি"
-    );
-
-  }
-
+            loadCallsList();
+          }
+        }
+      )
+      .subscribe();
 }
 
+/* =========================
+LOGOUT
+========================= */
+
+$("logoutBtn").onclick =
+  async () => {
+
+    await cleanupCall();
+
+    if(callChannel)
+      await supabaseClient.removeChannel(callChannel);
+
+    if(callsChannel)
+      await supabaseClient.removeChannel(callsChannel);
+
+    await supabaseClient.auth.signOut();
+
+    location.reload();
+  };
 
 /* =========================
-   LOGOUT
-   ========================= */
+INITIALIZE
+========================= */
 
-$("logoutBtn")
-  .addEventListener(
-    "click",
-    async ()=>{
+async function initializeApp(){
+
+  $("authScreen").classList.add("hidden");
+  $("app").classList.remove("hidden");
+
+  await loadProfile();
+
+  await loadChatList();
+
+  await loadCallsList();
+
+  subscribeToCalls();
+
+  await startCallRealtime();
+}
+
+async function checkSession(){
+
+  const {data} =
+    await supabaseClient.auth.getSession();
+
+  if(data.session){
+
+    currentUser =
+      data.session.user;
+
+    try{
+
+      await initializeApp();
+
+    }catch(error){
+
+      console.error(error);
+      toast(error.message);
+    }
+  }
+}
+
+supabaseClient.auth.onAuthStateChange(
+  async (_event,session) => {
+
+    if(session && !currentUser){
+
+      currentUser =
+        session.user;
 
       try{
 
-        if(
-          messageSubscription
-        ){
-
-          await supabaseClient
-            .removeChannel(
-              messageSubscription
-            );
-
-          messageSubscription =
-            null;
-
-        }
-
-
-        if(
-          chatListSubscription
-        ){
-
-          await supabaseClient
-            .removeChannel(
-              chatListSubscription
-            );
-
-          chatListSubscription =
-            null;
-
-        }
-
-
-        await supabaseClient
-          .auth
-          .signOut();
-
+        await initializeApp();
 
       }catch(error){
 
-        console.error(
-          error
-        );
-
+        console.error(error);
       }
-
     }
-  );
-
-
-/* =========================
-   START
-   ========================= */
+  }
+);
 
 checkSession();
-  /* =========================================================
-   RAZTARA
-   PART 3
-   AUDIO / VIDEO CALL
-   WEBRTC + SUPABASE REALTIME
-   ========================================================= */
+/* ==========================================
+REAL WEBRTC AUDIO + VIDEO CALL SYSTEM
+========================================== */
 
+let peerConnection = null;
 
-/* =========================
-   CALL GLOBALS
-   ========================= */
-
-let callPeer = null;
-
-let callLocalStream = null;
-
-let callRemoteStream = null;
-
-let callConversationId = null;
-
-let callMode = null;
+let localStream = null;
+let remoteStream = null;
 
 let callState = "idle";
 
-let callSubscription = null;
+let callConversationId = null;
+let currentCallId = null;
 
-let pendingCall = null;
-
+let incomingOffer = null;
 let pendingIceCandidates = [];
 
-
-/* =========================
-   STUN
-   ========================= */
+let callStartedAt = null;
+let callRingTimer = null;
 
 const rtcConfiguration = {
 
   iceServers:[
     {
-      urls:
-        "stun:stun.l.google.com:19302"
-    },
-    {
-      urls:
+      urls:[
+        "stun:stun.l.google.com:19302",
         "stun:stun1.l.google.com:19302"
+      ]
     }
   ]
-
 };
 
-
 /* =========================
-   CALL BUTTONS
-   ========================= */
+SEND SIGNAL
+========================= */
 
-$("audioCallBtn")
-  .addEventListener(
-    "click",
-    ()=>{
-      startRaztaraCall(
-        "audio"
-      );
-    }
-  );
-
-
-$("videoCallBtn")
-  .addEventListener(
-    "click",
-    ()=>{
-      startRaztaraCall(
-        "video"
-      );
-    }
-  );
-
-
-$("acceptCallBtn")
-  .addEventListener(
-    "click",
-    acceptRaztaraCall
-  );
-
-
-$("rejectCallBtn")
-  .addEventListener(
-    "click",
-    rejectRaztaraCall
-  );
-
-
-$("endCallBtn")
-  .addEventListener(
-    "click",
-    endRaztaraCall
-  );
-
-
-/* =========================
-   START CALL
-   ========================= */
-
-async function startRaztaraCall(
-  mode
+async function sendCallSignal(
+  conversationId,
+  type,
+  payload={}
 ){
 
-  if(
-    !currentUser ||
-    !currentChatUserId ||
-    !currentConversationId
-  ){
-
-    showToast(
-      "আগে একটি chat খুলুন"
-    );
-
-    return;
-
-  }
-
-
-  if(
-    callState !==
-    "idle"
-  ){
-
-    showToast(
-      "একটি call ইতিমধ্যে চলছে"
-    );
-
-    return;
-
-  }
-
-
-  try{
-
-    callMode =
-      mode;
-
-    callConversationId =
-      currentConversationId;
-
-    callState =
-      "calling";
-
-
-    const constraints =
-      mode === "video"
-        ? {
-            audio:true,
-            video:true
-          }
-        : {
-            audio:true,
-            video:false
-          };
-
-
-    callLocalStream =
-      await navigator
-        .mediaDevices
-        .getUserMedia(
-          constraints
-        );
-
-
-    showRaztaraCallUI(
-      "outgoing"
-    );
-
-
-    await createRaztaraPeer();
-
-
-    await startRaztaraCallSignaling();
-
-
-    callPeer =
-      createPeerObject();
-
-
-    /*
-      createPeerObject আবার local stream
-      ও ICE handler setup করবে।
-    */
-
-    callPeer =
-      callPeer;
-
-
-    const offer =
-      await callPeer
-        .createOffer();
-
-
-    await callPeer
-      .setLocalDescription(
-        offer
-      );
-
-
-    await sendRaztaraCallSignal(
-      "offer",
-      {
-        sdp:
-          offer.sdp,
-
-        type:
-          offer.type,
-
-        mode:
-          mode
-      }
-    );
-
-
-    $("callStatus")
-      .textContent =
-      "Calling...";
-
-
-  }catch(error){
-
-    console.error(
-      "Start call error:",
-      error
-    );
-
-    showToast(
-      error.message ||
-      "Call শুরু করা যায়নি"
-    );
-
-    await cleanupCall();
-
-  }
-
-}
-
-
-/* =========================
-   PEER CREATION
-   ========================= */
-
-async function createRaztaraPeer(){
-
-  if(callPeer){
-
-    try{
-      callPeer.close();
-    }catch(e){}
-
-  }
-
-
-  callPeer =
-    createPeerObject();
-
-  return callPeer;
-
-}
-
-
-function createPeerObject(){
-
-  const peer =
-    new RTCPeerConnection(
-      rtcConfiguration
-    );
-
-
-  callRemoteStream =
-    new MediaStream();
-
-
-  $("callRemoteVideo")
-    .srcObject =
-    callRemoteStream;
-
-
-  if(callLocalStream){
-
-    $("callLocalVideo")
-      .srcObject =
-      callLocalStream;
-
-
-    callLocalStream
-      .getTracks()
-      .forEach(
-        track=>{
-
-          peer.addTrack(
-            track,
-            callLocalStream
-          );
-
-        }
-      );
-
-  }
-
-
-  peer.ontrack =
-    event=>{
-
-      event.streams[0]
-        ?.getTracks()
-        .forEach(
-          track=>{
-
-            callRemoteStream
-              .addTrack(
-                track
-              );
-
-          }
-        );
-
-
-      $("callRemoteVideo")
-        .srcObject =
-        callRemoteStream;
-
-    };
-
-
-  peer.onicecandidate =
-    async event=>{
-
-      if(
-        event.candidate &&
-        callConversationId
-      ){
-
-        try{
-
-          await sendRaztaraCallSignal(
-            "ice",
-            {
-              candidate:
-                event.candidate
-            }
-          );
-
-        }catch(error){
-
-          console.error(
-            "ICE send error:",
-            error
-          );
-
-        }
-
-      }
-
-    };
-
-
-  peer.onconnectionstatechange =
-    ()=>{
-
-      const state =
-        peer.connectionState;
-
-
-      if(
-        state ===
-        "connected"
-      ){
-
-        callState =
-          "connected";
-
-        $("callStatus")
-          .textContent =
-          "Connected";
-
-      }
-
-
-      if(
-        state ===
-        "failed"
-      ){
-
-        showToast(
-          "Call connection failed"
-        );
-
-        cleanupCall();
-
-      }
-
-
-      if(
-        state ===
-        "disconnected"
-      ){
-
-        $("callStatus")
-          .textContent =
-          "Disconnected";
-
-      }
-
-    };
-
-
-  return peer;
-
-}
-
-
-/* =========================
-   SIGNALING SUBSCRIPTION
-   ========================= */
-
-async function startRaztaraCallSignaling(){
-
-  if(callSubscription){
-
-    try{
-
-      await supabaseClient
-        .removeChannel(
-          callSubscription
-        );
-
-    }catch(e){}
-
-    callSubscription =
-      null;
-
-  }
-
-
-  if(
-    !callConversationId
-  ){
-    return;
-  }
-
-
-  const conversationId =
-    callConversationId;
-
-
-  callSubscription =
-    supabaseClient
-      .channel(
-        "raztara-call-" +
-        conversationId +
-        "-" +
-        Date.now()
-      )
-      .on(
-        "postgres_changes",
-        {
-          event:"INSERT",
-          schema:"public",
-          table:
-            "call_signals",
-
-          filter:
-            "conversation_id=eq." +
-            conversationId
-        },
-        async payload=>{
-
-          if(
-            !payload.new
-          ){
-            return;
-          }
-
-
-          if(
-            payload.new.sender_id ===
-            currentUser.id
-          ){
-            return;
-          }
-
-
-          await handleRaztaraCallSignal(
-            payload.new
-          );
-
-        }
-      )
-      .subscribe();
-
-}
-
-
-/* =========================
-   SEND SIGNAL
-   ========================= */
-
-async function sendRaztaraCallSignal(
-  signalType,
-  payload
-){
-
-  if(
-    !currentUser ||
-    !callConversationId
-  ){
-    return;
-  }
-
-
-  const {
-    error
-  } =
-  await supabaseClient
-    .from("call_signals")
-    .insert({
-      conversation_id:
-        callConversationId,
-
-      sender_id:
-        currentUser.id,
-
-      signal_type:
-        signalType,
-
-      payload:
-        payload || {}
-    });
-
+  if(!currentUser) return;
+
+  const {error} =
+    await supabaseClient
+      .from("call_signals")
+      .insert({
+        conversation_id:
+          conversationId,
+        sender_id:
+          currentUser.id,
+        signal_type:
+          type,
+        payload
+      });
 
   if(error){
 
@@ -4515,916 +1793,896 @@ async function sendRaztaraCallSignal(
       error
     );
 
-    throw error;
-
+    toast(
+      "Call connection সমস্যা"
+    );
   }
-
 }
 
-
 /* =========================
-   RECEIVE SIGNAL
-   ========================= */
+CREATE PEER
+========================= */
 
-async function handleRaztaraCallSignal(
-  signal
-){
+function createPeer(){
 
-  if(
-    !signal ||
-    !signal.signal_type
-  ){
-    return;
-  }
-
-
-  /*
-    Incoming offer
-  */
-
-  if(
-    signal.signal_type ===
-    "offer"
-  ){
-
-    if(
-      callState !==
-      "idle"
-    ){
-
-      /*
-        আমি already call-এ থাকলে busy পাঠাই
-      */
-
-      try{
-
-        const oldConversation =
-          callConversationId;
-
-        callConversationId =
-          signal.conversation_id;
-
-        await sendRaztaraCallSignal(
-          "busy",
-          {}
-        );
-
-        callConversationId =
-          oldConversation;
-
-      }catch(error){
-
-        console.error(
-          error
-        );
-
-      }
-
-      return;
-
-    }
-
-
-    await receiveRaztaraOffer(
-      signal
+  peerConnection =
+    new RTCPeerConnection(
+      rtcConfiguration
     );
 
-    return;
+  remoteStream =
+    new MediaStream();
 
-  }
+  $("callRemoteVideo").srcObject =
+    remoteStream;
 
+  peerConnection.ontrack =
+    event => {
 
-  /*
-    Answer
-  */
+      event.streams[0]
+        .getTracks()
+        .forEach(track => {
 
-  if(
-    signal.signal_type ===
-    "answer"
-  ){
+          remoteStream.addTrack(track);
 
-    if(
-      !callPeer
-    ){
-      return;
-    }
-
-
-    try{
-
-      const description =
-        new RTCSessionDescription({
-          type:
-            signal.payload.type,
-
-          sdp:
-            signal.payload.sdp
         });
 
+      $("callRemoteVideo").play()
+        .catch(()=>{});
+    };
 
-      await callPeer
-        .setRemoteDescription(
-          description
+  peerConnection.onicecandidate =
+    async event => {
+
+      if(
+        event.candidate &&
+        callConversationId
+      ){
+
+        await sendCallSignal(
+          callConversationId,
+          "ice",
+          {
+            candidate:
+              event.candidate.toJSON()
+          }
         );
+      }
+    };
 
+  peerConnection.onconnectionstatechange =
+    () => {
 
-      callState =
-        "connected";
+      const state =
+        peerConnection?.connectionState;
 
-      $("callStatus")
-        .textContent =
-        "Connected";
+      if(state === "connected"){
 
-      await flushPendingIce();
-
-    }catch(error){
-
-      console.error(
-        "Answer error:",
-        error
-      );
-
-    }
-
-    return;
-
-  }
-
-
-  /*
-    ICE
-  */
-
-  if(
-    signal.signal_type ===
-    "ice"
-  ){
-
-    const candidate =
-      signal.payload
-        ?.candidate;
-
-
-    if(!candidate){
-      return;
-    }
-
-
-    if(
-      callPeer &&
-      callPeer.remoteDescription
-    ){
-
-      try{
-
-        await callPeer
-          .addIceCandidate(
-            new RTCIceCandidate(
-              candidate
-            )
-          );
-
-      }catch(error){
-
-        console.error(
-          "ICE error:",
-          error
-        );
-
+        $("callStatus").textContent =
+          "Connected";
       }
 
-    }else{
+      if(
+        state === "failed" ||
+        state === "disconnected"
+      ){
 
-      pendingIceCandidates
-        .push(
-          candidate
+        endCall("failed");
+      }
+    };
+
+  if(localStream){
+
+    localStream
+      .getTracks()
+      .forEach(track => {
+
+        peerConnection.addTrack(
+          track,
+          localStream
         );
-
-    }
-
-    return;
-
+      });
   }
-
-
-  /*
-    Busy
-  */
-
-  if(
-    signal.signal_type ===
-    "busy"
-  ){
-
-    $("callStatus")
-      .textContent =
-      "User is busy";
-
-    showToast(
-      "User এখন অন্য call-এ আছেন"
-    );
-
-    setTimeout(
-      ()=>{
-        cleanupCall();
-      },
-      1200
-    );
-
-    return;
-
-  }
-
-
-  /*
-    Reject
-  */
-
-  if(
-    signal.signal_type ===
-    "reject"
-  ){
-
-    $("callStatus")
-      .textContent =
-      "Call rejected";
-
-    showToast(
-      "Call reject করা হয়েছে"
-    );
-
-    setTimeout(
-      ()=>{
-        cleanupCall();
-      },
-      1000
-    );
-
-    return;
-
-  }
-
-
-  /*
-    Hangup
-  */
-
-  if(
-    signal.signal_type ===
-    "hangup"
-  ){
-
-    showToast(
-      "Call শেষ হয়েছে"
-    );
-
-    await cleanupCall();
-
-    return;
-
-  }
-
 }
 
+/* =========================
+GET MICROPHONE/CAMERA
+========================= */
+
+async function getCallMedia(
+  mode
+){
+
+  const constraints =
+    mode === "video"
+      ? {
+          audio:true,
+          video:{
+            facingMode:"user",
+            width:{ideal:1280},
+            height:{ideal:720}
+          }
+        }
+      : {
+          audio:true,
+          video:false
+        };
+
+  localStream =
+    await navigator.mediaDevices
+      .getUserMedia(constraints);
+
+  $("callLocalVideo").srcObject =
+    localStream;
+
+  $("callLocalVideo").style.display =
+    mode === "video"
+      ? "block"
+      : "none";
+}
 
 /* =========================
-   RECEIVE OFFER
-   ========================= */
+OPEN CALL UI
+========================= */
 
-async function receiveRaztaraOffer(
-  signal
+function openCallUI(
+  mode,
+  name,
+  avatar,
+  incoming=false
 ){
+
+  $("callOverlay").style.display =
+    "flex";
+
+  setAvatar(
+    $("callIncomingAvatar"),
+    avatar,
+    name
+  );
+
+  $("callTitle").textContent =
+    incoming
+      ? `${name} আপনাকে call করছেন`
+      : `${name} কে call করা হচ্ছে`;
+
+  $("callStatus").textContent =
+    incoming
+      ? "Incoming call..."
+      : "Calling...";
+
+  $("acceptCallBtn").style.display =
+    incoming ? "block" : "none";
+
+  $("rejectCallBtn").style.display =
+    incoming ? "block" : "none";
+
+  $("endCallBtn").style.display =
+    incoming ? "none" : "block";
+
+  $("callRemoteVideo").style.display =
+    mode === "video"
+      ? "block"
+      : "block";
+}
+
+/* =========================
+START CALL
+========================= */
+
+async function startCall(mode){
+
+  if(
+    !currentChatUser ||
+    !currentConversationId
+  ){
+
+    toast("আগে একটি chat খুলুন");
+    return;
+  }
+
+  if(callState !== "idle"){
+
+    toast("আপনি ইতিমধ্যে একটি call-এ আছেন");
+    return;
+  }
 
   try{
 
-    pendingCall =
-      signal;
-
+    callState = "calling";
 
     callConversationId =
-      signal.conversation_id;
+      currentConversationId;
 
+    callStartedAt =
+      new Date();
 
-    callMode =
-      signal.payload?.mode ||
-      "audio";
+    await getCallMedia(mode);
 
+    /* CREATE REAL CALL HISTORY */
 
-    callState =
-      "incoming";
+    const {data:call,error:callError} =
+      await supabaseClient
+        .from("calls")
+        .insert({
+          conversation_id:
+            callConversationId,
+          caller_id:
+            currentUser.id,
+          receiver_id:
+            currentChatUser.id,
+          call_type:
+            mode,
+          status:"ringing"
+        })
+        .select()
+        .single();
 
+    if(callError) throw callError;
 
-    const senderProfile =
-      await getProfileById(
-        signal.sender_id
-      );
+    currentCallId =
+      call.id;
 
-
-    pendingCall.senderProfile =
-      senderProfile;
-
-
-    showRaztaraCallUI(
-      "incoming",
-      senderProfile
+    openCallUI(
+      mode,
+      currentChatUser.full_name,
+      currentChatUser.avatar_url,
+      false
     );
 
+    createPeer();
 
-    await startRaztaraCallSignaling();
+    const offer =
+      await peerConnection
+        .createOffer();
 
+    await peerConnection
+      .setLocalDescription(offer);
+
+    await sendCallSignal(
+      callConversationId,
+      "offer",
+      {
+        sdp:offer,
+        mode,
+        call_id:
+          currentCallId
+      }
+    );
+
+    /* 30 SECOND RING TIMEOUT */
+
+    clearTimeout(callRingTimer);
+
+    callRingTimer =
+      setTimeout(
+        async () => {
+
+          if(callState === "calling"){
+
+            await updateCallStatus(
+              "missed"
+            );
+
+            await sendCallSignal(
+              callConversationId,
+              "hangup",
+              {
+                call_id:
+                  currentCallId
+              }
+            );
+
+            await cleanupCall();
+
+            toast("Call unanswered");
+
+          }
+
+        },
+        30000
+      );
 
   }catch(error){
 
-    console.error(
-      "Receive offer error:",
-      error
+    console.error(error);
+
+    toast(
+      error.message ||
+      "Call শুরু করা যায়নি"
     );
 
     await cleanupCall();
-
   }
-
 }
 
-
 /* =========================
-   ACCEPT
-   ========================= */
+ACCEPT INCOMING CALL
+========================= */
 
-async function acceptRaztaraCall(){
+async function acceptIncomingCall(){
 
   if(
-    !pendingCall
-  ){
-    return;
-  }
-
+    !incomingOffer ||
+    !callConversationId
+  ) return;
 
   try{
 
-    const signal =
-      pendingCall;
+    const mode =
+      incomingOffer.mode || "audio";
 
+    callState = "connected";
 
-    callMode =
-      signal.payload?.mode ||
-      "audio";
+    $("acceptCallBtn").style.display =
+      "none";
 
+    $("rejectCallBtn").style.display =
+      "none";
 
-    const constraints =
-      callMode === "video"
-        ? {
-            audio:true,
-            video:true
-          }
-        : {
-            audio:true,
-            video:false
-          };
+    $("endCallBtn").style.display =
+      "block";
 
+    await getCallMedia(mode);
 
-    callLocalStream =
-      await navigator
-        .mediaDevices
-        .getUserMedia(
-          constraints
-        );
+    createPeer();
 
-
-    $("acceptCallBtn")
-      .classList.add(
-        "hidden"
-      );
-
-    $("rejectCallBtn")
-      .classList.add(
-        "hidden"
-      );
-
-    $("endCallBtn")
-      .classList.remove(
-        "hidden"
-      );
-
-
-    await createRaztaraPeer();
-
-
-    const remoteDescription =
-      new RTCSessionDescription({
-        type:
-          signal.payload.type,
-
-        sdp:
-          signal.payload.sdp
-      });
-
-
-    await callPeer
+    await peerConnection
       .setRemoteDescription(
-        remoteDescription
+        new RTCSessionDescription(
+          incomingOffer.sdp
+        )
       );
-
 
     await flushPendingIce();
 
-
     const answer =
-      await callPeer
+      await peerConnection
         .createAnswer();
 
+    await peerConnection
+      .setLocalDescription(answer);
 
-    await callPeer
-      .setLocalDescription(
-        answer
-      );
-
-
-    callState =
-      "connected";
-
-
-    $("callStatus")
-      .textContent =
-      "Connecting...";
-
-
-    await sendRaztaraCallSignal(
+    await sendCallSignal(
+      callConversationId,
       "answer",
       {
-        type:
-          answer.type,
-
-        sdp:
-          answer.sdp
+        sdp:answer,
+        call_id:
+          currentCallId
       }
     );
 
+    await updateCallStatus(
+      "answered"
+    );
 
-    pendingCall =
-      null;
-
+    $("callStatus").textContent =
+      "Connected";
 
   }catch(error){
 
-    console.error(
-      "Accept call error:",
-      error
-    );
+    console.error(error);
 
-    showToast(
+    toast(
       error.message ||
       "Call accept করা যায়নি"
     );
 
     await cleanupCall();
-
   }
-
 }
 
+/* =========================
+REJECT
+========================= */
+
+async function rejectIncomingCall(){
+
+  if(callConversationId){
+
+    await sendCallSignal(
+      callConversationId,
+      "reject",
+      {
+        call_id:
+          currentCallId
+      }
+    );
+
+    await updateCallStatus(
+      "rejected"
+    );
+  }
+
+  await cleanupCall();
+}
 
 /* =========================
-   REJECT
-   ========================= */
+END CALL
+========================= */
 
-async function rejectRaztaraCall(){
+async function endCall(
+  status="ended"
+){
 
-  if(
-    !pendingCall
-  ){
+  if(callState === "idle"){
+
     await cleanupCall();
     return;
   }
 
+  const conversationId =
+    callConversationId;
 
-  try{
+  const callId =
+    currentCallId;
 
-    callConversationId =
-      pendingCall
-        .conversation_id;
+  if(conversationId){
 
-
-    await sendRaztaraCallSignal(
-      "reject",
-      {}
+    await sendCallSignal(
+      conversationId,
+      "hangup",
+      {
+        call_id:callId
+      }
     );
-
-  }catch(error){
-
-    console.error(
-      error
-    );
-
   }
 
-
-  pendingCall =
-    null;
-
+  await updateCallStatus(status);
 
   await cleanupCall();
-
 }
 
+/* =========================
+UPDATE CALL HISTORY
+========================= */
+
+async function updateCallStatus(
+  status
+){
+
+  if(!currentCallId) return;
+
+  const update = {
+    status
+  };
+
+  if(status === "answered"){
+
+    update.answered_at =
+      new Date().toISOString();
+
+  }
+
+  if(
+    status === "ended" ||
+    status === "missed" ||
+    status === "rejected" ||
+    status === "busy" ||
+    status === "failed"
+  ){
+
+    update.ended_at =
+      new Date().toISOString();
+
+    if(callStartedAt){
+
+      update.duration_seconds =
+        Math.max(
+          0,
+          Math.floor(
+            (
+              Date.now() -
+              callStartedAt.getTime()
+            ) / 1000
+          )
+        );
+    }
+  }
+
+  const {error} =
+    await supabaseClient
+      .from("calls")
+      .update(update)
+      .eq("id",currentCallId);
+
+  if(error){
+
+    console.error(
+      "Call history update:",
+      error
+    );
+  }
+
+  loadCallsList();
+}
 
 /* =========================
-   ICE QUEUE
-   ========================= */
+ICE QUEUE
+========================= */
 
-async function flushPendingIce(){
-
-  if(
-    !callPeer ||
-    !callPeer.remoteDescription
-  ){
-    return;
-  }
-
+async function addPendingIce(
+  candidate
+){
 
   if(
-    !pendingIceCandidates.length
-  ){
-    return;
-  }
-
-
-  const list =
-    [
-      ...pendingIceCandidates
-    ];
-
-
-  pendingIceCandidates =
-    [];
-
-
-  for(
-    const candidate of list
+    peerConnection &&
+    peerConnection.remoteDescription
   ){
 
     try{
 
-      await callPeer
+      await peerConnection
         .addIceCandidate(
-          new RTCIceCandidate(
-            candidate
-          )
+          new RTCIceCandidate(candidate)
         );
 
     }catch(error){
 
       console.error(
-        "Queued ICE error:",
+        "ICE error:",
         error
       );
-
     }
-
-  }
-
-}
-
-
-/* =========================
-   CALL UI
-   ========================= */
-
-function showRaztaraCallUI(
-  type,
-  profile=null
-){
-
-  const overlay =
-    $("callOverlay");
-
-
-  overlay.classList
-    .add("show");
-
-
-  const name =
-    profile?.full_name ||
-    profile?.username ||
-    currentChatProfile?.full_name ||
-    currentChatProfile?.username ||
-    "User";
-
-
-  $("callTitle")
-    .textContent =
-    name;
-
-
-  $("callIncomingAvatar")
-    .innerHTML =
-    profile
-      ? avatarHtml(
-          profile,
-          "avatar"
-        )
-      : "👤";
-
-
-  $("callRemoteVideo")
-    .style.display =
-    callMode ===
-    "video"
-      ? "block"
-      : "none";
-
-
-  $("callLocalVideo")
-    .style.display =
-    callMode ===
-    "video"
-      ? "block"
-      : "none";
-
-
-  $("callAudioAvatar")
-    .style.display =
-    callMode ===
-    "video"
-      ? "none"
-      : "flex";
-
-
-  if(type === "incoming"){
-
-    $("callStatus")
-      .textContent =
-      (
-        callMode ===
-        "video"
-          ? "Incoming video call"
-          : "Incoming audio call"
-      );
-
-
-    $("acceptCallBtn")
-      .classList.remove(
-        "hidden"
-      );
-
-    $("rejectCallBtn")
-      .classList.remove(
-        "hidden"
-      );
-
-    $("endCallBtn")
-      .classList.add(
-        "hidden"
-      );
 
   }else{
 
-    $("callStatus")
-      .textContent =
-      "Calling...";
-
-
-    $("acceptCallBtn")
-      .classList.add(
-        "hidden"
-      );
-
-    $("rejectCallBtn")
-      .classList.add(
-        "hidden"
-      );
-
-    $("endCallBtn")
-      .classList.remove(
-        "hidden"
-      );
-
+    pendingIceCandidates.push(
+      candidate
+    );
   }
-
-
-  if(callLocalStream){
-
-    $("callLocalVideo")
-      .srcObject =
-      callLocalStream;
-
-  }
-
 }
 
+async function flushPendingIce(){
+
+  const list =
+    [...pendingIceCandidates];
+
+  pendingIceCandidates = [];
+
+  for(const candidate of list){
+
+    await addPendingIce(
+      candidate
+    );
+  }
+}
 
 /* =========================
-   END CALL
-   ========================= */
+HANDLE SIGNAL
+========================= */
 
-async function endRaztaraCall(){
+async function handleCallSignal(
+  signal
+){
 
-  try{
+  if(
+    !signal ||
+    signal.sender_id === currentUser.id
+  ) return;
 
-    if(
-      callConversationId &&
-      currentUser
-    ){
+  if(
+    !callConversationId
+  ){
 
-      await sendRaztaraCallSignal(
-        "hangup",
-        {}
+    callConversationId =
+      signal.conversation_id;
+  }
+
+  const type =
+    signal.signal_type;
+
+  const payload =
+    signal.payload || {};
+
+  /* INCOMING OFFER */
+
+  if(type === "offer"){
+
+    if(callState !== "idle"){
+
+      await sendCallSignal(
+        signal.conversation_id,
+        "busy",
+        {
+          call_id:
+            payload.call_id
+        }
       );
 
+      return;
     }
 
-  }catch(error){
+    callState = "ringing";
 
-    console.error(
-      "Hangup error:",
-      error
+    callConversationId =
+      signal.conversation_id;
+
+    currentCallId =
+      payload.call_id || null;
+
+    incomingOffer = {
+      sdp:payload.sdp,
+      mode:payload.mode || "audio"
+    };
+
+    const {data:caller} =
+      await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq(
+          "id",
+          signal.sender_id
+        )
+        .maybeSingle();
+
+    openCallUI(
+      payload.mode || "audio",
+      caller?.full_name || "Unknown",
+      caller?.avatar_url,
+      true
     );
 
+    return;
   }
 
+  /* ANSWER */
 
-  await cleanupCall();
+  if(type === "answer"){
 
+    if(
+      !peerConnection ||
+      !payload.sdp
+    ) return;
+
+    await peerConnection
+      .setRemoteDescription(
+        new RTCSessionDescription(
+          payload.sdp
+        )
+      );
+
+    await flushPendingIce();
+
+    callState =
+      "connected";
+
+    clearTimeout(callRingTimer);
+
+    await updateCallStatus(
+      "answered"
+    );
+
+    $("callStatus").textContent =
+      "Connected";
+
+    return;
+  }
+
+  /* ICE */
+
+  if(type === "ice"){
+
+    if(payload.candidate){
+
+      await addPendingIce(
+        payload.candidate
+      );
+    }
+
+    return;
+  }
+
+  /* REJECT */
+
+  if(type === "reject"){
+
+    clearTimeout(callRingTimer);
+
+    await updateCallStatus(
+      "rejected"
+    );
+
+    toast("Call rejected");
+
+    await cleanupCall();
+
+    return;
+  }
+
+  /* BUSY */
+
+  if(type === "busy"){
+
+    clearTimeout(callRingTimer);
+
+    await updateCallStatus(
+      "busy"
+    );
+
+    toast("User is busy");
+
+    await cleanupCall();
+
+    return;
+  }
+
+  /* HANGUP */
+
+  if(type === "hangup"){
+
+    if(callState === "connected"){
+
+      await updateCallStatus(
+        "ended"
+      );
+    }
+
+    await cleanupCall();
+  }
 }
 
+/* =========================
+CALL REALTIME
+========================= */
+
+async function startCallRealtime(){
+
+  if(callChannel){
+
+    await supabaseClient.removeChannel(
+      callChannel
+    );
+  }
+
+  callChannel =
+    supabaseClient
+      .channel(
+        "call-signals-" +
+        currentUser.id
+      )
+      .on(
+        "postgres_changes",
+        {
+          event:"INSERT",
+          schema:"public",
+          table:"call_signals"
+        },
+        async payload => {
+
+          const signal =
+            payload.new;
+
+          if(
+            signal.sender_id !==
+            currentUser.id
+          ){
+
+            await handleCallSignal(
+              signal
+            );
+          }
+        }
+      )
+      .subscribe();
+}
 
 /* =========================
-   CLEANUP
-   ========================= */
+CALL BUTTONS
+========================= */
+
+$("audioCallBtn").onclick =
+  () => startCall("audio");
+
+$("videoCallBtn").onclick =
+  () => startCall("video");
+
+$("acceptCallBtn").onclick =
+  acceptIncomingCall;
+
+$("rejectCallBtn").onclick =
+  rejectIncomingCall;
+
+$("endCallBtn").onclick =
+  () => endCall("ended");
+
+/* =========================
+CLEANUP
+========================= */
 
 async function cleanupCall(){
 
-  callState =
-    "idle";
+  clearTimeout(callRingTimer);
 
+  if(localStream){
 
-  pendingCall =
-    null;
+    localStream
+      .getTracks()
+      .forEach(track => {
 
+        track.stop();
 
-  pendingIceCandidates =
-    [];
+      });
 
+    localStream = null;
+  }
 
-  if(callSubscription){
+  if(peerConnection){
+
+    peerConnection.ontrack = null;
+    peerConnection.onicecandidate = null;
 
     try{
+      peerConnection.close();
+    }catch(e){}
 
-      await supabaseClient
-        .removeChannel(
-          callSubscription
-        );
-
-    }catch(error){
-
-      console.error(
-        error
-      );
-
-    }
-
-    callSubscription =
-      null;
-
+    peerConnection = null;
   }
 
-
-  if(callPeer){
-
-    try{
-
-      callPeer.ontrack =
-        null;
-
-      callPeer.onicecandidate =
-        null;
-
-      callPeer.close();
-
-    }catch(error){
-
-      console.error(
-        error
-      );
-
-    }
-
-    callPeer =
-      null;
-
-  }
-
-
-  if(callLocalStream){
-
-    callLocalStream
-      .getTracks()
-      .forEach(
-        track =>
-          track.stop()
-      );
-
-    callLocalStream =
-      null;
-
-  }
-
-
-  if(callRemoteStream){
-
-    callRemoteStream
-      .getTracks()
-      .forEach(
-        track =>
-          track.stop()
-      );
-
-    callRemoteStream =
-      null;
-
-  }
-
-
-  $("callRemoteVideo")
-    .srcObject =
+  $("callRemoteVideo").srcObject =
     null;
 
-  $("callLocalVideo")
-    .srcObject =
+  $("callLocalVideo").srcObject =
     null;
 
+  $("callOverlay").style.display =
+    "none";
 
-  $("callOverlay")
-    .classList
-    .remove(
-      "show"
-    );
+  $("acceptCallBtn").style.display =
+    "none";
 
+  $("rejectCallBtn").style.display =
+    "none";
 
-  $("acceptCallBtn")
-    .classList
-    .remove(
-      "hidden"
-    );
+  $("endCallBtn").style.display =
+    "block";
 
-  $("rejectCallBtn")
-    .classList
-    .remove(
-      "hidden"
-    );
+  callState = "idle";
 
-  $("endCallBtn")
-    .classList
-    .add(
-      "hidden"
-    );
+  callConversationId = null;
+  currentCallId = null;
 
+  incomingOffer = null;
 
-  callConversationId =
-    null;
+  pendingIceCandidates = [];
 
-  callMode =
-    null;
-
+  callStartedAt = null;
 }
 
-
 /* =========================
-   GLOBAL ERROR
-   ========================= */
+PAGE ERROR HANDLER
+========================= */
 
 window.addEventListener(
   "error",
-  event=>{
+  event => {
 
     console.error(
-      "Global error:",
-      event.error ||
-      event.message
+      "App error:",
+      event.error || event.message
     );
-
   }
 );
-
 
 window.addEventListener(
-  "unhandledrejection",
-  event=>{
+  "beforeunload",
+  () => {
 
-    console.error(
-      "Unhandled promise:",
-      event.reason
-    );
+    if(callState !== "idle"){
 
+      sendCallSignal(
+        callConversationId,
+        "hangup",
+        {
+          call_id:
+            currentCallId
+        }
+      );
+    }
   }
 );
 
-
-/* =========================================================
-   END RAZTARA
-   ========================================================= */ 
-   </script>
-
+</script>
 </body>
-
-</html
+</html>
