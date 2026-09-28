@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -667,6 +669,44 @@ body{
 
 <script>
 
+/* ================= SUPABASE ================= */
+
+const SUPABASE_URL =
+"https://pqyicaqpmojijjskpzcp.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+
+const supabaseClient =
+supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* ================= LOGIN CHECK ================= */
+
+async function checkLogin(){
+
+    const { data, error } =
+        await supabaseClient.auth.getSession();
+
+    if(error || !data.session){
+
+        window.location.href = "login.html";
+
+        return;
+    }
+
+    const user = data.session.user;
+
+    console.log("Logged in:", user.email);
+
+}
+
+checkLogin();
+
+
 /* ================= MENU ================= */
 
 function openMenu(){
@@ -717,7 +757,8 @@ function openCalls(){
 function openChat(name){
 
     window.location.href =
-        "chat.html?user=" + encodeURIComponent(name);
+        "chat.html?user=" +
+        encodeURIComponent(name);
 
 }
 
@@ -788,20 +829,40 @@ function showSettings(){
 }
 
 
-/* ================= LOGOUT ================= */
+/* ================= REAL LOGOUT ================= */
 
-function logout(){
+async function logout(){
 
     const confirmLogout =
         confirm("Are you sure you want to logout?");
 
-    if(confirmLogout){
+    if(!confirmLogout){
 
-        window.location.href = "login.html";
+        return;
 
     }
 
+
+    const { error } =
+        await supabaseClient.auth.signOut();
+
+
+    if(error){
+
+        alert(
+            "Logout failed: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    window.location.href = "login.html";
+
 }
+
 
 </script>
 
