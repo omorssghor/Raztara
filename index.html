@@ -8,14 +8,154 @@
 <title>raztara | Connect • Call • Share</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+.callOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.82);
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
 
+.callBox{
+  width:min(520px,100%);
+  background:#111827;
+  color:#fff;
+  border-radius:24px;
+  overflow:hidden;
+}
+
+.callTop{
+  text-align:center;
+  padding:24px 18px 14px;
+}
+
+.callTitle{
+  font-size:20px;
+  font-weight:700;
+}
+
+.callStatus{
+  font-size:14px;
+  opacity:.72;
+  margin-top:5px;
+}
+
+.callVideos{
+  position:relative;
+  background:#000;
+  aspect-ratio:9/16;
+  max-height:62vh;
+}
+
+.callVideos video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+#callLocalVideo{
+  position:absolute;
+  right:12px;
+  top:12px;
+  width:110px;
+  height:150px;
+  border-radius:14px;
+  border:2px solid #fff;
+  object-fit:cover;
+}
+
+.callActions{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  padding:18px;
+}
+
+.callAction{
+  border:0;
+  border-radius:999px;
+  padding:13px 20px;
+  background:#374151;
+  color:#fff;
+  font-weight:700;
+}
+
+.callAction.accept{
+  background:#16a34a;
+}
+
+.callAction.reject,
+.callAction.end{
+  background:#dc2626;
+}
+
+.callIncomingAvatar{
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  margin:0 auto 12px;
+  background:#2563eb;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  font-weight:700;
+}
 <style>
 *{
   box-sizing:border-box;
   margin:0;
   padding:0;
 }
+<section id="callOverlay" class="callOverlay hidden">
 
+  <div class="callBox">
+
+    <div class="callTop">
+
+      <div id="callIncomingAvatar"
+           class="callIncomingAvatar">
+        R
+      </div>
+
+      <div id="callTitle"
+           class="callTitle">
+        Call
+      </div>
+
+      <div id="callStatus"
+           class="callStatus">
+        Connecting...
+      </div>
+
+    </div>
+
+    <div id="callVideos"
+         class="callVideos hidden">
+
+      <video id="callRemoteVideo"
+             autoplay
+             playsinline>
+      </video>
+
+      <video id="callLocalVideo"
+             autoplay
+             muted
+             playsinline>
+      </video>
+
+    </div>
+
+    <div id="callActions"
+         class="callActions">
+    </div>
+
+  </div>
+
+</section>
 body{
   font-family:Arial,sans-serif;
   background:#f4f7f6;
