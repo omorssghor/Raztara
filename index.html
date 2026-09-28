@@ -1,13 +1,25 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#087f5b">
 
-<title>raztara | Connect • Call • Share</title>
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0"
+>
+
+<meta
+  name="theme-color"
+  content="#087f5b"
+>
+
+<title>
+  raztara | Connect • Call • Share
+</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
 <style>
 
@@ -531,7 +543,9 @@ audio{
 }
 
 @keyframes pulse{
-  50%{opacity:.5}
+  50%{
+    opacity:.5
+  }
 }
 
 
@@ -704,7 +718,10 @@ audio{
      CALL OVERLAY
 ========================================================= -->
 
-<section id="callOverlay" class="callOverlay hidden">
+<section
+  id="callOverlay"
+  class="callOverlay hidden"
+>
 
   <div class="callBox">
 
@@ -837,9 +854,11 @@ audio{
       </span>
 
       <button onclick="toggleAuth()">
+
         <span id="switchButton">
           Sign Up
         </span>
+
       </button>
 
     </div>
@@ -929,9 +948,13 @@ audio{
       </div>
 
       <div class="empty">
+
         Audio এবং Video Call এখানে দেখা যাবে।
+
         <br><br>
+
         পরবর্তী Version-এ real calling system যোগ করা হবে।
+
       </div>
 
     </div>
@@ -1161,408 +1184,291 @@ audio{
 
 
 <script>
-
-/* =========================================================
-   SUPABASE
+   /* =========================================================
+   SUPABASE CONFIG
 ========================================================= */
 
 const SUPABASE_URL =
-"https://pqyicaqpmojijjskpzcp.supabase.co";
+  "https://pqyicaqpmojijjskpzcp.supabase.co";
 
 const SUPABASE_KEY =
-"sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+  "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
 
-const db =
-window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
 
 /* =========================================================
-   GLOBAL
+   GLOBAL STATE
 ========================================================= */
 
 let currentUser = null;
 let currentProfile = null;
 
-let currentConversation = null;
-let currentTarget = null;
+let currentChatUser = null;
+let currentConversationId = null;
 
 let messageSubscription = null;
+let chatListSubscription = null;
 
-let recording = false;
+let isSignup = false;
+
 let mediaRecorder = null;
-let audioChunks = [];
+let recordingChunks = [];
+
+let currentPage = "chats";
 
 
 /* =========================================================
-   CALL GLOBAL
+   HELPERS
 ========================================================= */
 
-let callPeer = null;
-let callLocalStream = null;
-let callRemoteStream = null;
-let callConversationId = null;
-let callMode = null;
-let callState = "idle";
-let callSubscription = null;
-let pendingCall = null;
-let pendingIceCandidates = [];
-
-const CALL_ICE_SERVERS = {
-
-  iceServers: [
-
-    {
-      urls:
-        "stun:stun.l.google.com:19302"
-    },
-
-    {
-      urls:
-        "stun:stun1.l.google.com:19302"
-    }
-
-  ]
-
-};
+function $(id){
+  return document.getElementById(id);
+}
 
 
-/* =========================================================
-   START
-========================================================= */
-
-async function start(){
-
-  const {
-    data:{
-      session
-    }
-  } =
-  await db.auth.getSession();
-
-
-  if(session){
-
-    currentUser =
-      session.user;
-
-    await showApp();
-
-  }else{
-
-    showAuth();
-
+function escapeHtml(value){
+  if(value === null || value === undefined){
+    return "";
   }
 
+  return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
 
-  db.auth.onAuthStateChange(
-    async(
-      event,
-      session
-    )=>{
 
-      if(session){
+function showToast(message){
+  const toast = $("toast");
 
-        currentUser =
-          session.user;
+  if(!toast){
+    return;
+  }
 
-        await showApp();
+  toast.textContent = message;
+  toast.style.display = "block";
 
-      }else{
+  clearTimeout(window.toastTimer);
 
-        currentUser = null;
-        currentProfile = null;
+  window.toastTimer = setTimeout(()=>{
+    toast.style.display = "none";
+  },3000);
+}
 
-        showAuth();
 
-      }
+function initials(name){
+  if(!name){
+    return "R";
+  }
 
-    }
-  );
+  return name
+    .trim()
+    .charAt(0)
+    .toUpperCase();
+}
 
+
+function formatTime(date){
+  if(!date){
+    return "";
+  }
+
+  const d = new Date(date);
+
+  return d.toLocaleTimeString("bn-BD",{
+    hour:"2-digit",
+    minute:"2-digit"
+  });
+}
+
+
+function formatDate(date){
+  if(!date){
+    return "";
+  }
+
+  const d = new Date(date);
+
+  return d.toLocaleDateString("bn-BD",{
+    day:"2-digit",
+    month:"short"
+  });
 }
 
 
 /* =========================================================
-   AUTH SCREEN
+   AUTH UI
 ========================================================= */
-
-function showAuth(){
-
-  document
-    .getElementById("authScreen")
-    .classList.remove("hidden");
-
-  document
-    .getElementById("app")
-    .classList.add("hidden");
-
-  document
-    .getElementById("chatScreen")
-    .classList.add("hidden");
-
-}
-
-
-/* =========================================================
-   AUTH MODE
-========================================================= */
-
-let signupMode = false;
-
 
 function toggleAuth(){
 
-  signupMode =
-    !signupMode;
+  isSignup = !isSignup;
 
+  $("authTitle").textContent =
+    isSignup ? "Sign Up" : "Login";
 
-  const fields =
-    document.getElementById(
-      "signupFields"
-    );
+  $("authButton").textContent =
+    isSignup ? "Create Account" : "Login";
 
-  const title =
-    document.getElementById(
-      "authTitle"
-    );
+  $("signupFields").classList.toggle(
+    "hidden",
+    !isSignup
+  );
 
-  const button =
-    document.getElementById(
-      "authButton"
-    );
+  $("switchText").textContent =
+    isSignup
+      ? "আগে থেকেই account আছে?"
+      : "নতুন account খুলবেন?";
 
-  const switchText =
-    document.getElementById(
-      "switchText"
-    );
-
-  const switchButton =
-    document.getElementById(
-      "switchButton"
-    );
-
-
-  if(signupMode){
-
-    fields.classList.remove(
-      "hidden"
-    );
-
-    title.textContent =
-      "Create Account";
-
-    button.textContent =
-      "Sign Up";
-
-    switchText.textContent =
-      "আগে থেকেই account আছে?";
-
-    switchButton.textContent =
-      "Login";
-
-  }else{
-
-    fields.classList.add(
-      "hidden"
-    );
-
-    title.textContent =
-      "Login";
-
-    button.textContent =
-      "Login";
-
-    switchText.textContent =
-      "নতুন account খুলবেন?";
-
-    switchButton.textContent =
-      "Sign Up";
-
-  }
-
+  $("switchButton").textContent =
+    isSignup
+      ? "Login"
+      : "Sign Up";
 }
 
 
 /* =========================================================
-   LOGIN / SIGNUP
+   AUTH
 ========================================================= */
 
 async function handleAuth(){
 
   const email =
-    document
-      .getElementById("email")
-      .value
-      .trim();
-
+    $("email").value.trim();
 
   const password =
-    document
-      .getElementById("password")
-      .value;
-
+    $("password").value;
 
   if(!email || !password){
 
-    toast(
+    showToast(
       "Email এবং Password দিন"
     );
 
     return;
-
   }
 
 
-  if(signupMode){
+  try{
 
-    const fullName =
-      document
-        .getElementById("fullName")
-        .value
-        .trim();
+    $("authButton").disabled = true;
 
 
-    const username =
-      document
-        .getElementById("username")
-        .value
-        .trim()
-        .toLowerCase();
+    if(isSignup){
+
+      const fullName =
+        $("fullName").value.trim();
+
+      const username =
+        $("username").value
+          .trim()
+          .toLowerCase();
 
 
-    if(!fullName || !username){
+      if(!fullName || !username){
 
-      toast(
-        "নাম এবং Username দিন"
-      );
+        showToast(
+          "নাম এবং Username দিন"
+        );
 
-      return;
+        return;
+      }
 
-    }
+
+      const { data, error } =
+        await supabaseClient.auth.signUp({
+
+          email,
+          password,
+
+          options:{
+            data:{
+              full_name:fullName,
+              username:username
+            }
+          }
+
+        });
 
 
-    const {
-      data,
-      error
-    } =
-    await db.auth.signUp({
+      if(error){
+        throw error;
+      }
 
-      email,
 
-      password,
+      if(data.user){
 
-      options:{
+        currentUser = data.user;
 
-        data:{
-
-          full_name:
-            fullName,
-
-          username:
-            username
-
-        }
+        await createOrUpdateProfile(
+          data.user,
+          fullName,
+          username
+        );
 
       }
 
-    });
+
+      if(data.session){
+
+        await initializeApp();
+
+      }else{
+
+        showToast(
+          "Account তৈরি হয়েছে। Email verification লাগতে পারে।"
+        );
+
+      }
 
 
-    if(error){
+    }else{
 
-      toast(
-        error.message
-      );
+      const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
 
-      return;
+          email,
+          password
+
+        });
+
+
+      if(error){
+        throw error;
+      }
+
+
+      currentUser = data.user;
+
+      await initializeApp();
 
     }
 
 
-    if(!data.session){
+  }catch(error){
 
-      toast(
-        "Account তৈরি হয়েছে। Email verification প্রয়োজন হলে email check করুন।"
-      );
-
-      toggleAuth();
-
-      return;
-
-    }
-
-
-    currentUser =
-      data.user;
-
-    await showApp();
-
-
-  }else{
-
-    const {
-      data,
+    console.error(
+      "Auth error:",
       error
-    } =
-    await db.auth.signInWithPassword({
+    );
 
-      email,
+    showToast(
+      error.message ||
+      "Authentication failed"
+    );
 
-      password
+  }finally{
 
-    });
-
-
-    if(error){
-
-      toast(
-        error.message
-      );
-
-      return;
-
-    }
-
-
-    currentUser =
-      data.user;
-
-    await showApp();
+    $("authButton").disabled = false;
 
   }
-
-}
-
-
-/* =========================================================
-   APP
-========================================================= */
-
-async function showApp(){
-
-  document
-    .getElementById("authScreen")
-    .classList.add("hidden");
-
-
-  document
-    .getElementById("app")
-    .classList.remove("hidden");
-
-
-  await loadProfile();
-
-  updateProfileUI();
-
-  await loadChatList();
-
-
-  /* CALL SIGNALING STARTS HERE */
-
-  startRaztaraCallSignaling();
 
 }
 
@@ -1571,59 +1477,170 @@ async function showApp(){
    PROFILE
 ========================================================= */
 
-async function loadProfile(){
+async function createOrUpdateProfile(
+  user,
+  fullName,
+  username
+){
 
-  if(!currentUser)
-    return;
+  const { data:existing } =
+    await supabaseClient
+      .from("profiles")
+      .select("*")
+      .eq("id",user.id)
+      .maybeSingle();
 
 
-  const {
-    data,
-    error
-  } =
-  await db
-    .from("profiles")
-    .select("*")
-    .eq(
-      "id",
-      currentUser.id
-    )
-    .single();
+  const payload = {
+
+    id:user.id,
+
+    full_name:
+      fullName ||
+      existing?.full_name ||
+      user.user_metadata?.full_name ||
+      "User",
+
+    username:
+      username ||
+      existing?.username ||
+      user.user_metadata?.username ||
+      "user_" + user.id.slice(0,6)
+
+  };
+
+
+  const { data,error } =
+    await supabaseClient
+      .from("profiles")
+      .upsert(
+        payload,
+        {
+          onConflict:"id"
+        }
+      )
+      .select()
+      .single();
 
 
   if(error){
 
-    console.log(error);
+    console.error(
+      "Profile error:",
+      error
+    );
 
-    return;
-
+    return null;
   }
 
 
-  currentProfile =
-    data;
+  currentProfile = data;
+
+  return data;
+}
+
+
+async function loadProfile(){
+
+  if(!currentUser){
+    return null;
+  }
+
+
+  const { data,error } =
+    await supabaseClient
+      .from("profiles")
+      .select("*")
+      .eq("id",currentUser.id)
+      .maybeSingle();
+
+
+  if(error){
+
+    console.error(
+      "Load profile error:",
+      error
+    );
+
+    return null;
+  }
+
+
+  if(data){
+
+    currentProfile = data;
+
+    return data;
+  }
+
+
+  return await createOrUpdateProfile(
+    currentUser,
+    currentUser.user_metadata?.full_name,
+    currentUser.user_metadata?.username
+  );
 
 }
 
 
-function initials(name){
+/* =========================================================
+   INITIALIZE APP
+========================================================= */
 
-  if(!name)
-    return "R";
+async function initializeApp(){
+
+  const {
+    data:{
+      user
+    }
+  } =
+    await supabaseClient.auth.getUser();
 
 
-  return name
-    .trim()
-    .charAt(0)
-    .toUpperCase();
+  if(!user){
+    return;
+  }
+
+
+  currentUser = user;
+
+
+  await loadProfile();
+
+
+  $("authScreen")
+    .classList
+    .add("hidden");
+
+
+  $("app")
+    .classList
+    .remove("hidden");
+
+
+  updateProfileUI();
+
+
+  await loadChatList();
+
+
+  subscribeChatList();
+
+
+  startRaztaraCallSignaling();
 
 }
 
+
+/* =========================================================
+   PROFILE UI
+========================================================= */
 
 function updateProfileUI(){
 
-  if(!currentProfile)
+  if(!currentProfile){
     return;
+  }
 
 
   const name =
@@ -1632,96 +1649,149 @@ function updateProfileUI(){
     "User";
 
 
-  document
-    .getElementById("topName")
-    .textContent =
-      name;
+  const username =
+    currentProfile.username ||
+    "";
 
 
-  document
-    .getElementById("profileName")
-    .textContent =
-      name;
+  $("topName").textContent =
+    name;
 
 
-  document
-    .getElementById("profileUsername")
-    .textContent =
-      "@" +
-      (
-        currentProfile.username ||
-        "user"
-      );
+  $("topAvatar").innerHTML =
+    getAvatarHtml(
+      currentProfile,
+      40
+    );
 
 
-  document
-    .getElementById("profileBio")
-    .textContent =
-      currentProfile.bio ||
-      "raztara user";
+  $("profileAvatar").innerHTML =
+    getAvatarHtml(
+      currentProfile,
+      90
+    );
 
 
-  setAvatar(
-    document.getElementById(
-      "topAvatar"
-    ),
-    currentProfile
-  );
+  $("profileName").textContent =
+    name;
 
 
-  setAvatar(
-    document.getElementById(
-      "profileAvatar"
-    ),
-    currentProfile
-  );
+  $("profileUsername").textContent =
+    username
+      ? "@" + username
+      : "";
+
+
+  $("profileBio").textContent =
+    currentProfile.bio ||
+    "raztara user";
 
 }
 
 
-function setAvatar(
-  element,
-  profile
+function getAvatarHtml(
+  profile,
+  size
 ){
 
-  element.innerHTML = "";
+  const name =
+    profile?.full_name ||
+    profile?.username ||
+    "R";
 
 
-  if(
-    profile &&
-    profile.avatar_url
-  ){
+  const avatar =
+    profile?.avatar_url ||
+    profile?.profile_photo ||
+    null;
 
-    const img =
-      document.createElement(
-        "img"
-      );
 
-    img.src =
-      profile.avatar_url;
+  if(avatar){
 
-    img.alt =
-      "Profile";
-
-    element.appendChild(
-      img
-    );
-
-  }else{
-
-    element.textContent =
-      initials(
-        profile?.full_name ||
-        profile?.username
-      );
+    return `
+      <img
+        src="${escapeHtml(avatar)}"
+        alt="${escapeHtml(name)}"
+        style="
+          width:${size}px;
+          height:${size}px;
+          border-radius:50%;
+          object-fit:cover;
+        "
+      >
+    `;
 
   }
+
+
+  return escapeHtml(
+    initials(name)
+  );
 
 }
 
 
 /* =========================================================
-   SEARCH USERS
+   PAGE NAVIGATION
+========================================================= */
+
+function changePage(page){
+
+  currentPage = page;
+
+
+  $("chatsPage")
+    .classList
+    .toggle(
+      "hidden",
+      page !== "chats"
+    );
+
+
+  $("callsPage")
+    .classList
+    .toggle(
+      "hidden",
+      page !== "calls"
+    );
+
+
+  $("profilePage")
+    .classList
+    .toggle(
+      "hidden",
+      page !== "profile"
+    );
+
+
+  $("navChats")
+    .classList
+    .toggle(
+      "active",
+      page === "chats"
+    );
+
+
+  $("navCalls")
+    .classList
+    .toggle(
+      "active",
+      page === "calls"
+    );
+
+
+  $("navProfile")
+    .classList
+    .toggle(
+      "active",
+      page === "profile"
+    );
+
+}
+
+
+/* =========================================================
+   USER SEARCH
 ========================================================= */
 
 let searchTimer = null;
@@ -1729,15 +1799,13 @@ let searchTimer = null;
 
 function searchUsers(){
 
-  clearTimeout(
-    searchTimer
-  );
+  clearTimeout(searchTimer);
 
 
   searchTimer =
     setTimeout(
       performUserSearch,
-      300
+      350
     );
 
 }
@@ -1745,420 +1813,283 @@ function searchUsers(){
 
 async function performUserSearch(){
 
-  const input =
-    document
-      .getElementById(
-        "searchInput"
-      )
+  const query =
+    $("searchInput")
       .value
-      .trim();
+      .trim()
+      .toLowerCase();
 
 
-  const box =
-    document.getElementById(
-      "searchResults"
+  const container =
+    $("searchResults");
+
+
+  if(!query){
+
+    container.innerHTML = "";
+
+    return;
+  }
+
+
+  container.innerHTML = `
+    <div class="loading">
+      খোঁজা হচ্ছে...
+    </div>
+  `;
+
+
+  try{
+
+    const { data,error } =
+      await supabaseClient
+        .from("profiles")
+        .select("*")
+        .or(
+          `username.ilike.%${query}%,full_name.ilike.%${query}%`
+        )
+        .neq(
+          "id",
+          currentUser.id
+        )
+        .limit(20);
+
+
+    if(error){
+      throw error;
+    }
+
+
+    if(!data || !data.length){
+
+      container.innerHTML = `
+        <div class="empty">
+          কোনো user পাওয়া যায়নি।
+        </div>
+      `;
+
+      return;
+    }
+
+
+    container.innerHTML =
+      data
+        .map(profile => `
+
+          <div class="userCard">
+
+            <div class="userInfo">
+
+              <div class="avatar">
+                ${getAvatarHtml(profile,40)}
+              </div>
+
+              <div>
+
+                <div class="userName">
+                  ${escapeHtml(
+                    profile.full_name ||
+                    profile.username ||
+                    "User"
+                  )}
+                </div>
+
+                <div class="userUsername">
+                  @${escapeHtml(
+                    profile.username || ""
+                  )}
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <button
+              class="primary"
+              style="
+                width:auto;
+                padding:9px 14px;
+                margin:0;
+              "
+              onclick='openChatFromSearch(${JSON.stringify(profile).replace(/'/g,"&#39;")})'
+            >
+              Chat
+            </button>
+
+          </div>
+
+        `)
+        .join("");
+
+
+  }catch(error){
+
+    console.error(
+      "Search error:",
+      error
     );
 
-
-  if(input.length < 2){
-
-    box.innerHTML = "";
-
-    return;
-
-  }
-
-
-  const safeInput =
-    escapeQuery(input);
-
-
-  const {
-    data,
-    error
-  } =
-  await db
-    .from("profiles")
-    .select("*")
-    .or(
-      `username.ilike.%${safeInput}%,full_name.ilike.%${safeInput}%`
-    )
-    .neq(
-      "id",
-      currentUser.id
-    )
-    .limit(10);
-
-
-  if(error){
-
-    box.innerHTML =
-      `<div class="empty">${
-        escapeHtml(error.message)
-      }</div>`;
-
-    return;
+    container.innerHTML = `
+      <div class="empty">
+        Search করতে সমস্যা হয়েছে।
+      </div>
+    `;
 
   }
-
-
-  if(
-    !data ||
-    !data.length
-  ){
-
-    box.innerHTML =
-      `<div class="empty">
-        কোনো user পাওয়া যায়নি
-      </div>`;
-
-    return;
-
-  }
-
-
-  box.innerHTML = "";
-
-
-  data.forEach(
-    user=>{
-
-      const div =
-        document.createElement(
-          "div"
-        );
-
-      div.className =
-        "userCard";
-
-
-      const left =
-        document.createElement(
-          "div"
-        );
-
-      left.className =
-        "userInfo";
-
-
-      const av =
-        document.createElement(
-          "div"
-        );
-
-      av.className =
-        "avatar";
-
-
-      setAvatar(
-        av,
-        user
-      );
-
-
-      const info =
-        document.createElement(
-          "div"
-        );
-
-
-      const name =
-        document.createElement(
-          "div"
-        );
-
-      name.className =
-        "userName";
-
-      name.textContent =
-        user.full_name ||
-        user.username ||
-        "User";
-
-
-      const uname =
-        document.createElement(
-          "div"
-        );
-
-      uname.className =
-        "userUsername";
-
-      uname.textContent =
-        "@" +
-        (
-          user.username ||
-          ""
-        );
-
-
-      info.appendChild(
-        name
-      );
-
-      info.appendChild(
-        uname
-      );
-
-
-      left.appendChild(
-        av
-      );
-
-      left.appendChild(
-        info
-      );
-
-
-      const button =
-        document.createElement(
-          "button"
-        );
-
-      button.className =
-        "primary";
-
-      button.style.width =
-        "auto";
-
-      button.style.padding =
-        "9px 13px";
-
-      button.textContent =
-        "Chat";
-
-
-      button.onclick =
-        ()=>startChat(user);
-
-
-      div.appendChild(
-        left
-      );
-
-      div.appendChild(
-        button
-      );
-
-
-      box.appendChild(
-        div
-      );
-
-    }
-  );
-
-}
-
-
-function escapeQuery(value){
-
-  return value
-    .replace(/,/g,"")
-    .replace(/%/g,"");
 
 }
 
 
 /* =========================================================
-   START CHAT
+   OPEN CHAT FROM SEARCH
 ========================================================= */
 
-async function startChat(target){
+async function openChatFromSearch(profile){
 
-  if(!currentUser)
-    return;
+  if(
+    typeof profile === "string"
+  ){
 
-
-  toast(
-    "Chat তৈরি হচ্ছে..."
-  );
-
-
-  const {
-    data:myMemberships,
-    error:myError
-  } =
-  await db
-    .from("conversation_members")
-    .select(
-      "conversation_id"
-    )
-    .eq(
-      "user_id",
-      currentUser.id
-    );
-
-
-  if(myError){
-
-    toast(
-      myError.message
-    );
-
-    return;
+    try{
+      profile = JSON.parse(profile);
+    }catch{
+      return;
+    }
 
   }
 
 
-  let conversationId =
-    null;
+  await openChat(profile);
+
+}
 
 
-  if(
-    myMemberships?.length
-  ){
+/* =========================================================
+   CONVERSATIONS
+========================================================= */
 
-    const ids =
-      myMemberships.map(
-        x=>x.conversation_id
-      );
+async function getOrCreateConversation(
+  otherUserId
+){
+
+  if(!currentUser){
+    return null;
+  }
 
 
-    const {
-      data:targetMemberships
-    } =
-    await db
+  const { data:myMemberships,error } =
+    await supabaseClient
       .from("conversation_members")
       .select(
         "conversation_id"
       )
-      .in(
-        "conversation_id",
-        ids
-      )
       .eq(
         "user_id",
-        target.id
+        currentUser.id
       );
 
 
-    if(
-      targetMemberships?.length
-    ){
+  if(error){
+    throw error;
+  }
 
-      conversationId =
-        targetMemberships[0]
-          .conversation_id;
+
+  const conversationIds =
+    (myMemberships || [])
+      .map(
+        item => item.conversation_id
+      );
+
+
+  if(conversationIds.length){
+
+    const { data:matches,error:matchError } =
+      await supabaseClient
+        .from("conversation_members")
+        .select(
+          "conversation_id,user_id"
+        )
+        .in(
+          "conversation_id",
+          conversationIds
+        )
+        .eq(
+          "user_id",
+          otherUserId
+        );
+
+
+    if(matchError){
+      throw matchError;
+    }
+
+
+    if(matches && matches.length){
+
+      return matches[0].conversation_id;
 
     }
 
   }
 
 
-  if(!conversationId){
-
-    const {
-      data:conversation,
-      error
-    } =
-    await db
+  const { data:conversation,error:createError } =
+    await supabaseClient
       .from("conversations")
-      .insert({
-
-        is_group:false,
-
-        name:
-          target.full_name ||
-          target.username,
-
-        created_by:
-          currentUser.id
-
-      })
+      .insert({})
       .select()
       .single();
 
 
-    if(error){
-
-      toast(
-        error.message
-      );
-
-      return;
-
-    }
-
-
-    conversationId =
-      conversation.id;
-
-
-    const {
-      error:myMemberError
-    } =
-    await db
-      .from("conversation_members")
-      .insert({
-
-        conversation_id:
-          conversationId,
-
-        user_id:
-          currentUser.id
-
-      });
-
-
-    if(myMemberError){
-
-      toast(
-        myMemberError.message
-      );
-
-      return;
-
-    }
-
-
-    const {
-      error:targetMemberError
-    } =
-    await db
-      .from("conversation_members")
-      .insert({
-
-        conversation_id:
-          conversationId,
-
-        user_id:
-          target.id
-
-      });
-
-
-    if(targetMemberError){
-
-      toast(
-        targetMemberError.message
-      );
-
-      return;
-
-    }
-
+  if(createError){
+    throw createError;
   }
 
 
-  document
-    .getElementById(
-      "searchInput"
-    )
-    .value = "";
+  const conversationId =
+    conversation.id;
 
 
-  document
-    .getElementById(
-      "searchResults"
-    )
-    .innerHTML = "";
+  const { error:memberError } =
+    await supabaseClient
+      .from("conversation_members")
+      .insert([
+
+        {
+          conversation_id:
+            conversationId,
+
+          user_id:
+            currentUser.id
+        },
+
+        {
+          conversation_id:
+            conversationId,
+
+          user_id:
+            otherUserId
+        }
+
+      ]);
 
 
-  await openChat(
-    conversationId,
-    target
-  );
+  if(memberError){
+
+    await supabaseClient
+      .from("conversations")
+      .delete()
+      .eq(
+        "id",
+        conversationId
+      );
+
+    throw memberError;
+  }
+
+
+  return conversationId;
 
 }
 
@@ -2167,48 +2098,351 @@ async function startChat(target){
    OPEN CHAT
 ========================================================= */
 
-async function openChat(
-  conversationId,
-  target
-){
+async function openChat(profile){
 
-  currentConversation =
-    conversationId;
+  try{
 
-  currentTarget =
-    target;
+    if(!profile || !profile.id){
+      return;
+    }
 
 
-  document
-    .getElementById(
-      "chatScreen"
-    )
-    .classList.remove(
-      "hidden"
-    );
+    currentChatUser = profile;
 
 
-  document
-    .getElementById(
-      "chatHeaderName"
-    )
-    .textContent =
-      target.full_name ||
-      target.username ||
+    currentConversationId =
+      await getOrCreateConversation(
+        profile.id
+      );
+
+
+    if(!currentConversationId){
+      throw new Error(
+        "Conversation তৈরি করা যায়নি"
+      );
+    }
+
+
+    $("chatHeaderName").textContent =
+      profile.full_name ||
+      profile.username ||
       "User";
 
 
-  setAvatar(
-    document.getElementById(
-      "chatAvatar"
-    ),
-    target
-  );
+    $("chatAvatar").innerHTML =
+      getAvatarHtml(
+        profile,
+        40
+      );
 
 
-  await loadMessages();
+    $("chatScreen")
+      .classList
+      .remove("hidden");
 
-  subscribeMessages();
+
+    await loadMessages();
+
+
+    subscribeMessages();
+
+
+    setTimeout(()=>{
+      $("messageInput")?.focus();
+    },100);
+
+
+  }catch(error){
+
+    console.error(
+      "Open chat error:",
+      error
+    );
+
+    showToast(
+      error.message ||
+      "Chat open করা যায়নি"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   CLOSE CHAT
+========================================================= */
+
+function closeChat(){
+
+  $("chatScreen")
+    .classList
+    .add("hidden");
+
+
+  currentChatUser = null;
+  currentConversationId = null;
+
+
+  if(messageSubscription){
+
+    supabaseClient
+      .removeChannel(
+        messageSubscription
+      );
+
+    messageSubscription = null;
+
+  }
+
+}
+
+
+/* =========================================================
+   LOAD CHAT LIST
+========================================================= */
+
+async function loadChatList(){
+
+  const container =
+    $("chatList");
+
+
+  if(!currentUser){
+
+    container.innerHTML = "";
+
+    return;
+  }
+
+
+  try{
+
+    const { data:members,error } =
+      await supabaseClient
+        .from("conversation_members")
+        .select(
+          "conversation_id,user_id"
+        )
+        .eq(
+          "user_id",
+          currentUser.id
+        );
+
+
+    if(error){
+      throw error;
+    }
+
+
+    if(!members || !members.length){
+
+      container.innerHTML = `
+        <div class="empty">
+          এখনো কোনো chat নেই।
+          <br><br>
+          উপরের search box দিয়ে user খুঁজে chat শুরু করুন।
+        </div>
+      `;
+
+      return;
+    }
+
+
+    const conversationIds =
+      members.map(
+        m => m.conversation_id
+      );
+
+
+    const { data:allMembers,error:memberError } =
+      await supabaseClient
+        .from("conversation_members")
+        .select(
+          "conversation_id,user_id"
+        )
+        .in(
+          "conversation_id",
+          conversationIds
+        );
+
+
+    if(memberError){
+      throw memberError;
+    }
+
+
+    const otherUserIds =
+      [...new Set(
+        allMembers
+          .filter(
+            m =>
+              m.user_id !==
+              currentUser.id
+          )
+          .map(
+            m => m.user_id
+          )
+      )];
+
+
+    if(!otherUserIds.length){
+
+      container.innerHTML = `
+        <div class="empty">
+          কোনো chat পাওয়া যায়নি।
+        </div>
+      `;
+
+      return;
+    }
+
+
+    const { data:profiles,error:profileError } =
+      await supabaseClient
+        .from("profiles")
+        .select("*")
+        .in(
+          "id",
+          otherUserIds
+        );
+
+
+    if(profileError){
+      throw profileError;
+    }
+
+
+    const profileMap = {};
+
+    (profiles || []).forEach(
+      profile => {
+        profileMap[profile.id] =
+          profile;
+      }
+    );
+
+
+    container.innerHTML =
+      allMembers
+        .filter(
+          member =>
+            member.user_id !==
+            currentUser.id
+        )
+        .map(member => {
+
+          const profile =
+            profileMap[
+              member.user_id
+            ];
+
+
+          if(!profile){
+            return "";
+          }
+
+
+          return `
+
+            <div
+              class="chatItem"
+              onclick='openChatFromSearch(${JSON.stringify(profile).replace(/'/g,"&#39;")})'
+            >
+
+              <div class="avatar">
+
+                ${getAvatarHtml(
+                  profile,
+                  40
+                )}
+
+              </div>
+
+
+              <div style="flex:1">
+
+                <div class="userName">
+
+                  ${escapeHtml(
+                    profile.full_name ||
+                    profile.username ||
+                    "User"
+                  )}
+
+                </div>
+
+
+                <div class="userUsername">
+
+                  @${escapeHtml(
+                    profile.username || ""
+                  )}
+
+                </div>
+
+              </div>
+
+            </div>
+
+          `;
+
+        })
+        .join("");
+
+
+  }catch(error){
+
+    console.error(
+      "Chat list error:",
+      error
+    );
+
+    container.innerHTML = `
+      <div class="empty">
+        Chat list load করতে সমস্যা হয়েছে।
+      </div>
+    `;
+
+  }
+
+}
+
+
+/* =========================================================
+   CHAT LIST REALTIME
+========================================================= */
+
+function subscribeChatList(){
+
+  if(chatListSubscription){
+
+    supabaseClient
+      .removeChannel(
+        chatListSubscription
+      );
+
+  }
+
+
+  chatListSubscription =
+    supabaseClient
+      .channel(
+        "raztara-chat-list-" +
+        currentUser.id
+      )
+      .on(
+        "postgres_changes",
+        {
+          event:"*",
+          schema:"public",
+          table:"conversation_members"
+        },
+        async ()=>{
+          await loadChatList();
+        }
+      )
+      .subscribe();
 
 }
 
@@ -2219,89 +2453,313 @@ async function openChat(
 
 async function loadMessages(){
 
-  const box =
-    document.getElementById(
-      "messages"
+  const container =
+    $("messages");
+
+
+  container.innerHTML = `
+    <div class="loading">
+      Messages load হচ্ছে...
+    </div>
+  `;
+
+
+  try{
+
+    const { data,error } =
+      await supabaseClient
+        .from("messages")
+        .select("*")
+        .eq(
+          "conversation_id",
+          currentConversationId
+        )
+        .order(
+          "created_at",
+          {
+            ascending:true
+          }
+        );
+
+
+    if(error){
+      throw error;
+    }
+
+
+    renderMessages(
+      data || []
     );
 
 
-  box.innerHTML =
-    `<div class="loading">
-      Loading...
-    </div>`;
+  }catch(error){
 
-
-  const {
-    data,
-    error
-  } =
-  await db
-    .from("messages")
-    .select("*")
-    .eq(
-      "conversation_id",
-      currentConversation
-    )
-    .order(
-      "created_at",
-      {
-        ascending:true
-      }
+    console.error(
+      "Messages error:",
+      error
     );
 
-
-  if(error){
-
-    box.innerHTML =
-      `<div class="empty">
-        ${escapeHtml(error.message)}
-      </div>`;
-
-    return;
+    container.innerHTML = `
+      <div class="empty">
+        Message load করতে সমস্যা হয়েছে।
+      </div>
+    `;
 
   }
-
-
-  box.innerHTML = "";
-
-
-  for(
-    const message of data
-  ){
-
-    await renderMessage(
-      message,
-      false
-    );
-
-  }
-
-
-  scrollMessages();
 
 }
 
 
 /* =========================================================
-   REALTIME
+   RENDER MESSAGES
+========================================================= */
+
+function renderMessages(messages){
+
+  const container =
+    $("messages");
+
+
+  if(!messages.length){
+
+    container.innerHTML = `
+      <div class="empty">
+        এখনো কোনো message নেই।
+        <br>
+        প্রথম message পাঠান।
+      </div>
+    `;
+
+    return;
+  }
+
+
+  container.innerHTML =
+    messages
+      .map(
+        message =>
+          renderMessage(message)
+      )
+      .join("");
+
+
+  scrollMessagesToBottom();
+
+}
+
+
+/* =========================================================
+   RENDER SINGLE MESSAGE
+========================================================= */
+
+function renderMessage(message){
+
+  const mine =
+    message.sender_id ===
+    currentUser.id;
+
+
+  const content =
+    message.content || "";
+
+
+  const type =
+    message.message_type ||
+    "text";
+
+
+  let body = "";
+
+
+  if(type === "text"){
+
+    body = `
+      <div class="messageText">
+        ${escapeHtml(content)}
+      </div>
+    `;
+
+  }
+
+
+  else if(type === "image"){
+
+    body = `
+
+      <img
+        src="${escapeHtml(
+          message.file_url || content
+        )}"
+        alt="image"
+        loading="lazy"
+      >
+
+    `;
+
+  }
+
+
+  else if(type === "video"){
+
+    body = `
+
+      <video
+        src="${escapeHtml(
+          message.file_url || content
+        )}"
+        controls
+        playsinline
+      ></video>
+
+    `;
+
+  }
+
+
+  else if(type === "audio"){
+
+    body = `
+
+      <audio
+        src="${escapeHtml(
+          message.file_url || content
+        )}"
+        controls
+      ></audio>
+
+    `;
+
+  }
+
+
+  else if(type === "file"){
+
+    const fileUrl =
+      message.file_url || content;
+
+    const fileName =
+      message.file_name ||
+      "File";
+
+
+    body = `
+
+      <div class="fileMessage">
+
+        <div class="fileIcon">
+          📄
+        </div>
+
+        <div style="flex:1">
+
+          <div class="fileName">
+            ${escapeHtml(fileName)}
+          </div>
+
+          <button
+            class="fileOpen"
+            onclick="window.open('${escapeHtml(fileUrl)}','_blank')"
+          >
+            Open
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  else if(type === "location"){
+
+    body = `
+
+      <div>
+
+        📍 Location shared
+
+        <br>
+
+        <button
+          class="fileOpen"
+          onclick="window.open('${escapeHtml(content)}','_blank')"
+        >
+          Open Map
+        </button>
+
+      </div>
+
+    `;
+
+  }
+
+
+  else{
+
+    body = `
+      <div class="messageText">
+        ${escapeHtml(content)}
+      </div>
+    `;
+
+  }
+
+
+  return `
+
+    <div
+      class="messageRow ${mine ? "mine" : ""}"
+    >
+
+      <div class="message">
+
+        ${body}
+
+        <div class="messageTime">
+
+          ${formatTime(
+            message.created_at
+          )}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   MESSAGE REALTIME
 ========================================================= */
 
 function subscribeMessages(){
 
   if(messageSubscription){
 
-    db.removeChannel(
-      messageSubscription
-    );
+    supabaseClient
+      .removeChannel(
+        messageSubscription
+      );
 
   }
 
 
+  if(!currentConversationId){
+    return;
+  }
+
+
   messageSubscription =
-    db
+    supabaseClient
       .channel(
-        "messages-" +
-        currentConversation
+        "raztara-messages-" +
+        currentConversationId
       )
       .on(
         "postgres_changes",
@@ -2311,16 +2769,13 @@ function subscribeMessages(){
           table:"messages",
           filter:
             "conversation_id=eq." +
-            currentConversation
+            currentConversationId
         },
-        async payload=>{
+        payload => {
 
-          await renderMessage(
-            payload.new,
-            true
+          appendMessage(
+            payload.new
           );
-
-          scrollMessages();
 
         }
       )
@@ -2330,344 +2785,15 @@ function subscribeMessages(){
 
 
 /* =========================================================
-   RENDER MESSAGE
+   APPEND MESSAGE
 ========================================================= */
 
-async function renderMessage(
-  message,
-  append
-){
-
-  const box =
-    document.getElementById(
-      "messages"
-    );
-
-
-  const row =
-    document.createElement(
-      "div"
-    );
-
-  row.className =
-    "messageRow";
-
+function appendMessage(message){
 
   if(
-    message.sender_id ===
-    currentUser.id
-  ){
-
-    row.classList.add(
-      "mine"
-    );
-
-  }
-
-
-  const bubble =
-    document.createElement(
-      "div"
-    );
-
-  bubble.className =
-    "message";
-
-
-  if(
-    message.message_type ===
-    "text"
-  ){
-
-    const text =
-      document.createElement(
-        "div"
-      );
-
-    text.className =
-      "messageText";
-
-    text.textContent =
-      message.content || "";
-
-    bubble.appendChild(
-      text
-    );
-
-  }
-
-
-  else if(
-    message.message_type ===
-      "image" ||
-
-    message.message_type ===
-      "video" ||
-
-    message.message_type ===
-      "audio" ||
-
-    message.message_type ===
-      "file"
-  ){
-
-    const signedUrl =
-      await getSignedUrl(
-        message.file_url
-      );
-
-
-    if(!signedUrl){
-
-      bubble.textContent =
-        "File unavailable";
-
-    }else{
-
-      if(
-        message.message_type ===
-        "image"
-      ){
-
-        const img =
-          document.createElement(
-            "img"
-          );
-
-        img.src =
-          signedUrl;
-
-        img.loading =
-          "lazy";
-
-        bubble.appendChild(
-          img
-        );
-
-
-      }else if(
-        message.message_type ===
-        "video"
-      ){
-
-        const video =
-          document.createElement(
-            "video"
-          );
-
-        video.src =
-          signedUrl;
-
-        video.controls =
-          true;
-
-        video.playsInline =
-          true;
-
-        bubble.appendChild(
-          video
-        );
-
-
-      }else if(
-        message.message_type ===
-        "audio"
-      ){
-
-        const audio =
-          document.createElement(
-            "audio"
-          );
-
-        audio.src =
-          signedUrl;
-
-        audio.controls =
-          true;
-
-        bubble.appendChild(
-          audio
-        );
-
-
-      }else{
-
-        const fileBox =
-          document.createElement(
-            "div"
-          );
-
-        fileBox.className =
-          "fileMessage";
-
-
-        const icon =
-          document.createElement(
-            "div"
-          );
-
-        icon.className =
-          "fileIcon";
-
-        icon.textContent =
-          "📄";
-
-
-        const info =
-          document.createElement(
-            "div"
-          );
-
-        info.style.flex =
-          "1";
-
-
-        const name =
-          document.createElement(
-            "div"
-          );
-
-        name.className =
-          "fileName";
-
-        name.textContent =
-          message.content ||
-          "File";
-
-
-        const open =
-          document.createElement(
-            "button"
-          );
-
-        open.className =
-          "fileOpen";
-
-        open.textContent =
-          "Open";
-
-
-        open.onclick =
-          ()=>{
-            window.open(
-              signedUrl,
-              "_blank"
-            );
-          };
-
-
-        info.appendChild(
-          name
-        );
-
-        info.appendChild(
-          open
-        );
-
-
-        fileBox.appendChild(
-          icon
-        );
-
-        fileBox.appendChild(
-          info
-        );
-
-
-        bubble.appendChild(
-          fileBox
-        );
-
-      }
-
-    }
-
-  }
-
-
-  else if(
-    message.message_type ===
-    "location"
-  ){
-
-    const button =
-      document.createElement(
-        "button"
-      );
-
-    button.className =
-      "primary";
-
-    button.textContent =
-      "📍 Open Location";
-
-
-    button.onclick =
-      ()=>{
-        window.open(
-          message.content,
-          "_blank"
-        );
-      };
-
-
-    bubble.appendChild(
-      button
-    );
-
-  }
-
-
-  const time =
-    document.createElement(
-      "div"
-    );
-
-  time.className =
-    "messageTime";
-
-  time.textContent =
-    formatTime(
-      message.created_at
-    );
-
-
-  bubble.appendChild(
-    time
-  );
-
-
-  row.appendChild(
-    bubble
-  );
-
-
-  box.appendChild(
-    row
-  );
-
-}
-
-
-/* =========================================================
-   SEND TEXT
-========================================================= */
-
-async function sendMessage(){
-
-  const input =
-    document.getElementById(
-      "messageInput"
-    );
-
-
-  const text =
-    input.value.trim();
-
-
-  if(
-    !text ||
-    !currentConversation
+    !message ||
+    message.conversation_id !==
+    currentConversationId
   ){
 
     return;
@@ -2675,48 +2801,137 @@ async function sendMessage(){
   }
 
 
+  const container =
+    $("messages");
+
+
+  const empty =
+    container.querySelector(
+      ".empty"
+    );
+
+
+  if(empty){
+    container.innerHTML = "";
+  }
+
+
+  container.insertAdjacentHTML(
+    "beforeend",
+    renderMessage(message)
+  );
+
+
+  scrollMessagesToBottom();
+
+}
+
+
+function scrollMessagesToBottom(){
+
+  const container =
+    $("messages");
+
+
+  if(!container){
+    return;
+  }
+
+
+  setTimeout(()=>{
+
+    container.scrollTop =
+      container.scrollHeight;
+
+  },50);
+
+}
+
+
+/* =========================================================
+   SEND MESSAGE
+========================================================= */
+
+async function sendMessage(){
+
+  const input =
+    $("messageInput");
+
+
+  const content =
+    input.value.trim();
+
+
+  if(!content){
+    return;
+  }
+
+
+  if(!currentConversationId){
+
+    showToast(
+      "আগে একটি chat খুলুন"
+    );
+
+    return;
+  }
+
+
   input.value = "";
 
 
-  const {
-    error
-  } =
-  await db
-    .from("messages")
-    .insert({
+  try{
 
-      conversation_id:
-        currentConversation,
+    const { error } =
+      await supabaseClient
+        .from("messages")
+        .insert({
 
-      sender_id:
-        currentUser.id,
+          conversation_id:
+            currentConversationId,
 
-      content:
-        text,
+          sender_id:
+            currentUser.id,
 
-      message_type:
-        "text"
+          content:
+            content,
 
-    });
+          message_type:
+            "text"
+
+        });
 
 
-  if(error){
+    if(error){
+      throw error;
+    }
 
-    toast(
-      error.message
+
+  }catch(error){
+
+    console.error(
+      "Send message error:",
+      error
     );
 
     input.value =
-      text;
+      content;
+
+    showToast(
+      error.message ||
+      "Message পাঠানো যায়নি"
+    );
 
   }
 
 }
 
 
-function messageKeyDown(
-  event
-){
+/* =========================================================
+   ENTER TO SEND
+========================================================= */
+
+function messageKeyDown(event){
 
   if(
     event.key === "Enter" &&
@@ -2738,333 +2953,234 @@ function messageKeyDown(
 
 function chooseFile(){
 
-  document
-    .getElementById(
-      "fileInput"
-    )
-    .click();
+  $("fileInput").click();
 
 }
 
 
 /* =========================================================
-   UPLOAD FILE
+   FILE UPLOAD
 ========================================================= */
 
-async function uploadSelectedFile(
-  event
-){
+async function uploadSelectedFile(event){
 
   const file =
-    event.target.files[0];
+    event.target.files?.[0];
 
 
   event.target.value = "";
 
 
-  if(!file)
+  if(!file){
     return;
+  }
 
 
-  if(!currentConversation){
+  if(!currentConversationId){
 
-    toast(
+    showToast(
       "আগে একটি chat খুলুন"
     );
 
     return;
-
   }
 
 
-  if(
-    file.size >
-    50 * 1024 * 1024
-  ){
+  const maxSize =
+    6 * 1024 * 1024;
 
-    toast(
-      "ফাইল 50 MB-এর বেশি হতে পারবে না"
+
+  if(file.size > maxSize){
+
+    showToast(
+      "File সর্বোচ্চ 6 MB হতে পারবে"
     );
 
     return;
-
   }
 
 
-  toast(
-    "Uploading..."
-  );
+  try{
 
-
-  let messageType =
-    "file";
-
-
-  if(
-    file.type.startsWith(
-      "image/"
-    )
-  ){
-
-    messageType =
-      "image";
-
-  }else if(
-    file.type.startsWith(
-      "video/"
-    )
-  ){
-
-    messageType =
-      "video";
-
-  }
-
-
-  const safeName =
-    file.name
-      .replace(
-        /[^a-zA-Z0-9._-]/g,
-        "_"
-      );
-
-
-  const random =
-    crypto.randomUUID();
-
-
-  const path =
-    currentUser.id +
-    "/" +
-    currentConversation +
-    "/" +
-    random +
-    "-" +
-    safeName;
-
-
-  const {
-    data,
-    error
-  } =
-  await db.storage
-    .from("raztara-media")
-    .upload(
-      path,
-      file,
-      {
-        contentType:
-          file.type ||
-          "application/octet-stream",
-
-        upsert:false
-      }
+    showToast(
+      "File upload হচ্ছে..."
     );
 
 
-  if(error){
+    const safeName =
+      file.name
+        .replace(
+          /[^a-zA-Z0-9._-]/g,
+          "_"
+        );
 
-    toast(
-      error.message
+
+    const path =
+      currentUser.id +
+      "/" +
+      Date.now() +
+      "_" +
+      safeName;
+
+
+    const { error:uploadError } =
+      await supabaseClient
+        .storage
+        .from("post-images")
+        .upload(
+          path,
+          file,
+          {
+            upsert:false
+          }
+        );
+
+
+    if(uploadError){
+      throw uploadError;
+    }
+
+
+    const { data:urlData } =
+      supabaseClient
+        .storage
+        .from("post-images")
+        .getPublicUrl(path);
+
+
+    const fileUrl =
+      urlData.publicUrl;
+
+
+    let messageType =
+      "file";
+
+
+    if(
+      file.type.startsWith(
+        "image/"
+      )
+    ){
+
+      messageType =
+        "image";
+
+    }else if(
+      file.type.startsWith(
+        "video/"
+      )
+    ){
+
+      messageType =
+        "video";
+
+    }
+
+
+    const { error:messageError } =
+      await supabaseClient
+        .from("messages")
+        .insert({
+
+          conversation_id:
+            currentConversationId,
+
+          sender_id:
+            currentUser.id,
+
+          content:
+            fileUrl,
+
+          message_type:
+            messageType,
+
+          file_url:
+            fileUrl,
+
+          file_name:
+            file.name
+
+        });
+
+
+    if(messageError){
+      throw messageError;
+    }
+
+
+    showToast(
+      "File পাঠানো হয়েছে"
     );
 
-    return;
 
-  }
+  }catch(error){
 
-
-  const {
-    error:messageError
-  } =
-  await db
-    .from("messages")
-    .insert({
-
-      conversation_id:
-        currentConversation,
-
-      sender_id:
-        currentUser.id,
-
-      content:
-        file.name,
-
-      message_type:
-        messageType,
-
-      file_url:
-        data.path
-
-    });
-
-
-  if(messageError){
-
-    await db.storage
-      .from("raztara-media")
-      .remove([
-        data.path
-      ]);
-
-
-    toast(
-      messageError.message
+    console.error(
+      "Upload error:",
+      error
     );
 
-    return;
+    showToast(
+      error.message ||
+      "File upload করা যায়নি"
+    );
 
   }
-
-
-  toast(
-    "Sent ✓"
-  );
 
 }
 
 
 /* =========================================================
-   SIGNED URL
-========================================================= */
-
-async function getSignedUrl(
-  path
-){
-
-  if(!path)
-    return null;
-
-
-  if(
-    path.startsWith(
-      "http://"
-    ) ||
-    path.startsWith(
-      "https://"
-    )
-  ){
-
-    return path;
-
-  }
-
-
-  const {
-    data,
-    error
-  } =
-  await db.storage
-    .from("raztara-media")
-    .createSignedUrl(
-      path,
-      60 * 60
-    );
-
-
-  if(error){
-
-    console.log(error);
-
-    return null;
-
-  }
-
-
-  return data.signedUrl;
-
-}
-
-
-/* =========================================================
-   VOICE MESSAGE
+   VOICE RECORDING
 ========================================================= */
 
 async function toggleRecording(){
 
-  if(recording){
+  if(
+    mediaRecorder &&
+    mediaRecorder.state === "recording"
+  ){
 
-    stopRecording();
+    mediaRecorder.stop();
 
-  }else{
-
-    startRecording();
-
+    return;
   }
 
-}
 
+  if(!currentConversationId){
 
-async function startRecording(){
-
-  if(!currentConversation){
-
-    toast(
+    showToast(
       "আগে একটি chat খুলুন"
     );
 
     return;
-
-  }
-
-
-  if(
-    !navigator.mediaDevices ||
-    !navigator.mediaDevices.getUserMedia
-  ){
-
-    toast(
-      "এই browser-এ microphone recording support নেই"
-    );
-
-    return;
-
   }
 
 
   try{
 
     const stream =
-      await navigator
-        .mediaDevices
+      await navigator.mediaDevices
         .getUserMedia({
           audio:true
         });
 
 
-    audioChunks = [];
-
-
-    let options = {};
-
-
-    if(
-      MediaRecorder.isTypeSupported(
-        "audio/webm;codecs=opus"
-      )
-    ){
-
-      options.mimeType =
-        "audio/webm;codecs=opus";
-
-    }
+    recordingChunks = [];
 
 
     mediaRecorder =
       new MediaRecorder(
-        stream,
-        options
+        stream
       );
 
 
     mediaRecorder.ondataavailable =
-      event=>{
+      event => {
 
-        if(
-          event.data &&
-          event.data.size > 0
-        ){
+        if(event.data.size > 0){
 
-          audioChunks.push(
+          recordingChunks.push(
             event.data
           );
 
@@ -3074,19 +3190,26 @@ async function startRecording(){
 
 
     mediaRecorder.onstop =
-      async()=>{
+      async () => {
 
         stream
           .getTracks()
           .forEach(
-            track=>
+            track =>
               track.stop()
+          );
+
+
+        $("recordBtn")
+          .classList
+          .remove(
+            "recording"
           );
 
 
         const blob =
           new Blob(
-            audioChunks,
+            recordingChunks,
             {
               type:
                 mediaRecorder.mimeType ||
@@ -3104,34 +3227,27 @@ async function startRecording(){
 
     mediaRecorder.start();
 
-    recording = true;
 
-
-    const btn =
-      document.getElementById(
-        "recordBtn"
+    $("recordBtn")
+      .classList
+      .add(
+        "recording"
       );
 
 
-    btn.classList.add(
-      "recording"
-    );
-
-
-    btn.textContent =
-      "⏹";
-
-
-    toast(
-      "Recording চলছে..."
+    showToast(
+      "Recording চলছে... আবার চাপলে বন্ধ হবে"
     );
 
 
   }catch(error){
 
-    console.log(error);
+    console.error(
+      "Recording error:",
+      error
+    );
 
-    toast(
+    showToast(
       "Microphone permission দিন"
     );
 
@@ -3140,139 +3256,106 @@ async function startRecording(){
 }
 
 
-function stopRecording(){
+/* =========================================================
+   UPLOAD VOICE
+========================================================= */
 
-  if(
-    mediaRecorder &&
-    recording
-  ){
+async function uploadVoice(blob){
 
-    mediaRecorder.stop();
+  try{
+
+    showToast(
+      "Voice message upload হচ্ছে..."
+    );
+
+
+    const path =
+      currentUser.id +
+      "/voice_" +
+      Date.now() +
+      ".webm";
+
+
+    const { error:uploadError } =
+      await supabaseClient
+        .storage
+        .from("post-images")
+        .upload(
+          path,
+          blob,
+          {
+            contentType:
+              "audio/webm",
+            upsert:false
+          }
+        );
+
+
+    if(uploadError){
+      throw uploadError;
+    }
+
+
+    const { data:urlData } =
+      supabaseClient
+        .storage
+        .from("post-images")
+        .getPublicUrl(path);
+
+
+    const url =
+      urlData.publicUrl;
+
+
+    const { error:messageError } =
+      await supabaseClient
+        .from("messages")
+        .insert({
+
+          conversation_id:
+            currentConversationId,
+
+          sender_id:
+            currentUser.id,
+
+          content:
+            url,
+
+          message_type:
+            "audio",
+
+          file_url:
+            url,
+
+          file_name:
+            "Voice message"
+
+        });
+
+
+    if(messageError){
+      throw messageError;
+    }
+
+
+    showToast(
+      "Voice message পাঠানো হয়েছে"
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "Voice upload error:",
+      error
+    );
+
+    showToast(
+      error.message ||
+      "Voice message পাঠানো যায়নি"
+    );
 
   }
-
-
-  recording = false;
-
-
-  const btn =
-    document.getElementById(
-      "recordBtn"
-    );
-
-
-  btn.classList.remove(
-    "recording"
-  );
-
-
-  btn.textContent =
-    "🎤";
-
-}
-
-
-async function uploadVoice(
-  blob
-){
-
-  toast(
-    "Voice upload হচ্ছে..."
-  );
-
-
-  const ext =
-    blob.type.includes("ogg")
-      ? "ogg"
-      : "webm";
-
-
-  const path =
-    currentUser.id +
-    "/" +
-    currentConversation +
-    "/" +
-    crypto.randomUUID() +
-    "." +
-    ext;
-
-
-  const {
-    data,
-    error
-  } =
-  await db.storage
-    .from("raztara-media")
-    .upload(
-      path,
-      blob,
-      {
-        contentType:
-          blob.type ||
-          "audio/webm",
-
-        upsert:false
-      }
-    );
-
-
-  if(error){
-
-    toast(
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  const {
-    error:messageError
-  } =
-  await db
-    .from("messages")
-    .insert({
-
-      conversation_id:
-        currentConversation,
-
-      sender_id:
-        currentUser.id,
-
-      content:
-        "Voice message",
-
-      message_type:
-        "audio",
-
-      file_url:
-        data.path
-
-    });
-
-
-  if(messageError){
-
-    await db.storage
-      .from("raztara-media")
-      .remove([
-        data.path
-      ]);
-
-
-    toast(
-      messageError.message
-    );
-
-    return;
-
-  }
-
-
-  toast(
-    "Voice sent ✓"
-  );
 
 }
 
@@ -3281,22 +3364,36 @@ async function uploadVoice(
    LOCATION
 ========================================================= */
 
-async function sendLocation(){
+async function shareLocation(){
 
-  if(!navigator.geolocation){
+  if(!currentConversationId){
 
-    toast(
-      "Location support নেই"
+    showToast(
+      "আগে একটি chat খুলুন"
     );
 
     return;
-
   }
+
+
+  if(!navigator.geolocation){
+
+    showToast(
+      "এই browser location support করে না"
+    );
+
+    return;
+  }
+
+
+  showToast(
+    "Location নেওয়া হচ্ছে..."
+  );
 
 
   navigator.geolocation.getCurrentPosition(
 
-    async position=>{
+    async position => {
 
       const lat =
         position.coords.latitude;
@@ -3312,42 +3409,69 @@ async function sendLocation(){
         lng;
 
 
-      const {
-        error
-      } =
-      await db
-        .from("messages")
-        .insert({
+      try{
 
-          conversation_id:
-            currentConversation,
+        const { error } =
+          await supabaseClient
+            .from("messages")
+            .insert({
 
-          sender_id:
-            currentUser.id,
+              conversation_id:
+                currentConversationId,
 
-          content:
-            mapUrl,
+              sender_id:
+                currentUser.id,
 
-          message_type:
-            "location"
+              content:
+                mapUrl,
 
-        });
+              message_type:
+                "location"
+
+            });
 
 
-      if(error){
+        if(error){
+          throw error;
+        }
 
-        toast(
-          error.message
+
+        showToast(
+          "Location পাঠানো হয়েছে"
+        );
+
+
+      }catch(error){
+
+        console.error(
+          "Location error:",
+          error
+        );
+
+        showToast(
+          "Location পাঠানো যায়নি"
         );
 
       }
 
     },
 
-    ()=>{
-      toast(
+    error => {
+
+      console.error(
+        error
+      );
+
+      showToast(
         "Location permission দিন"
       );
+
+    },
+
+    {
+      enableHighAccuracy:true,
+      timeout:10000,
+      maximumAge:0
     }
 
   );
@@ -3356,507 +3480,372 @@ async function sendLocation(){
 
 
 /* =========================================================
-   CHAT CLOSE
-========================================================= */
-
-function closeChat(){
-
-  if(messageSubscription){
-
-    db.removeChannel(
-      messageSubscription
-    );
-
-    messageSubscription =
-      null;
-
-  }
-
-
-  currentConversation =
-    null;
-
-  currentTarget =
-    null;
-
-
-  document
-    .getElementById(
-      "chatScreen"
-    )
-    .classList.add(
-      "hidden"
-    );
-
-
-  loadChatList();
-
-}
-
-
-/* =========================================================
-   CHAT LIST
-========================================================= */
-
-async function loadChatList(){
-
-  const box =
-    document.getElementById(
-      "chatList"
-    );
-
-
-  if(!currentUser)
-    return;
-
-
-  const {
-    data:members,
-    error
-  } =
-  await db
-    .from("conversation_members")
-    .select(
-      "conversation_id"
-    )
-    .eq(
-      "user_id",
-      currentUser.id
-    );
-
-
-  if(error){
-
-    box.innerHTML =
-      `<div class="empty">
-        ${escapeHtml(error.message)}
-      </div>`;
-
-    return;
-
-  }
-
-
-  if(!members?.length){
-
-    box.innerHTML =
-      `<div class="empty">
-        এখনো কোনো chat নেই।<br><br>
-        উপরের search box দিয়ে user খুঁজে chat শুরু করুন।
-      </div>`;
-
-    return;
-
-  }
-
-
-  const ids =
-    members.map(
-      x=>x.conversation_id
-    );
-
-
-  const {
-    data:conversations
-  } =
-  await db
-    .from("conversations")
-    .select("*")
-    .in(
-      "id",
-      ids
-    )
-    .order(
-      "created_at",
-      {
-        ascending:false
-      }
-    );
-
-
-  box.innerHTML = "";
-
-
-  for(
-    const conversation
-    of conversations || []
-  ){
-
-    const {
-      data:otherMembers
-    } =
-    await db
-      .from("conversation_members")
-      .select(
-        "user_id"
-      )
-      .eq(
-        "conversation_id",
-        conversation.id
-      )
-      .neq(
-        "user_id",
-        currentUser.id
-      )
-      .limit(1);
-
-
-    let target = null;
-
-
-    if(
-      otherMembers &&
-      otherMembers.length
-    ){
-
-      const {
-        data:user
-      } =
-      await db
-        .from("profiles")
-        .select("*")
-        .eq(
-          "id",
-          otherMembers[0].user_id
-        )
-        .single();
-
-
-      target =
-        user;
-
-    }
-
-
-    if(!target)
-      continue;
-
-
-    const item =
-      document.createElement(
-        "div"
-      );
-
-    item.className =
-      "chatItem";
-
-
-    const av =
-      document.createElement(
-        "div"
-      );
-
-    av.className =
-      "avatar";
-
-
-    setAvatar(
-      av,
-      target
-    );
-
-
-    const info =
-      document.createElement(
-        "div"
-      );
-
-
-    const name =
-      document.createElement(
-        "div"
-      );
-
-    name.className =
-      "userName";
-
-    name.textContent =
-      target.full_name ||
-      target.username ||
-      "User";
-
-
-    const uname =
-      document.createElement(
-        "div"
-      );
-
-    uname.className =
-      "userUsername";
-
-    uname.textContent =
-      "@" +
-      (
-        target.username ||
-        ""
-      );
-
-
-    info.appendChild(
-      name
-    );
-
-    info.appendChild(
-      uname
-    );
-
-
-    item.appendChild(
-      av
-    );
-
-    item.appendChild(
-      info
-    );
-
-
-    item.onclick =
-      ()=>openChat(
-        conversation.id,
-        target
-      );
-
-
-    box.appendChild(
-      item
-    );
-
-  }
-
-
-  if(
-    !box.children.length
-  ){
-
-    box.innerHTML =
-      `<div class="empty">
-        কোনো chat পাওয়া যায়নি।
-      </div>`;
-
-  }
-
-}
-
-
-/* =========================================================
-   PROFILE EDIT
+   EDIT PROFILE
 ========================================================= */
 
 async function editProfile(){
 
-  const name =
-    prompt(
-      "আপনার নাম:",
-      currentProfile?.full_name || ""
-    );
-
-
-  if(name === null)
+  if(!currentProfile){
     return;
-
-
-  const username =
-    prompt(
-      "Username:",
-      currentProfile?.username || ""
-    );
-
-
-  if(username === null)
-    return;
-
-
-  const bio =
-    prompt(
-      "Bio:",
-      currentProfile?.bio || ""
-    );
-
-
-  if(bio === null)
-    return;
-
-
-  const {
-    data,
-    error
-  } =
-  await db
-    .from("profiles")
-    .update({
-
-      full_name:
-        name.trim(),
-
-      username:
-        username.trim()
-          .toLowerCase(),
-
-      bio:
-        bio.trim(),
-
-      updated_at:
-        new Date().toISOString()
-
-    })
-    .eq(
-      "id",
-      currentUser.id
-    )
-    .select()
-    .single();
-
-
-  if(error){
-
-    toast(
-      error.message
-    );
-
-    return;
-
   }
 
 
-  currentProfile =
-    data;
+  const currentName =
+    currentProfile.full_name ||
+    "";
+
+
+  const currentBio =
+    currentProfile.bio ||
+    "";
+
+
+  const currentUsername =
+    currentProfile.username ||
+    "";
+
+
+  const main =
+    $("profilePage");
+
+
+  main.innerHTML = `
+
+    <div class="editBox">
+
+      <h2>
+        ✏️ Edit Profile
+      </h2>
+
+
+      <label>
+        নাম
+      </label>
+
+      <input
+        id="editFullName"
+        class="input"
+        value="${escapeHtml(currentName)}"
+      >
+
+
+      <label>
+        Username
+      </label>
+
+      <input
+        id="editUsername"
+        class="input"
+        value="${escapeHtml(currentUsername)}"
+      >
+
+
+      <label>
+        Bio
+      </label>
+
+      <input
+        id="editBio"
+        class="input"
+        value="${escapeHtml(currentBio)}"
+      >
+
+
+      <button
+        class="primary"
+        onclick="saveProfile()"
+      >
+        💾 Save
+      </button>
+
+
+      <button
+        class="secondary"
+        onclick="restoreProfilePage()"
+      >
+        Cancel
+      </button>
+
+    </div>
+
+  `;
+
+}
+
+
+async function saveProfile(){
+
+  const fullName =
+    $("editFullName")
+      .value
+      .trim();
+
+
+  const username =
+    $("editUsername")
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  const bio =
+    $("editBio")
+      .value
+      .trim();
+
+
+  if(!fullName || !username){
+
+    showToast(
+      "নাম এবং Username লাগবে"
+    );
+
+    return;
+  }
+
+
+  try{
+
+    const { data,error } =
+      await supabaseClient
+        .from("profiles")
+        .update({
+
+          full_name:
+            fullName,
+
+          username:
+            username,
+
+          bio:
+            bio
+
+        })
+        .eq(
+          "id",
+          currentUser.id
+        )
+        .select()
+        .single();
+
+
+    if(error){
+      throw error;
+    }
+
+
+    currentProfile =
+      data;
+
+
+    updateProfileUI();
+
+
+    restoreProfilePage();
+
+
+    showToast(
+      "Profile update হয়েছে"
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "Save profile error:",
+      error
+    );
+
+    showToast(
+      error.message ||
+      "Profile save করা যায়নি"
+    );
+
+  }
+
+}
+
+
+function restoreProfilePage(){
+
+  $("profilePage").innerHTML = `
+
+    <div class="profileCard">
+
+      <div
+        id="profileAvatar"
+        class="profileBig"
+      >
+        R
+      </div>
+
+      <h2 id="profileName">
+        User
+      </h2>
+
+      <p id="profileUsername">
+        @username
+      </p>
+
+      <p id="profileBio">
+        raztara user
+      </p>
+
+
+      <div class="profileActions">
+
+        <button
+          class="secondary"
+          onclick="editProfile()"
+        >
+          ✏️ Edit Profile
+        </button>
+
+
+        <button
+          class="secondary"
+          onclick="logout()"
+        >
+          🚪 Logout
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
 
 
   updateProfileUI();
 
+}
 
-  toast(
-    "Profile updated ✓"
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logout(){
+
+  try{
+
+    if(messageSubscription){
+
+      await supabaseClient
+        .removeChannel(
+          messageSubscription
+        );
+
+      messageSubscription =
+        null;
+
+    }
+
+
+    if(chatListSubscription){
+
+      await supabaseClient
+        .removeChannel(
+          chatListSubscription
+        );
+
+      chatListSubscription =
+        null;
+
+    }
+
+
+    if(
+      typeof endRaztaraCall ===
+      "function"
+    ){
+
+      await endRaztaraCall(
+        false
+      );
+
+    }
+
+
+    await supabaseClient.auth.signOut();
+
+
+  }catch(error){
+
+    console.error(
+      "Logout error:",
+      error
+    );
+
+  }
+
+
+  currentUser = null;
+  currentProfile = null;
+  currentChatUser = null;
+  currentConversationId = null;
+
+
+  $("app")
+    .classList
+    .add("hidden");
+
+
+  $("chatScreen")
+    .classList
+    .add("hidden");
+
+
+  $("authScreen")
+    .classList
+    .remove("hidden");
+
+
+  $("email").value = "";
+  $("password").value = "";
+
+
+  showToast(
+    "Logout হয়েছে"
   );
 
 }
 
 
 /* =========================================================
-   NAVIGATION
+   AUTH SESSION CHECK
 ========================================================= */
 
-function changePage(page){
+async function checkSession(){
 
-  document
-    .getElementById(
-      "chatsPage"
-    )
-    .classList.add(
-      "hidden"
+  try{
+
+    const {
+      data:{
+        session
+      }
+    } =
+      await supabaseClient
+        .auth
+        .getSession();
+
+
+    if(session?.user){
+
+      currentUser =
+        session.user;
+
+      await initializeApp();
+
+    }
+
+
+  }catch(error){
+
+    console.error(
+      "Session error:",
+      error
     );
-
-
-  document
-    .getElementById(
-      "callsPage"
-    )
-    .classList.add(
-      "hidden"
-    );
-
-
-  document
-    .getElementById(
-      "profilePage"
-    )
-    .classList.add(
-      "hidden"
-    );
-
-
-  document
-    .getElementById(
-      "navChats"
-    )
-    .classList.remove(
-      "active"
-    );
-
-
-  document
-    .getElementById(
-      "navCalls"
-    )
-    .classList.remove(
-      "active"
-    );
-
-
-  document
-    .getElementById(
-      "navProfile"
-    )
-    .classList.remove(
-      "active"
-    );
-
-
-  if(page === "chats"){
-
-    document
-      .getElementById(
-        "chatsPage"
-      )
-      .classList.remove(
-        "hidden"
-      );
-
-
-    document
-      .getElementById(
-        "navChats"
-      )
-      .classList.add(
-        "active"
-      );
-
-
-    loadChatList();
-
-  }
-
-
-  if(page === "calls"){
-
-    document
-      .getElementById(
-        "callsPage"
-      )
-      .classList.remove(
-        "hidden"
-      );
-
-
-    document
-      .getElementById(
-        "navCalls"
-      )
-      .classList.add(
-        "active"
-      );
-
-  }
-
-
-  if(page === "profile"){
-
-    document
-      .getElementById(
-        "profilePage"
-      )
-      .classList.remove(
-        "hidden"
-      );
-
-
-    document
-      .getElementById(
-        "navProfile"
-      )
-      .classList.add(
-        "active"
-      );
 
   }
 
@@ -3864,31 +3853,100 @@ function changePage(page){
 
 
 /* =========================================================
-   RAZTARA AUDIO + VIDEO CALL
+   AUTH STATE LISTENER
 ========================================================= */
 
+supabaseClient
+  .auth
+  .onAuthStateChange(
+    async (event,session) => {
 
-/* ---------- START CALL ---------- */
+      if(
+        event ===
+        "SIGNED_IN"
+      ){
 
-function startAudioCall(){
+        if(
+          session?.user &&
+          !currentUser
+        ){
 
-  startRaztaraCall(
+          currentUser =
+            session.user;
+
+          await initializeApp();
+
+        }
+
+      }
+
+
+      if(
+        event ===
+        "SIGNED_OUT"
+      ){
+
+        currentUser = null;
+        currentProfile = null;
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   START
+========================================================= */
+
+checkSession();
+   /* =========================================================
+   WEBRTC CALL SYSTEM
+========================================================= */
+
+let callPeer = null;
+let callLocalStream = null;
+let callRemoteStream = null;
+
+let callConversationId = null;
+let callMode = null;
+let callState = "idle";
+
+let callSubscription = null;
+
+let pendingCall = null;
+let pendingIceCandidates = [];
+
+
+/* =========================================================
+   START AUDIO CALL
+========================================================= */
+
+async function startAudioCall(){
+
+  await startRaztaraCall(
     "audio"
   );
 
 }
 
 
-function startVideoCall(){
+/* =========================================================
+   START VIDEO CALL
+========================================================= */
 
-  startRaztaraCall(
+async function startVideoCall(){
+
+  await startRaztaraCall(
     "video"
   );
 
 }
 
 
-/* ---------- OUTGOING CALL ---------- */
+/* =========================================================
+   START CALL
+========================================================= */
 
 async function startRaztaraCall(
   mode
@@ -3896,23 +3954,31 @@ async function startRaztaraCall(
 
   if(!currentUser){
 
-    toast(
+    showToast(
       "আগে Login করুন"
     );
 
     return;
-
   }
 
 
-  if(!currentConversation){
+  if(!currentChatUser){
 
-    toast(
-      "আগে একটি Chat খুলুন"
+    showToast(
+      "যার সাথে call করবেন তাকে নির্বাচন করুন"
     );
 
     return;
+  }
 
+
+  if(!currentConversationId){
+
+    showToast(
+      "Conversation পাওয়া যায়নি"
+    );
+
+    return;
   }
 
 
@@ -3921,41 +3987,45 @@ async function startRaztaraCall(
     "idle"
   ){
 
-    toast(
-      "একটি Call ইতিমধ্যে চলছে"
+    showToast(
+      "আপনি ইতিমধ্যে একটি call-এ আছেন"
     );
 
     return;
-
   }
-
-
-  callMode =
-    mode;
-
-  callConversationId =
-    currentConversation;
-
-  callState =
-    "calling";
-
-
-  showRaztaraCallUI(
-    mode === "video"
-      ? "Video Call"
-      : "Audio Call",
-
-    "Calling...",
-
-    false
-  );
 
 
   try{
 
+    callMode =
+      mode;
+
+    callConversationId =
+      currentConversationId;
+
+    callState =
+      "calling";
+
+
+    showRaztaraCallUI(
+      false
+    );
+
+
+    $("callTitle").textContent =
+      currentChatUser.full_name ||
+      currentChatUser.username ||
+      "User";
+
+
+    $("callStatus").textContent =
+      mode === "video"
+        ? "Video calling..."
+        : "Calling...";
+
+
     callLocalStream =
-      await navigator
-        .mediaDevices
+      await navigator.mediaDevices
         .getUserMedia({
 
           audio:true,
@@ -3966,47 +4036,20 @@ async function startRaztaraCall(
         });
 
 
-    createRaztaraPeer();
+    if(mode === "video"){
+
+      $("callVideos")
+        .classList
+        .remove("hidden");
 
 
-    callLocalStream
-      .getTracks()
-      .forEach(
-        track=>{
-
-          callPeer.addTrack(
-            track,
-            callLocalStream
-          );
-
-        }
-      );
-
-
-    /* Local video preview */
-
-    if(
-      mode === "video"
-    ){
-
-      const localVideo =
-        document.getElementById(
-          "callLocalVideo"
-        );
-
-      if(localVideo){
-
-        localVideo.srcObject =
-          callLocalStream;
-
-        localVideo.play()
-          .catch(
-            ()=>{}
-          );
-
-      }
+      $("callLocalVideo").srcObject =
+        callLocalStream;
 
     }
+
+
+    createRaztaraPeer();
 
 
     const offer =
@@ -4023,13 +4066,8 @@ async function startRaztaraCall(
     await sendRaztaraCallSignal(
       "offer",
       {
-
-        mode:
-          mode,
-
-        sdp:
-          offer
-
+        offer:offer,
+        mode:mode
       }
     );
 
@@ -4037,92 +4075,93 @@ async function startRaztaraCall(
   }catch(error){
 
     console.error(
+      "Start call error:",
       error
     );
 
 
-    toast(
-      "Microphone/Camera permission দিন"
+    showToast(
+      error.message ||
+      "Call শুরু করা যায়নি"
     );
 
 
-    endRaztaraCall(
-      false
-    );
+    await endRaztaraCall();
 
   }
 
 }
 
 
-/* ---------- PEER CONNECTION ---------- */
+/* =========================================================
+   CREATE PEER
+========================================================= */
 
 function createRaztaraPeer(){
-
-  if(callPeer)
-    return;
-
-
-  callPeer =
-    new RTCPeerConnection(
-      CALL_ICE_SERVERS
-    );
-
 
   callRemoteStream =
     new MediaStream();
 
 
-  const remoteVideo =
-    document.getElementById(
-      "callRemoteVideo"
-    );
-
-
-  remoteVideo.srcObject =
+  $("callRemoteVideo").srcObject =
     callRemoteStream;
 
 
+  callPeer =
+    new RTCPeerConnection({
+
+      iceServers:[
+        {
+          urls:
+            "stun:stun.l.google.com:19302"
+        },
+        {
+          urls:
+            "stun:stun1.l.google.com:19302"
+        }
+      ]
+
+    });
+
+
+  callLocalStream
+    ?.getTracks()
+    .forEach(
+      track => {
+
+        callPeer.addTrack(
+          track,
+          callLocalStream
+        );
+
+      }
+    );
+
+
   callPeer.ontrack =
-    event=>{
+    event => {
 
       event.streams[0]
         ?.getTracks()
         .forEach(
-          track=>{
+          track => {
 
-            if(
-              !callRemoteStream
-                .getTracks()
-                .some(
-                  t =>
-                    t.id ===
-                    track.id
-                )
-            ){
-
-              callRemoteStream
-                .addTrack(
-                  track
-                );
-
-            }
+            callRemoteStream
+              .addTrack(track);
 
           }
         );
 
 
-      remoteVideo
-        .play()
-        .catch(
-          ()=>{}
-        );
+      $("callRemoteVideo")
+        .srcObject =
+        callRemoteStream;
 
     };
 
 
   callPeer.onicecandidate =
-    async event=>{
+    async event => {
 
       if(
         event.candidate &&
@@ -4132,11 +4171,8 @@ function createRaztaraPeer(){
         await sendRaztaraCallSignal(
           "ice",
           {
-
             candidate:
               event.candidate
-                .toJSON()
-
           }
         );
 
@@ -4146,14 +4182,16 @@ function createRaztaraPeer(){
 
 
   callPeer.onconnectionstatechange =
-    ()=>{
-
-      if(!callPeer)
-        return;
-
+    () => {
 
       const state =
         callPeer.connectionState;
+
+
+      console.log(
+        "Call connection:",
+        state
+      );
 
 
       if(
@@ -4161,12 +4199,13 @@ function createRaztaraPeer(){
         "connected"
       ){
 
-        document
-          .getElementById(
-            "callStatus"
-          )
-          .textContent =
-            "Connected";
+        callState =
+          "connected";
+
+
+        $("callStatus").textContent =
+          "Connected";
+
 
       }
 
@@ -4176,13 +4215,34 @@ function createRaztaraPeer(){
         "failed"
       ){
 
-        toast(
+        showToast(
           "Call connection failed"
         );
 
+        endRaztaraCall();
 
-        endRaztaraCall(
-          false
+      }
+
+
+      if(
+        state ===
+        "disconnected"
+      ){
+
+        setTimeout(
+          () => {
+
+            if(
+              callState ===
+              "connected"
+            ){
+
+              endRaztaraCall();
+
+            }
+
+          },
+          3000
         );
 
       }
@@ -4192,43 +4252,52 @@ function createRaztaraPeer(){
 }
 
 
-/* ---------- SEND SIGNAL ---------- */
+/* =========================================================
+   SEND CALL SIGNAL
+========================================================= */
 
 async function sendRaztaraCallSignal(
-  signalType,
+  type,
   payload
 ){
 
   if(
     !currentUser ||
     !callConversationId
-  )
+  ){
+
     return;
+  }
 
 
-  const {
-    error
-  } =
-  await db
-    .from("call_signals")
-    .insert({
+  try{
 
-      conversation_id:
-        callConversationId,
+    const { error } =
+      await supabaseClient
+        .from("call_signals")
+        .insert({
 
-      sender_id:
-        currentUser.id,
+          conversation_id:
+            callConversationId,
 
-      signal_type:
-        signalType,
+          sender_id:
+            currentUser.id,
 
-      payload:
-        payload || {}
+          type:
+            type,
 
-    });
+          payload:
+            payload
+
+        });
 
 
-  if(error){
+    if(error){
+      throw error;
+    }
+
+
+  }catch(error){
 
     console.error(
       "Call signal error:",
@@ -4240,72 +4309,85 @@ async function sendRaztaraCallSignal(
 }
 
 
-/* ---------- SIGNALING ---------- */
+/* =========================================================
+   CALL SIGNALING SUBSCRIPTION
+========================================================= */
 
 function startRaztaraCallSignaling(){
 
-  if(
-    callSubscription ||
-    !currentUser
-  )
+  if(!currentUser){
     return;
+  }
+
+
+  if(callSubscription){
+
+    supabaseClient
+      .removeChannel(
+        callSubscription
+      );
+
+  }
 
 
   callSubscription =
-    db
+    supabaseClient
       .channel(
-        "raztara-call-" +
+        "raztara-call-signals-" +
         currentUser.id
       )
-
       .on(
+
         "postgres_changes",
+
         {
-
-          event:
-            "INSERT",
-
-          schema:
-            "public",
-
-          table:
-            "call_signals"
-
+          event:"INSERT",
+          schema:"public",
+          table:"call_signals"
         },
 
-        async payload=>{
+        async payload => {
 
           await handleRaztaraCallSignal(
             payload.new
           );
 
         }
-      )
 
+      )
       .subscribe();
 
 }
 
 
-/* ---------- RECEIVE SIGNAL ---------- */
+/* =========================================================
+   HANDLE CALL SIGNAL
+========================================================= */
 
 async function handleRaztaraCallSignal(
   signal
 ){
 
-  if(!signal)
+  if(!signal){
     return;
+  }
 
 
   if(
     signal.sender_id ===
     currentUser.id
-  )
+  ){
+
     return;
+  }
+
+
+  const payload =
+    signal.payload || {};
 
 
   if(
-    signal.signal_type ===
+    signal.type ===
     "offer"
   ){
 
@@ -4314,54 +4396,67 @@ async function handleRaztaraCallSignal(
     );
 
     return;
-
   }
 
 
   if(
-    signal.conversation_id !==
-    callConversationId
-  )
-    return;
-
-
-  if(
-    signal.signal_type ===
+    signal.type ===
     "answer"
   ){
 
-    if(callPeer){
+    if(
+      !callPeer ||
+      !payload.answer
+    ){
+
+      return;
+    }
+
+
+    try{
 
       await callPeer
         .setRemoteDescription(
-
           new RTCSessionDescription(
-            signal.payload.sdp
+            payload.answer
           )
-
         );
+
+
+      callState =
+        "connected";
+
+
+      $("callStatus").textContent =
+        "Connected";
 
 
       await addPendingIce();
 
+    }catch(error){
+
+      console.error(
+        "Answer error:",
+        error
+      );
+
     }
 
     return;
-
   }
 
 
   if(
-    signal.signal_type ===
+    signal.type ===
     "ice"
   ){
 
-    const candidate =
-      signal.payload?.candidate;
+    if(
+      !payload.candidate
+    ){
 
-
-    if(!candidate)
       return;
+    }
 
 
     if(
@@ -4373,16 +4468,15 @@ async function handleRaztaraCallSignal(
 
         await callPeer
           .addIceCandidate(
-
             new RTCIceCandidate(
-              candidate
+              payload.candidate
             )
-
           );
 
       }catch(error){
 
         console.error(
+          "ICE error:",
           error
         );
 
@@ -4392,57 +4486,60 @@ async function handleRaztaraCallSignal(
 
       pendingIceCandidates
         .push(
-          candidate
+          payload.candidate
         );
 
     }
 
     return;
-
   }
 
 
   if(
-    signal.signal_type ===
-    "hangup"
-  ){
-
-    toast(
-      "Call ended"
-    );
-
-
-    endRaztaraCall(
-      false
-    );
-
-  }
-
-
-  if(
-    signal.signal_type ===
+    signal.type ===
     "reject"
   ){
 
-    toast(
+    showToast(
       "Call rejected"
     );
 
 
-    endRaztaraCall(
-      false
-    );
+    await endRaztaraCall();
 
+    return;
+  }
+
+
+  if(
+    signal.type ===
+    "end"
+  ){
+
+    await endRaztaraCall();
+
+    return;
   }
 
 }
 
 
-/* ---------- INCOMING CALL ---------- */
+/* =========================================================
+   RECEIVE OFFER
+========================================================= */
 
 async function receiveRaztaraOffer(
   signal
 ){
+
+  const payload =
+    signal.payload || {};
+
+
+  if(!payload.offer){
+    return;
+  }
+
 
   if(
     callState !==
@@ -4450,126 +4547,244 @@ async function receiveRaztaraOffer(
   ){
 
     return;
-
   }
+
+
+  const senderProfile =
+    await getProfileById(
+      signal.sender_id
+    );
+
+
+  pendingCall = {
+
+    signal:signal,
+
+    senderId:
+      signal.sender_id,
+
+    conversationId:
+      signal.conversation_id,
+
+    offer:
+      payload.offer,
+
+    mode:
+      payload.mode ||
+      "audio",
+
+    profile:
+      senderProfile
+
+  };
 
 
   callConversationId =
     signal.conversation_id;
 
-
   callMode =
-    signal.payload?.mode ===
-    "video"
-      ? "video"
-      : "audio";
-
+    pendingCall.mode;
 
   callState =
     "incoming";
 
 
-  pendingCall = {
-
-    sdp:
-      signal.payload.sdp
-
-  };
-
-
   showRaztaraCallUI(
-
-    callMode === "video"
-      ? "Incoming Video Call"
-      : "Incoming Audio Call",
-
-    "Someone is calling you...",
-
     true
-
   );
+
+
+  const profile =
+    senderProfile || {};
+
+
+  $("callTitle").textContent =
+    profile.full_name ||
+    profile.username ||
+    "Incoming Call";
+
+
+  $("callStatus").textContent =
+    pendingCall.mode === "video"
+      ? "Incoming video call..."
+      : "Incoming audio call...";
+
+
+  $("callIncomingAvatar").textContent =
+    initials(
+      profile.full_name ||
+      profile.username ||
+      "R"
+    );
 
 }
 
 
-/* ---------- ACCEPT ---------- */
+/* =========================================================
+   GET PROFILE
+========================================================= */
+
+async function getProfileById(
+  userId
+){
+
+  try{
+
+    const { data,error } =
+      await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq(
+          "id",
+          userId
+        )
+        .maybeSingle();
+
+
+    if(error){
+
+      console.error(
+        "Get profile error:",
+        error
+      );
+
+      return null;
+    }
+
+
+    return data;
+
+  }catch(error){
+
+    console.error(
+      error
+    );
+
+    return null;
+  }
+
+}
+
+
+/* =========================================================
+   SHOW CALL UI
+========================================================= */
+
+function showRaztaraCallUI(
+  incoming
+){
+
+  $("callOverlay")
+    .classList
+    .remove("hidden");
+
+
+  $("callVideos")
+    .classList
+    .toggle(
+      "hidden",
+      callMode !== "video"
+    );
+
+
+  if(!incoming){
+
+    $("callActions").innerHTML = `
+
+      <button
+        class="callAction end"
+        onclick="endRaztaraCall()"
+      >
+        🔴 End
+      </button>
+
+    `;
+
+  }else{
+
+    $("callActions").innerHTML = `
+
+      <button
+        class="callAction accept"
+        onclick="acceptRaztaraCall()"
+      >
+        📞 Accept
+      </button>
+
+      <button
+        class="callAction reject"
+        onclick="rejectRaztaraCall()"
+      >
+        ❌ Reject
+      </button>
+
+    `;
+
+  }
+
+}
+
+
+/* =========================================================
+   ACCEPT CALL
+========================================================= */
 
 async function acceptRaztaraCall(){
 
-  if(
-    !pendingCall ||
-    callState !==
-    "incoming"
-  )
+  if(!pendingCall){
+
     return;
+  }
 
 
   try{
 
+    callState =
+      "connecting";
+
+
+    $("callStatus").textContent =
+      "Connecting...";
+
+
     callLocalStream =
-      await navigator
-        .mediaDevices
+      await navigator.mediaDevices
         .getUserMedia({
 
           audio:true,
 
           video:
-            callMode ===
+            pendingCall.mode ===
             "video"
 
         });
 
 
-    createRaztaraPeer();
-
-
-    callLocalStream
-      .getTracks()
-      .forEach(
-        track=>{
-
-          callPeer.addTrack(
-            track,
-            callLocalStream
-          );
-
-        }
-      );
-
-
-    /* Local video preview */
-
     if(
-      callMode ===
+      pendingCall.mode ===
       "video"
     ){
 
-      const localVideo =
-        document.getElementById(
-          "callLocalVideo"
-        );
+      $("callVideos")
+        .classList
+        .remove("hidden");
 
 
-      if(localVideo){
-
-        localVideo.srcObject =
-          callLocalStream;
-
-        localVideo.play()
-          .catch(
-            ()=>{}
-          );
-
-      }
+      $("callLocalVideo")
+        .srcObject =
+        callLocalStream;
 
     }
+
+
+    createRaztaraPeer();
 
 
     await callPeer
       .setRemoteDescription(
 
         new RTCSessionDescription(
-          pendingCall.sdp
+          pendingCall.offer
         )
 
       );
@@ -4592,92 +4807,97 @@ async function acceptRaztaraCall(){
     await sendRaztaraCallSignal(
       "answer",
       {
-
-        sdp:
-          answer
-
+        answer:answer
       }
     );
-
-
-    pendingCall =
-      null;
 
 
     callState =
       "connected";
 
 
-    showRaztaraCallUI(
+    $("callStatus").textContent =
+      "Connected";
 
-      callMode === "video"
-        ? "Video Call"
-        : "Audio Call",
 
-      "Connecting...",
-
-      false
-
-    );
+    pendingCall =
+      null;
 
 
   }catch(error){
 
     console.error(
+      "Accept call error:",
       error
     );
 
 
-    toast(
-      "Call গ্রহণ করা যায়নি"
+    showToast(
+      error.message ||
+      "Call accept করা যায়নি"
     );
 
 
-    endRaztaraCall(
-      false
-    );
+    await endRaztaraCall();
 
   }
 
 }
 
 
-/* ---------- REJECT ---------- */
+/* =========================================================
+   REJECT CALL
+========================================================= */
 
 async function rejectRaztaraCall(){
 
-  await sendRaztaraCallSignal(
-    "reject",
-    {}
-  );
+  if(
+    pendingCall &&
+    callConversationId
+  ){
+
+    await sendRaztaraCallSignal(
+      "reject",
+      {}
+    );
+
+  }
 
 
   pendingCall =
     null;
 
 
-  endRaztaraCall(
-    false
-  );
+  await endRaztaraCall();
 
 }
 
 
-/* ---------- ICE QUEUE ---------- */
+/* =========================================================
+   ADD PENDING ICE
+========================================================= */
 
 async function addPendingIce(){
 
   if(
     !callPeer ||
     !callPeer.remoteDescription
-  )
+  ){
+
     return;
+  }
+
+
+  if(
+    !pendingIceCandidates.length
+  ){
+
+    return;
+  }
 
 
   const candidates =
-    [
-      ...pendingIceCandidates
-    ];
+    [...pendingIceCandidates];
 
 
   pendingIceCandidates =
@@ -4685,24 +4905,22 @@ async function addPendingIce(){
 
 
   for(
-    const candidate
-    of candidates
+    const candidate of candidates
   ){
 
     try{
 
       await callPeer
         .addIceCandidate(
-
           new RTCIceCandidate(
             candidate
           )
-
         );
 
     }catch(error){
 
       console.error(
+        "Pending ICE error:",
         error
       );
 
@@ -4713,120 +4931,35 @@ async function addPendingIce(){
 }
 
 
-/* ---------- CALL UI ---------- */
-
-function showRaztaraCallUI(
-  title,
-  status,
-  incoming
-){
-
-  const overlay =
-    document.getElementById(
-      "callOverlay"
-    );
-
-
-  const titleElement =
-    document.getElementById(
-      "callTitle"
-    );
-
-
-  const statusElement =
-    document.getElementById(
-      "callStatus"
-    );
-
-
-  const videos =
-    document.getElementById(
-      "callVideos"
-    );
-
-
-  const actions =
-    document.getElementById(
-      "callActions"
-    );
-
-
-  titleElement.textContent =
-    title;
-
-
-  statusElement.textContent =
-    status;
-
-
-  videos.classList.toggle(
-    "hidden",
-    callMode !==
-      "video"
-  );
-
-
-  actions.innerHTML =
-    "";
-
-
-  if(incoming){
-
-    actions.innerHTML = `
-
-      <button
-        class="callAction reject"
-        onclick="rejectRaztaraCall()"
-      >
-        Reject
-      </button>
-
-      <button
-        class="callAction accept"
-        onclick="acceptRaztaraCall()"
-      >
-        Accept
-      </button>
-
-    `;
-
-  }else{
-
-    actions.innerHTML = `
-
-      <button
-        class="callAction end"
-        onclick="endRaztaraCall(true)"
-      >
-        End Call
-      </button>
-
-    `;
-
-  }
-
-
-  overlay.classList.remove(
-    "hidden"
-  );
-
-}
-
-
-/* ---------- END CALL ---------- */
+/* =========================================================
+   END CALL
+========================================================= */
 
 async function endRaztaraCall(
-  sendSignal
+  sendSignal = true
 ){
 
-  if(
-    sendSignal &&
-    callConversationId
-  ){
+  try{
 
-    await sendRaztaraCallSignal(
-      "hangup",
-      {}
+    if(
+      sendSignal &&
+      callConversationId &&
+      currentUser &&
+      callState !== "idle"
+    ){
+
+      await sendRaztaraCallSignal(
+        "end",
+        {}
+      );
+
+    }
+
+  }catch(error){
+
+    console.error(
+      "End signal error:",
+      error
     );
 
   }
@@ -4838,7 +4971,13 @@ async function endRaztaraCall(
 
       callPeer.close();
 
-    }catch(error){}
+    }catch(error){
+
+      console.error(
+        error
+      );
+
+    }
 
   }
 
@@ -4848,7 +4987,7 @@ async function endRaztaraCall(
     callLocalStream
       .getTracks()
       .forEach(
-        track=>
+        track =>
           track.stop()
       );
 
@@ -4860,7 +4999,7 @@ async function endRaztaraCall(
     callRemoteStream
       .getTracks()
       .forEach(
-        track=>
+        track =>
           track.stop()
       );
 
@@ -4892,187 +5031,83 @@ async function endRaztaraCall(
     [];
 
 
-  const localVideo =
-    document.getElementById(
-      "callLocalVideo"
-    );
+  $("callRemoteVideo").srcObject =
+    null;
+
+  $("callLocalVideo").srcObject =
+    null;
 
 
-  const remoteVideo =
-    document.getElementById(
-      "callRemoteVideo"
-    );
+  $("callOverlay")
+    .classList
+    .add("hidden");
 
 
-  if(localVideo)
-    localVideo.srcObject =
-      null;
+  $("callVideos")
+    .classList
+    .add("hidden");
 
 
-  if(remoteVideo)
-    remoteVideo.srcObject =
-      null;
+  $("callActions").innerHTML =
+    "";
 
 
-  document
-    .getElementById(
-      "callOverlay"
-    )
-    .classList.add(
-      "hidden"
-    );
+  $("callStatus").textContent =
+    "Connecting...";
 
 }
 
 
 /* =========================================================
-   LOGOUT
+   CLEANUP
 ========================================================= */
 
-async function logout(){
+window.addEventListener(
+  "beforeunload",
+  () => {
 
-  if(callSubscription){
+    if(callPeer){
 
-    await db.removeChannel(
-      callSubscription
-    );
+      try{
+        callPeer.close();
+      }catch{}
 
-    callSubscription =
-      null;
+    }
+
+
+    if(callLocalStream){
+
+      callLocalStream
+        .getTracks()
+        .forEach(
+          track =>
+            track.stop()
+        );
+
+    }
 
   }
+);
 
 
-  if(messageSubscription){
+/* =========================================================
+   GLOBAL ERROR HANDLER
+========================================================= */
 
-    await db.removeChannel(
-      messageSubscription
+window.addEventListener(
+  "error",
+  event => {
+
+    console.error(
+      "Global error:",
+      event.error
     );
-
-    messageSubscription =
-      null;
 
   }
-
-
-  await endRaztaraCall(
-    false
-  );
-
-
-  await db.auth.signOut();
-
-}
-
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function scrollMessages(){
-
-  const box =
-    document.getElementById(
-      "messages"
-    );
-
-
-  box.scrollTop =
-    box.scrollHeight;
-
-}
-
-
-function formatTime(date){
-
-  return new Date(date)
-    .toLocaleTimeString(
-      "bn-BD",
-      {
-
-        hour:
-          "numeric",
-
-        minute:
-          "2-digit"
-
-      }
-    );
-
-}
-
-
-function escapeHtml(value){
-
-  return String(
-    value || ""
-  )
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-
-}
-
-
-function toast(message){
-
-  const box =
-    document.getElementById(
-      "toast"
-    );
-
-
-  box.textContent =
-    message;
-
-
-  box.style.display =
-    "block";
-
-
-  clearTimeout(
-    window.toastTimer
-  );
-
-
-  window.toastTimer =
-    setTimeout(
-      ()=>{
-
-        box.style.display =
-          "none";
-
-      },
-      3000
-    );
-
-}
-
-
-/* =========================================================
-   START APP
-========================================================= */
-
-start();
+);
 
 </script>
+
 
 </body>
 </html>
