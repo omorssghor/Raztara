@@ -731,7 +731,7 @@ function showLogin(){
 
 /* ================= SHOW APP ================= */
 
-    async function loadMyProfile(){
+async function loadMyProfile(){
 
     const { data, error } =
         await supabaseClient.auth.getUser();
@@ -757,32 +757,67 @@ function showLogin(){
         avatar_url: null,
         bio: null
     };
-        if(currentProfile.avatar_url){
-    const photo = document.getElementById("headerProfilePhoto");
 
-    if(photo){
-        photo.src = currentProfile.avatar_url;
+    if(currentProfile.avatar_url){
+
+        const photo =
+            document.getElementById("headerProfilePhoto");
+
+        if(photo){
+            photo.src = currentProfile.avatar_url;
+        }
+    }
+
+    const nameElement =
+        document.getElementById("headerUserName");
+
+    if(nameElement){
+        nameElement.textContent =
+            currentProfile.full_name ||
+            currentProfile.username ||
+            "User";
     }
 }
-        
-const nameElement = document.getElementById("headerUserName");
 
-if(nameElement){
-    nameElement.textContent =
-        currentProfile.full_name ||
-        currentProfile.username ||
-        "User";
+
+function updateHomeProfile(){
+
+    if(!currentProfile) return;
+
+    const photo =
+        document.getElementById("headerProfilePhoto");
+
+    if(photo && currentProfile.avatar_url){
+        photo.src = currentProfile.avatar_url;
+    }
+
+    const nameElement =
+        document.getElementById("headerUserName");
+
+    if(nameElement){
+        nameElement.textContent =
+            currentProfile.full_name ||
+            currentProfile.username ||
+            "User";
+    }
 }
-        function openProfile(){
+
+
+function openProfile(){
+
     window.location.href = "profile.html";
+
 }
+
+
 function showApp(){
 
     loginScreen.style.display = "none";
 
     appScreen.style.display = "block";
-    
+
     loadMyProfile();
+
 }
 
 
