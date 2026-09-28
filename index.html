@@ -8,6 +8,13 @@
 <title>raztara | Connect • Call • Share</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+/* =========================================================
+   CALL OVERLAY
+========================================================= */
+
 .callOverlay{
   position:fixed;
   inset:0;
@@ -104,65 +111,26 @@
   font-size:28px;
   font-weight:700;
 }
-<style>
+
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
 *{
   box-sizing:border-box;
   margin:0;
   padding:0;
 }
-<section id="callOverlay" class="callOverlay hidden">
 
-  <div class="callBox">
-
-    <div class="callTop">
-
-      <div id="callIncomingAvatar"
-           class="callIncomingAvatar">
-        R
-      </div>
-
-      <div id="callTitle"
-           class="callTitle">
-        Call
-      </div>
-
-      <div id="callStatus"
-           class="callStatus">
-        Connecting...
-      </div>
-
-    </div>
-
-    <div id="callVideos"
-         class="callVideos hidden">
-
-      <video id="callRemoteVideo"
-             autoplay
-             playsinline>
-      </video>
-
-      <video id="callLocalVideo"
-             autoplay
-             muted
-             playsinline>
-      </video>
-
-    </div>
-
-    <div id="callActions"
-         class="callActions">
-    </div>
-
-  </div>
-
-</section>
 body{
   font-family:Arial,sans-serif;
   background:#f4f7f6;
   color:#17211f;
 }
 
-button,input{
+button,
+input{
   font:inherit;
 }
 
@@ -174,7 +142,10 @@ button{
   display:none!important;
 }
 
-/* AUTH */
+
+/* =========================================================
+   AUTH
+========================================================= */
 
 #authScreen{
   min-height:100vh;
@@ -260,7 +231,10 @@ button{
   font-weight:bold;
 }
 
-/* APP */
+
+/* =========================================================
+   APP
+========================================================= */
 
 #app{
   min-height:100vh;
@@ -317,7 +291,10 @@ button{
   padding-bottom:90px;
 }
 
-/* SEARCH */
+
+/* =========================================================
+   SEARCH
+========================================================= */
 
 .searchBox{
   background:white;
@@ -356,7 +333,10 @@ button{
   font-size:13px;
 }
 
-/* CHAT LIST */
+
+/* =========================================================
+   CHAT LIST
+========================================================= */
 
 .sectionTitle{
   font-size:21px;
@@ -379,7 +359,10 @@ button{
   background:#f5faf8;
 }
 
-/* CHAT */
+
+/* =========================================================
+   CHAT
+========================================================= */
 
 .chatScreen{
   position:fixed;
@@ -499,7 +482,10 @@ audio{
   max-width:100%;
 }
 
-/* COMPOSER */
+
+/* =========================================================
+   COMPOSER
+========================================================= */
 
 .composer{
   background:white;
@@ -548,7 +534,10 @@ audio{
   50%{opacity:.5}
 }
 
-/* PROFILE */
+
+/* =========================================================
+   PROFILE
+========================================================= */
 
 .profileCard{
   background:white;
@@ -591,7 +580,10 @@ audio{
   margin-top:20px;
 }
 
-/* BOTTOM */
+
+/* =========================================================
+   BOTTOM
+========================================================= */
 
 .bottomNav{
   position:fixed;
@@ -625,7 +617,10 @@ audio{
   margin-bottom:2px;
 }
 
-/* PROFILE EDIT */
+
+/* =========================================================
+   PROFILE EDIT
+========================================================= */
 
 .editBox{
   background:white;
@@ -640,7 +635,10 @@ audio{
   font-size:14px;
 }
 
-/* LOADING */
+
+/* =========================================================
+   LOADING
+========================================================= */
 
 .loading{
   text-align:center;
@@ -654,7 +652,10 @@ audio{
   padding:30px;
 }
 
-/* TOAST */
+
+/* =========================================================
+   TOAST
+========================================================= */
 
 .toast{
   position:fixed;
@@ -670,9 +671,13 @@ audio{
   font-size:13px;
 }
 
-/* MOBILE */
+
+/* =========================================================
+   MOBILE
+========================================================= */
 
 @media(max-width:600px){
+
   .main{
     padding:10px;
     padding-bottom:85px;
@@ -685,24 +690,106 @@ audio{
   .brand{
     font-size:22px;
   }
+
 }
+
 </style>
 </head>
 
+
 <body>
 
-<!-- AUTH -->
+
+<!-- =========================================================
+     CALL OVERLAY
+========================================================= -->
+
+<section id="callOverlay" class="callOverlay hidden">
+
+  <div class="callBox">
+
+    <div class="callTop">
+
+      <div
+        id="callIncomingAvatar"
+        class="callIncomingAvatar"
+      >
+        R
+      </div>
+
+      <div
+        id="callTitle"
+        class="callTitle"
+      >
+        Call
+      </div>
+
+      <div
+        id="callStatus"
+        class="callStatus"
+      >
+        Connecting...
+      </div>
+
+    </div>
+
+
+    <div
+      id="callVideos"
+      class="callVideos hidden"
+    >
+
+      <video
+        id="callRemoteVideo"
+        autoplay
+        playsinline
+      ></video>
+
+      <video
+        id="callLocalVideo"
+        autoplay
+        muted
+        playsinline
+      ></video>
+
+    </div>
+
+
+    <div
+      id="callActions"
+      class="callActions"
+    ></div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     AUTH
+========================================================= -->
 
 <section id="authScreen">
 
   <div class="authBox">
 
-    <div class="logo">raztara</div>
-    <div class="tagline">Connect • Call • Share</div>
+    <div class="logo">
+      raztara
+    </div>
 
-    <h2 id="authTitle">Login</h2>
+    <div class="tagline">
+      Connect • Call • Share
+    </div>
 
-    <div id="signupFields" class="hidden">
+    <h2 id="authTitle">
+      Login
+    </h2>
+
+
+    <div
+      id="signupFields"
+      class="hidden"
+    >
 
       <input
         id="fullName"
@@ -718,6 +805,7 @@ audio{
 
     </div>
 
+
     <input
       id="email"
       type="email"
@@ -732,6 +820,7 @@ audio{
       placeholder="Password"
     >
 
+
     <button
       id="authButton"
       class="primary"
@@ -740,6 +829,7 @@ audio{
       Login
     </button>
 
+
     <div class="switchAuth">
 
       <span id="switchText">
@@ -747,7 +837,9 @@ audio{
       </span>
 
       <button onclick="toggleAuth()">
-        <span id="switchButton">Sign Up</span>
+        <span id="switchButton">
+          Sign Up
+        </span>
       </button>
 
     </div>
@@ -757,9 +849,14 @@ audio{
 </section>
 
 
-<!-- APP -->
+<!-- =========================================================
+     APP
+========================================================= -->
 
-<section id="app" class="hidden">
+<section
+  id="app"
+  class="hidden"
+>
 
   <header class="topbar">
 
@@ -785,6 +882,7 @@ audio{
 
   <main class="main">
 
+
     <!-- CHATS PAGE -->
 
     <div id="chatsPage">
@@ -802,14 +900,18 @@ audio{
 
       </div>
 
+
       <div class="sectionTitle">
         💬 Chats
       </div>
 
+
       <div id="chatList">
+
         <div class="loading">
           Loading...
         </div>
+
       </div>
 
     </div>
@@ -817,7 +919,10 @@ audio{
 
     <!-- CALLS PAGE -->
 
-    <div id="callsPage" class="hidden">
+    <div
+      id="callsPage"
+      class="hidden"
+    >
 
       <div class="sectionTitle">
         📞 Calls
@@ -834,7 +939,10 @@ audio{
 
     <!-- PROFILE PAGE -->
 
-    <div id="profilePage" class="hidden">
+    <div
+      id="profilePage"
+      class="hidden"
+    >
 
       <div class="profileCard">
 
@@ -857,6 +965,7 @@ audio{
           raztara user
         </p>
 
+
         <div class="profileActions">
 
           <button
@@ -865,6 +974,7 @@ audio{
           >
             ✏️ Edit Profile
           </button>
+
 
           <button
             class="secondary"
@@ -891,26 +1001,43 @@ audio{
       class="navBtn active"
       onclick="changePage('chats')"
     >
-      <span class="navIcon">💬</span>
+
+      <span class="navIcon">
+        💬
+      </span>
+
       Chats
+
     </button>
+
 
     <button
       id="navCalls"
       class="navBtn"
       onclick="changePage('calls')"
     >
-      <span class="navIcon">📞</span>
+
+      <span class="navIcon">
+        📞
+      </span>
+
       Calls
+
     </button>
+
 
     <button
       id="navProfile"
       class="navBtn"
       onclick="changePage('profile')"
     >
-      <span class="navIcon">👤</span>
+
+      <span class="navIcon">
+        👤
+      </span>
+
       Profile
+
     </button>
 
   </nav>
@@ -918,7 +1045,9 @@ audio{
 </section>
 
 
-<!-- CHAT SCREEN -->
+<!-- =========================================================
+     CHAT SCREEN
+========================================================= -->
 
 <section
   id="chatScreen"
@@ -934,12 +1063,14 @@ audio{
       ‹
     </button>
 
+
     <div
       id="chatAvatar"
       class="avatar"
     >
       U
     </div>
+
 
     <div
       id="chatHeaderName"
@@ -948,12 +1079,14 @@ audio{
       User
     </div>
 
+
     <button
       class="callBtn"
       onclick="startAudioCall()"
     >
       📞
     </button>
+
 
     <button
       class="callBtn"
@@ -968,8 +1101,7 @@ audio{
   <div
     id="messages"
     class="messages"
-  >
-  </div>
+  ></div>
 
 
   <div class="composer">
@@ -982,6 +1114,7 @@ audio{
       ＋
     </button>
 
+
     <input
       id="fileInput"
       type="file"
@@ -990,12 +1123,14 @@ audio{
       onchange="uploadSelectedFile(event)"
     >
 
+
     <input
       id="messageInput"
       class="messageInput"
       placeholder="Message..."
       onkeydown="messageKeyDown(event)"
     >
+
 
     <button
       id="recordBtn"
@@ -1005,6 +1140,7 @@ audio{
     >
       🎤
     </button>
+
 
     <button
       class="sendBtn"
@@ -1018,7 +1154,10 @@ audio{
 </section>
 
 
-<div id="toast" class="toast"></div>
+<div
+  id="toast"
+  class="toast"
+></div>
 
 
 <script>
@@ -1058,6 +1197,39 @@ let audioChunks = [];
 
 
 /* =========================================================
+   CALL GLOBAL
+========================================================= */
+
+let callPeer = null;
+let callLocalStream = null;
+let callRemoteStream = null;
+let callConversationId = null;
+let callMode = null;
+let callState = "idle";
+let callSubscription = null;
+let pendingCall = null;
+let pendingIceCandidates = [];
+
+const CALL_ICE_SERVERS = {
+
+  iceServers: [
+
+    {
+      urls:
+        "stun:stun.l.google.com:19302"
+    },
+
+    {
+      urls:
+        "stun:stun1.l.google.com:19302"
+    }
+
+  ]
+
+};
+
+
+/* =========================================================
    START
 ========================================================= */
 
@@ -1067,11 +1239,14 @@ async function start(){
     data:{
       session
     }
-  } = await db.auth.getSession();
+  } =
+  await db.auth.getSession();
+
 
   if(session){
 
-    currentUser = session.user;
+    currentUser =
+      session.user;
 
     await showApp();
 
@@ -1081,12 +1256,17 @@ async function start(){
 
   }
 
+
   db.auth.onAuthStateChange(
-    async(event,session)=>{
+    async(
+      event,
+      session
+    )=>{
 
       if(session){
 
-        currentUser = session.user;
+        currentUser =
+          session.user;
 
         await showApp();
 
@@ -1126,32 +1306,50 @@ function showAuth(){
 }
 
 
+/* =========================================================
+   AUTH MODE
+========================================================= */
+
 let signupMode = false;
 
 
 function toggleAuth(){
 
-  signupMode = !signupMode;
+  signupMode =
+    !signupMode;
+
 
   const fields =
-    document.getElementById("signupFields");
+    document.getElementById(
+      "signupFields"
+    );
 
   const title =
-    document.getElementById("authTitle");
+    document.getElementById(
+      "authTitle"
+    );
 
   const button =
-    document.getElementById("authButton");
+    document.getElementById(
+      "authButton"
+    );
 
   const switchText =
-    document.getElementById("switchText");
+    document.getElementById(
+      "switchText"
+    );
 
   const switchButton =
-    document.getElementById("switchButton");
+    document.getElementById(
+      "switchButton"
+    );
 
 
   if(signupMode){
 
-    fields.classList.remove("hidden");
+    fields.classList.remove(
+      "hidden"
+    );
 
     title.textContent =
       "Create Account";
@@ -1167,7 +1365,9 @@ function toggleAuth(){
 
   }else{
 
-    fields.classList.add("hidden");
+    fields.classList.add(
+      "hidden"
+    );
 
     title.textContent =
       "Login";
@@ -1193,17 +1393,23 @@ function toggleAuth(){
 async function handleAuth(){
 
   const email =
-    document.getElementById("email")
-    .value
-    .trim();
+    document
+      .getElementById("email")
+      .value
+      .trim();
+
 
   const password =
-    document.getElementById("password")
-    .value;
+    document
+      .getElementById("password")
+      .value;
+
 
   if(!email || !password){
 
-    toast("Email এবং Password দিন");
+    toast(
+      "Email এবং Password দিন"
+    );
 
     return;
 
@@ -1213,20 +1419,25 @@ async function handleAuth(){
   if(signupMode){
 
     const fullName =
-      document.getElementById("fullName")
-      .value
-      .trim();
+      document
+        .getElementById("fullName")
+        .value
+        .trim();
+
 
     const username =
-      document.getElementById("username")
-      .value
-      .trim()
-      .toLowerCase();
+      document
+        .getElementById("username")
+        .value
+        .trim()
+        .toLowerCase();
 
 
     if(!fullName || !username){
 
-      toast("নাম এবং Username দিন");
+      toast(
+        "নাম এবং Username দিন"
+      );
 
       return;
 
@@ -1240,13 +1451,21 @@ async function handleAuth(){
     await db.auth.signUp({
 
       email,
+
       password,
 
       options:{
+
         data:{
-          full_name:fullName,
-          username:username
+
+          full_name:
+            fullName,
+
+          username:
+            username
+
         }
+
       }
 
     });
@@ -1254,7 +1473,9 @@ async function handleAuth(){
 
     if(error){
 
-      toast(error.message);
+      toast(
+        error.message
+      );
 
       return;
 
@@ -1282,7 +1503,6 @@ async function handleAuth(){
 
   }else{
 
-
     const {
       data,
       error
@@ -1290,6 +1510,7 @@ async function handleAuth(){
     await db.auth.signInWithPassword({
 
       email,
+
       password
 
     });
@@ -1297,7 +1518,9 @@ async function handleAuth(){
 
     if(error){
 
-      toast(error.message);
+      toast(
+        error.message
+      );
 
       return;
 
@@ -1308,7 +1531,7 @@ async function handleAuth(){
       data.user;
 
     await showApp();
-startRaztaraCallSignaling();
+
   }
 
 }
@@ -1324,6 +1547,7 @@ async function showApp(){
     .getElementById("authScreen")
     .classList.add("hidden");
 
+
   document
     .getElementById("app")
     .classList.remove("hidden");
@@ -1335,6 +1559,11 @@ async function showApp(){
 
   await loadChatList();
 
+
+  /* CALL SIGNALING STARTS HERE */
+
+  startRaztaraCallSignaling();
+
 }
 
 
@@ -1344,7 +1573,8 @@ async function showApp(){
 
 async function loadProfile(){
 
-  if(!currentUser) return;
+  if(!currentUser)
+    return;
 
 
   const {
@@ -1354,7 +1584,10 @@ async function loadProfile(){
   await db
     .from("profiles")
     .select("*")
-    .eq("id",currentUser.id)
+    .eq(
+      "id",
+      currentUser.id
+    )
     .single();
 
 
@@ -1375,7 +1608,9 @@ async function loadProfile(){
 
 function initials(name){
 
-  if(!name) return "R";
+  if(!name)
+    return "R";
+
 
   return name
     .trim()
@@ -1387,7 +1622,8 @@ function initials(name){
 
 function updateProfileUI(){
 
-  if(!currentProfile) return;
+  if(!currentProfile)
+    return;
 
 
   const name =
@@ -1426,29 +1662,40 @@ function updateProfileUI(){
 
 
   setAvatar(
-    document.getElementById("topAvatar"),
-    currentProfile,
-    40
+    document.getElementById(
+      "topAvatar"
+    ),
+    currentProfile
   );
 
 
   setAvatar(
-    document.getElementById("profileAvatar"),
-    currentProfile,
-    90
+    document.getElementById(
+      "profileAvatar"
+    ),
+    currentProfile
   );
 
 }
 
 
-function setAvatar(element,profile,size){
+function setAvatar(
+  element,
+  profile
+){
 
   element.innerHTML = "";
 
-  if(profile && profile.avatar_url){
+
+  if(
+    profile &&
+    profile.avatar_url
+  ){
 
     const img =
-      document.createElement("img");
+      document.createElement(
+        "img"
+      );
 
     img.src =
       profile.avatar_url;
@@ -1456,7 +1703,9 @@ function setAvatar(element,profile,size){
     img.alt =
       "Profile";
 
-    element.appendChild(img);
+    element.appendChild(
+      img
+    );
 
   }else{
 
@@ -1480,7 +1729,10 @@ let searchTimer = null;
 
 function searchUsers(){
 
-  clearTimeout(searchTimer);
+  clearTimeout(
+    searchTimer
+  );
+
 
   searchTimer =
     setTimeout(
@@ -1495,13 +1747,17 @@ async function performUserSearch(){
 
   const input =
     document
-      .getElementById("searchInput")
+      .getElementById(
+        "searchInput"
+      )
       .value
       .trim();
 
 
   const box =
-    document.getElementById("searchResults");
+    document.getElementById(
+      "searchResults"
+    );
 
 
   if(input.length < 2){
@@ -1513,6 +1769,10 @@ async function performUserSearch(){
   }
 
 
+  const safeInput =
+    escapeQuery(input);
+
+
   const {
     data,
     error
@@ -1521,26 +1781,36 @@ async function performUserSearch(){
     .from("profiles")
     .select("*")
     .or(
-      `username.ilike.%${escapeQuery(input)}%,full_name.ilike.%${escapeQuery(input)}%`
+      `username.ilike.%${safeInput}%,full_name.ilike.%${safeInput}%`
     )
-    .neq("id",currentUser.id)
+    .neq(
+      "id",
+      currentUser.id
+    )
     .limit(10);
 
 
   if(error){
 
     box.innerHTML =
-      `<div class="empty">${escapeHtml(error.message)}</div>`;
+      `<div class="empty">${
+        escapeHtml(error.message)
+      }</div>`;
 
     return;
 
   }
 
 
-  if(!data || !data.length){
+  if(
+    !data ||
+    !data.length
+  ){
 
     box.innerHTML =
-      `<div class="empty">কোনো user পাওয়া যায়নি</div>`;
+      `<div class="empty">
+        কোনো user পাওয়া যায়নি
+      </div>`;
 
     return;
 
@@ -1550,99 +1820,133 @@ async function performUserSearch(){
   box.innerHTML = "";
 
 
-  data.forEach(user=>{
+  data.forEach(
+    user=>{
 
-    const div =
-      document.createElement("div");
+      const div =
+        document.createElement(
+          "div"
+        );
 
-    div.className =
-      "userCard";
-
-
-    const left =
-      document.createElement("div");
-
-    left.className =
-      "userInfo";
+      div.className =
+        "userCard";
 
 
-    const av =
-      document.createElement("div");
+      const left =
+        document.createElement(
+          "div"
+        );
 
-    av.className =
-      "avatar";
-
-
-    setAvatar(
-      av,
-      user,
-      40
-    );
+      left.className =
+        "userInfo";
 
 
-    const info =
-      document.createElement("div");
+      const av =
+        document.createElement(
+          "div"
+        );
+
+      av.className =
+        "avatar";
 
 
-    const name =
-      document.createElement("div");
-
-    name.className =
-      "userName";
-
-    name.textContent =
-      user.full_name ||
-      user.username ||
-      "User";
-
-
-    const uname =
-      document.createElement("div");
-
-    uname.className =
-      "userUsername";
-
-    uname.textContent =
-      "@" +
-      (
-        user.username ||
-        ""
+      setAvatar(
+        av,
+        user
       );
 
 
-    info.appendChild(name);
-    info.appendChild(uname);
-
-    left.appendChild(av);
-    left.appendChild(info);
-
-
-    const button =
-      document.createElement("button");
-
-    button.className =
-      "primary";
-
-    button.style.width =
-      "auto";
-
-    button.style.padding =
-      "9px 13px";
-
-    button.textContent =
-      "Chat";
+      const info =
+        document.createElement(
+          "div"
+        );
 
 
-    button.onclick =
-      ()=>startChat(user);
+      const name =
+        document.createElement(
+          "div"
+        );
+
+      name.className =
+        "userName";
+
+      name.textContent =
+        user.full_name ||
+        user.username ||
+        "User";
 
 
-    div.appendChild(left);
-    div.appendChild(button);
+      const uname =
+        document.createElement(
+          "div"
+        );
 
-    box.appendChild(div);
+      uname.className =
+        "userUsername";
 
-  });
+      uname.textContent =
+        "@" +
+        (
+          user.username ||
+          ""
+        );
+
+
+      info.appendChild(
+        name
+      );
+
+      info.appendChild(
+        uname
+      );
+
+
+      left.appendChild(
+        av
+      );
+
+      left.appendChild(
+        info
+      );
+
+
+      const button =
+        document.createElement(
+          "button"
+        );
+
+      button.className =
+        "primary";
+
+      button.style.width =
+        "auto";
+
+      button.style.padding =
+        "9px 13px";
+
+      button.textContent =
+        "Chat";
+
+
+      button.onclick =
+        ()=>startChat(user);
+
+
+      div.appendChild(
+        left
+      );
+
+      div.appendChild(
+        button
+      );
+
+
+      box.appendChild(
+        div
+      );
+
+    }
+  );
 
 }
 
@@ -1662,15 +1966,14 @@ function escapeQuery(value){
 
 async function startChat(target){
 
-  if(!currentUser) return;
+  if(!currentUser)
+    return;
 
 
-  toast("Chat তৈরি হচ্ছে...");
+  toast(
+    "Chat তৈরি হচ্ছে..."
+  );
 
-
-  /*
-    প্রথমে current user-এর conversations বের করি।
-  */
 
   const {
     data:myMemberships,
@@ -1678,7 +1981,9 @@ async function startChat(target){
   } =
   await db
     .from("conversation_members")
-    .select("conversation_id")
+    .select(
+      "conversation_id"
+    )
     .eq(
       "user_id",
       currentUser.id
@@ -1687,17 +1992,22 @@ async function startChat(target){
 
   if(myError){
 
-    toast(myError.message);
+    toast(
+      myError.message
+    );
 
     return;
 
   }
 
 
-  let conversationId = null;
+  let conversationId =
+    null;
 
 
-  if(myMemberships?.length){
+  if(
+    myMemberships?.length
+  ){
 
     const ids =
       myMemberships.map(
@@ -1710,7 +2020,9 @@ async function startChat(target){
     } =
     await db
       .from("conversation_members")
-      .select("conversation_id")
+      .select(
+        "conversation_id"
+      )
       .in(
         "conversation_id",
         ids
@@ -1721,7 +2033,9 @@ async function startChat(target){
       );
 
 
-    if(targetMemberships?.length){
+    if(
+      targetMemberships?.length
+    ){
 
       conversationId =
         targetMemberships[0]
@@ -1731,11 +2045,6 @@ async function startChat(target){
 
   }
 
-
-  /*
-    যদি chat না থাকে,
-    নতুন conversation বানাই।
-  */
 
   if(!conversationId){
 
@@ -1763,7 +2072,9 @@ async function startChat(target){
 
     if(error){
 
-      toast(error.message);
+      toast(
+        error.message
+      );
 
       return;
 
@@ -1773,10 +2084,6 @@ async function startChat(target){
     conversationId =
       conversation.id;
 
-
-    /*
-      Current user membership
-    */
 
     const {
       error:myMemberError
@@ -1796,16 +2103,14 @@ async function startChat(target){
 
     if(myMemberError){
 
-      toast(myMemberError.message);
+      toast(
+        myMemberError.message
+      );
 
       return;
 
     }
 
-
-    /*
-      Target user membership
-    */
 
     const {
       error:targetMemberError
@@ -1825,7 +2130,9 @@ async function startChat(target){
 
     if(targetMemberError){
 
-      toast(targetMemberError.message);
+      toast(
+        targetMemberError.message
+      );
 
       return;
 
@@ -1835,11 +2142,16 @@ async function startChat(target){
 
 
   document
-    .getElementById("searchInput")
+    .getElementById(
+      "searchInput"
+    )
     .value = "";
 
+
   document
-    .getElementById("searchResults")
+    .getElementById(
+      "searchResults"
+    )
     .innerHTML = "";
 
 
@@ -1868,12 +2180,18 @@ async function openChat(
 
 
   document
-    .getElementById("chatScreen")
-    .classList.remove("hidden");
+    .getElementById(
+      "chatScreen"
+    )
+    .classList.remove(
+      "hidden"
+    );
 
 
   document
-    .getElementById("chatHeaderName")
+    .getElementById(
+      "chatHeaderName"
+    )
     .textContent =
       target.full_name ||
       target.username ||
@@ -1881,9 +2199,10 @@ async function openChat(
 
 
   setAvatar(
-    document.getElementById("chatAvatar"),
-    target,
-    40
+    document.getElementById(
+      "chatAvatar"
+    ),
+    target
   );
 
 
@@ -1901,11 +2220,15 @@ async function openChat(
 async function loadMessages(){
 
   const box =
-    document.getElementById("messages");
+    document.getElementById(
+      "messages"
+    );
 
 
   box.innerHTML =
-    `<div class="loading">Loading...</div>`;
+    `<div class="loading">
+      Loading...
+    </div>`;
 
 
   const {
@@ -1930,7 +2253,9 @@ async function loadMessages(){
   if(error){
 
     box.innerHTML =
-      `<div class="empty">${escapeHtml(error.message)}</div>`;
+      `<div class="empty">
+        ${escapeHtml(error.message)}
+      </div>`;
 
     return;
 
@@ -1940,7 +2265,9 @@ async function loadMessages(){
   box.innerHTML = "";
 
 
-  for(const message of data){
+  for(
+    const message of data
+  ){
 
     await renderMessage(
       message,
@@ -2012,38 +2339,50 @@ async function renderMessage(
 ){
 
   const box =
-    document.getElementById("messages");
+    document.getElementById(
+      "messages"
+    );
 
 
   const row =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
   row.className =
     "messageRow";
 
 
-  if(message.sender_id === currentUser.id){
+  if(
+    message.sender_id ===
+    currentUser.id
+  ){
 
-    row.classList.add("mine");
+    row.classList.add(
+      "mine"
+    );
 
   }
 
 
   const bubble =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
   bubble.className =
     "message";
 
 
-  /*
-    TEXT
-  */
-
-  if(message.message_type === "text"){
+  if(
+    message.message_type ===
+    "text"
+  ){
 
     const text =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
     text.className =
       "messageText";
@@ -2051,20 +2390,25 @@ async function renderMessage(
     text.textContent =
       message.content || "";
 
-    bubble.appendChild(text);
+    bubble.appendChild(
+      text
+    );
 
   }
 
 
-  /*
-    MEDIA
-  */
-
   else if(
-    message.message_type === "image" ||
-    message.message_type === "video" ||
-    message.message_type === "audio" ||
-    message.message_type === "file"
+    message.message_type ===
+      "image" ||
+
+    message.message_type ===
+      "video" ||
+
+    message.message_type ===
+      "audio" ||
+
+    message.message_type ===
+      "file"
   ){
 
     const signedUrl =
@@ -2081,11 +2425,14 @@ async function renderMessage(
     }else{
 
       if(
-        message.message_type === "image"
+        message.message_type ===
+        "image"
       ){
 
         const img =
-          document.createElement("img");
+          document.createElement(
+            "img"
+          );
 
         img.src =
           signedUrl;
@@ -2093,15 +2440,20 @@ async function renderMessage(
         img.loading =
           "lazy";
 
-        bubble.appendChild(img);
+        bubble.appendChild(
+          img
+        );
 
 
       }else if(
-        message.message_type === "video"
+        message.message_type ===
+        "video"
       ){
 
         const video =
-          document.createElement("video");
+          document.createElement(
+            "video"
+          );
 
         video.src =
           signedUrl;
@@ -2112,15 +2464,20 @@ async function renderMessage(
         video.playsInline =
           true;
 
-        bubble.appendChild(video);
+        bubble.appendChild(
+          video
+        );
 
 
       }else if(
-        message.message_type === "audio"
+        message.message_type ===
+        "audio"
       ){
 
         const audio =
-          document.createElement("audio");
+          document.createElement(
+            "audio"
+          );
 
         audio.src =
           signedUrl;
@@ -2128,20 +2485,26 @@ async function renderMessage(
         audio.controls =
           true;
 
-        bubble.appendChild(audio);
+        bubble.appendChild(
+          audio
+        );
 
 
       }else{
 
         const fileBox =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
 
         fileBox.className =
           "fileMessage";
 
 
         const icon =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
 
         icon.className =
           "fileIcon";
@@ -2151,14 +2514,18 @@ async function renderMessage(
 
 
         const info =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
 
         info.style.flex =
           "1";
 
 
         const name =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
 
         name.className =
           "fileName";
@@ -2169,7 +2536,9 @@ async function renderMessage(
 
 
         const open =
-          document.createElement("button");
+          document.createElement(
+            "button"
+          );
 
         open.className =
           "fileOpen";
@@ -2187,13 +2556,27 @@ async function renderMessage(
           };
 
 
-        info.appendChild(name);
-        info.appendChild(open);
+        info.appendChild(
+          name
+        );
 
-        fileBox.appendChild(icon);
-        fileBox.appendChild(info);
+        info.appendChild(
+          open
+        );
 
-        bubble.appendChild(fileBox);
+
+        fileBox.appendChild(
+          icon
+        );
+
+        fileBox.appendChild(
+          info
+        );
+
+
+        bubble.appendChild(
+          fileBox
+        );
 
       }
 
@@ -2202,22 +2585,22 @@ async function renderMessage(
   }
 
 
-  /*
-    LOCATION
-  */
-
   else if(
-    message.message_type === "location"
+    message.message_type ===
+    "location"
   ){
 
     const button =
-      document.createElement("button");
+      document.createElement(
+        "button"
+      );
 
     button.className =
       "primary";
 
     button.textContent =
       "📍 Open Location";
+
 
     button.onclick =
       ()=>{
@@ -2227,13 +2610,18 @@ async function renderMessage(
         );
       };
 
-    bubble.appendChild(button);
+
+    bubble.appendChild(
+      button
+    );
 
   }
 
 
   const time =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
   time.className =
     "messageTime";
@@ -2244,11 +2632,19 @@ async function renderMessage(
     );
 
 
-  bubble.appendChild(time);
+  bubble.appendChild(
+    time
+  );
 
-  row.appendChild(bubble);
 
-  box.appendChild(row);
+  row.appendChild(
+    bubble
+  );
+
+
+  box.appendChild(
+    row
+  );
 
 }
 
@@ -2269,7 +2665,10 @@ async function sendMessage(){
     input.value.trim();
 
 
-  if(!text || !currentConversation){
+  if(
+    !text ||
+    !currentConversation
+  ){
 
     return;
 
@@ -2303,7 +2702,9 @@ async function sendMessage(){
 
   if(error){
 
-    toast(error.message);
+    toast(
+      error.message
+    );
 
     input.value =
       text;
@@ -2313,7 +2714,9 @@ async function sendMessage(){
 }
 
 
-function messageKeyDown(event){
+function messageKeyDown(
+  event
+){
 
   if(
     event.key === "Enter" &&
@@ -2336,7 +2739,9 @@ function messageKeyDown(event){
 function chooseFile(){
 
   document
-    .getElementById("fileInput")
+    .getElementById(
+      "fileInput"
+    )
     .click();
 
 }
@@ -2346,7 +2751,9 @@ function chooseFile(){
    UPLOAD FILE
 ========================================================= */
 
-async function uploadSelectedFile(event){
+async function uploadSelectedFile(
+  event
+){
 
   const file =
     event.target.files[0];
@@ -2355,22 +2762,20 @@ async function uploadSelectedFile(event){
   event.target.value = "";
 
 
-  if(!file) return;
+  if(!file)
+    return;
 
 
   if(!currentConversation){
 
-    toast("আগে একটি chat খুলুন");
+    toast(
+      "আগে একটি chat খুলুন"
+    );
 
     return;
 
   }
 
-
-  /*
-    Client-side size limit
-    50 MB
-  */
 
   if(
     file.size >
@@ -2386,7 +2791,9 @@ async function uploadSelectedFile(event){
   }
 
 
-  toast("Uploading...");
+  toast(
+    "Uploading..."
+  );
 
 
   let messageType =
@@ -2394,14 +2801,18 @@ async function uploadSelectedFile(event){
 
 
   if(
-    file.type.startsWith("image/")
+    file.type.startsWith(
+      "image/"
+    )
   ){
 
     messageType =
       "image";
 
   }else if(
-    file.type.startsWith("video/")
+    file.type.startsWith(
+      "video/"
+    )
   ){
 
     messageType =
@@ -2421,11 +2832,6 @@ async function uploadSelectedFile(event){
   const random =
     crypto.randomUUID();
 
-
-  /*
-    Path:
-    userId/conversationId/random-filename
-  */
 
   const path =
     currentUser.id +
@@ -2458,7 +2864,9 @@ async function uploadSelectedFile(event){
 
   if(error){
 
-    toast(error.message);
+    toast(
+      error.message
+    );
 
     return;
 
@@ -2492,14 +2900,11 @@ async function uploadSelectedFile(event){
 
   if(messageError){
 
-    /*
-      Message তৈরি না হলে
-      uploaded file delete করার চেষ্টা।
-    */
-
     await db.storage
       .from("raztara-media")
-      .remove([data.path]);
+      .remove([
+        data.path
+      ]);
 
 
     toast(
@@ -2511,7 +2916,9 @@ async function uploadSelectedFile(event){
   }
 
 
-  toast("Sent ✓");
+  toast(
+    "Sent ✓"
+  );
 
 }
 
@@ -2520,18 +2927,21 @@ async function uploadSelectedFile(event){
    SIGNED URL
 ========================================================= */
 
-async function getSignedUrl(path){
+async function getSignedUrl(
+  path
+){
 
-  if(!path) return null;
+  if(!path)
+    return null;
 
-
-  /*
-    যদি পুরোনো data তে সরাসরি URL থাকে
-  */
 
   if(
-    path.startsWith("http://") ||
-    path.startsWith("https://")
+    path.startsWith(
+      "http://"
+    ) ||
+    path.startsWith(
+      "https://"
+    )
   ){
 
     return path;
@@ -2588,7 +2998,9 @@ async function startRecording(){
 
   if(!currentConversation){
 
-    toast("আগে একটি chat খুলুন");
+    toast(
+      "আগে একটি chat খুলুন"
+    );
 
     return;
 
@@ -2623,6 +3035,7 @@ async function startRecording(){
 
 
     let options = {};
+
 
     if(
       MediaRecorder.isTypeSupported(
@@ -2666,7 +3079,8 @@ async function startRecording(){
         stream
           .getTracks()
           .forEach(
-            track=>track.stop()
+            track=>
+              track.stop()
           );
 
 
@@ -2698,9 +3112,11 @@ async function startRecording(){
         "recordBtn"
       );
 
+
     btn.classList.add(
       "recording"
     );
+
 
     btn.textContent =
       "⏹";
@@ -2744,9 +3160,11 @@ function stopRecording(){
       "recordBtn"
     );
 
+
   btn.classList.remove(
     "recording"
   );
+
 
   btn.textContent =
     "🎤";
@@ -2754,7 +3172,9 @@ function stopRecording(){
 }
 
 
-async function uploadVoice(blob){
+async function uploadVoice(
+  blob
+){
 
   toast(
     "Voice upload হচ্ছে..."
@@ -2798,7 +3218,9 @@ async function uploadVoice(blob){
 
   if(error){
 
-    toast(error.message);
+    toast(
+      error.message
+    );
 
     return;
 
@@ -2848,7 +3270,9 @@ async function uploadVoice(blob){
   }
 
 
-  toast("Voice sent ✓");
+  toast(
+    "Voice sent ✓"
+  );
 
 }
 
@@ -2912,7 +3336,9 @@ async function sendLocation(){
 
       if(error){
 
-        toast(error.message);
+        toast(
+          error.message
+        );
 
       }
 
@@ -2955,8 +3381,12 @@ function closeChat(){
 
 
   document
-    .getElementById("chatScreen")
-    .classList.add("hidden");
+    .getElementById(
+      "chatScreen"
+    )
+    .classList.add(
+      "hidden"
+    );
 
 
   loadChatList();
@@ -2976,11 +3406,8 @@ async function loadChatList(){
     );
 
 
-  if(!currentUser){
-
+  if(!currentUser)
     return;
-
-  }
 
 
   const {
@@ -3001,7 +3428,9 @@ async function loadChatList(){
   if(error){
 
     box.innerHTML =
-      `<div class="empty">${escapeHtml(error.message)}</div>`;
+      `<div class="empty">
+        ${escapeHtml(error.message)}
+      </div>`;
 
     return;
 
@@ -3099,22 +3528,23 @@ async function loadChatList(){
     }
 
 
-    if(!target){
-
+    if(!target)
       continue;
-
-    }
 
 
     const item =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
     item.className =
       "chatItem";
 
 
     const av =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
     av.className =
       "avatar";
@@ -3122,17 +3552,20 @@ async function loadChatList(){
 
     setAvatar(
       av,
-      target,
-      40
+      target
     );
 
 
     const info =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
 
     const name =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
     name.className =
       "userName";
@@ -3144,7 +3577,9 @@ async function loadChatList(){
 
 
     const uname =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
     uname.className =
       "userUsername";
@@ -3157,12 +3592,22 @@ async function loadChatList(){
       );
 
 
-    info.appendChild(name);
-    info.appendChild(uname);
+    info.appendChild(
+      name
+    );
+
+    info.appendChild(
+      uname
+    );
 
 
-    item.appendChild(av);
-    item.appendChild(info);
+    item.appendChild(
+      av
+    );
+
+    item.appendChild(
+      info
+    );
 
 
     item.onclick =
@@ -3172,12 +3617,16 @@ async function loadChatList(){
       );
 
 
-    box.appendChild(item);
+    box.appendChild(
+      item
+    );
 
   }
 
 
-  if(!box.children.length){
+  if(
+    !box.children.length
+  ){
 
     box.innerHTML =
       `<div class="empty">
@@ -3202,7 +3651,8 @@ async function editProfile(){
     );
 
 
-  if(name === null) return;
+  if(name === null)
+    return;
 
 
   const username =
@@ -3212,7 +3662,8 @@ async function editProfile(){
     );
 
 
-  if(username === null) return;
+  if(username === null)
+    return;
 
 
   const bio =
@@ -3222,7 +3673,8 @@ async function editProfile(){
     );
 
 
-  if(bio === null) return;
+  if(bio === null)
+    return;
 
 
   const {
@@ -3257,7 +3709,9 @@ async function editProfile(){
 
   if(error){
 
-    toast(error.message);
+    toast(
+      error.message
+    );
 
     return;
 
@@ -3269,6 +3723,7 @@ async function editProfile(){
 
 
   updateProfileUI();
+
 
   toast(
     "Profile updated ✓"
@@ -3284,40 +3739,77 @@ async function editProfile(){
 function changePage(page){
 
   document
-    .getElementById("chatsPage")
-    .classList.add("hidden");
-
-  document
-    .getElementById("callsPage")
-    .classList.add("hidden");
-
-  document
-    .getElementById("profilePage")
-    .classList.add("hidden");
+    .getElementById(
+      "chatsPage"
+    )
+    .classList.add(
+      "hidden"
+    );
 
 
   document
-    .getElementById("navChats")
-    .classList.remove("active");
+    .getElementById(
+      "callsPage"
+    )
+    .classList.add(
+      "hidden"
+    );
+
 
   document
-    .getElementById("navCalls")
-    .classList.remove("active");
+    .getElementById(
+      "profilePage"
+    )
+    .classList.add(
+      "hidden"
+    );
+
 
   document
-    .getElementById("navProfile")
-    .classList.remove("active");
+    .getElementById(
+      "navChats"
+    )
+    .classList.remove(
+      "active"
+    );
+
+
+  document
+    .getElementById(
+      "navCalls"
+    )
+    .classList.remove(
+      "active"
+    );
+
+
+  document
+    .getElementById(
+      "navProfile"
+    )
+    .classList.remove(
+      "active"
+    );
 
 
   if(page === "chats"){
 
     document
-      .getElementById("chatsPage")
-      .classList.remove("hidden");
+      .getElementById(
+        "chatsPage"
+      )
+      .classList.remove(
+        "hidden"
+      );
+
 
     document
-      .getElementById("navChats")
-      .classList.add("active");
+      .getElementById(
+        "navChats"
+      )
+      .classList.add(
+        "active"
+      );
 
 
     loadChatList();
@@ -3328,12 +3820,21 @@ function changePage(page){
   if(page === "calls"){
 
     document
-      .getElementById("callsPage")
-      .classList.remove("hidden");
+      .getElementById(
+        "callsPage"
+      )
+      .classList.remove(
+        "hidden"
+      );
+
 
     document
-      .getElementById("navCalls")
-      .classList.add("active");
+      .getElementById(
+        "navCalls"
+      )
+      .classList.add(
+        "active"
+      );
 
   }
 
@@ -3341,205 +3842,353 @@ function changePage(page){
   if(page === "profile"){
 
     document
-      .getElementById("profilePage")
-      .classList.remove("hidden");
+      .getElementById(
+        "profilePage"
+      )
+      .classList.remove(
+        "hidden"
+      );
+
 
     document
-      .getElementById("navProfile")
-      .classList.add("active");
-/* ===============================
+      .getElementById(
+        "navProfile"
+      )
+      .classList.add(
+        "active"
+      );
+
+  }
+
+}
+
+
+/* =========================================================
    RAZTARA AUDIO + VIDEO CALL
-================================ */
-
-let callPeer = null;
-let callLocalStream = null;
-let callRemoteStream = null;
-let callConversationId = null;
-let callMode = null;
-let callState = "idle";
-let callSubscription = null;
-let pendingCall = null;
-let pendingIceCandidates = [];
-
-const CALL_ICE_SERVERS = {
-  iceServers: [
-    { urls: "stun:stun.l.google.com:19302" },
-    { urls: "stun:stun1.l.google.com:19302" }
-  ]
-};
+========================================================= */
 
 
 /* ---------- START CALL ---------- */
 
-function startAudioCall() {
-  startRaztaraCall("audio");
+function startAudioCall(){
+
+  startRaztaraCall(
+    "audio"
+  );
+
 }
 
-function startVideoCall() {
-  startRaztaraCall("video");
+
+function startVideoCall(){
+
+  startRaztaraCall(
+    "video"
+  );
+
 }
 
 
 /* ---------- OUTGOING CALL ---------- */
 
-async function startRaztaraCall(mode) {
+async function startRaztaraCall(
+  mode
+){
 
-  if (!currentUser) {
-    toast("আগে Login করুন");
+  if(!currentUser){
+
+    toast(
+      "আগে Login করুন"
+    );
+
     return;
+
   }
 
-  if (!currentConversation) {
-    toast("আগে একটি Chat খুলুন");
+
+  if(!currentConversation){
+
+    toast(
+      "আগে একটি Chat খুলুন"
+    );
+
     return;
+
   }
 
-  if (callState !== "idle") {
-    toast("একটি Call ইতিমধ্যে চলছে");
+
+  if(
+    callState !==
+    "idle"
+  ){
+
+    toast(
+      "একটি Call ইতিমধ্যে চলছে"
+    );
+
     return;
+
   }
 
-  callMode = mode;
-  callConversationId = currentConversation;
-  callState = "calling";
+
+  callMode =
+    mode;
+
+  callConversationId =
+    currentConversation;
+
+  callState =
+    "calling";
+
 
   showRaztaraCallUI(
-    mode === "video" ? "Video Call" : "Audio Call",
+    mode === "video"
+      ? "Video Call"
+      : "Audio Call",
+
     "Calling...",
+
     false
   );
 
-  try {
+
+  try{
 
     callLocalStream =
-      await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: mode === "video"
-      });
+      await navigator
+        .mediaDevices
+        .getUserMedia({
+
+          audio:true,
+
+          video:
+            mode === "video"
+
+        });
+
 
     createRaztaraPeer();
 
-    callLocalStream.getTracks().forEach(track => {
-      callPeer.addTrack(track, callLocalStream);
-    });
+
+    callLocalStream
+      .getTracks()
+      .forEach(
+        track=>{
+
+          callPeer.addTrack(
+            track,
+            callLocalStream
+          );
+
+        }
+      );
+
+
+    /* Local video preview */
+
+    if(
+      mode === "video"
+    ){
+
+      const localVideo =
+        document.getElementById(
+          "callLocalVideo"
+        );
+
+      if(localVideo){
+
+        localVideo.srcObject =
+          callLocalStream;
+
+        localVideo.play()
+          .catch(
+            ()=>{}
+          );
+
+      }
+
+    }
+
 
     const offer =
-      await callPeer.createOffer();
+      await callPeer
+        .createOffer();
 
-    await callPeer.setLocalDescription(offer);
+
+    await callPeer
+      .setLocalDescription(
+        offer
+      );
+
 
     await sendRaztaraCallSignal(
       "offer",
       {
-        mode: mode,
-        sdp: offer
+
+        mode:
+          mode,
+
+        sdp:
+          offer
+
       }
     );
 
-  } catch (error) {
 
-    console.error(error);
+  }catch(error){
+
+    console.error(
+      error
+    );
+
 
     toast(
       "Microphone/Camera permission দিন"
     );
 
-    endRaztaraCall(false);
+
+    endRaztaraCall(
+      false
+    );
+
   }
+
 }
 
 
 /* ---------- PEER CONNECTION ---------- */
 
-function createRaztaraPeer() {
+function createRaztaraPeer(){
 
-  if (callPeer) return;
+  if(callPeer)
+    return;
+
 
   callPeer =
     new RTCPeerConnection(
       CALL_ICE_SERVERS
     );
 
+
   callRemoteStream =
     new MediaStream();
+
 
   const remoteVideo =
     document.getElementById(
       "callRemoteVideo"
     );
 
+
   remoteVideo.srcObject =
     callRemoteStream;
 
 
-  callPeer.ontrack = event => {
+  callPeer.ontrack =
+    event=>{
 
-    event.streams[0]
-      ?.getTracks()
-      .forEach(track => {
+      event.streams[0]
+        ?.getTracks()
+        .forEach(
+          track=>{
 
-        if (
-          !callRemoteStream
-            .getTracks()
-            .some(t => t.id === track.id)
-        ) {
+            if(
+              !callRemoteStream
+                .getTracks()
+                .some(
+                  t =>
+                    t.id ===
+                    track.id
+                )
+            ){
 
-          callRemoteStream
-            .addTrack(track);
-        }
+              callRemoteStream
+                .addTrack(
+                  track
+                );
 
-      });
+            }
 
-    remoteVideo.play()
-      .catch(() => {});
-  };
+          }
+        );
+
+
+      remoteVideo
+        .play()
+        .catch(
+          ()=>{}
+        );
+
+    };
 
 
   callPeer.onicecandidate =
-    async event => {
+    async event=>{
 
-      if (
+      if(
         event.candidate &&
         callConversationId
-      ) {
+      ){
 
         await sendRaztaraCallSignal(
           "ice",
           {
+
             candidate:
               event.candidate
                 .toJSON()
+
           }
         );
+
       }
+
     };
 
 
   callPeer.onconnectionstatechange =
-    () => {
+    ()=>{
 
-      if (!callPeer) return;
+      if(!callPeer)
+        return;
+
 
       const state =
         callPeer.connectionState;
 
-      if (state === "connected") {
 
-        document.getElementById(
-          "callStatus"
-        ).textContent =
-          "Connected";
+      if(
+        state ===
+        "connected"
+      ){
+
+        document
+          .getElementById(
+            "callStatus"
+          )
+          .textContent =
+            "Connected";
+
       }
 
-      if (state === "failed") {
+
+      if(
+        state ===
+        "failed"
+      ){
 
         toast(
           "Call connection failed"
         );
 
-        endRaztaraCall(false);
+
+        endRaztaraCall(
+          false
+        );
+
       }
+
     };
+
 }
 
 
@@ -3548,49 +4197,59 @@ function createRaztaraPeer() {
 async function sendRaztaraCallSignal(
   signalType,
   payload
-) {
+){
 
-  if (
+  if(
     !currentUser ||
     !callConversationId
-  ) return;
+  )
+    return;
 
-  const { error } =
-    await db
-      .from("call_signals")
-      .insert({
 
-        conversation_id:
-          callConversationId,
+  const {
+    error
+  } =
+  await db
+    .from("call_signals")
+    .insert({
 
-        sender_id:
-          currentUser.id,
+      conversation_id:
+        callConversationId,
 
-        signal_type:
-          signalType,
+      sender_id:
+        currentUser.id,
 
-        payload:
-          payload || {}
-      });
+      signal_type:
+        signalType,
 
-  if (error) {
+      payload:
+        payload || {}
+
+    });
+
+
+  if(error){
 
     console.error(
       "Call signal error:",
       error
     );
+
   }
+
 }
 
 
 /* ---------- SIGNALING ---------- */
 
-function startRaztaraCallSignaling() {
+function startRaztaraCallSignaling(){
 
-  if (
+  if(
     callSubscription ||
     !currentUser
-  ) return;
+  )
+    return;
+
 
   callSubscription =
     db
@@ -3602,20 +4261,29 @@ function startRaztaraCallSignaling() {
       .on(
         "postgres_changes",
         {
-          event: "INSERT",
-          schema: "public",
-          table: "call_signals"
+
+          event:
+            "INSERT",
+
+          schema:
+            "public",
+
+          table:
+            "call_signals"
+
         },
 
-        async payload => {
+        async payload=>{
 
           await handleRaztaraCallSignal(
             payload.new
           );
+
         }
       )
 
       .subscribe();
+
 }
 
 
@@ -3623,116 +4291,150 @@ function startRaztaraCallSignaling() {
 
 async function handleRaztaraCallSignal(
   signal
-) {
+){
 
-  if (!signal) return;
+  if(!signal)
+    return;
 
-  if (
+
+  if(
     signal.sender_id ===
     currentUser.id
-  ) return;
+  )
+    return;
 
 
-  if (
+  if(
     signal.signal_type ===
     "offer"
-  ) {
+  ){
 
     await receiveRaztaraOffer(
       signal
     );
 
     return;
+
   }
 
 
-  if (
+  if(
     signal.conversation_id !==
     callConversationId
-  ) return;
+  )
+    return;
 
 
-  if (
+  if(
     signal.signal_type ===
     "answer"
-  ) {
+  ){
 
-    if (callPeer) {
+    if(callPeer){
 
       await callPeer
         .setRemoteDescription(
+
           new RTCSessionDescription(
             signal.payload.sdp
           )
+
         );
 
+
       await addPendingIce();
+
     }
 
     return;
+
   }
 
 
-  if (
+  if(
     signal.signal_type ===
     "ice"
-  ) {
+  ){
 
     const candidate =
       signal.payload?.candidate;
 
-    if (!candidate) return;
+
+    if(!candidate)
+      return;
 
 
-    if (
+    if(
       callPeer &&
       callPeer.remoteDescription
-    ) {
+    ){
 
-      try {
+      try{
 
         await callPeer
           .addIceCandidate(
+
             new RTCIceCandidate(
               candidate
             )
+
           );
 
-      } catch (error) {
+      }catch(error){
 
-        console.error(error);
+        console.error(
+          error
+        );
+
       }
 
-    } else {
+    }else{
 
       pendingIceCandidates
-        .push(candidate);
+        .push(
+          candidate
+        );
+
     }
 
     return;
+
   }
 
 
-  if (
+  if(
     signal.signal_type ===
     "hangup"
-  ) {
+  ){
 
-    toast("Call ended");
+    toast(
+      "Call ended"
+    );
 
-    endRaztaraCall(false);
+
+    endRaztaraCall(
+      false
+    );
+
   }
 
 
-  if (
+  if(
     signal.signal_type ===
     "reject"
-  ) {
+  ){
 
-    toast("Call rejected");
+    toast(
+      "Call rejected"
+    );
 
-    endRaztaraCall(false);
+
+    endRaztaraCall(
+      false
+    );
+
   }
+
 }
 
 
@@ -3740,21 +4442,21 @@ async function handleRaztaraCallSignal(
 
 async function receiveRaztaraOffer(
   signal
-) {
+){
 
-  if (callState !== "idle") {
-
-    await sendRaztaraCallSignal(
-      "busy",
-      {}
-    );
+  if(
+    callState !==
+    "idle"
+  ){
 
     return;
+
   }
 
 
   callConversationId =
     signal.conversation_id;
+
 
   callMode =
     signal.payload?.mode ===
@@ -3762,17 +4464,21 @@ async function receiveRaztaraOffer(
       ? "video"
       : "audio";
 
+
   callState =
     "incoming";
 
 
   pendingCall = {
+
     sdp:
       signal.payload.sdp
+
   };
 
 
   showRaztaraCallUI(
+
     callMode === "video"
       ? "Incoming Video Call"
       : "Incoming Audio Call",
@@ -3780,31 +4486,37 @@ async function receiveRaztaraOffer(
     "Someone is calling you...",
 
     true
+
   );
+
 }
 
 
 /* ---------- ACCEPT ---------- */
 
-async function acceptRaztaraCall() {
+async function acceptRaztaraCall(){
 
-  if (
+  if(
     !pendingCall ||
-    callState !== "incoming"
-  ) return;
+    callState !==
+    "incoming"
+  )
+    return;
 
 
-  try {
+  try{
 
     callLocalStream =
-      await navigator.mediaDevices
+      await navigator
+        .mediaDevices
         .getUserMedia({
 
-          audio: true,
+          audio:true,
 
           video:
             callMode ===
             "video"
+
         });
 
 
@@ -3813,20 +4525,53 @@ async function acceptRaztaraCall() {
 
     callLocalStream
       .getTracks()
-      .forEach(track => {
+      .forEach(
+        track=>{
 
-        callPeer.addTrack(
-          track,
-          callLocalStream
+          callPeer.addTrack(
+            track,
+            callLocalStream
+          );
+
+        }
+      );
+
+
+    /* Local video preview */
+
+    if(
+      callMode ===
+      "video"
+    ){
+
+      const localVideo =
+        document.getElementById(
+          "callLocalVideo"
         );
-      });
+
+
+      if(localVideo){
+
+        localVideo.srcObject =
+          callLocalStream;
+
+        localVideo.play()
+          .catch(
+            ()=>{}
+          );
+
+      }
+
+    }
 
 
     await callPeer
       .setRemoteDescription(
+
         new RTCSessionDescription(
           pendingCall.sdp
         )
+
       );
 
 
@@ -3834,7 +4579,8 @@ async function acceptRaztaraCall() {
 
 
     const answer =
-      await callPeer.createAnswer();
+      await callPeer
+        .createAnswer();
 
 
     await callPeer
@@ -3846,18 +4592,24 @@ async function acceptRaztaraCall() {
     await sendRaztaraCallSignal(
       "answer",
       {
-        sdp: answer
+
+        sdp:
+          answer
+
       }
     );
 
 
-    pendingCall = null;
+    pendingCall =
+      null;
+
 
     callState =
       "connected";
 
 
     showRaztaraCallUI(
+
       callMode === "video"
         ? "Video Call"
         : "Audio Call",
@@ -3865,71 +4617,99 @@ async function acceptRaztaraCall() {
       "Connecting...",
 
       false
+
     );
 
 
-  } catch (error) {
+  }catch(error){
 
-    console.error(error);
+    console.error(
+      error
+    );
+
 
     toast(
       "Call গ্রহণ করা যায়নি"
     );
 
-    endRaztaraCall(false);
+
+    endRaztaraCall(
+      false
+    );
+
   }
+
 }
 
 
 /* ---------- REJECT ---------- */
 
-async function rejectRaztaraCall() {
+async function rejectRaztaraCall(){
 
   await sendRaztaraCallSignal(
     "reject",
     {}
   );
 
-  pendingCall = null;
 
-  endRaztaraCall(false);
+  pendingCall =
+    null;
+
+
+  endRaztaraCall(
+    false
+  );
+
 }
 
 
 /* ---------- ICE QUEUE ---------- */
 
-async function addPendingIce() {
+async function addPendingIce(){
 
-  if (
+  if(
     !callPeer ||
     !callPeer.remoteDescription
-  ) return;
+  )
+    return;
 
 
   const candidates =
-    [...pendingIceCandidates];
+    [
+      ...pendingIceCandidates
+    ];
 
-  pendingIceCandidates = [];
+
+  pendingIceCandidates =
+    [];
 
 
-  for (
-    const candidate of candidates
-  ) {
+  for(
+    const candidate
+    of candidates
+  ){
 
-    try {
+    try{
 
       await callPeer
         .addIceCandidate(
+
           new RTCIceCandidate(
             candidate
           )
+
         );
 
-    } catch (error) {
+    }catch(error){
 
-      console.error(error);
+      console.error(
+        error
+      );
+
     }
+
   }
+
 }
 
 
@@ -3939,27 +4719,31 @@ function showRaztaraCallUI(
   title,
   status,
   incoming
-) {
+){
 
   const overlay =
     document.getElementById(
       "callOverlay"
     );
 
+
   const titleElement =
     document.getElementById(
       "callTitle"
     );
+
 
   const statusElement =
     document.getElementById(
       "callStatus"
     );
 
+
   const videos =
     document.getElementById(
       "callVideos"
     );
+
 
   const actions =
     document.getElementById(
@@ -3970,60 +4754,62 @@ function showRaztaraCallUI(
   titleElement.textContent =
     title;
 
+
   statusElement.textContent =
     status;
 
 
   videos.classList.toggle(
     "hidden",
-    callMode !== "video"
+    callMode !==
+      "video"
   );
 
 
-  actions.innerHTML = "";
+  actions.innerHTML =
+    "";
 
 
-  if (incoming) {
+  if(incoming){
 
     actions.innerHTML = `
 
       <button
         class="callAction reject"
-        onclick="
-          rejectRaztaraCall()
-        ">
+        onclick="rejectRaztaraCall()"
+      >
         Reject
       </button>
 
       <button
         class="callAction accept"
-        onclick="
-          acceptRaztaraCall()
-        ">
+        onclick="acceptRaztaraCall()"
+      >
         Accept
       </button>
 
     `;
 
-  } else {
+  }else{
 
     actions.innerHTML = `
 
       <button
         class="callAction end"
-        onclick="
-          endRaztaraCall(true)
-        ">
+        onclick="endRaztaraCall(true)"
+      >
         End Call
       </button>
 
     `;
+
   }
 
 
   overlay.classList.remove(
     "hidden"
   );
+
 }
 
 
@@ -4031,65 +4817,79 @@ function showRaztaraCallUI(
 
 async function endRaztaraCall(
   sendSignal
-) {
+){
 
-  if (
+  if(
     sendSignal &&
     callConversationId
-  ) {
+  ){
 
     await sendRaztaraCallSignal(
       "hangup",
       {}
     );
+
   }
 
 
-  if (callPeer) {
+  if(callPeer){
 
-    try {
+    try{
 
       callPeer.close();
 
-    } catch (error) {}
+    }catch(error){}
+
   }
 
 
-  if (callLocalStream) {
+  if(callLocalStream){
 
     callLocalStream
       .getTracks()
-      .forEach(track =>
-        track.stop()
+      .forEach(
+        track=>
+          track.stop()
       );
+
   }
 
 
-  if (callRemoteStream) {
+  if(callRemoteStream){
 
     callRemoteStream
       .getTracks()
-      .forEach(track =>
-        track.stop()
+      .forEach(
+        track=>
+          track.stop()
       );
+
   }
 
 
-  callPeer = null;
+  callPeer =
+    null;
 
-  callLocalStream = null;
+  callLocalStream =
+    null;
 
-  callRemoteStream = null;
+  callRemoteStream =
+    null;
 
-  callConversationId = null;
+  callConversationId =
+    null;
 
-  callMode = null;
+  callMode =
+    null;
 
-  callState = "idle";
+  callState =
+    "idle";
 
-  pendingCall = null;
+  pendingCall =
+    null;
 
-  pendingIceCandidates = [];
+  pendingIceCandidates =
+    [];
 
 
   const localVideo =
@@ -4097,17 +4897,21 @@ async function endRaztaraCall(
       "callLocalVideo"
     );
 
+
   const remoteVideo =
     document.getElementById(
       "callRemoteVideo"
     );
 
 
-  if (localVideo)
-    localVideo.srcObject = null;
+  if(localVideo)
+    localVideo.srcObject =
+      null;
 
-  if (remoteVideo)
-    remoteVideo.srcObject = null;
+
+  if(remoteVideo)
+    remoteVideo.srcObject =
+      null;
 
 
   document
@@ -4117,20 +4921,6 @@ async function endRaztaraCall(
     .classList.add(
       "hidden"
     );
-}
-
-
-/* ---------- START SIGNALING ---------- */
-
-if (
-  typeof currentUser !==
-  "undefined" &&
-  currentUser
-) {
-
-  startRaztaraCallSignaling();
-}
-
 
 }
 
@@ -4140,6 +4930,35 @@ if (
 ========================================================= */
 
 async function logout(){
+
+  if(callSubscription){
+
+    await db.removeChannel(
+      callSubscription
+    );
+
+    callSubscription =
+      null;
+
+  }
+
+
+  if(messageSubscription){
+
+    await db.removeChannel(
+      messageSubscription
+    );
+
+    messageSubscription =
+      null;
+
+  }
+
+
+  await endRaztaraCall(
+    false
+  );
+
 
   await db.auth.signOut();
 
@@ -4157,6 +4976,7 @@ function scrollMessages(){
       "messages"
     );
 
+
   box.scrollTop =
     box.scrollHeight;
 
@@ -4169,8 +4989,13 @@ function formatTime(date){
     .toLocaleTimeString(
       "bn-BD",
       {
-        hour:"numeric",
-        minute:"2-digit"
+
+        hour:
+          "numeric",
+
+        minute:
+          "2-digit"
+
       }
     );
 
@@ -4179,7 +5004,9 @@ function formatTime(date){
 
 function escapeHtml(value){
 
-  return String(value || "")
+  return String(
+    value || ""
+  )
     .replace(
       /&/g,
       "&amp;"
@@ -4211,8 +5038,10 @@ function toast(message){
       "toast"
     );
 
+
   box.textContent =
     message;
+
 
   box.style.display =
     "block";
@@ -4226,8 +5055,10 @@ function toast(message){
   window.toastTimer =
     setTimeout(
       ()=>{
+
         box.style.display =
           "none";
+
       },
       3000
     );
