@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>RAZTARA | Registration</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    min-height:100vh;
+    background:linear-gradient(135deg,#075e54,#128c7e);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:430px;
+}
+
+.card{
+    background:#ffffff;
+    border-radius:24px;
+    padding:30px 24px;
+    box-shadow:0 15px 45px rgba(0,0,0,.20);
+}
+
+.logo{
+    width:72px;
+    height:72px;
+    margin:0 auto 15px;
+    border-radius:20px;
+    background:#075e54;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
+    font-weight:800;
+    letter-spacing:-1px;
+}
+
+.title{
+    text-align:center;
+    font-size:28px;
+    font-weight:800;
+    color:#075e54;
+}
+
+.subtitle{
+    text-align:center;
+    color:#777;
+    font-size:14px;
+    margin-top:5px;
+    margin-bottom:28px;
+}
+
+.form-group{
+    margin-bottom:17px;
+}
+
+label{
+    display:block;
+    font-size:14px;
+    font-weight:600;
+    color:#333;
+    margin-bottom:7px;
+}
+
+input{
+    width:100%;
+    height:50px;
+    border:1px solid #ddd;
+    border-radius:12px;
+    padding:0 14px;
+    font-size:15px;
+    outline:none;
+    transition:.2s;
+    background:#fafafa;
+}
+
+input:focus{
+    border-color:#128c7e;
+    background:#fff;
+    box-shadow:0 0 0 3px rgba(18,140,126,.10);
+}
+
+.password-box{
+    position:relative;
+}
+
+.password-box input{
+    padding-right:50px;
+}
+
+.show-password{
+    position:absolute;
+    right:14px;
+    top:50%;
+    transform:translateY(-50%);
+    border:none;
+    background:none;
+    font-size:20px;
+    cursor:pointer;
+    color:#777;
+}
+
+.register-btn{
+    width:100%;
+    height:52px;
+    border:none;
+    border-radius:13px;
+    background:#075e54;
+    color:white;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    margin-top:5px;
+    transition:.2s;
+}
+
+.register-btn:active{
+    transform:scale(.98);
+}
+
+.register-btn:hover{
+    background:#064c44;
+}
+
+.error{
+    display:none;
+    margin-top:15px;
+    padding:11px 13px;
+    border-radius:10px;
+    background:#fff0f0;
+    color:#d93025;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.success{
+    display:none;
+    margin-top:15px;
+    padding:11px 13px;
+    border-radius:10px;
+    background:#eaf8f2;
+    color:#087f5b;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.login-link{
+    text-align:center;
+    margin-top:22px;
+    font-size:14px;
+    color:#666;
+}
+
+.login-link button{
+    border:none;
+    background:none;
+    color:#075e54;
+    font-weight:700;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.footer{
+    text-align:center;
+    color:#999;
+    font-size:12px;
+    margin-top:20px;
+}
+
+@media(max-width:400px){
+    .card{
+        padding:26px 19px;
+        border-radius:20px;
+    }
+
+    .title{
+        font-size:25px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <div class="logo">RZ</div>
+
+        <div class="title">Create Account</div>
+
+        <div class="subtitle">
+            Join RAZTARA and connect with people
+        </div>
+
+        <form id="registrationForm">
+
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input
+                    type="text"
+                    id="name"
+                    placeholder="Enter your full name"
+                    autocomplete="name"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+
+                <div class="password-box">
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Create a password"
+                        autocomplete="new-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword('password', this)"
+                    >👁</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+
+                <div class="password-box">
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        placeholder="Confirm your password"
+                        autocomplete="new-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword('confirmPassword', this)"
+                    >👁</button>
+                </div>
+            </div>
+
+            <button type="submit" class="register-btn">
+                CREATE ACCOUNT
+            </button>
+
+            <div id="errorMessage" class="error"></div>
+
+            <div id="successMessage" class="success"></div>
+
+        </form>
+
+        <div class="login-link">
+            Already have an account?
+            <button type="button" onclick="goToLogin()">
+                Login
+            </button>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        © 2026 RAZTARA • Connect • Call • Share
+    </div>
+
+</div>
+
+
+<script>
+
+function togglePassword(id, button){
+
+    const input = document.getElementById(id);
+
+    if(input.type === "password"){
+        input.type = "text";
+        button.textContent = "🙈";
+    }else{
+        input.type = "password";
+        button.textContent = "👁";
+    }
+}
+
+
+function goToLogin(){
+
+    window.location.href = "login.html";
+
+}
+
+
+document.getElementById("registrationForm").addEventListener("submit", function(e){
+
+    e.preventDefault();
+
+    const name =
+        document.getElementById("name").value.trim();
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    const confirmPassword =
+        document.getElementById("confirmPassword").value;
+
+    const error =
+        document.getElementById("errorMessage");
+
+    const success =
+        document.getElementById("successMessage");
+
+
+    error.style.display = "none";
+    success.style.display = "none";
+
+
+    if(name === ""){
+        error.textContent = "Please enter your full name.";
+        error.style.display = "block";
+        return;
+    }
+
+
+    if(email === ""){
+        error.textContent = "Please enter your email.";
+        error.style.display = "block";
+        return;
+    }
+
+
+    if(password.length < 6){
+        error.textContent =
+            "Password must be at least 6 characters.";
+        error.style.display = "block";
+        return;
+    }
+
+
+    if(password !== confirmPassword){
+        error.textContent =
+            "Passwords do not match.";
+        error.style.display = "block";
+        return;
+    }
+
+
+    success.textContent =
+        "Registration system will be connected to Supabase in the next step.";
+
+    success.style.display = "block";
+
+});
+
+
+</script>
+
+</body>
+</html>
