@@ -1308,7 +1308,7 @@ async function handleAuth(){
       data.user;
 
     await showApp();
-
+startRaztaraCallSignaling();
   }
 
 }
@@ -3347,32 +3347,790 @@ function changePage(page){
     document
       .getElementById("navProfile")
       .classList.add("active");
+/* ===============================
+   RAZTARA AUDIO + VIDEO CALL
+================================ */
 
-    updateProfileUI();
+let callPeer = null;
+let callLocalStream = null;
+let callRemoteStream = null;
+let callConversationId = null;
+let callMode = null;
+let callState = "idle";
+let callSubscription = null;
+let pendingCall = null;
+let pendingIceCandidates = [];
 
+const CALL_ICE_SERVERS = {
+  iceServers: [
+    { urls: "stun:stun.l.google.com:19302" },
+    { urls: "stun:stun1.l.google.com:19302" }
+  ]
+};
+
+
+/* ---------- START CALL ---------- */
+
+function startAudioCall() {
+  startRaztaraCall("audio");
+}
+
+function startVideoCall() {
+  startRaztaraCall("video");
+}
+
+
+/* ---------- OUTGOING CALL ---------- */
+
+async function startRaztaraCall(mode) {
+
+  if (!currentUser) {
+    toast("আগে Login করুন");
+    return;
   }
 
+  if (!currentConversation) {
+    toast("আগে একটি Chat খুলুন");
+    return;
+  }
+
+  if (callState !== "idle") {
+    toast("একটি Call ইতিমধ্যে চলছে");
+    return;
+  }
+
+  callMode = mode;
+  callConversationId = currentConversation;
+  callState = "calling";
+
+  showRaztaraCallUI(
+    mode === "video" ? "Video Call" : "Audio Call",
+    "Calling...",
+    false
+  );
+
+  try {
+
+    callLocalStream =
+      await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: mode === "video"
+      });
+
+    createRaztaraPeer();
+
+    callLocalStream.getTracks().forEach(track => {
+      callPeer.addTrack(track, callLocalStream);
+    });
+
+    const offer =
+      await callPeer.createOffer();
+
+    await callPeer.setLocalDescription(offer);
+
+    await sendRaztaraCallSignal(
+      "offer",
+      {
+        mode: mode,
+        sdp: offer
+      }
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    toast(
+      "Microphone/Camera permission দিন"
+    );
+
+    endRaztaraCall(false);
+  }
 }
 
 
-/* =========================================================
-   AUDIO / VIDEO CALL PLACEHOLDER
-========================================================= */
+/* ---------- PEER CONNECTION ---------- */
 
-function startAudioCall(){
+function createRaztaraPeer() {
 
-  toast(
-    "Audio Call system পরবর্তী ধাপে যোগ হবে।"
-  );
+  if (callPeer) return;
 
+  callPeer =
+    new RTCPeerConnection(
+      CALL_ICE_SERVERS
+    );
+
+  callRemoteStream =
+    new MediaStream();
+
+  const remoteVideo =
+    document.getElementById(
+      "callRemoteVideo"
+    );
+
+  remoteVideo.srcObject =
+    callRemoteStream;
+
+
+  callPeer.ontrack = event => {
+
+    event.streams[0]
+      ?.getTracks()
+      .forEach(track => {
+
+        if (
+          !callRemoteStream
+            .getTracks()
+            .some(t => t.id === track.id)
+        ) {
+
+          callRemoteStream
+            .addTrack(track);
+        }
+
+      });
+
+    remoteVideo.play()
+      .catch(() => {});
+  };
+
+
+  callPeer.onicecandidate =
+    async event => {
+
+      if (
+        event.candidate &&
+        callConversationId
+      ) {
+
+        await sendRaztaraCallSignal(
+          "ice",
+          {
+            candidate:
+              event.candidate
+                .toJSON()
+          }
+        );
+      }
+    };
+
+
+  callPeer.onconnectionstatechange =
+    () => {
+
+      if (!callPeer) return;
+
+      const state =
+        callPeer.connectionState;
+
+      if (state === "connected") {
+
+        document.getElementById(
+          "callStatus"
+        ).textContent =
+          "Connected";
+      }
+
+      if (state === "failed") {
+
+        toast(
+          "Call connection failed"
+        );
+
+        endRaztaraCall(false);
+      }
+    };
 }
 
 
-function startVideoCall(){
+/* ---------- SEND SIGNAL ---------- */
 
-  toast(
-    "Video Call system পরবর্তী ধাপে যোগ হবে।"
+async function sendRaztaraCallSignal(
+  signalType,
+  payload
+) {
+
+  if (
+    !currentUser ||
+    !callConversationId
+  ) return;
+
+  const { error } =
+    await db
+      .from("call_signals")
+      .insert({
+
+        conversation_id:
+          callConversationId,
+
+        sender_id:
+          currentUser.id,
+
+        signal_type:
+          signalType,
+
+        payload:
+          payload || {}
+      });
+
+  if (error) {
+
+    console.error(
+      "Call signal error:",
+      error
+    );
+  }
+}
+
+
+/* ---------- SIGNALING ---------- */
+
+function startRaztaraCallSignaling() {
+
+  if (
+    callSubscription ||
+    !currentUser
+  ) return;
+
+  callSubscription =
+    db
+      .channel(
+        "raztara-call-" +
+        currentUser.id
+      )
+
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "call_signals"
+        },
+
+        async payload => {
+
+          await handleRaztaraCallSignal(
+            payload.new
+          );
+        }
+      )
+
+      .subscribe();
+}
+
+
+/* ---------- RECEIVE SIGNAL ---------- */
+
+async function handleRaztaraCallSignal(
+  signal
+) {
+
+  if (!signal) return;
+
+  if (
+    signal.sender_id ===
+    currentUser.id
+  ) return;
+
+
+  if (
+    signal.signal_type ===
+    "offer"
+  ) {
+
+    await receiveRaztaraOffer(
+      signal
+    );
+
+    return;
+  }
+
+
+  if (
+    signal.conversation_id !==
+    callConversationId
+  ) return;
+
+
+  if (
+    signal.signal_type ===
+    "answer"
+  ) {
+
+    if (callPeer) {
+
+      await callPeer
+        .setRemoteDescription(
+          new RTCSessionDescription(
+            signal.payload.sdp
+          )
+        );
+
+      await addPendingIce();
+    }
+
+    return;
+  }
+
+
+  if (
+    signal.signal_type ===
+    "ice"
+  ) {
+
+    const candidate =
+      signal.payload?.candidate;
+
+    if (!candidate) return;
+
+
+    if (
+      callPeer &&
+      callPeer.remoteDescription
+    ) {
+
+      try {
+
+        await callPeer
+          .addIceCandidate(
+            new RTCIceCandidate(
+              candidate
+            )
+          );
+
+      } catch (error) {
+
+        console.error(error);
+      }
+
+    } else {
+
+      pendingIceCandidates
+        .push(candidate);
+    }
+
+    return;
+  }
+
+
+  if (
+    signal.signal_type ===
+    "hangup"
+  ) {
+
+    toast("Call ended");
+
+    endRaztaraCall(false);
+  }
+
+
+  if (
+    signal.signal_type ===
+    "reject"
+  ) {
+
+    toast("Call rejected");
+
+    endRaztaraCall(false);
+  }
+}
+
+
+/* ---------- INCOMING CALL ---------- */
+
+async function receiveRaztaraOffer(
+  signal
+) {
+
+  if (callState !== "idle") {
+
+    await sendRaztaraCallSignal(
+      "busy",
+      {}
+    );
+
+    return;
+  }
+
+
+  callConversationId =
+    signal.conversation_id;
+
+  callMode =
+    signal.payload?.mode ===
+    "video"
+      ? "video"
+      : "audio";
+
+  callState =
+    "incoming";
+
+
+  pendingCall = {
+    sdp:
+      signal.payload.sdp
+  };
+
+
+  showRaztaraCallUI(
+    callMode === "video"
+      ? "Incoming Video Call"
+      : "Incoming Audio Call",
+
+    "Someone is calling you...",
+
+    true
   );
+}
+
+
+/* ---------- ACCEPT ---------- */
+
+async function acceptRaztaraCall() {
+
+  if (
+    !pendingCall ||
+    callState !== "incoming"
+  ) return;
+
+
+  try {
+
+    callLocalStream =
+      await navigator.mediaDevices
+        .getUserMedia({
+
+          audio: true,
+
+          video:
+            callMode ===
+            "video"
+        });
+
+
+    createRaztaraPeer();
+
+
+    callLocalStream
+      .getTracks()
+      .forEach(track => {
+
+        callPeer.addTrack(
+          track,
+          callLocalStream
+        );
+      });
+
+
+    await callPeer
+      .setRemoteDescription(
+        new RTCSessionDescription(
+          pendingCall.sdp
+        )
+      );
+
+
+    await addPendingIce();
+
+
+    const answer =
+      await callPeer.createAnswer();
+
+
+    await callPeer
+      .setLocalDescription(
+        answer
+      );
+
+
+    await sendRaztaraCallSignal(
+      "answer",
+      {
+        sdp: answer
+      }
+    );
+
+
+    pendingCall = null;
+
+    callState =
+      "connected";
+
+
+    showRaztaraCallUI(
+      callMode === "video"
+        ? "Video Call"
+        : "Audio Call",
+
+      "Connecting...",
+
+      false
+    );
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    toast(
+      "Call গ্রহণ করা যায়নি"
+    );
+
+    endRaztaraCall(false);
+  }
+}
+
+
+/* ---------- REJECT ---------- */
+
+async function rejectRaztaraCall() {
+
+  await sendRaztaraCallSignal(
+    "reject",
+    {}
+  );
+
+  pendingCall = null;
+
+  endRaztaraCall(false);
+}
+
+
+/* ---------- ICE QUEUE ---------- */
+
+async function addPendingIce() {
+
+  if (
+    !callPeer ||
+    !callPeer.remoteDescription
+  ) return;
+
+
+  const candidates =
+    [...pendingIceCandidates];
+
+  pendingIceCandidates = [];
+
+
+  for (
+    const candidate of candidates
+  ) {
+
+    try {
+
+      await callPeer
+        .addIceCandidate(
+          new RTCIceCandidate(
+            candidate
+          )
+        );
+
+    } catch (error) {
+
+      console.error(error);
+    }
+  }
+}
+
+
+/* ---------- CALL UI ---------- */
+
+function showRaztaraCallUI(
+  title,
+  status,
+  incoming
+) {
+
+  const overlay =
+    document.getElementById(
+      "callOverlay"
+    );
+
+  const titleElement =
+    document.getElementById(
+      "callTitle"
+    );
+
+  const statusElement =
+    document.getElementById(
+      "callStatus"
+    );
+
+  const videos =
+    document.getElementById(
+      "callVideos"
+    );
+
+  const actions =
+    document.getElementById(
+      "callActions"
+    );
+
+
+  titleElement.textContent =
+    title;
+
+  statusElement.textContent =
+    status;
+
+
+  videos.classList.toggle(
+    "hidden",
+    callMode !== "video"
+  );
+
+
+  actions.innerHTML = "";
+
+
+  if (incoming) {
+
+    actions.innerHTML = `
+
+      <button
+        class="callAction reject"
+        onclick="
+          rejectRaztaraCall()
+        ">
+        Reject
+      </button>
+
+      <button
+        class="callAction accept"
+        onclick="
+          acceptRaztaraCall()
+        ">
+        Accept
+      </button>
+
+    `;
+
+  } else {
+
+    actions.innerHTML = `
+
+      <button
+        class="callAction end"
+        onclick="
+          endRaztaraCall(true)
+        ">
+        End Call
+      </button>
+
+    `;
+  }
+
+
+  overlay.classList.remove(
+    "hidden"
+  );
+}
+
+
+/* ---------- END CALL ---------- */
+
+async function endRaztaraCall(
+  sendSignal
+) {
+
+  if (
+    sendSignal &&
+    callConversationId
+  ) {
+
+    await sendRaztaraCallSignal(
+      "hangup",
+      {}
+    );
+  }
+
+
+  if (callPeer) {
+
+    try {
+
+      callPeer.close();
+
+    } catch (error) {}
+  }
+
+
+  if (callLocalStream) {
+
+    callLocalStream
+      .getTracks()
+      .forEach(track =>
+        track.stop()
+      );
+  }
+
+
+  if (callRemoteStream) {
+
+    callRemoteStream
+      .getTracks()
+      .forEach(track =>
+        track.stop()
+      );
+  }
+
+
+  callPeer = null;
+
+  callLocalStream = null;
+
+  callRemoteStream = null;
+
+  callConversationId = null;
+
+  callMode = null;
+
+  callState = "idle";
+
+  pendingCall = null;
+
+  pendingIceCandidates = [];
+
+
+  const localVideo =
+    document.getElementById(
+      "callLocalVideo"
+    );
+
+  const remoteVideo =
+    document.getElementById(
+      "callRemoteVideo"
+    );
+
+
+  if (localVideo)
+    localVideo.srcObject = null;
+
+  if (remoteVideo)
+    remoteVideo.srcObject = null;
+
+
+  document
+    .getElementById(
+      "callOverlay"
+    )
+    .classList.add(
+      "hidden"
+    );
+}
+
+
+/* ---------- START SIGNALING ---------- */
+
+if (
+  typeof currentUser !==
+  "undefined" &&
+  currentUser
+) {
+
+  startRaztaraCallSignaling();
+}
+
 
 }
 
