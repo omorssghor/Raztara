@@ -1,834 +1,399 @@
 <!DOCTYPE html>
-<html lang="bn">
-
+<html lang="en">
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAZTARA | Login</title>
 
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
->
-
-<meta
-  name="theme-color"
-  content="#087f5b"
->
-
-<title>RAZTARA - Login</title>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
-/* =========================
-   RESET
-========================= */
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
-html,
-body{
-  width:100%;
-  min-height:100%;
-}
+*{margin:0;padding:0;box-sizing:border-box}
 
 body{
-
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Arial,
-    sans-serif;
-
-  background:
-    linear-gradient(
-      145deg,
-      #e9f8f2,
-      #f8fbfa
-    );
-
-  color:#222;
-
-  display:flex;
-
-  justify-content:center;
-
-  align-items:center;
-
-  padding:20px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    min-height:100vh;
+    background:linear-gradient(135deg,#075e54,#128c7e);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
 }
 
+.container{width:100%;max-width:430px}
 
-/* =========================
-   LOGIN CONTAINER
-========================= */
-
-.login-wrapper{
-
-  width:100%;
-
-  max-width:420px;
-
-}
-
-
-/* =========================
-   BRAND
-========================= */
-
-.brand{
-
-  text-align:center;
-
-  margin-bottom:25px;
+.card{
+    background:#fff;
+    border-radius:24px;
+    padding:32px 24px;
+    box-shadow:0 15px 45px rgba(0,0,0,.2);
 }
 
 .logo{
-
-  width:76px;
-
-  height:76px;
-
-  margin:0 auto 13px;
-
-  border-radius:24px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #087f5b,
-      #0aa876
-    );
-
-  color:white;
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:center;
-
-  font-size:30px;
-
-  font-weight:800;
-
-  box-shadow:
-    0 10px 25px
-    rgba(8,127,91,.20);
+    width:72px;height:72px;
+    margin:0 auto 15px;
+    border-radius:20px;
+    background:#075e54;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
+    font-weight:800;
 }
 
-.brand h1{
-
-  font-size:29px;
-
-  font-weight:800;
-
-  color:#087f5b;
-
-  letter-spacing:.5px;
+.title{
+    text-align:center;
+    color:#075e54;
+    font-size:28px;
+    font-weight:800;
 }
 
-.brand p{
-
-  margin-top:5px;
-
-  color:#777;
-
-  font-size:14px;
+.subtitle{
+    text-align:center;
+    color:#777;
+    font-size:14px;
+    margin:6px 0 28px;
 }
 
+.group{margin-bottom:17px}
 
-/* =========================
-   LOGIN CARD
-========================= */
-
-.login-card{
-
-  background:#ffffff;
-
-  border-radius:24px;
-
-  padding:25px 20px 22px;
-
-  box-shadow:
-    0 12px 40px
-    rgba(0,0,0,.08);
-
-  border:1px solid
-    rgba(0,0,0,.04);
+label{
+    display:block;
+    font-size:14px;
+    font-weight:600;
+    margin-bottom:7px;
 }
 
-
-/* =========================
-   TITLE
-========================= */
-
-.login-title{
-
-  text-align:center;
-
-  font-size:21px;
-
-  font-weight:700;
-
-  margin-bottom:20px;
-
-  color:#222;
+input{
+    width:100%;
+    height:50px;
+    border:1px solid #ddd;
+    border-radius:12px;
+    padding:0 14px;
+    font-size:15px;
+    outline:none;
+    background:#fafafa;
 }
 
-
-/* =========================
-   INPUT
-========================= */
-
-.input-group{
-
-  margin-bottom:14px;
+input:focus{
+    border-color:#128c7e;
+    background:#fff;
 }
 
-.input-label{
+.password-box{position:relative}
 
-  display:block;
+.password-box input{padding-right:50px}
 
-  font-size:13px;
-
-  font-weight:600;
-
-  color:#555;
-
-  margin-bottom:7px;
+.eye{
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%);
+    border:0;
+    background:none;
+    font-size:20px;
+    cursor:pointer;
 }
 
-.input-box{
-
-  height:52px;
-
-  width:100%;
-
-  display:flex;
-
-  align-items:center;
-
-  background:#f5f7f6;
-
-  border:1px solid #e1e6e4;
-
-  border-radius:14px;
-
-  transition:.2s;
+.forgot{
+    display:block;
+    width:100%;
+    border:0;
+    background:none;
+    color:#075e54;
+    text-align:right;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    margin:-5px 0 18px;
 }
 
-.input-box:focus-within{
-
-  background:#ffffff;
-
-  border-color:#087f5b;
-
-  box-shadow:
-    0 0 0 3px
-    rgba(8,127,91,.10);
+.btn{
+    width:100%;
+    height:52px;
+    border:0;
+    border-radius:13px;
+    background:#075e54;
+    color:#fff;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
 }
 
-.input-icon{
-
-  width:48px;
-
-  text-align:center;
-
-  font-size:19px;
-
-  color:#087f5b;
+.btn:disabled{
+    opacity:.65;
 }
-
-.input-box input{
-
-  flex:1;
-
-  height:100%;
-
-  min-width:0;
-
-  border:0;
-
-  outline:0;
-
-  background:transparent;
-
-  font-size:15px;
-
-  color:#222;
-
-  padding-right:10px;
-}
-
-.input-box input::placeholder{
-
-  color:#999;
-}
-
-
-/* =========================
-   PASSWORD EYE
-========================= */
-
-.password-toggle{
-
-  width:45px;
-
-  height:45px;
-
-  background:transparent;
-
-  color:#777;
-
-  font-size:18px;
-
-  cursor:pointer;
-}
-
-
-/* =========================
-   FORGOT PASSWORD
-========================= */
-
-.forgot-row{
-
-  text-align:right;
-
-  margin:2px 2px 18px;
-}
-
-.forgot-button{
-
-  border:0;
-
-  background:transparent;
-
-  color:#087f5b;
-
-  font-size:13px;
-
-  font-weight:600;
-
-  cursor:pointer;
-}
-
-
-/* =========================
-   LOGIN BUTTON
-========================= */
-
-.login-button{
-
-  width:100%;
-
-  height:52px;
-
-  border:0;
-
-  border-radius:14px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #087f5b,
-      #0aa876
-    );
-
-  color:white;
-
-  font-size:16px;
-
-  font-weight:700;
-
-  cursor:pointer;
-
-  box-shadow:
-    0 7px 18px
-    rgba(8,127,91,.20);
-
-  transition:.2s;
-}
-
-.login-button:active{
-
-  transform:scale(.98);
-}
-
-
-/* =========================
-   DIVIDER
-========================= */
 
 .divider{
-
-  display:flex;
-
-  align-items:center;
-
-  gap:10px;
-
-  margin:21px 0;
-
-  color:#aaa;
-
-  font-size:12px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:22px 0;
+    color:#aaa;
+    font-size:13px;
 }
 
-.divider::before,
-.divider::after{
-
-  content:"";
-
-  height:1px;
-
-  background:#e5e8e7;
-
-  flex:1;
+.divider:before,
+.divider:after{
+    content:"";
+    height:1px;
+    background:#ddd;
+    flex:1;
 }
 
-
-/* =========================
-   REGISTRATION BUTTON
-========================= */
-
-.registration-button{
-
-  width:100%;
-
-  height:50px;
-
-  border-radius:14px;
-
-  border:1.5px solid #087f5b;
-
-  background:#ffffff;
-
-  color:#087f5b;
-
-  font-size:15px;
-
-  font-weight:700;
-
-  cursor:pointer;
-
-  transition:.2s;
+.register{
+    width:100%;
+    height:50px;
+    border:1px solid #075e54;
+    border-radius:13px;
+    background:white;
+    color:#075e54;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
 }
-
-.registration-button:active{
-
-  background:#eaf7f2;
-
-  transform:scale(.98);
-}
-
-
-/* =========================
-   MESSAGE
-========================= */
 
 .message{
-
-  display:none;
-
-  margin-bottom:14px;
-
-  padding:11px 12px;
-
-  border-radius:10px;
-
-  font-size:13px;
-
-  text-align:center;
+    display:none;
+    margin-top:15px;
+    padding:12px;
+    border-radius:10px;
+    font-size:13px;
+    line-height:1.5;
 }
 
-.message.error{
-
-  display:block;
-
-  background:#fff1f1;
-
-  color:#c62828;
-
-  border:1px solid #ffd5d5;
+.error{
+    background:#fff0f0;
+    color:#d93025;
 }
 
-
-/* =========================
-   FOOTER
-========================= */
+.success{
+    background:#eaf8f2;
+    color:#087f5b;
+}
 
 .footer{
-
-  text-align:center;
-
-  margin-top:20px;
-
-  color:#999;
-
-  font-size:12px;
+    text-align:center;
+    color:#eee;
+    font-size:12px;
+    margin-top:20px;
 }
-
-
-/* =========================
-   LOADING
-========================= */
-
-.login-button.loading{
-
-  opacity:.7;
-
-  pointer-events:none;
-}
-
-
-/* =========================
-   DESKTOP
-========================= */
-
-@media(min-width:600px){
-
-  body{
-
-    padding:40px 20px;
-  }
-
-  .login-card{
-
-    padding:30px;
-  }
-
-}
-
 </style>
-
 </head>
-
 
 <body>
 
+<div class="container">
 
-<div class="login-wrapper">
+<div class="card">
 
+<div class="logo">RZ</div>
 
-  <!-- =====================
-       BRAND
-  ====================== -->
+<div class="title">RAZTARA</div>
 
-  <div class="brand">
+<div class="subtitle">Connect • Call • Share</div>
 
-    <div class="logo">
-      R
-    </div>
+<form id="loginForm">
 
-    <h1>
-      RAZTARA
-    </h1>
+<div class="group">
+<label>Email</label>
+<input
+    type="email"
+    id="email"
+    placeholder="Enter your email"
+    autocomplete="email"
+    required
+>
+</div>
 
-    <p>
-      Connect • Call • Share
-    </p>
+<div class="group">
 
-  </div>
+<label>Password</label>
 
+<div class="password-box">
 
+<input
+    type="password"
+    id="password"
+    placeholder="Enter your password"
+    autocomplete="current-password"
+    required
+>
 
-  <!-- =====================
-       LOGIN CARD
-  ====================== -->
+<button
+    type="button"
+    class="eye"
+    onclick="togglePassword()"
+>👁</button>
 
-  <div class="login-card">
+</div>
+</div>
 
+<button
+    type="button"
+    class="forgot"
+    onclick="goForgot()"
+>
+Forgot Password?
+</button>
 
-    <div class="login-title">
-      Welcome Back
-    </div>
+<button
+    type="submit"
+    class="btn"
+    id="loginBtn"
+>
+LOGIN
+</button>
 
+<div id="message" class="message"></div>
 
-    <!-- ERROR MESSAGE -->
+</form>
 
-    <div
-      id="message"
-      class="message"
-    ></div>
+<div class="divider">OR</div>
 
-
-    <!-- EMAIL -->
-
-    <div class="input-group">
-
-      <label class="input-label">
-        Email
-      </label>
-
-      <div class="input-box">
-
-        <span class="input-icon">
-          📧
-        </span>
-
-        <input
-          id="email"
-          type="email"
-          placeholder="Enter your email"
-          autocomplete="email"
-        >
-
-      </div>
-
-    </div>
-
-
-    <!-- PASSWORD -->
-
-    <div class="input-group">
-
-      <label class="input-label">
-        Password
-      </label>
-
-      <div class="input-box">
-
-        <span class="input-icon">
-          🔒
-        </span>
-
-        <input
-          id="password"
-          type="password"
-          placeholder="Enter your password"
-          autocomplete="current-password"
-        >
-
-        <button
-          id="passwordToggle"
-          class="password-toggle"
-          type="button"
-          aria-label="Show password"
-        >
-          👁
-        </button>
-
-      </div>
-
-    </div>
-
-
-    <!-- FORGOT -->
-
-    <div class="forgot-row">
-
-      <button
-        id="forgotButton"
-        class="forgot-button"
-        type="button"
-      >
-        Forgot password?
-      </button>
-
-    </div>
-
-
-    <!-- LOGIN -->
-
-    <button
-      id="loginButton"
-      class="login-button"
-      type="button"
-    >
-      LOGIN
-    </button>
-
-
-    <!-- DIVIDER -->
-
-    <div class="divider">
-      OR
-    </div>
-
-
-    <!-- REGISTRATION -->
-
-    <button
-      id="registrationButton"
-      class="registration-button"
-      type="button"
-    >
-      REGISTRATION
-    </button>
-
-
-  </div>
-
-
-  <div class="footer">
-    © 2026 RAZTARA
-  </div>
-
+<button
+    class="register"
+    onclick="goRegistration()"
+>
+CREATE NEW ACCOUNT
+</button>
 
 </div>
 
+<div class="footer">
+© 2026 RAZTARA • Connect • Call • Share
+</div>
 
+</div>
 
 <script>
 
+const SUPABASE_URL =
+"https://pqyicaqpmojijjskpzcp.supabase.co";
 
-/* =========================
-   PASSWORD SHOW / HIDE
-========================= */
+const SUPABASE_KEY =
+"sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
 
-const password =
-  document.getElementById(
-    "password"
-  );
-
-const passwordToggle =
-  document.getElementById(
-    "passwordToggle"
-  );
-
-
-passwordToggle.addEventListener(
-  "click",
-  function(){
-
-    if(
-      password.type ===
-      "password"
-    ){
-
-      password.type = "text";
-
-      passwordToggle.textContent =
-        "🙈";
-
-    }else{
-
-      password.type = "password";
-
-      passwordToggle.textContent =
-        "👁";
-
-    }
-
-  }
+const supabaseClient =
+supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
 );
 
 
-/* =========================
-   FORGOT PASSWORD
-========================= */
+async function checkExistingSession(){
 
-document
-  .getElementById(
-    "forgotButton"
-  )
-  .addEventListener(
-    "click",
-    function(){
+    const {data} =
+        await supabaseClient.auth.getSession();
 
-      window.location.href =
+    if(data.session){
+
+        window.location.href = "index.html";
+
+    }
+
+}
+
+checkExistingSession();
+
+
+function togglePassword(){
+
+    const input =
+        document.getElementById("password");
+
+    const button =
+        document.querySelector(".eye");
+
+    if(input.type === "password"){
+
+        input.type = "text";
+        button.textContent = "🙈";
+
+    }else{
+
+        input.type = "password";
+        button.textContent = "👁";
+
+    }
+}
+
+
+function goForgot(){
+
+    window.location.href =
         "forgot-password.html";
 
-    }
-  );
+}
 
 
-/* =========================
-   REGISTRATION
-========================= */
+function goRegistration(){
 
-document
-  .getElementById(
-    "registrationButton"
-  )
-  .addEventListener(
-    "click",
-    function(){
-
-      window.location.href =
+    window.location.href =
         "registration.html";
 
-    }
-  );
+}
 
-
-/* =========================
-   LOGIN
-========================= */
 
 document
-  .getElementById(
-    "loginButton"
-  )
-  .addEventListener(
-    "click",
-    function(){
+.getElementById("loginForm")
+.addEventListener("submit", async function(e){
 
-      const email =
-        document
-          .getElementById("email")
-          .value
-          .trim();
+    e.preventDefault();
 
-      const pass =
-        password
-          .value
-          .trim();
+    const email =
+        document.getElementById("email")
+        .value.trim();
 
-      const message =
-        document.getElementById(
-          "message"
-        );
+    const password =
+        document.getElementById("password")
+        .value;
 
+    const button =
+        document.getElementById("loginBtn");
 
-      if(!email){
+    const message =
+        document.getElementById("message");
 
-        message.textContent =
-          "Please enter your email.";
+    message.style.display = "none";
 
-        message.className =
-          "message error";
+    button.disabled = true;
+    button.textContent = "LOGGING IN...";
 
-        return;
-      }
+    const {data,error} =
+        await supabaseClient.auth
+        .signInWithPassword({
+            email:email,
+            password:password
+        });
 
-
-      if(!pass){
-
-        message.textContent =
-          "Please enter your password.";
+    if(error){
 
         message.className =
-          "message error";
+            "message error";
+
+        message.textContent =
+            error.message;
+
+        message.style.display = "block";
+
+        button.disabled = false;
+        button.textContent = "LOGIN";
 
         return;
-      }
+    }
 
+    if(data.session){
 
-      /*
-        Supabase Login
-        আমরা পরের ধাপে এখানে
-        যুক্ত করব।
-      */
-
-      message.textContent =
-        "Login system পরের ধাপে যুক্ত হবে।";
-
-      message.className =
-        "message error";
+        window.location.href =
+            "index.html";
 
     }
-  );
+
+});
 
 </script>
-
 
 </body>
 </html>
