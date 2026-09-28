@@ -14,120 +14,11 @@
   content="#087f5b"
 >
 
-<title>
-  raztara | Connect • Call • Share
-</title>
+<title>raztara | Connect • Call • Share</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
 <style>
-
-/* =========================================================
-   CALL OVERLAY
-========================================================= */
-
-.callOverlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.82);
-  z-index:9999;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-}
-
-.callBox{
-  width:min(520px,100%);
-  background:#111827;
-  color:#fff;
-  border-radius:24px;
-  overflow:hidden;
-}
-
-.callTop{
-  text-align:center;
-  padding:24px 18px 14px;
-}
-
-.callTitle{
-  font-size:20px;
-  font-weight:700;
-}
-
-.callStatus{
-  font-size:14px;
-  opacity:.72;
-  margin-top:5px;
-}
-
-.callVideos{
-  position:relative;
-  background:#000;
-  aspect-ratio:9/16;
-  max-height:62vh;
-}
-
-.callVideos video{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-#callLocalVideo{
-  position:absolute;
-  right:12px;
-  top:12px;
-  width:110px;
-  height:150px;
-  border-radius:14px;
-  border:2px solid #fff;
-  object-fit:cover;
-}
-
-.callActions{
-  display:flex;
-  justify-content:center;
-  gap:12px;
-  padding:18px;
-}
-
-.callAction{
-  border:0;
-  border-radius:999px;
-  padding:13px 20px;
-  background:#374151;
-  color:#fff;
-  font-weight:700;
-}
-
-.callAction.accept{
-  background:#16a34a;
-}
-
-.callAction.reject,
-.callAction.end{
-  background:#dc2626;
-}
-
-.callIncomingAvatar{
-  width:72px;
-  height:72px;
-  border-radius:50%;
-  margin:0 auto 12px;
-  background:#2563eb;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:28px;
-  font-weight:700;
-}
-
-
-/* =========================================================
-   GLOBAL
-========================================================= */
 
 *{
   box-sizing:border-box;
@@ -135,287 +26,442 @@
   padding:0;
 }
 
+html,
 body{
-  font-family:Arial,sans-serif;
+  width:100%;
+  height:100%;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Arial,
+    sans-serif;
   background:#f4f7f6;
-  color:#17211f;
+  color:#17201d;
 }
 
 button,
-input{
+input,
+textarea{
   font:inherit;
 }
 
 button{
+  border:0;
   cursor:pointer;
 }
 
 .hidden{
-  display:none!important;
+  display:none !important;
 }
 
-
-/* =========================================================
-   AUTH
-========================================================= */
+/* AUTH */
 
 #authScreen{
   min-height:100vh;
   display:flex;
-  align-items:center;
   justify-content:center;
+  align-items:center;
   padding:20px;
-  background:linear-gradient(135deg,#087f5b,#075f47);
+  background:
+    linear-gradient(
+      145deg,
+      #087f5b,
+      #065c43
+    );
 }
 
 .authBox{
   width:100%;
   max-width:420px;
-  background:white;
+  background:#fff;
   border-radius:24px;
-  padding:30px 22px;
-  box-shadow:0 15px 50px rgba(0,0,0,.2);
+  padding:28px;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.18);
 }
 
-.logo{
+.logoText{
   text-align:center;
-  font-size:36px;
-  font-weight:bold;
+  font-size:34px;
+  font-weight:800;
   color:#087f5b;
-  margin-bottom:5px;
+  margin-bottom:6px;
 }
 
-.tagline{
+.authSub{
   text-align:center;
-  color:#777;
+  color:#6c7773;
   margin-bottom:25px;
 }
 
-.authBox h2{
-  text-align:center;
-  margin-bottom:20px;
-}
-
-.input{
+.authBox input{
   width:100%;
   padding:14px;
-  border:1px solid #ddd;
-  border-radius:12px;
   margin-bottom:12px;
+  border:1px solid #dce5e1;
+  border-radius:12px;
   outline:none;
 }
 
-.input:focus{
+.authBox input:focus{
   border-color:#087f5b;
 }
 
-.primary{
+.primaryBtn{
   width:100%;
   padding:14px;
-  border:0;
   border-radius:12px;
   background:#087f5b;
-  color:white;
-  font-weight:bold;
-  margin-top:5px;
+  color:#fff;
+  font-weight:700;
 }
 
-.secondary{
+.secondaryBtn{
   width:100%;
   padding:13px;
-  border:1px solid #087f5b;
-  border-radius:12px;
-  background:white;
-  color:#087f5b;
   margin-top:10px;
+  border-radius:12px;
+  background:#e8f3ef;
+  color:#087f5b;
+  font-weight:700;
 }
 
-.switchAuth{
+.switchText{
   text-align:center;
   margin-top:18px;
-  color:#666;
+  color:#68736f;
 }
 
-.switchAuth button{
-  border:0;
+#switchButton{
   background:none;
   color:#087f5b;
-  font-weight:bold;
+  font-weight:700;
 }
 
-
-/* =========================================================
-   APP
-========================================================= */
+/* APP */
 
 #app{
-  min-height:100vh;
+  width:100%;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  background:#f5f7f6;
 }
 
-.topbar{
-  height:64px;
-  background:white;
+.topBar{
+  height:62px;
+  flex-shrink:0;
+  background:#fff;
+  border-bottom:1px solid #e5ebe8;
   display:flex;
   align-items:center;
   justify-content:space-between;
   padding:0 16px;
-  border-bottom:1px solid #e5e5e5;
-  position:sticky;
-  top:0;
-  z-index:20;
 }
 
-.brand{
-  color:#087f5b;
-  font-size:25px;
-  font-weight:bold;
-}
-
-.topProfile{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-.avatar{
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  background:#087f5b;
-  color:white;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:bold;
-  overflow:hidden;
-}
-
-.avatar img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.main{
-  max-width:900px;
-  margin:auto;
-  padding:15px;
-  padding-bottom:90px;
-}
-
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-.searchBox{
-  background:white;
-  padding:12px;
-  border-radius:15px;
-  margin-bottom:15px;
-  box-shadow:0 2px 8px rgba(0,0,0,.05);
-}
-
-.searchBox input{
-  margin:0;
-}
-
-.userCard{
-  background:white;
-  padding:13px;
-  border-radius:15px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-top:8px;
-}
-
-.userInfo{
+.topUser{
   display:flex;
   align-items:center;
   gap:10px;
 }
 
-.userName{
-  font-weight:bold;
+.avatar{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#dff0e9;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#087f5b;
+  font-weight:800;
 }
 
-.userUsername{
-  color:#777;
+.topName{
+  font-weight:700;
+}
+
+.main{
+  flex:1;
+  min-height:0;
+  overflow:hidden;
+}
+
+.page{
+  height:100%;
+  overflow-y:auto;
+  padding:15px;
+}
+
+.pageTitle{
+  font-size:24px;
+  font-weight:800;
+  margin-bottom:14px;
+}
+
+/* SEARCH */
+
+.searchBox{
+  position:relative;
+  margin-bottom:12px;
+}
+
+.searchBox input{
+  width:100%;
+  border:0;
+  outline:0;
+  background:#fff;
+  border-radius:14px;
+  padding:14px 16px 14px 42px;
+  box-shadow:0 1px 4px rgba(0,0,0,.05);
+}
+
+.searchIcon{
+  position:absolute;
+  left:15px;
+  top:13px;
+  color:#7b8782;
+}
+
+.searchResults{
+  margin-bottom:10px;
+}
+
+.searchUser{
+  background:#fff;
+  border-radius:14px;
+  padding:11px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:7px;
+  border:1px solid #e6ece9;
+}
+
+.searchUserInfo{
+  flex:1;
+}
+
+.searchUserName{
+  font-weight:700;
+}
+
+.searchUsername{
+  color:#7a8581;
   font-size:13px;
 }
 
-
-/* =========================================================
-   CHAT LIST
-========================================================= */
-
-.sectionTitle{
-  font-size:21px;
-  font-weight:bold;
-  margin:10px 0 14px;
-}
+/* CHAT LIST */
 
 .chatItem{
-  background:white;
-  padding:14px;
+  background:#fff;
   border-radius:15px;
+  padding:12px;
+  display:flex;
+  gap:11px;
+  align-items:center;
+  margin-bottom:8px;
+  border:1px solid #e9eeec;
+}
+
+.chatItem:active{
+  transform:scale(.99);
+}
+
+.chatInfo{
+  flex:1;
+  min-width:0;
+}
+
+.chatName{
+  font-weight:700;
+  margin-bottom:4px;
+}
+
+.chatLast{
+  color:#7b8581;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-size:14px;
+}
+
+/* EMPTY */
+
+.empty{
+  text-align:center;
+  padding:50px 20px;
+  color:#7b8581;
+}
+
+/* BOTTOM NAV */
+
+.bottomNav{
+  height:65px;
+  flex-shrink:0;
+  background:#fff;
+  border-top:1px solid #e3e9e6;
   display:flex;
   align-items:center;
-  gap:12px;
-  margin-bottom:8px;
-  border:1px solid #eee;
+  justify-content:space-around;
 }
 
-.chatItem:hover{
-  background:#f5faf8;
+.navBtn{
+  flex:1;
+  height:100%;
+  background:none;
+  color:#7c8883;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:4px;
+  font-size:12px;
 }
 
+.navBtn.active{
+  color:#087f5b;
+  font-weight:700;
+}
 
-/* =========================================================
-   CHAT
-========================================================= */
+.navIcon{
+  font-size:21px;
+}
 
-.chatScreen{
+/* PROFILE */
+
+.profileCard{
+  background:#fff;
+  border-radius:20px;
+  padding:24px;
+  text-align:center;
+}
+
+.profileBigAvatar{
+  width:95px;
+  height:95px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#dff0e9;
+  margin:auto;
+}
+
+.profileName{
+  margin-top:12px;
+  font-size:22px;
+  font-weight:800;
+}
+
+.profileUsername{
+  color:#75807c;
+  margin-top:3px;
+}
+
+.profileBio{
+  margin-top:12px;
+  color:#5e6965;
+}
+
+.profileActions{
+  margin-top:20px;
+}
+
+.profileActions button{
+  width:100%;
+  padding:13px;
+  border-radius:12px;
+  margin-top:8px;
+  background:#e8f3ef;
+  color:#087f5b;
+  font-weight:700;
+}
+
+/* CALLS */
+
+.callCard{
+  background:#fff;
+  border-radius:15px;
+  padding:15px;
+  margin-bottom:9px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.callInfo{
+  flex:1;
+}
+
+.callType{
+  font-size:13px;
+  color:#7a8581;
+}
+
+.callEmpty{
+  text-align:center;
+  padding:50px 20px;
+  color:#7a8581;
+}
+
+/* CHAT SCREEN */
+
+#chatScreen{
   position:fixed;
   inset:0;
-  background:#eef5f2;
-  z-index:100;
+  background:#f1f5f3;
+  z-index:50;
   display:flex;
   flex-direction:column;
 }
 
-.chatHeader{
-  height:64px;
-  background:white;
+.chatTop{
+  height:62px;
+  flex-shrink:0;
+  background:#fff;
+  border-bottom:1px solid #e2e8e5;
   display:flex;
   align-items:center;
   gap:10px;
-  padding:8px 12px;
-  border-bottom:1px solid #ddd;
+  padding:0 10px;
 }
 
 .backBtn{
-  border:0;
+  width:40px;
+  height:40px;
   background:none;
-  font-size:27px;
+  font-size:24px;
 }
 
-.chatHeaderName{
-  font-weight:bold;
+.chatHeaderInfo{
   flex:1;
 }
 
-.callBtn{
-  border:0;
-  background:#eaf7f2;
-  color:#087f5b;
+.chatHeaderName{
+  font-weight:800;
+}
+
+.chatHeaderStatus{
+  font-size:12px;
+  color:#75817c;
+}
+
+.chatCallBtns{
+  display:flex;
+  gap:5px;
+}
+
+.chatCallBtn{
   width:40px;
   height:40px;
   border-radius:50%;
+  background:#e8f3ef;
+  color:#087f5b;
+  font-size:18px;
 }
 
-.messages{
+#messages{
   flex:1;
   overflow-y:auto;
   padding:15px;
@@ -430,579 +476,468 @@ button{
   justify-content:flex-end;
 }
 
-.message{
+.messageBubble{
   max-width:78%;
-  padding:9px 11px;
-  border-radius:14px;
-  background:white;
-  box-shadow:0 1px 3px rgba(0,0,0,.06);
-  overflow:hidden;
-}
-
-.mine .message{
-  background:#d9f5e9;
-}
-
-.messageText{
-  white-space:pre-wrap;
+  padding:10px 12px;
+  border-radius:16px;
+  background:#fff;
+  box-shadow:0 1px 2px rgba(0,0,0,.05);
   word-break:break-word;
+}
+
+.mine .messageBubble{
+  background:#087f5b;
+  color:#fff;
+  border-bottom-right-radius:5px;
 }
 
 .messageTime{
   font-size:10px;
-  color:#777;
-  text-align:right;
+  opacity:.6;
   margin-top:4px;
 }
 
-.message img,
-.message video{
-  max-width:100%;
-  border-radius:10px;
+.messageFile{
+  display:block;
+  margin-top:5px;
+  text-decoration:none;
+  color:inherit;
+}
+
+.messageImage{
+  max-width:220px;
+  max-height:280px;
+  border-radius:12px;
   display:block;
 }
 
-.fileMessage{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:8px;
-  background:#f4f7f6;
+.messageAudio{
+  width:220px;
+}
+
+.locationBtn{
+  display:inline-block;
+  padding:8px 12px;
   border-radius:10px;
+  background:rgba(255,255,255,.18);
+  color:inherit;
+  text-decoration:none;
 }
 
-.fileIcon{
-  font-size:28px;
-}
-
-.fileName{
-  font-size:13px;
-  word-break:break-all;
-}
-
-.fileOpen{
-  border:0;
-  background:#087f5b;
-  color:white;
-  padding:6px 9px;
-  border-radius:8px;
-  margin-top:5px;
-  font-size:12px;
-}
-
-audio{
-  max-width:100%;
-}
-
-
-/* =========================================================
-   COMPOSER
-========================================================= */
+/* COMPOSER */
 
 .composer{
-  background:white;
+  flex-shrink:0;
+  background:#fff;
+  border-top:1px solid #e1e7e4;
   padding:8px;
-  border-top:1px solid #ddd;
   display:flex;
   align-items:center;
   gap:7px;
 }
 
-.iconBtn{
-  width:42px;
-  height:42px;
-  border:0;
-  border-radius:50%;
-  background:#edf5f2;
-  color:#087f5b;
-  font-size:20px;
-}
-
-.messageInput{
+.composerInput{
   flex:1;
-  border:1px solid #ddd;
+  border:0;
+  outline:0;
+  background:#f1f4f3;
   border-radius:22px;
-  padding:11px 14px;
-  outline:none;
+  padding:12px 15px;
+  max-height:100px;
+  resize:none;
 }
 
-.sendBtn{
+.composerBtn{
   width:42px;
   height:42px;
-  border:0;
   border-radius:50%;
-  background:#087f5b;
-  color:white;
+  background:#e8f3ef;
+  color:#087f5b;
   font-size:18px;
 }
 
-.recording{
-  background:#d62d2d!important;
-  color:white!important;
-  animation:pulse 1s infinite;
-}
-
-@keyframes pulse{
-  50%{
-    opacity:.5
-  }
-}
-
-
-/* =========================================================
-   PROFILE
-========================================================= */
-
-.profileCard{
-  background:white;
-  border-radius:18px;
-  padding:22px;
-  text-align:center;
-}
-
-.profileBig{
-  width:90px;
-  height:90px;
-  margin:auto;
-  border-radius:50%;
+.sendBtn{
   background:#087f5b;
-  color:white;
+  color:#fff;
+}
+
+/* CALL OVERLAY */
+
+#callOverlay{
+  position:fixed;
+  inset:0;
+  background:#0c1512;
+  z-index:200;
+  color:#fff;
+  display:none;
+  flex-direction:column;
+}
+
+#callOverlay.show{
+  display:flex;
+}
+
+.callTop{
+  padding:18px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.callTopInfo{
+  flex:1;
+}
+
+#callTitle{
+  font-size:19px;
+  font-weight:800;
+}
+
+#callStatus{
+  font-size:13px;
+  opacity:.75;
+  margin-top:3px;
+}
+
+.callVideos{
+  flex:1;
+  position:relative;
+  background:#101917;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:32px;
-  font-weight:bold;
   overflow:hidden;
 }
 
-.profileBig img{
+#callRemoteVideo{
   width:100%;
   height:100%;
   object-fit:cover;
 }
 
-.profileCard h2{
-  margin-top:12px;
+#callLocalVideo{
+  position:absolute;
+  right:15px;
+  top:15px;
+  width:115px;
+  height:160px;
+  object-fit:cover;
+  border-radius:14px;
+  background:#000;
 }
 
-.profileCard p{
-  color:#777;
-  margin-top:5px;
-}
-
-.profileActions{
-  margin-top:20px;
-}
-
-
-/* =========================================================
-   BOTTOM
-========================================================= */
-
-.bottomNav{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  height:65px;
-  background:white;
-  border-top:1px solid #ddd;
+.callAudioAvatar{
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  background:#087f5b;
   display:flex;
-  justify-content:space-around;
-  z-index:30;
+  align-items:center;
+  justify-content:center;
+  font-size:40px;
 }
 
-.navBtn{
-  flex:1;
-  border:0;
-  background:white;
-  color:#777;
-  font-size:12px;
+.callActions{
+  min-height:90px;
+  padding:15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
 }
 
-.navBtn.active{
-  color:#087f5b;
-  font-weight:bold;
-}
-
-.navIcon{
-  display:block;
+.callAction{
+  width:55px;
+  height:55px;
+  border-radius:50%;
+  background:#25312d;
+  color:#fff;
   font-size:22px;
-  margin-bottom:2px;
 }
 
-
-/* =========================================================
-   PROFILE EDIT
-========================================================= */
-
-.editBox{
-  background:white;
-  border-radius:18px;
-  padding:18px;
+.callAction.red{
+  background:#d63d3d;
 }
 
-.editBox label{
-  display:block;
-  margin:10px 0 6px;
-  font-weight:bold;
-  font-size:14px;
+.callAction.green{
+  background:#087f5b;
 }
 
+/* TOAST */
 
-/* =========================================================
-   LOADING
-========================================================= */
-
-.loading{
-  text-align:center;
-  padding:30px;
-  color:#777;
-}
-
-.empty{
-  text-align:center;
-  color:#777;
-  padding:30px;
-}
-
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-.toast{
+#toast{
   position:fixed;
-  bottom:80px;
   left:50%;
+  bottom:85px;
   transform:translateX(-50%);
-  background:#222;
-  color:white;
-  padding:11px 17px;
-  border-radius:20px;
-  z-index:999;
+  background:#17201d;
+  color:#fff;
+  padding:11px 16px;
+  border-radius:12px;
+  z-index:500;
   display:none;
-  font-size:13px;
+  max-width:90%;
+  text-align:center;
 }
 
+#toast.show{
+  display:block;
+}
 
-/* =========================================================
-   MOBILE
-========================================================= */
+/* MODAL */
 
-@media(max-width:600px){
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:300;
+  background:rgba(0,0,0,.5);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
 
-  .main{
-    padding:10px;
-    padding-bottom:85px;
-  }
+.modalBox{
+  width:100%;
+  max-width:420px;
+  background:#fff;
+  border-radius:20px;
+  padding:20px;
+}
 
-  .message{
-    max-width:86%;
-  }
+.modalBox h3{
+  margin-bottom:15px;
+}
 
-  .brand{
-    font-size:22px;
+.modalBox input,
+.modalBox textarea{
+  width:100%;
+  border:1px solid #dce5e1;
+  border-radius:11px;
+  padding:12px;
+  margin-bottom:10px;
+  outline:0;
+}
+
+.modalActions{
+  display:flex;
+  gap:8px;
+}
+
+.modalActions button{
+  flex:1;
+  padding:12px;
+  border-radius:10px;
+  font-weight:700;
+}
+
+@media(max-width:500px){
+
+  .messageBubble{
+    max-width:85%;
   }
 
 }
 
 </style>
-</head>
 
+</head>
 
 <body>
 
+<!-- AUTH -->
 
-<!-- =========================================================
-     CALL OVERLAY
-========================================================= -->
-
-<section
-  id="callOverlay"
-  class="callOverlay hidden"
->
-
-  <div class="callBox">
-
-    <div class="callTop">
-
-      <div
-        id="callIncomingAvatar"
-        class="callIncomingAvatar"
-      >
-        R
-      </div>
-
-      <div
-        id="callTitle"
-        class="callTitle"
-      >
-        Call
-      </div>
-
-      <div
-        id="callStatus"
-        class="callStatus"
-      >
-        Connecting...
-      </div>
-
-    </div>
-
-
-    <div
-      id="callVideos"
-      class="callVideos hidden"
-    >
-
-      <video
-        id="callRemoteVideo"
-        autoplay
-        playsinline
-      ></video>
-
-      <video
-        id="callLocalVideo"
-        autoplay
-        muted
-        playsinline
-      ></video>
-
-    </div>
-
-
-    <div
-      id="callActions"
-      class="callActions"
-    ></div>
-
-  </div>
-
-</section>
-
-
-<!-- =========================================================
-     AUTH
-========================================================= -->
-
-<section id="authScreen">
+<div id="authScreen">
 
   <div class="authBox">
 
-    <div class="logo">
+    <div class="logoText">
       raztara
     </div>
 
-    <div class="tagline">
+    <div class="authSub">
       Connect • Call • Share
     </div>
 
-    <h2 id="authTitle">
-      Login
-    </h2>
-
-
-    <div
-      id="signupFields"
-      class="hidden"
-    >
+    <div id="signupFields" class="hidden">
 
       <input
         id="fullName"
-        class="input"
+        type="text"
         placeholder="আপনার নাম"
       >
 
       <input
         id="username"
-        class="input"
+        type="text"
         placeholder="Username"
       >
 
     </div>
 
-
     <input
       id="email"
       type="email"
-      class="input"
       placeholder="Email"
     >
 
     <input
       id="password"
       type="password"
-      class="input"
       placeholder="Password"
     >
 
-
     <button
       id="authButton"
-      class="primary"
-      onclick="handleAuth()"
+      class="primaryBtn"
     >
       Login
     </button>
 
+    <div class="switchText">
 
-    <div class="switchAuth">
-
-      <span id="switchText">
+      <span id="switchLabel">
         নতুন account খুলবেন?
       </span>
 
-      <button onclick="toggleAuth()">
-
-        <span id="switchButton">
-          Sign Up
-        </span>
-
+      <button id="switchButton">
+        Sign Up
       </button>
 
     </div>
 
   </div>
 
-</section>
+</div>
 
 
-<!-- =========================================================
-     APP
-========================================================= -->
+<!-- APP -->
 
-<section
-  id="app"
-  class="hidden"
->
+<div id="app" class="hidden">
 
-  <header class="topbar">
+  <div class="topBar">
 
-    <div class="brand">
-      raztara
-    </div>
+    <div class="topUser">
 
-    <div class="topProfile">
-
-      <span id="topName"></span>
-
-      <div
+      <img
         id="topAvatar"
         class="avatar"
+        src=""
+        alt=""
       >
-        R
+
+      <div id="topName">
+        raztara
       </div>
 
     </div>
 
-  </header>
+  </div>
 
 
-  <main class="main">
+  <div class="main">
 
+    <!-- CHATS -->
 
-    <!-- CHATS PAGE -->
+    <section
+      id="chatsPage"
+      class="page"
+    >
 
-    <div id="chatsPage">
+      <div class="pageTitle">
+        Chats
+      </div>
 
       <div class="searchBox">
 
+        <span class="searchIcon">
+          🔎
+        </span>
+
         <input
           id="searchInput"
-          class="input"
-          placeholder="Username বা নাম দিয়ে খুঁজুন..."
-          oninput="searchUsers()"
+          type="text"
+          placeholder="User খুঁজুন..."
         >
 
-        <div id="searchResults"></div>
-
       </div>
 
+      <div id="searchResults"></div>
 
-      <div class="sectionTitle">
-        💬 Chats
+      <div id="chatList"></div>
+
+    </section>
+
+
+    <!-- CALLS -->
+
+    <section
+      id="callsPage"
+      class="page hidden"
+    >
+
+      <div class="pageTitle">
+        Calls
       </div>
 
+      <div id="callsList">
 
-      <div id="chatList">
-
-        <div class="loading">
-          Loading...
+        <div class="callEmpty">
+          এখনো কোনো call নেই
         </div>
 
       </div>
 
-    </div>
+    </section>
 
 
-    <!-- CALLS PAGE -->
+    <!-- PROFILE -->
 
-    <div
-      id="callsPage"
-      class="hidden"
-    >
-
-      <div class="sectionTitle">
-        📞 Calls
-      </div>
-
-      <div class="empty">
-
-        Audio এবং Video Call এখানে দেখা যাবে।
-
-        <br><br>
-
-        পরবর্তী Version-এ real calling system যোগ করা হবে।
-
-      </div>
-
-    </div>
-
-
-    <!-- PROFILE PAGE -->
-
-    <div
+    <section
       id="profilePage"
-      class="hidden"
+      class="page hidden"
     >
+
+      <div class="pageTitle">
+        Profile
+      </div>
 
       <div class="profileCard">
 
-        <div
+        <img
           id="profileAvatar"
-          class="profileBig"
+          class="profileBigAvatar"
+          src=""
+          alt=""
         >
-          R
+
+        <div
+          id="profileName"
+          class="profileName"
+        >
+          -
         </div>
 
-        <h2 id="profileName">
-          User
-        </h2>
+        <div
+          id="profileUsername"
+          class="profileUsername"
+        >
+          -
+        </div>
 
-        <p id="profileUsername">
-          @username
-        </p>
-
-        <p id="profileBio">
-          raztara user
-        </p>
-
+        <div
+          id="profileBio"
+          class="profileBio"
+        >
+        </div>
 
         <div class="profileActions">
 
-          <button
-            class="secondary"
-            onclick="editProfile()"
-          >
+          <button id="editProfileBtn">
             ✏️ Edit Profile
           </button>
 
-
-          <button
-            class="secondary"
-            onclick="logout()"
-          >
+          <button id="logoutBtn">
             🚪 Logout
           </button>
 
@@ -1010,183 +945,305 @@ audio{
 
       </div>
 
-    </div>
+    </section>
 
-  </main>
+  </div>
 
 
-  <!-- BOTTOM NAV -->
+  <!-- NAV -->
 
-  <nav class="bottomNav">
+  <div class="bottomNav">
 
     <button
       id="navChats"
       class="navBtn active"
-      onclick="changePage('chats')"
     >
-
-      <span class="navIcon">
-        💬
-      </span>
-
+      <span class="navIcon">💬</span>
       Chats
-
     </button>
-
 
     <button
       id="navCalls"
       class="navBtn"
-      onclick="changePage('calls')"
     >
-
-      <span class="navIcon">
-        📞
-      </span>
-
+      <span class="navIcon">📞</span>
       Calls
-
     </button>
-
 
     <button
       id="navProfile"
       class="navBtn"
-      onclick="changePage('profile')"
     >
-
-      <span class="navIcon">
-        👤
-      </span>
-
+      <span class="navIcon">👤</span>
       Profile
-
     </button>
 
-  </nav>
+  </div>
 
-</section>
+</div>
 
 
-<!-- =========================================================
-     CHAT SCREEN
-========================================================= -->
+<!-- CHAT SCREEN -->
 
-<section
+<div
   id="chatScreen"
-  class="chatScreen hidden"
+  class="hidden"
 >
 
-  <header class="chatHeader">
+  <div class="chatTop">
 
     <button
+      id="closeChatBtn"
       class="backBtn"
-      onclick="closeChat()"
     >
       ‹
     </button>
 
-
-    <div
+    <img
       id="chatAvatar"
       class="avatar"
+      src=""
+      alt=""
     >
-      U
+
+    <div class="chatHeaderInfo">
+
+      <div id="chatHeaderName">
+        -
+      </div>
+
+      <div
+        id="chatHeaderStatus"
+        class="chatHeaderStatus"
+      >
+        Online
+      </div>
+
     </div>
 
+    <div class="chatCallBtns">
 
-    <div
-      id="chatHeaderName"
-      class="chatHeaderName"
-    >
-      User
+      <button
+        id="audioCallBtn"
+        class="chatCallBtn"
+      >
+        📞
+      </button>
+
+      <button
+        id="videoCallBtn"
+        class="chatCallBtn"
+      >
+        🎥
+      </button>
+
     </div>
 
-
-    <button
-      class="callBtn"
-      onclick="startAudioCall()"
-    >
-      📞
-    </button>
+  </div>
 
 
-    <button
-      class="callBtn"
-      onclick="startVideoCall()"
-    >
-      🎥
-    </button>
-
-  </header>
-
-
-  <div
-    id="messages"
-    class="messages"
-  ></div>
+  <div id="messages"></div>
 
 
   <div class="composer">
 
     <button
-      class="iconBtn"
-      onclick="chooseFile()"
-      title="Photo / Video / File"
+      id="fileBtn"
+      class="composerBtn"
     >
-      ＋
+      📎
     </button>
 
-
-    <input
-      id="fileInput"
-      type="file"
-      hidden
-      accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip"
-      onchange="uploadSelectedFile(event)"
+    <button
+      id="locationBtn"
+      class="composerBtn"
     >
-
-
-    <input
-      id="messageInput"
-      class="messageInput"
-      placeholder="Message..."
-      onkeydown="messageKeyDown(event)"
-    >
-
+      📍
+    </button>
 
     <button
       id="recordBtn"
-      class="iconBtn"
-      onclick="toggleRecording()"
-      title="Voice message"
+      class="composerBtn"
     >
-      🎤
+      🎙️
     </button>
 
+    <textarea
+      id="messageInput"
+      class="composerInput"
+      rows="1"
+      placeholder="Message..."
+    ></textarea>
 
     <button
-      class="sendBtn"
-      onclick="sendMessage()"
+      id="sendBtn"
+      class="composerBtn sendBtn"
     >
       ➤
     </button>
 
+    <input
+      id="fileInput"
+      type="file"
+      class="hidden"
+    >
+
   </div>
 
-</section>
+</div>
 
+
+<!-- CALL OVERLAY -->
+
+<div id="callOverlay">
+
+  <div class="callTop">
+
+    <div
+      id="callIncomingAvatar"
+      class="avatar"
+    >
+      👤
+    </div>
+
+    <div class="callTopInfo">
+
+      <div id="callTitle">
+        Call
+      </div>
+
+      <div id="callStatus">
+        Connecting...
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="callVideos">
+
+    <div
+      id="callAudioAvatar"
+      class="callAudioAvatar"
+    >
+      👤
+    </div>
+
+    <video
+      id="callRemoteVideo"
+      autoplay
+      playsinline
+    ></video>
+
+    <video
+      id="callLocalVideo"
+      autoplay
+      muted
+      playsinline
+    ></video>
+
+  </div>
+
+
+  <div class="callActions">
+
+    <button
+      id="acceptCallBtn"
+      class="callAction green"
+    >
+      ✓
+    </button>
+
+    <button
+      id="rejectCallBtn"
+      class="callAction red"
+    >
+      ✕
+    </button>
+
+    <button
+      id="endCallBtn"
+      class="callAction red hidden"
+    >
+      ☎
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- TOAST -->
+
+<div id="toast"></div>
+
+
+<!-- PROFILE MODAL -->
 
 <div
-  id="toast"
-  class="toast"
-></div>
+  id="profileModal"
+  class="modal hidden"
+>
+
+  <div class="modalBox">
+
+    <h3>
+      Edit Profile
+    </h3>
+
+    <input
+      id="editFullName"
+      type="text"
+      placeholder="নাম"
+    >
+
+    <input
+      id="editUsername"
+      type="text"
+      placeholder="Username"
+    >
+
+    <textarea
+      id="editBio"
+      rows="3"
+      placeholder="Bio"
+    ></textarea>
+
+    <div class="modalActions">
+
+      <button
+        id="cancelProfileBtn"
+        style="background:#eee"
+      >
+        Cancel
+      </button>
+
+      <button
+        id="saveProfileBtn"
+        style="background:#087f5b;color:#fff"
+      >
+        Save
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
 
 
 <script>
-   /* =========================================================
-   SUPABASE CONFIG
-========================================================= */
+  /* =========================================================
+   RAZTARA
+   PART 2
+   SUPABASE + AUTH + PROFILE + CHAT + MESSAGES
+   ========================================================= */
+
+
+/* =========================
+   SUPABASE
+   ========================= */
 
 const SUPABASE_URL =
   "https://pqyicaqpmojijjskpzcp.supabase.co";
@@ -1201,37 +1258,67 @@ const supabaseClient =
   );
 
 
-/* =========================================================
-   GLOBAL STATE
-========================================================= */
+/* =========================
+   GLOBALS
+   ========================= */
 
 let currentUser = null;
+
 let currentProfile = null;
 
-let currentChatUser = null;
 let currentConversationId = null;
 
+let currentChatUserId = null;
+
+let currentChatProfile = null;
+
 let messageSubscription = null;
+
 let chatListSubscription = null;
 
-let isSignup = false;
+let searchTimer = null;
 
 let mediaRecorder = null;
-let recordingChunks = [];
 
-let currentPage = "chats";
+let audioChunks = [];
+
+let isRecording = false;
 
 
-/* =========================================================
+/* =========================
    HELPERS
-========================================================= */
+   ========================= */
 
 function $(id){
   return document.getElementById(id);
 }
 
 
+function showToast(message){
+
+  const toast = $("toast");
+
+  toast.textContent = message;
+
+  toast.classList.add("show");
+
+  clearTimeout(
+    showToast.timer
+  );
+
+  showToast.timer =
+    setTimeout(
+      ()=>{
+        toast.classList.remove("show");
+      },
+      2500
+    );
+
+}
+
+
 function escapeHtml(value){
+
   if(value === null || value === undefined){
     return "";
   }
@@ -1242,617 +1329,821 @@ function escapeHtml(value){
     .replace(/>/g,"&gt;")
     .replace(/"/g,"&quot;")
     .replace(/'/g,"&#039;");
+
 }
 
 
-function showToast(message){
-  const toast = $("toast");
+function avatarUrl(profile){
 
-  if(!toast){
-    return;
+  if(
+    profile &&
+    profile.avatar_url
+  ){
+    return profile.avatar_url;
   }
 
-  toast.textContent = message;
-  toast.style.display = "block";
-
-  clearTimeout(window.toastTimer);
-
-  window.toastTimer = setTimeout(()=>{
-    toast.style.display = "none";
-  },3000);
+  return "";
 }
 
 
-function initials(name){
-  if(!name){
-    return "R";
+function avatarHtml(profile,className="avatar"){
+
+  const url =
+    avatarUrl(profile);
+
+  if(url){
+
+    return `
+      <img
+        class="${className}"
+        src="${escapeHtml(url)}"
+        alt=""
+      >
+    `;
+
   }
 
-  return name
-    .trim()
-    .charAt(0)
-    .toUpperCase();
+  const name =
+    profile?.full_name ||
+    profile?.username ||
+    "U";
+
+  return `
+    <div class="${className}">
+      ${escapeHtml(
+        name
+          .trim()
+          .charAt(0)
+          .toUpperCase()
+      )}
+    </div>
+  `;
+
 }
 
 
 function formatTime(date){
+
   if(!date){
     return "";
   }
 
-  const d = new Date(date);
-
-  return d.toLocaleTimeString("bn-BD",{
-    hour:"2-digit",
-    minute:"2-digit"
-  });
-}
-
-
-function formatDate(date){
-  if(!date){
-    return "";
-  }
-
-  const d = new Date(date);
-
-  return d.toLocaleDateString("bn-BD",{
-    day:"2-digit",
-    month:"short"
-  });
-}
-
-
-/* =========================================================
-   AUTH UI
-========================================================= */
-
-function toggleAuth(){
-
-  isSignup = !isSignup;
-
-  $("authTitle").textContent =
-    isSignup ? "Sign Up" : "Login";
-
-  $("authButton").textContent =
-    isSignup ? "Create Account" : "Login";
-
-  $("signupFields").classList.toggle(
-    "hidden",
-    !isSignup
-  );
-
-  $("switchText").textContent =
-    isSignup
-      ? "আগে থেকেই account আছে?"
-      : "নতুন account খুলবেন?";
-
-  $("switchButton").textContent =
-    isSignup
-      ? "Login"
-      : "Sign Up";
-}
-
-
-/* =========================================================
-   AUTH
-========================================================= */
-
-async function handleAuth(){
-
-  const email =
-    $("email").value.trim();
-
-  const password =
-    $("password").value;
-
-  if(!email || !password){
-
-    showToast(
-      "Email এবং Password দিন"
+  return new Date(date)
+    .toLocaleTimeString(
+      "bn-BD",
+      {
+        hour:"2-digit",
+        minute:"2-digit"
+      }
     );
 
-    return;
+}
+
+
+/* =========================
+   AUTH UI
+   ========================= */
+
+let isSignup = false;
+
+
+$("switchButton").addEventListener(
+  "click",
+  ()=>{
+    isSignup =
+      !isSignup;
+
+    $("signupFields")
+      .classList.toggle(
+        "hidden",
+        !isSignup
+      );
+
+    $("authButton")
+      .textContent =
+      isSignup
+        ? "Sign Up"
+        : "Login";
+
+    $("switchButton")
+      .textContent =
+      isSignup
+        ? "Login"
+        : "Sign Up";
+
+    $("switchLabel")
+      .textContent =
+      isSignup
+        ? "আগে account আছে?"
+        : "নতুন account খুলবেন?";
   }
+);
 
 
-  try{
+$("authButton").addEventListener(
+  "click",
+  async ()=>{
 
-    $("authButton").disabled = true;
+    const email =
+      $("email").value.trim();
 
+    const password =
+      $("password").value;
 
-    if(isSignup){
+    if(!email || !password){
 
-      const fullName =
-        $("fullName").value.trim();
+      showToast(
+        "Email ও Password দিন"
+      );
 
-      const username =
-        $("username").value
-          .trim()
-          .toLowerCase();
-
-
-      if(!fullName || !username){
-
-        showToast(
-          "নাম এবং Username দিন"
-        );
-
-        return;
-      }
-
-
-      const { data, error } =
-        await supabaseClient.auth.signUp({
-
-          email,
-          password,
-
-          options:{
-            data:{
-              full_name:fullName,
-              username:username
-            }
-          }
-
-        });
-
-
-      if(error){
-        throw error;
-      }
-
-
-      if(data.user){
-
-        currentUser = data.user;
-
-        await createOrUpdateProfile(
-          data.user,
-          fullName,
-          username
-        );
-
-      }
-
-
-      if(data.session){
-
-        await initializeApp();
-
-      }else{
-
-        showToast(
-          "Account তৈরি হয়েছে। Email verification লাগতে পারে।"
-        );
-
-      }
-
-
-    }else{
-
-      const { data, error } =
-        await supabaseClient.auth.signInWithPassword({
-
-          email,
-          password
-
-        });
-
-
-      if(error){
-        throw error;
-      }
-
-
-      currentUser = data.user;
-
-      await initializeApp();
-
+      return;
     }
 
 
-  }catch(error){
+    try{
 
-    console.error(
-      "Auth error:",
-      error
-    );
+      $("authButton")
+        .disabled = true;
 
-    showToast(
-      error.message ||
-      "Authentication failed"
-    );
 
-  }finally{
+      if(isSignup){
 
-    $("authButton").disabled = false;
+        const fullName =
+          $("fullName")
+            .value
+            .trim();
+
+        const username =
+          $("username")
+            .value
+            .trim()
+            .toLowerCase();
+
+
+        if(!fullName || !username){
+
+          showToast(
+            "নাম ও Username দিন"
+          );
+
+          return;
+        }
+
+
+        const {
+          data,
+          error
+        } =
+        await supabaseClient
+          .auth
+          .signUp({
+            email,
+            password,
+            options:{
+              data:{
+                full_name:
+                  fullName,
+
+                username:
+                  username
+              }
+            }
+          });
+
+
+        if(error){
+          throw error;
+        }
+
+
+        if(
+          data.user &&
+          data.session
+        ){
+
+          await ensureProfile(
+            data.user
+          );
+
+          showToast(
+            "Account তৈরি হয়েছে"
+          );
+
+        }else{
+
+          showToast(
+            "Email verification প্রয়োজন হতে পারে"
+          );
+
+        }
+
+      }else{
+
+        const {
+          data,
+          error
+        } =
+        await supabaseClient
+          .auth
+          .signInWithPassword({
+            email,
+            password
+          });
+
+        if(error){
+          throw error;
+        }
+
+        await initializeApp(
+          data.user
+        );
+
+      }
+
+    }catch(error){
+
+      console.error(
+        "Auth error:",
+        error
+      );
+
+      showToast(
+        error.message ||
+        "Login সমস্যা হয়েছে"
+      );
+
+    }finally{
+
+      $("authButton")
+        .disabled = false;
+
+    }
+
+  }
+);
+
+
+/* =========================
+   PROFILE
+   ========================= */
+
+async function ensureProfile(user){
+
+  const {
+    data:existing,
+    error:selectError
+  } =
+  await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq(
+      "id",
+      user.id
+    )
+    .maybeSingle();
+
+  if(selectError){
+    throw selectError;
+  }
+
+
+  if(existing){
+
+    currentProfile =
+      existing;
+
+    return existing;
 
   }
 
-}
+
+  const metadata =
+    user.user_metadata || {};
 
 
-/* =========================================================
-   PROFILE
-========================================================= */
-
-async function createOrUpdateProfile(
-  user,
-  fullName,
-  username
-){
-
-  const { data:existing } =
-    await supabaseClient
-      .from("profiles")
-      .select("*")
-      .eq("id",user.id)
-      .maybeSingle();
+  const baseUsername =
+    metadata.username ||
+    (
+      user.email
+        ?.split("@")[0] ||
+      "user"
+    );
 
 
-  const payload = {
-
-    id:user.id,
-
-    full_name:
-      fullName ||
-      existing?.full_name ||
-      user.user_metadata?.full_name ||
-      "User",
-
-    username:
-      username ||
-      existing?.username ||
-      user.user_metadata?.username ||
-      "user_" + user.id.slice(0,6)
-
-  };
-
-
-  const { data,error } =
-    await supabaseClient
-      .from("profiles")
-      .upsert(
-        payload,
-        {
-          onConflict:"id"
-        }
+  const username =
+    baseUsername
+      .toLowerCase()
+      .replace(
+        /[^a-z0-9_]/g,
+        ""
       )
-      .select()
-      .single();
+      .slice(0,25) ||
+    "user";
+
+
+  const {
+    data,
+    error
+  } =
+  await supabaseClient
+    .from("profiles")
+    .insert({
+      id:user.id,
+
+      username:
+
+        username,
+
+      full_name:
+        metadata.full_name ||
+        "Raztara User",
+
+      bio:""
+
+    })
+    .select()
+    .single();
 
 
   if(error){
 
-    console.error(
-      "Profile error:",
-      error
-    );
+    /*
+      Username duplicate হলে অন্য username
+      দিয়ে আবার চেষ্টা
+    */
 
-    return null;
+    if(error.code === "23505"){
+
+      const randomUsername =
+        username +
+        Math.floor(
+          Math.random()*9999
+        );
+
+      const retry =
+        await supabaseClient
+          .from("profiles")
+          .insert({
+            id:user.id,
+
+            username:
+              randomUsername,
+
+            full_name:
+              metadata.full_name ||
+              "Raztara User",
+
+            bio:""
+          })
+          .select()
+          .single();
+
+      if(retry.error){
+        throw retry.error;
+      }
+
+      currentProfile =
+        retry.data;
+
+      return retry.data;
+
+    }
+
+    throw error;
   }
 
 
-  currentProfile = data;
+  currentProfile =
+    data;
 
   return data;
+
 }
 
 
-async function loadProfile(){
+async function loadMyProfile(){
 
   if(!currentUser){
     return null;
   }
 
-
-  const { data,error } =
-    await supabaseClient
-      .from("profiles")
-      .select("*")
-      .eq("id",currentUser.id)
-      .maybeSingle();
+  const {
+    data,
+    error
+  } =
+  await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq(
+      "id",
+      currentUser.id
+    )
+    .single();
 
 
   if(error){
-
-    console.error(
-      "Load profile error:",
-      error
-    );
-
-    return null;
+    throw error;
   }
 
+  currentProfile =
+    data;
 
-  if(data){
-
-    currentProfile = data;
-
-    return data;
-  }
-
-
-  return await createOrUpdateProfile(
-    currentUser,
-    currentUser.user_metadata?.full_name,
-    currentUser.user_metadata?.username
-  );
+  return data;
 
 }
 
 
-/* =========================================================
-   INITIALIZE APP
-========================================================= */
-
-async function initializeApp(){
-
-  const {
-    data:{
-      user
-    }
-  } =
-    await supabaseClient.auth.getUser();
-
-
-  if(!user){
-    return;
-  }
-
-
-  currentUser = user;
-
-
-  await loadProfile();
-
-
-  $("authScreen")
-    .classList
-    .add("hidden");
-
-
-  $("app")
-    .classList
-    .remove("hidden");
-
-
-  updateProfileUI();
-
-
-  await loadChatList();
-
-
-  subscribeChatList();
-
-
-  startRaztaraCallSignaling();
-
-}
-
-
-/* =========================================================
-   PROFILE UI
-========================================================= */
-
-function updateProfileUI(){
+function renderProfile(){
 
   if(!currentProfile){
     return;
   }
-
 
   const name =
     currentProfile.full_name ||
     currentProfile.username ||
     "User";
 
-
   const username =
-    currentProfile.username ||
-    "";
-
-
-  $("topName").textContent =
-    name;
-
-
-  $("topAvatar").innerHTML =
-    getAvatarHtml(
-      currentProfile,
-      40
-    );
-
-
-  $("profileAvatar").innerHTML =
-    getAvatarHtml(
-      currentProfile,
-      90
-    );
-
-
-  $("profileName").textContent =
-    name;
-
-
-  $("profileUsername").textContent =
-    username
-      ? "@" + username
+    currentProfile.username
+      ? "@" +
+        currentProfile.username
       : "";
 
+  $("profileName")
+    .textContent =
+    name;
 
-  $("profileBio").textContent =
+  $("profileUsername")
+    .textContent =
+    username;
+
+  $("profileBio")
+    .textContent =
     currentProfile.bio ||
-    "raztara user";
+    "";
+
+  $("topName")
+    .textContent =
+    name;
+
+
+  const url =
+    avatarUrl(
+      currentProfile
+    );
+
+
+  $("topAvatar").src =
+    url;
+
+  $("profileAvatar").src =
+    url;
 
 }
 
 
-function getAvatarHtml(
-  profile,
-  size
-){
+/* =========================
+   APP INITIALIZE
+   ========================= */
 
-  const name =
-    profile?.full_name ||
-    profile?.username ||
-    "R";
+async function initializeApp(user){
+
+  currentUser =
+    user;
+
+  await ensureProfile(
+    user
+  );
+
+  await loadMyProfile();
+
+  renderProfile();
+
+  $("authScreen")
+    .classList.add("hidden");
+
+  $("app")
+    .classList.remove("hidden");
+
+  showPage(
+    "chats"
+  );
+
+  await loadChatList();
+
+  subscribeChatList();
+
+}
 
 
-  const avatar =
-    profile?.avatar_url ||
-    profile?.profile_photo ||
-    null;
+async function checkSession(){
 
+  const {
+    data,
+    error
+  } =
+  await supabaseClient
+    .auth
+    .getSession();
 
-  if(avatar){
+  if(error){
 
-    return `
-      <img
-        src="${escapeHtml(avatar)}"
-        alt="${escapeHtml(name)}"
-        style="
-          width:${size}px;
-          height:${size}px;
-          border-radius:50%;
-          object-fit:cover;
-        "
-      >
-    `;
+    console.error(
+      error
+    );
+
+    return;
 
   }
 
 
-  return escapeHtml(
-    initials(name)
-  );
+  if(
+    data.session &&
+    data.session.user
+  ){
+
+    try{
+
+      await initializeApp(
+        data.session.user
+      );
+
+    }catch(error){
+
+      console.error(
+        error
+      );
+
+      showToast(
+        error.message ||
+        "App load হয়নি"
+      );
+
+    }
+
+  }
 
 }
 
 
-/* =========================================================
+supabaseClient
+  .auth
+  .onAuthStateChange(
+    async (
+      event,
+      session
+    )=>{
+
+      if(
+        event ===
+        "SIGNED_OUT"
+      ){
+
+        currentUser =
+          null;
+
+        currentProfile =
+          null;
+
+        $("app")
+          .classList.add(
+            "hidden"
+          );
+
+        $("authScreen")
+          .classList.remove(
+            "hidden"
+          );
+
+        return;
+
+      }
+
+
+      if(
+        session &&
+        session.user
+      ){
+
+        if(
+          !currentUser
+        ){
+
+          try{
+
+            await initializeApp(
+              session.user
+            );
+
+          }catch(error){
+
+            console.error(
+              error
+            );
+
+          }
+
+        }
+
+      }
+
+    }
+  );
+
+
+/* =========================
    PAGE NAVIGATION
-========================================================= */
+   ========================= */
 
-function changePage(page){
-
-  currentPage = page;
-
+function showPage(page){
 
   $("chatsPage")
-    .classList
-    .toggle(
-      "hidden",
-      page !== "chats"
+    .classList.add(
+      "hidden"
     );
-
 
   $("callsPage")
-    .classList
-    .toggle(
-      "hidden",
-      page !== "calls"
+    .classList.add(
+      "hidden"
     );
 
-
   $("profilePage")
-    .classList
-    .toggle(
-      "hidden",
-      page !== "profile"
+    .classList.add(
+      "hidden"
     );
 
 
   $("navChats")
-    .classList
-    .toggle(
-      "active",
-      page === "chats"
+    .classList.remove(
+      "active"
     );
-
 
   $("navCalls")
-    .classList
-    .toggle(
-      "active",
-      page === "calls"
+    .classList.remove(
+      "active"
     );
-
 
   $("navProfile")
-    .classList
-    .toggle(
-      "active",
-      page === "profile"
+    .classList.remove(
+      "active"
     );
+
+
+  if(page === "chats"){
+
+    $("chatsPage")
+      .classList.remove(
+        "hidden"
+      );
+
+    $("navChats")
+      .classList.add(
+        "active"
+      );
+
+  }
+
+
+  if(page === "calls"){
+
+    $("callsPage")
+      .classList.remove(
+        "hidden"
+      );
+
+    $("navCalls")
+      .classList.add(
+        "active"
+      );
+
+  }
+
+
+  if(page === "profile"){
+
+    $("profilePage")
+      .classList.remove(
+        "hidden"
+      );
+
+    $("navProfile")
+      .classList.add(
+        "active"
+      );
+
+    renderProfile();
+
+  }
 
 }
 
 
-/* =========================================================
-   USER SEARCH
-========================================================= */
-
-let searchTimer = null;
-
-
-function searchUsers(){
-
-  clearTimeout(searchTimer);
+$("navChats")
+  .addEventListener(
+    "click",
+    ()=>{
+      showPage("chats");
+    }
+  );
 
 
-  searchTimer =
-    setTimeout(
-      performUserSearch,
-      350
-    );
-
-}
-
-
-async function performUserSearch(){
-
-  const query =
-    $("searchInput")
-      .value
-      .trim()
-      .toLowerCase();
+$("navCalls")
+  .addEventListener(
+    "click",
+    ()=>{
+      showPage("calls");
+    }
+  );
 
 
-  const container =
-    $("searchResults");
+$("navProfile")
+  .addEventListener(
+    "click",
+    ()=>{
+      showPage("profile");
+    }
+  );
 
 
-  if(!query){
+/* =========================
+   SEARCH USERS
+   ========================= */
 
-    container.innerHTML = "";
+$("searchInput")
+  .addEventListener(
+    "input",
+    ()=>{
 
+      clearTimeout(
+        searchTimer
+      );
+
+      const value =
+        $("searchInput")
+          .value
+          .trim();
+
+      if(!value){
+
+        $("searchResults")
+          .innerHTML = "";
+
+        return;
+
+      }
+
+
+      searchTimer =
+        setTimeout(
+          ()=>{
+            searchUsers(
+              value
+            );
+          },
+          350
+        );
+
+    }
+  );
+
+
+async function searchUsers(query){
+
+  if(!currentUser){
     return;
   }
 
 
-  container.innerHTML = `
-    <div class="loading">
-      খোঁজা হচ্ছে...
-    </div>
-  `;
+  const clean =
+    query
+      .replace(/%/g,"")
+      .replace(/,/g,"")
+      .trim();
+
+
+  if(!clean){
+    return;
+  }
 
 
   try{
 
-    const { data,error } =
-      await supabaseClient
-        .from("profiles")
-        .select("*")
-        .or(
-          `username.ilike.%${query}%,full_name.ilike.%${query}%`
-        )
-        .neq(
-          "id",
-          currentUser.id
-        )
-        .limit(20);
+    const {
+      data,
+      error
+    } =
+    await supabaseClient
+      .from("profiles")
+      .select("*")
+      .or(
+        `username.ilike.%${clean}%,full_name.ilike.%${clean}%`
+      )
+      .neq(
+        "id",
+        currentUser.id
+      )
+      .limit(15);
 
 
     if(error){
@@ -1862,66 +2153,75 @@ async function performUserSearch(){
 
     if(!data || !data.length){
 
-      container.innerHTML = `
-        <div class="empty">
-          কোনো user পাওয়া যায়নি।
-        </div>
-      `;
+      $("searchResults")
+        .innerHTML = `
+          <div class="empty">
+            কোনো user পাওয়া যায়নি
+          </div>
+        `;
 
       return;
+
     }
 
 
-    container.innerHTML =
-      data
-        .map(profile => `
+    $("searchResults")
+      .innerHTML =
+      data.map(
+        user=>`
 
-          <div class="userCard">
+          <div
+            class="searchUser"
+          >
 
-            <div class="userInfo">
+            ${avatarHtml(
+              user
+            )}
 
-              <div class="avatar">
-                ${getAvatarHtml(profile,40)}
+            <div
+              class="searchUserInfo"
+            >
+
+              <div
+                class="searchUserName"
+              >
+                ${escapeHtml(
+                  user.full_name ||
+                  user.username
+                )}
               </div>
 
-              <div>
-
-                <div class="userName">
-                  ${escapeHtml(
-                    profile.full_name ||
-                    profile.username ||
-                    "User"
-                  )}
-                </div>
-
-                <div class="userUsername">
-                  @${escapeHtml(
-                    profile.username || ""
-                  )}
-                </div>
-
+              <div
+                class="searchUsername"
+              >
+                @${escapeHtml(
+                  user.username ||
+                  ""
+                )}
               </div>
 
             </div>
 
-
             <button
-              class="primary"
+              class="primaryBtn"
               style="
                 width:auto;
-                padding:9px 14px;
-                margin:0;
+                padding:9px 13px;
               "
-              onclick='openChatFromSearch(${JSON.stringify(profile).replace(/'/g,"&#39;")})'
+              onclick="
+                openChatWithUser(
+                  '${user.id}'
+                )
+              "
             >
               Chat
             </button>
 
           </div>
 
-        `)
-        .join("");
-
+        `
+      )
+      .join("");
 
   }catch(error){
 
@@ -1930,64 +2230,79 @@ async function performUserSearch(){
       error
     );
 
-    container.innerHTML = `
-      <div class="empty">
-        Search করতে সমস্যা হয়েছে।
-      </div>
-    `;
+    showToast(
+      "User search সমস্যা"
+    );
 
   }
 
 }
 
 
-/* =========================================================
-   OPEN CHAT FROM SEARCH
-========================================================= */
+/* =========================
+   GET PROFILE
+   ========================= */
 
-async function openChatFromSearch(profile){
+async function getProfileById(
+  userId
+){
 
-  if(
-    typeof profile === "string"
-  ){
+  const {
+    data,
+    error
+  } =
+  await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq(
+      "id",
+      userId
+    )
+    .single();
 
-    try{
-      profile = JSON.parse(profile);
-    }catch{
-      return;
-    }
 
+  if(error){
+    throw error;
   }
 
-
-  await openChat(profile);
+  return data;
 
 }
 
 
-/* =========================================================
-   CONVERSATIONS
-========================================================= */
+/* =========================
+   CONVERSATION
+   ========================= */
 
 async function getOrCreateConversation(
   otherUserId
 ){
 
-  if(!currentUser){
+  if(
+    !currentUser ||
+    !otherUserId
+  ){
     return null;
   }
 
 
-  const { data:myMemberships,error } =
-    await supabaseClient
-      .from("conversation_members")
-      .select(
-        "conversation_id"
-      )
-      .eq(
-        "user_id",
-        currentUser.id
-      );
+  /*
+    প্রথমে আমার conversation বের করি
+  */
+
+  const {
+    data:myMemberships,
+    error
+  } =
+  await supabaseClient
+    .from("conversation_members")
+    .select(
+      "conversation_id"
+    )
+    .eq(
+      "user_id",
+      currentUser.id
+    );
 
 
   if(error){
@@ -1998,26 +2313,36 @@ async function getOrCreateConversation(
   const conversationIds =
     (myMemberships || [])
       .map(
-        item => item.conversation_id
+        item =>
+          item.conversation_id
       );
 
 
-  if(conversationIds.length){
+  /*
+    Existing conversation আছে কি না
+  */
 
-    const { data:matches,error:matchError } =
-      await supabaseClient
-        .from("conversation_members")
-        .select(
-          "conversation_id,user_id"
-        )
-        .in(
-          "conversation_id",
-          conversationIds
-        )
-        .eq(
-          "user_id",
-          otherUserId
-        );
+  if(
+    conversationIds.length
+  ){
+
+    const {
+      data:matches,
+      error:matchError
+    } =
+    await supabaseClient
+      .from("conversation_members")
+      .select(
+        "conversation_id,user_id"
+      )
+      .in(
+        "conversation_id",
+        conversationIds
+      )
+      .eq(
+        "user_id",
+        otherUserId
+      );
 
 
     if(matchError){
@@ -2025,21 +2350,39 @@ async function getOrCreateConversation(
     }
 
 
-    if(matches && matches.length){
+    if(
+      matches &&
+      matches.length
+    ){
 
-      return matches[0].conversation_id;
+      return
+        matches[0]
+          .conversation_id;
 
     }
 
   }
 
 
-  const { data:conversation,error:createError } =
-    await supabaseClient
-      .from("conversations")
-      .insert({})
-      .select()
-      .single();
+  /*
+    নতুন conversation
+  */
+
+  const {
+    data:conversation,
+    error:createError
+  } =
+  await supabaseClient
+    .from("conversations")
+    .insert({
+      created_by:
+        currentUser.id,
+
+      is_group:
+        false
+    })
+    .select()
+    .single();
 
 
   if(createError){
@@ -2051,41 +2394,45 @@ async function getOrCreateConversation(
     conversation.id;
 
 
-  const { error:memberError } =
-    await supabaseClient
-      .from("conversation_members")
-      .insert([
+  /*
+    দুইজনকে member করি
+  */
 
-        {
-          conversation_id:
-            conversationId,
+  const {
+    error:memberError
+  } =
+  await supabaseClient
+    .from("conversation_members")
+    .insert([
 
-          user_id:
-            currentUser.id
-        },
+      {
+        conversation_id:
+          conversationId,
 
-        {
-          conversation_id:
-            conversationId,
+        user_id:
+          currentUser.id
+      },
 
-          user_id:
-            otherUserId
-        }
+      {
+        conversation_id:
+          conversationId,
 
-      ]);
+        user_id:
+          otherUserId
+      }
+
+    ]);
 
 
   if(memberError){
 
-    await supabaseClient
-      .from("conversations")
-      .delete()
-      .eq(
-        "id",
-        conversationId
-      );
+    console.error(
+      "Member error:",
+      memberError
+    );
 
     throw memberError;
+
   }
 
 
@@ -2094,63 +2441,61 @@ async function getOrCreateConversation(
 }
 
 
-/* =========================================================
+/* =========================
    OPEN CHAT
-========================================================= */
+   ========================= */
 
-async function openChat(profile){
+async function openChatWithUser(
+  userId
+){
 
   try{
 
-    if(!profile || !profile.id){
-      return;
-    }
+    currentChatUserId =
+      userId;
 
-
-    currentChatUser = profile;
-
+    currentChatProfile =
+      await getProfileById(
+        userId
+      );
 
     currentConversationId =
       await getOrCreateConversation(
-        profile.id
+        userId
       );
 
 
-    if(!currentConversationId){
-      throw new Error(
-        "Conversation তৈরি করা যায়নি"
-      );
-    }
-
-
-    $("chatHeaderName").textContent =
-      profile.full_name ||
-      profile.username ||
+    $("chatHeaderName")
+      .textContent =
+      currentChatProfile
+        .full_name ||
+      currentChatProfile
+        .username ||
       "User";
 
 
-    $("chatAvatar").innerHTML =
-      getAvatarHtml(
-        profile,
-        40
+    $("chatAvatar")
+      .src =
+      avatarUrl(
+        currentChatProfile
       );
 
 
     $("chatScreen")
-      .classList
-      .remove("hidden");
+      .classList.remove(
+        "hidden"
+      );
+
+
+    $("messages")
+      .innerHTML = "";
 
 
     await loadMessages();
 
-
     subscribeMessages();
 
-
-    setTimeout(()=>{
-      $("messageInput")?.focus();
-    },100);
-
+    await loadChatList();
 
   }catch(error){
 
@@ -2161,7 +2506,7 @@ async function openChat(profile){
 
     showToast(
       error.message ||
-      "Chat open করা যায়নি"
+      "Chat খুলতে সমস্যা হয়েছে"
     );
 
   }
@@ -2169,20 +2514,14 @@ async function openChat(profile){
 }
 
 
-/* =========================================================
-   CLOSE CHAT
-========================================================= */
+$("closeChatBtn")
+  .addEventListener(
+    "click",
+    closeChat
+  );
+
 
 function closeChat(){
-
-  $("chatScreen")
-    .classList
-    .add("hidden");
-
-
-  currentChatUser = null;
-  currentConversationId = null;
-
 
   if(messageSubscription){
 
@@ -2191,43 +2530,56 @@ function closeChat(){
         messageSubscription
       );
 
-    messageSubscription = null;
+    messageSubscription =
+      null;
 
   }
+
+
+  $("chatScreen")
+    .classList.add(
+      "hidden"
+    );
+
+
+  currentConversationId =
+    null;
+
+  currentChatUserId =
+    null;
+
+  currentChatProfile =
+    null;
 
 }
 
 
-/* =========================================================
-   LOAD CHAT LIST
-========================================================= */
+/* =========================
+   CHAT LIST
+   ========================= */
 
 async function loadChatList(){
 
-  const container =
-    $("chatList");
-
-
   if(!currentUser){
-
-    container.innerHTML = "";
-
     return;
   }
 
 
   try{
 
-    const { data:members,error } =
-      await supabaseClient
-        .from("conversation_members")
-        .select(
-          "conversation_id,user_id"
-        )
-        .eq(
-          "user_id",
-          currentUser.id
-        );
+    const {
+      data:myMemberships,
+      error
+    } =
+    await supabaseClient
+      .from("conversation_members")
+      .select(
+        "conversation_id"
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      );
 
 
     if(error){
@@ -2235,36 +2587,44 @@ async function loadChatList(){
     }
 
 
-    if(!members || !members.length){
+    if(
+      !myMemberships ||
+      !myMemberships.length
+    ){
 
-      container.innerHTML = `
-        <div class="empty">
-          এখনো কোনো chat নেই।
-          <br><br>
-          উপরের search box দিয়ে user খুঁজে chat শুরু করুন।
-        </div>
-      `;
+      $("chatList")
+        .innerHTML = `
+          <div class="empty">
+            এখনো কোনো chat নেই
+          </div>
+        `;
 
       return;
+
     }
 
 
-    const conversationIds =
-      members.map(
-        m => m.conversation_id
-      );
-
-
-    const { data:allMembers,error:memberError } =
-      await supabaseClient
-        .from("conversation_members")
-        .select(
-          "conversation_id,user_id"
-        )
-        .in(
-          "conversation_id",
-          conversationIds
+    const ids =
+      myMemberships
+        .map(
+          x =>
+            x.conversation_id
         );
+
+
+    const {
+      data:members,
+      error:memberError
+    } =
+    await supabaseClient
+      .from("conversation_members")
+      .select(
+        "conversation_id,user_id"
+      )
+      .in(
+        "conversation_id",
+        ids
+      );
 
 
     if(memberError){
@@ -2272,40 +2632,48 @@ async function loadChatList(){
     }
 
 
-    const otherUserIds =
-      [...new Set(
-        allMembers
-          .filter(
-            m =>
-              m.user_id !==
-              currentUser.id
-          )
-          .map(
-            m => m.user_id
-          )
-      )];
+    const otherIds =
+      [
+        ...new Set(
+          (members || [])
+            .filter(
+              m =>
+                m.user_id !==
+                currentUser.id
+            )
+            .map(
+              m =>
+                m.user_id
+            )
+        )
+      ];
 
 
-    if(!otherUserIds.length){
+    if(!otherIds.length){
 
-      container.innerHTML = `
-        <div class="empty">
-          কোনো chat পাওয়া যায়নি।
-        </div>
-      `;
+      $("chatList")
+        .innerHTML = `
+          <div class="empty">
+            কোনো user পাওয়া যায়নি
+          </div>
+        `;
 
       return;
+
     }
 
 
-    const { data:profiles,error:profileError } =
-      await supabaseClient
-        .from("profiles")
-        .select("*")
-        .in(
-          "id",
-          otherUserIds
-        );
+    const {
+      data:profiles,
+      error:profileError
+    } =
+    await supabaseClient
+      .from("profiles")
+      .select("*")
+      .in(
+        "id",
+        otherIds
+      );
 
 
     if(profileError){
@@ -2313,81 +2681,88 @@ async function loadChatList(){
     }
 
 
-    const profileMap = {};
+    const profileMap =
+      new Map(
+        (profiles || [])
+          .map(
+            p =>
+              [p.id,p]
+          )
+      );
 
-    (profiles || []).forEach(
-      profile => {
-        profileMap[profile.id] =
-          profile;
-      }
-    );
+
+    const conversationMap =
+      new Map();
 
 
-    container.innerHTML =
-      allMembers
-        .filter(
-          member =>
-            member.user_id !==
+    (members || [])
+      .forEach(
+        m=>{
+
+          if(
+            m.user_id !==
             currentUser.id
-        )
-        .map(member => {
+          ){
 
-          const profile =
-            profileMap[
-              member.user_id
-            ];
+            conversationMap.set(
+              m.user_id,
+              m.conversation_id
+            );
 
-
-          if(!profile){
-            return "";
           }
 
+        }
+      );
 
-          return `
+
+    $("chatList")
+      .innerHTML =
+      (profiles || [])
+        .map(
+          profile=>`
 
             <div
               class="chatItem"
-              onclick='openChatFromSearch(${JSON.stringify(profile).replace(/'/g,"&#39;")})'
+              onclick="
+                openChatWithUser(
+                  '${profile.id}'
+                )
+              "
             >
 
-              <div class="avatar">
+              ${avatarHtml(
+                profile
+              )}
 
-                ${getAvatarHtml(
-                  profile,
-                  40
-                )}
+              <div
+                class="chatInfo"
+              >
 
-              </div>
-
-
-              <div style="flex:1">
-
-                <div class="userName">
-
+                <div
+                  class="chatName"
+                >
                   ${escapeHtml(
                     profile.full_name ||
                     profile.username ||
                     "User"
                   )}
-
                 </div>
 
-
-                <div class="userUsername">
-
+                <div
+                  class="chatLast"
+                >
                   @${escapeHtml(
-                    profile.username || ""
+                    profile.username ||
+                    ""
                   )}
-
                 </div>
 
               </div>
 
             </div>
 
-          `;
-
-        })
+          `
+        )
         .join("");
 
 
@@ -2398,20 +2773,21 @@ async function loadChatList(){
       error
     );
 
-    container.innerHTML = `
-      <div class="empty">
-        Chat list load করতে সমস্যা হয়েছে।
-      </div>
-    `;
+    $("chatList")
+      .innerHTML = `
+        <div class="empty">
+          Chat list load করতে সমস্যা হয়েছে
+        </div>
+      `;
 
   }
 
 }
 
 
-/* =========================================================
+/* =========================
    CHAT LIST REALTIME
-========================================================= */
+   ========================= */
 
 function subscribeChatList(){
 
@@ -2436,7 +2812,19 @@ function subscribeChatList(){
         {
           event:"*",
           schema:"public",
-          table:"conversation_members"
+          table:
+            "conversation_members"
+        },
+        async ()=>{
+          await loadChatList();
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event:"*",
+          schema:"public",
+          table:"messages"
         },
         async ()=>{
           await loadChatList();
@@ -2447,296 +2835,240 @@ function subscribeChatList(){
 }
 
 
-/* =========================================================
-   LOAD MESSAGES
-========================================================= */
+/* =========================
+   MESSAGES
+   ========================= */
 
 async function loadMessages(){
 
-  const container =
-    $("messages");
-
-
-  container.innerHTML = `
-    <div class="loading">
-      Messages load হচ্ছে...
-    </div>
-  `;
-
-
-  try{
-
-    const { data,error } =
-      await supabaseClient
-        .from("messages")
-        .select("*")
-        .eq(
-          "conversation_id",
-          currentConversationId
-        )
-        .order(
-          "created_at",
-          {
-            ascending:true
-          }
-        );
-
-
-    if(error){
-      throw error;
-    }
-
-
-    renderMessages(
-      data || []
-    );
-
-
-  }catch(error){
-
-    console.error(
-      "Messages error:",
-      error
-    );
-
-    container.innerHTML = `
-      <div class="empty">
-        Message load করতে সমস্যা হয়েছে।
-      </div>
-    `;
-
-  }
-
-}
-
-
-/* =========================================================
-   RENDER MESSAGES
-========================================================= */
-
-function renderMessages(messages){
-
-  const container =
-    $("messages");
-
-
-  if(!messages.length){
-
-    container.innerHTML = `
-      <div class="empty">
-        এখনো কোনো message নেই।
-        <br>
-        প্রথম message পাঠান।
-      </div>
-    `;
-
+  if(
+    !currentConversationId
+  ){
     return;
   }
 
 
-  container.innerHTML =
-    messages
-      .map(
-        message =>
-          renderMessage(message)
-      )
-      .join("");
+  const {
+    data,
+    error
+  } =
+  await supabaseClient
+    .from("messages")
+    .select("*")
+    .eq(
+      "conversation_id",
+      currentConversationId
+    )
+    .order(
+      "created_at",
+      {
+        ascending:true
+      }
+    );
 
 
-  scrollMessagesToBottom();
+  if(error){
+    throw error;
+  }
+
+
+  $("messages")
+    .innerHTML = "";
+
+
+  (data || [])
+    .forEach(
+      message =>
+        renderMessage(
+          message
+        )
+    );
+
+
+  scrollMessages();
 
 }
 
 
-/* =========================================================
-   RENDER SINGLE MESSAGE
-========================================================= */
+function scrollMessages(){
 
-function renderMessage(message){
+  const box =
+    $("messages");
+
+  box.scrollTop =
+    box.scrollHeight;
+
+}
+
+
+function renderMessage(
+  message
+){
 
   const mine =
     message.sender_id ===
     currentUser.id;
 
 
-  const content =
-    message.content || "";
+  const row =
+    document.createElement(
+      "div"
+    );
+
+  row.className =
+    "messageRow " +
+    (
+      mine
+        ? "mine"
+        : ""
+    );
 
 
-  const type =
-    message.message_type ||
-    "text";
+  const bubble =
+    document.createElement(
+      "div"
+    );
+
+  bubble.className =
+    "messageBubble";
 
 
   let body = "";
 
 
-  if(type === "text"){
+  if(
+    message.message_type ===
+    "image"
+  ){
 
     body = `
-      <div class="messageText">
-        ${escapeHtml(content)}
-      </div>
-    `;
-
-  }
-
-
-  else if(type === "image"){
-
-    body = `
-
       <img
+        class="messageImage"
         src="${escapeHtml(
-          message.file_url || content
+          message.file_url
         )}"
         alt="image"
-        loading="lazy"
       >
-
     `;
 
   }
-
-
-  else if(type === "video"){
-
-    body = `
-
-      <video
-        src="${escapeHtml(
-          message.file_url || content
-        )}"
-        controls
-        playsinline
-      ></video>
-
-    `;
-
-  }
-
-
-  else if(type === "audio"){
+  else if(
+    message.message_type ===
+    "audio"
+  ){
 
     body = `
-
       <audio
-        src="${escapeHtml(
-          message.file_url || content
-        )}"
+        class="messageAudio"
         controls
+        src="${escapeHtml(
+          message.file_url
+        )}"
       ></audio>
-
     `;
 
   }
-
-
-  else if(type === "file"){
-
-    const fileUrl =
-      message.file_url || content;
-
-    const fileName =
-      message.file_name ||
-      "File";
-
+  else if(
+    message.message_type ===
+    "video"
+  ){
 
     body = `
-
-      <div class="fileMessage">
-
-        <div class="fileIcon">
-          📄
-        </div>
-
-        <div style="flex:1">
-
-          <div class="fileName">
-            ${escapeHtml(fileName)}
-          </div>
-
-          <button
-            class="fileOpen"
-            onclick="window.open('${escapeHtml(fileUrl)}','_blank')"
-          >
-            Open
-          </button>
-
-        </div>
-
-      </div>
-
+      <video
+        controls
+        style="
+          max-width:230px;
+          border-radius:12px;
+        "
+        src="${escapeHtml(
+          message.file_url
+        )}"
+      ></video>
     `;
 
   }
-
-
-  else if(type === "location"){
+  else if(
+    message.message_type ===
+    "file"
+  ){
 
     body = `
-
-      <div>
-
-        📍 Location shared
-
-        <br>
-
-        <button
-          class="fileOpen"
-          onclick="window.open('${escapeHtml(content)}','_blank')"
-        >
-          Open Map
-        </button>
-
-      </div>
-
+      <a
+        class="messageFile"
+        href="${escapeHtml(
+          message.file_url
+        )}"
+        target="_blank"
+        rel="noopener"
+      >
+        📎
+        ${escapeHtml(
+          message.content ||
+          "File"
+        )}
+      </a>
     `;
 
   }
+  else if(
+    message.message_type ===
+    "location"
+  ){
 
+    body = `
+      <a
+        class="locationBtn"
+        href="${escapeHtml(
+          message.content
+        )}"
+        target="_blank"
+        rel="noopener"
+      >
+        📍 Location খুলুন
+      </a>
+    `;
 
+  }
   else{
 
-    body = `
-      <div class="messageText">
-        ${escapeHtml(content)}
-      </div>
-    `;
+    body =
+      escapeHtml(
+        message.content
+      )
+      .replace(
+        /\n/g,
+        "<br>"
+      );
 
   }
 
 
-  return `
-
-    <div
-      class="messageRow ${mine ? "mine" : ""}"
-    >
-
-      <div class="message">
-
+  bubble.innerHTML =
+    `
+      <div>
         ${body}
-
-        <div class="messageTime">
-
-          ${formatTime(
-            message.created_at
-          )}
-
-        </div>
-
       </div>
 
-    </div>
+      <div class="messageTime">
+        ${formatTime(
+          message.created_at
+        )}
+      </div>
+    `;
 
-  `;
+
+  row.appendChild(
+    bubble
+  );
+
+
+  $("messages")
+    .appendChild(
+      row
+    );
 
 }
 
-
-/* =========================================================
-   MESSAGE REALTIME
-========================================================= */
 
 function subscribeMessages(){
 
@@ -2750,16 +3082,22 @@ function subscribeMessages(){
   }
 
 
-  if(!currentConversationId){
+  if(
+    !currentConversationId
+  ){
     return;
   }
+
+
+  const conversationId =
+    currentConversationId;
 
 
   messageSubscription =
     supabaseClient
       .channel(
         "raztara-messages-" +
-        currentConversationId
+        conversationId
       )
       .on(
         "postgres_changes",
@@ -2769,13 +3107,15 @@ function subscribeMessages(){
           table:"messages",
           filter:
             "conversation_id=eq." +
-            currentConversationId
+            conversationId
         },
-        payload => {
+        payload=>{
 
-          appendMessage(
+          renderMessage(
             payload.new
           );
+
+          scrollMessages();
 
         }
       )
@@ -2784,79 +3124,50 @@ function subscribeMessages(){
 }
 
 
-/* =========================================================
-   APPEND MESSAGE
-========================================================= */
+/* =========================
+   SEND TEXT
+   ========================= */
 
-function appendMessage(message){
-
-  if(
-    !message ||
-    message.conversation_id !==
-    currentConversationId
-  ){
-
-    return;
-
-  }
-
-
-  const container =
-    $("messages");
-
-
-  const empty =
-    container.querySelector(
-      ".empty"
-    );
-
-
-  if(empty){
-    container.innerHTML = "";
-  }
-
-
-  container.insertAdjacentHTML(
-    "beforeend",
-    renderMessage(message)
+$("sendBtn")
+  .addEventListener(
+    "click",
+    sendTextMessage
   );
 
 
-  scrollMessagesToBottom();
+$("messageInput")
+  .addEventListener(
+    "keydown",
+    event=>{
 
-}
+      if(
+        event.key ===
+        "Enter" &&
+        !event.shiftKey
+      ){
+
+        event.preventDefault();
+
+        sendTextMessage();
+
+      }
+
+    }
+  );
 
 
-function scrollMessagesToBottom(){
+async function sendTextMessage(){
 
-  const container =
-    $("messages");
-
-
-  if(!container){
+  if(
+    !currentUser ||
+    !currentConversationId
+  ){
     return;
   }
 
 
-  setTimeout(()=>{
-
-    container.scrollTop =
-      container.scrollHeight;
-
-  },50);
-
-}
-
-
-/* =========================================================
-   SEND MESSAGE
-========================================================= */
-
-async function sendMessage(){
-
   const input =
     $("messageInput");
-
 
   const content =
     input.value.trim();
@@ -2867,50 +3178,38 @@ async function sendMessage(){
   }
 
 
-  if(!currentConversationId){
-
-    showToast(
-      "আগে একটি chat খুলুন"
-    );
-
-    return;
-  }
-
-
-  input.value = "";
-
-
   try{
 
-    const { error } =
-      await supabaseClient
-        .from("messages")
-        .insert({
+    input.value = "";
 
-          conversation_id:
-            currentConversationId,
 
-          sender_id:
-            currentUser.id,
+    const {
+      error
+    } =
+    await supabaseClient
+      .from("messages")
+      .insert({
+        conversation_id:
+          currentConversationId,
 
-          content:
-            content,
+        sender_id:
+          currentUser.id,
 
-          message_type:
-            "text"
+        content:
+          content,
 
-        });
+        message_type:
+          "text"
+      });
 
 
     if(error){
       throw error;
     }
 
-
   }catch(error){
 
     console.error(
-      "Send message error:",
       error
     );
 
@@ -2918,7 +3217,6 @@ async function sendMessage(){
       content;
 
     showToast(
-      error.message ||
       "Message পাঠানো যায়নি"
     );
 
@@ -2927,76 +3225,68 @@ async function sendMessage(){
 }
 
 
-/* =========================================================
-   ENTER TO SEND
-========================================================= */
+/* =========================
+   FILE UPLOAD
+   ========================= */
 
-function messageKeyDown(event){
+$("fileBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+      $("fileInput")
+        .click();
+    }
+  );
+
+
+$("fileInput")
+  .addEventListener(
+    "change",
+    async event=>{
+
+      const file =
+        event.target.files[0];
+
+      if(!file){
+        return;
+      }
+
+
+      await uploadMessageFile(
+        file
+      );
+
+
+      event.target.value =
+        "";
+
+    }
+  );
+
+
+async function uploadMessageFile(
+  file
+){
 
   if(
-    event.key === "Enter" &&
-    !event.shiftKey
+    !currentUser ||
+    !currentConversationId
   ){
-
-    event.preventDefault();
-
-    sendMessage();
-
-  }
-
-}
-
-
-/* =========================================================
-   FILE PICKER
-========================================================= */
-
-function chooseFile(){
-
-  $("fileInput").click();
-
-}
-
-
-/* =========================================================
-   FILE UPLOAD
-========================================================= */
-
-async function uploadSelectedFile(event){
-
-  const file =
-    event.target.files?.[0];
-
-
-  event.target.value = "";
-
-
-  if(!file){
     return;
   }
 
 
-  if(!currentConversationId){
-
-    showToast(
-      "আগে একটি chat খুলুন"
-    );
-
-    return;
-  }
-
-
-  const maxSize =
-    6 * 1024 * 1024;
-
-
-  if(file.size > maxSize){
+  if(
+    file.size >
+    6 * 1024 * 1024
+  ){
 
     showToast(
       "File সর্বোচ্চ 6 MB হতে পারবে"
     );
 
     return;
+
   }
 
 
@@ -3007,33 +3297,40 @@ async function uploadSelectedFile(event){
     );
 
 
-    const safeName =
+    const extension =
       file.name
-        .replace(
-          /[^a-zA-Z0-9._-]/g,
-          "_"
-        );
+        .split(".")
+        .pop()
+        .toLowerCase();
 
 
     const path =
       currentUser.id +
       "/" +
       Date.now() +
-      "_" +
-      safeName;
+      "-" +
+      Math.random()
+        .toString(36)
+        .slice(2) +
+      "." +
+      extension;
 
 
-    const { error:uploadError } =
-      await supabaseClient
-        .storage
-        .from("post-images")
-        .upload(
-          path,
-          file,
-          {
-            upsert:false
-          }
-        );
+    const {
+      error:uploadError
+    } =
+    await supabaseClient
+      .storage
+      .from("post-images")
+      .upload(
+        path,
+        file,
+        {
+          upsert:false,
+          contentType:
+            file.type
+        }
+      );
 
 
     if(uploadError){
@@ -3041,14 +3338,18 @@ async function uploadSelectedFile(event){
     }
 
 
-    const { data:urlData } =
-      supabaseClient
-        .storage
-        .from("post-images")
-        .getPublicUrl(path);
+    const {
+      data:urlData
+    } =
+    supabaseClient
+      .storage
+      .from("post-images")
+      .getPublicUrl(
+        path
+      );
 
 
-    const fileUrl =
+    const url =
       urlData.publicUrl;
 
 
@@ -3065,7 +3366,8 @@ async function uploadSelectedFile(event){
       messageType =
         "image";
 
-    }else if(
+    }
+    else if(
       file.type.startsWith(
         "video/"
       )
@@ -3077,30 +3379,27 @@ async function uploadSelectedFile(event){
     }
 
 
-    const { error:messageError } =
-      await supabaseClient
-        .from("messages")
-        .insert({
+    const {
+      error:messageError
+    } =
+    await supabaseClient
+      .from("messages")
+      .insert({
+        conversation_id:
+          currentConversationId,
 
-          conversation_id:
-            currentConversationId,
+        sender_id:
+          currentUser.id,
 
-          sender_id:
-            currentUser.id,
+        content:
+          file.name,
 
-          content:
-            fileUrl,
+        message_type:
+          messageType,
 
-          message_type:
-            messageType,
-
-          file_url:
-            fileUrl,
-
-          file_name:
-            file.name
-
-        });
+        file_url:
+          url
+      });
 
 
     if(messageError){
@@ -3112,7 +3411,6 @@ async function uploadSelectedFile(event){
       "File পাঠানো হয়েছে"
     );
 
-
   }catch(error){
 
     console.error(
@@ -3122,7 +3420,7 @@ async function uploadSelectedFile(event){
 
     showToast(
       error.message ||
-      "File upload করা যায়নি"
+      "File upload হয়নি"
     );
 
   }
@@ -3130,30 +3428,25 @@ async function uploadSelectedFile(event){
 }
 
 
-/* =========================================================
+/* =========================
    VOICE RECORDING
-========================================================= */
+   ========================= */
+
+$("recordBtn")
+  .addEventListener(
+    "click",
+    toggleRecording
+  );
+
 
 async function toggleRecording(){
 
-  if(
-    mediaRecorder &&
-    mediaRecorder.state === "recording"
-  ){
+  if(isRecording){
 
-    mediaRecorder.stop();
+    stopRecording();
 
     return;
-  }
 
-
-  if(!currentConversationId){
-
-    showToast(
-      "আগে একটি chat খুলুন"
-    );
-
-    return;
   }
 
 
@@ -3166,7 +3459,7 @@ async function toggleRecording(){
         });
 
 
-    recordingChunks = [];
+    audioChunks = [];
 
 
     mediaRecorder =
@@ -3175,12 +3468,16 @@ async function toggleRecording(){
       );
 
 
-    mediaRecorder.ondataavailable =
-      event => {
+    mediaRecorder
+      .ondataavailable =
+      event=>{
 
-        if(event.data.size > 0){
+        if(
+          event.data &&
+          event.data.size
+        ){
 
-          recordingChunks.push(
+          audioChunks.push(
             event.data
           );
 
@@ -3189,8 +3486,9 @@ async function toggleRecording(){
       };
 
 
-    mediaRecorder.onstop =
-      async () => {
+    mediaRecorder
+      .onstop =
+      async ()=>{
 
         stream
           .getTracks()
@@ -3200,19 +3498,11 @@ async function toggleRecording(){
           );
 
 
-        $("recordBtn")
-          .classList
-          .remove(
-            "recording"
-          );
-
-
         const blob =
           new Blob(
-            recordingChunks,
+            audioChunks,
             {
               type:
-                mediaRecorder.mimeType ||
                 "audio/webm"
             }
           );
@@ -3227,23 +3517,20 @@ async function toggleRecording(){
 
     mediaRecorder.start();
 
+    isRecording =
+      true;
 
     $("recordBtn")
-      .classList
-      .add(
-        "recording"
-      );
-
+      .textContent =
+      "⏹️";
 
     showToast(
-      "Recording চলছে... আবার চাপলে বন্ধ হবে"
+      "Recording চলছে..."
     );
-
 
   }catch(error){
 
     console.error(
-      "Recording error:",
       error
     );
 
@@ -3256,39 +3543,55 @@ async function toggleRecording(){
 }
 
 
-/* =========================================================
-   UPLOAD VOICE
-========================================================= */
+function stopRecording(){
 
-async function uploadVoice(blob){
+  if(
+    mediaRecorder &&
+    isRecording
+  ){
+
+    mediaRecorder.stop();
+
+    isRecording =
+      false;
+
+    $("recordBtn")
+      .textContent =
+      "🎙️";
+
+  }
+
+}
+
+
+async function uploadVoice(
+  blob
+){
 
   try{
 
-    showToast(
-      "Voice message upload হচ্ছে..."
-    );
-
-
     const path =
       currentUser.id +
-      "/voice_" +
+      "/voice-" +
       Date.now() +
       ".webm";
 
 
-    const { error:uploadError } =
-      await supabaseClient
-        .storage
-        .from("post-images")
-        .upload(
-          path,
-          blob,
-          {
-            contentType:
-              "audio/webm",
-            upsert:false
-          }
-        );
+    const {
+      error:uploadError
+    } =
+    await supabaseClient
+      .storage
+      .from("post-images")
+      .upload(
+        path,
+        blob,
+        {
+          upsert:false,
+          contentType:
+            "audio/webm"
+        }
+      );
 
 
     if(uploadError){
@@ -3296,45 +3599,42 @@ async function uploadVoice(blob){
     }
 
 
-    const { data:urlData } =
-      supabaseClient
-        .storage
-        .from("post-images")
-        .getPublicUrl(path);
+    const {
+      data
+    } =
+    supabaseClient
+      .storage
+      .from("post-images")
+      .getPublicUrl(
+        path
+      );
 
 
-    const url =
-      urlData.publicUrl;
+    const {
+      error
+    } =
+    await supabaseClient
+      .from("messages")
+      .insert({
+        conversation_id:
+          currentConversationId,
+
+        sender_id:
+          currentUser.id,
+
+        content:
+          "Voice message",
+
+        message_type:
+          "audio",
+
+        file_url:
+          data.publicUrl
+      });
 
 
-    const { error:messageError } =
-      await supabaseClient
-        .from("messages")
-        .insert({
-
-          conversation_id:
-            currentConversationId,
-
-          sender_id:
-            currentUser.id,
-
-          content:
-            url,
-
-          message_type:
-            "audio",
-
-          file_url:
-            url,
-
-          file_name:
-            "Voice message"
-
-        });
-
-
-    if(messageError){
-      throw messageError;
+    if(error){
+      throw error;
     }
 
 
@@ -3342,17 +3642,15 @@ async function uploadVoice(blob){
       "Voice message পাঠানো হয়েছে"
     );
 
-
   }catch(error){
 
     console.error(
-      "Voice upload error:",
       error
     );
 
     showToast(
       error.message ||
-      "Voice message পাঠানো যায়নি"
+      "Voice পাঠানো যায়নি"
     );
 
   }
@@ -3360,62 +3658,58 @@ async function uploadVoice(blob){
 }
 
 
-/* =========================================================
+/* =========================
    LOCATION
-========================================================= */
+   ========================= */
 
-async function shareLocation(){
-
-  if(!currentConversationId){
-
-    showToast(
-      "আগে একটি chat খুলুন"
-    );
-
-    return;
-  }
-
-
-  if(!navigator.geolocation){
-
-    showToast(
-      "এই browser location support করে না"
-    );
-
-    return;
-  }
-
-
-  showToast(
-    "Location নেওয়া হচ্ছে..."
+$("locationBtn")
+  .addEventListener(
+    "click",
+    shareLocation
   );
 
 
-  navigator.geolocation.getCurrentPosition(
+function shareLocation(){
 
-    async position => {
+  if(
+    !navigator.geolocation
+  ){
 
-      const lat =
-        position.coords.latitude;
+    showToast(
+      "Location support নেই"
+    );
 
-      const lng =
-        position.coords.longitude;
+    return;
 
-
-      const mapUrl =
-        "https://www.google.com/maps?q=" +
-        lat +
-        "," +
-        lng;
+  }
 
 
-      try{
+  navigator.geolocation
+    .getCurrentPosition(
+      async position=>{
 
-        const { error } =
+        const lat =
+          position.coords.latitude;
+
+        const lng =
+          position.coords.longitude;
+
+
+        const url =
+          "https://www.google.com/maps?q=" +
+          lat +
+          "," +
+          lng;
+
+
+        try{
+
+          const {
+            error
+          } =
           await supabaseClient
             .from("messages")
             .insert({
-
               conversation_id:
                 currentConversationId,
 
@@ -3423,170 +3717,115 @@ async function shareLocation(){
                 currentUser.id,
 
               content:
-                mapUrl,
+                url,
 
               message_type:
                 "location"
-
             });
 
 
-        if(error){
-          throw error;
+          if(error){
+            throw error;
+          }
+
+
+        }catch(error){
+
+          console.error(
+            error
+          );
+
+          showToast(
+            "Location পাঠানো যায়নি"
+          );
+
         }
 
-
+      },
+      ()=>{
         showToast(
-          "Location পাঠানো হয়েছে"
+          "Location permission দিন"
         );
+      }
+    );
+
+}
 
 
-      }catch(error){
+/* =========================
+   EDIT PROFILE
+   ========================= */
 
-        console.error(
-          "Location error:",
-          error
-        );
+$("editProfileBtn")
+  .addEventListener(
+    "click",
+    ()=>{
 
-        showToast(
-          "Location পাঠানো যায়নি"
-        );
-
+      if(!currentProfile){
+        return;
       }
 
-    },
 
-    error => {
+      $("editFullName")
+        .value =
+        currentProfile.full_name ||
+        "";
 
-      console.error(
-        error
-      );
+      $("editUsername")
+        .value =
+        currentProfile.username ||
+        "";
 
-      showToast(
-        "Location permission দিন"
-      );
+      $("editBio")
+        .value =
+        currentProfile.bio ||
+        "";
 
-    },
+      $("profileModal")
+        .classList.remove(
+          "hidden"
+        );
 
-    {
-      enableHighAccuracy:true,
-      timeout:10000,
-      maximumAge:0
     }
-
   );
 
-}
+
+$("cancelProfileBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+      $("profileModal")
+        .classList.add(
+          "hidden"
+        );
+    }
+  );
 
 
-/* =========================================================
-   EDIT PROFILE
-========================================================= */
-
-async function editProfile(){
-
-  if(!currentProfile){
-    return;
-  }
-
-
-  const currentName =
-    currentProfile.full_name ||
-    "";
-
-
-  const currentBio =
-    currentProfile.bio ||
-    "";
-
-
-  const currentUsername =
-    currentProfile.username ||
-    "";
-
-
-  const main =
-    $("profilePage");
-
-
-  main.innerHTML = `
-
-    <div class="editBox">
-
-      <h2>
-        ✏️ Edit Profile
-      </h2>
-
-
-      <label>
-        নাম
-      </label>
-
-      <input
-        id="editFullName"
-        class="input"
-        value="${escapeHtml(currentName)}"
-      >
-
-
-      <label>
-        Username
-      </label>
-
-      <input
-        id="editUsername"
-        class="input"
-        value="${escapeHtml(currentUsername)}"
-      >
-
-
-      <label>
-        Bio
-      </label>
-
-      <input
-        id="editBio"
-        class="input"
-        value="${escapeHtml(currentBio)}"
-      >
-
-
-      <button
-        class="primary"
-        onclick="saveProfile()"
-      >
-        💾 Save
-      </button>
-
-
-      <button
-        class="secondary"
-        onclick="restoreProfilePage()"
-      >
-        Cancel
-      </button>
-
-    </div>
-
-  `;
-
-}
+$("saveProfileBtn")
+  .addEventListener(
+    "click",
+    saveProfile
+  );
 
 
 async function saveProfile(){
+
+  if(!currentUser){
+    return;
+  }
+
 
   const fullName =
     $("editFullName")
       .value
       .trim();
 
-
   const username =
     $("editUsername")
       .value
       .trim()
       .toLowerCase();
-
 
   const bio =
     $("editBio")
@@ -3597,36 +3836,42 @@ async function saveProfile(){
   if(!fullName || !username){
 
     showToast(
-      "নাম এবং Username লাগবে"
+      "নাম ও Username দিন"
     );
 
     return;
+
   }
 
 
   try{
 
-    const { data,error } =
-      await supabaseClient
-        .from("profiles")
-        .update({
+    const {
+      data,
+      error
+    } =
+    await supabaseClient
+      .from("profiles")
+      .update({
+        full_name:
+          fullName,
 
-          full_name:
-            fullName,
+        username:
+          username,
 
-          username:
-            username,
+        bio:
+          bio,
 
-          bio:
-            bio
-
-        })
-        .eq(
-          "id",
-          currentUser.id
-        )
-        .select()
-        .single();
+        updated_at:
+          new Date()
+            .toISOString()
+      })
+      .eq(
+        "id",
+        currentUser.id
+      )
+      .select()
+      .single();
 
 
     if(error){
@@ -3637,28 +3882,28 @@ async function saveProfile(){
     currentProfile =
       data;
 
+    renderProfile();
 
-    updateProfileUI();
 
-
-    restoreProfilePage();
+    $("profileModal")
+      .classList.add(
+        "hidden"
+      );
 
 
     showToast(
       "Profile update হয়েছে"
     );
 
-
   }catch(error){
 
     console.error(
-      "Save profile error:",
       error
     );
 
     showToast(
       error.message ||
-      "Profile save করা যায়নি"
+      "Profile update হয়নি"
     );
 
   }
@@ -3666,228 +3911,57 @@ async function saveProfile(){
 }
 
 
-function restoreProfilePage(){
-
-  $("profilePage").innerHTML = `
-
-    <div class="profileCard">
-
-      <div
-        id="profileAvatar"
-        class="profileBig"
-      >
-        R
-      </div>
-
-      <h2 id="profileName">
-        User
-      </h2>
-
-      <p id="profileUsername">
-        @username
-      </p>
-
-      <p id="profileBio">
-        raztara user
-      </p>
-
-
-      <div class="profileActions">
-
-        <button
-          class="secondary"
-          onclick="editProfile()"
-        >
-          ✏️ Edit Profile
-        </button>
-
-
-        <button
-          class="secondary"
-          onclick="logout()"
-        >
-          🚪 Logout
-        </button>
-
-      </div>
-
-    </div>
-
-  `;
-
-
-  updateProfileUI();
-
-}
-
-
-/* =========================================================
+/* =========================
    LOGOUT
-========================================================= */
+   ========================= */
 
-async function logout(){
+$("logoutBtn")
+  .addEventListener(
+    "click",
+    async ()=>{
 
-  try{
-
-    if(messageSubscription){
-
-      await supabaseClient
-        .removeChannel(
-          messageSubscription
-        );
-
-      messageSubscription =
-        null;
-
-    }
-
-
-    if(chatListSubscription){
-
-      await supabaseClient
-        .removeChannel(
-          chatListSubscription
-        );
-
-      chatListSubscription =
-        null;
-
-    }
-
-
-    if(
-      typeof endRaztaraCall ===
-      "function"
-    ){
-
-      await endRaztaraCall(
-        false
-      );
-
-    }
-
-
-    await supabaseClient.auth.signOut();
-
-
-  }catch(error){
-
-    console.error(
-      "Logout error:",
-      error
-    );
-
-  }
-
-
-  currentUser = null;
-  currentProfile = null;
-  currentChatUser = null;
-  currentConversationId = null;
-
-
-  $("app")
-    .classList
-    .add("hidden");
-
-
-  $("chatScreen")
-    .classList
-    .add("hidden");
-
-
-  $("authScreen")
-    .classList
-    .remove("hidden");
-
-
-  $("email").value = "";
-  $("password").value = "";
-
-
-  showToast(
-    "Logout হয়েছে"
-  );
-
-}
-
-
-/* =========================================================
-   AUTH SESSION CHECK
-========================================================= */
-
-async function checkSession(){
-
-  try{
-
-    const {
-      data:{
-        session
-      }
-    } =
-      await supabaseClient
-        .auth
-        .getSession();
-
-
-    if(session?.user){
-
-      currentUser =
-        session.user;
-
-      await initializeApp();
-
-    }
-
-
-  }catch(error){
-
-    console.error(
-      "Session error:",
-      error
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   AUTH STATE LISTENER
-========================================================= */
-
-supabaseClient
-  .auth
-  .onAuthStateChange(
-    async (event,session) => {
-
-      if(
-        event ===
-        "SIGNED_IN"
-      ){
+      try{
 
         if(
-          session?.user &&
-          !currentUser
+          messageSubscription
         ){
 
-          currentUser =
-            session.user;
+          await supabaseClient
+            .removeChannel(
+              messageSubscription
+            );
 
-          await initializeApp();
+          messageSubscription =
+            null;
 
         }
 
-      }
+
+        if(
+          chatListSubscription
+        ){
+
+          await supabaseClient
+            .removeChannel(
+              chatListSubscription
+            );
+
+          chatListSubscription =
+            null;
+
+        }
 
 
-      if(
-        event ===
-        "SIGNED_OUT"
-      ){
+        await supabaseClient
+          .auth
+          .signOut();
 
-        currentUser = null;
-        currentProfile = null;
+
+      }catch(error){
+
+        console.error(
+          error
+        );
 
       }
 
@@ -3895,90 +3969,129 @@ supabaseClient
   );
 
 
-/* =========================================================
+/* =========================
    START
-========================================================= */
+   ========================= */
 
 checkSession();
-   /* =========================================================
-   WEBRTC CALL SYSTEM
-========================================================= */
+  /* =========================================================
+   RAZTARA
+   PART 3
+   AUDIO / VIDEO CALL
+   WEBRTC + SUPABASE REALTIME
+   ========================================================= */
+
+
+/* =========================
+   CALL GLOBALS
+   ========================= */
 
 let callPeer = null;
+
 let callLocalStream = null;
+
 let callRemoteStream = null;
 
 let callConversationId = null;
+
 let callMode = null;
+
 let callState = "idle";
 
 let callSubscription = null;
 
 let pendingCall = null;
+
 let pendingIceCandidates = [];
 
 
-/* =========================================================
-   START AUDIO CALL
-========================================================= */
+/* =========================
+   STUN
+   ========================= */
 
-async function startAudioCall(){
+const rtcConfiguration = {
 
-  await startRaztaraCall(
-    "audio"
+  iceServers:[
+    {
+      urls:
+        "stun:stun.l.google.com:19302"
+    },
+    {
+      urls:
+        "stun:stun1.l.google.com:19302"
+    }
+  ]
+
+};
+
+
+/* =========================
+   CALL BUTTONS
+   ========================= */
+
+$("audioCallBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+      startRaztaraCall(
+        "audio"
+      );
+    }
   );
 
-}
 
-
-/* =========================================================
-   START VIDEO CALL
-========================================================= */
-
-async function startVideoCall(){
-
-  await startRaztaraCall(
-    "video"
+$("videoCallBtn")
+  .addEventListener(
+    "click",
+    ()=>{
+      startRaztaraCall(
+        "video"
+      );
+    }
   );
 
-}
+
+$("acceptCallBtn")
+  .addEventListener(
+    "click",
+    acceptRaztaraCall
+  );
 
 
-/* =========================================================
+$("rejectCallBtn")
+  .addEventListener(
+    "click",
+    rejectRaztaraCall
+  );
+
+
+$("endCallBtn")
+  .addEventListener(
+    "click",
+    endRaztaraCall
+  );
+
+
+/* =========================
    START CALL
-========================================================= */
+   ========================= */
 
 async function startRaztaraCall(
   mode
 ){
 
-  if(!currentUser){
+  if(
+    !currentUser ||
+    !currentChatUserId ||
+    !currentConversationId
+  ){
 
     showToast(
-      "আগে Login করুন"
+      "আগে একটি chat খুলুন"
     );
 
     return;
-  }
 
-
-  if(!currentChatUser){
-
-    showToast(
-      "যার সাথে call করবেন তাকে নির্বাচন করুন"
-    );
-
-    return;
-  }
-
-
-  if(!currentConversationId){
-
-    showToast(
-      "Conversation পাওয়া যায়নি"
-    );
-
-    return;
   }
 
 
@@ -3988,10 +4101,11 @@ async function startRaztaraCall(
   ){
 
     showToast(
-      "আপনি ইতিমধ্যে একটি call-এ আছেন"
+      "একটি call ইতিমধ্যে চলছে"
     );
 
     return;
+
   }
 
 
@@ -4007,49 +4121,48 @@ async function startRaztaraCall(
       "calling";
 
 
-    showRaztaraCallUI(
-      false
-    );
-
-
-    $("callTitle").textContent =
-      currentChatUser.full_name ||
-      currentChatUser.username ||
-      "User";
-
-
-    $("callStatus").textContent =
+    const constraints =
       mode === "video"
-        ? "Video calling..."
-        : "Calling...";
+        ? {
+            audio:true,
+            video:true
+          }
+        : {
+            audio:true,
+            video:false
+          };
 
 
     callLocalStream =
-      await navigator.mediaDevices
-        .getUserMedia({
-
-          audio:true,
-
-          video:
-            mode === "video"
-
-        });
+      await navigator
+        .mediaDevices
+        .getUserMedia(
+          constraints
+        );
 
 
-    if(mode === "video"){
-
-      $("callVideos")
-        .classList
-        .remove("hidden");
+    showRaztaraCallUI(
+      "outgoing"
+    );
 
 
-      $("callLocalVideo").srcObject =
-        callLocalStream;
-
-    }
+    await createRaztaraPeer();
 
 
-    createRaztaraPeer();
+    await startRaztaraCallSignaling();
+
+
+    callPeer =
+      createPeerObject();
+
+
+    /*
+      createPeerObject আবার local stream
+      ও ICE handler setup করবে।
+    */
+
+    callPeer =
+      callPeer;
 
 
     const offer =
@@ -4066,10 +4179,21 @@ async function startRaztaraCall(
     await sendRaztaraCallSignal(
       "offer",
       {
-        offer:offer,
-        mode:mode
+        sdp:
+          offer.sdp,
+
+        type:
+          offer.type,
+
+        mode:
+          mode
       }
     );
+
+
+    $("callStatus")
+      .textContent =
+      "Calling...";
 
 
   }catch(error){
@@ -4079,75 +4203,93 @@ async function startRaztaraCall(
       error
     );
 
-
     showToast(
       error.message ||
       "Call শুরু করা যায়নি"
     );
 
-
-    await endRaztaraCall();
+    await cleanupCall();
 
   }
 
 }
 
 
-/* =========================================================
-   CREATE PEER
-========================================================= */
+/* =========================
+   PEER CREATION
+   ========================= */
 
-function createRaztaraPeer(){
+async function createRaztaraPeer(){
+
+  if(callPeer){
+
+    try{
+      callPeer.close();
+    }catch(e){}
+
+  }
+
+
+  callPeer =
+    createPeerObject();
+
+  return callPeer;
+
+}
+
+
+function createPeerObject(){
+
+  const peer =
+    new RTCPeerConnection(
+      rtcConfiguration
+    );
+
 
   callRemoteStream =
     new MediaStream();
 
 
-  $("callRemoteVideo").srcObject =
+  $("callRemoteVideo")
+    .srcObject =
     callRemoteStream;
 
 
-  callPeer =
-    new RTCPeerConnection({
+  if(callLocalStream){
 
-      iceServers:[
-        {
-          urls:
-            "stun:stun.l.google.com:19302"
-        },
-        {
-          urls:
-            "stun:stun1.l.google.com:19302"
+    $("callLocalVideo")
+      .srcObject =
+      callLocalStream;
+
+
+    callLocalStream
+      .getTracks()
+      .forEach(
+        track=>{
+
+          peer.addTrack(
+            track,
+            callLocalStream
+          );
+
         }
-      ]
+      );
 
-    });
-
-
-  callLocalStream
-    ?.getTracks()
-    .forEach(
-      track => {
-
-        callPeer.addTrack(
-          track,
-          callLocalStream
-        );
-
-      }
-    );
+  }
 
 
-  callPeer.ontrack =
-    event => {
+  peer.ontrack =
+    event=>{
 
       event.streams[0]
         ?.getTracks()
         .forEach(
-          track => {
+          track=>{
 
             callRemoteStream
-              .addTrack(track);
+              .addTrack(
+                track
+              );
 
           }
         );
@@ -4160,38 +4302,43 @@ function createRaztaraPeer(){
     };
 
 
-  callPeer.onicecandidate =
-    async event => {
+  peer.onicecandidate =
+    async event=>{
 
       if(
         event.candidate &&
         callConversationId
       ){
 
-        await sendRaztaraCallSignal(
-          "ice",
-          {
-            candidate:
-              event.candidate
-          }
-        );
+        try{
+
+          await sendRaztaraCallSignal(
+            "ice",
+            {
+              candidate:
+                event.candidate
+            }
+          );
+
+        }catch(error){
+
+          console.error(
+            "ICE send error:",
+            error
+          );
+
+        }
 
       }
 
     };
 
 
-  callPeer.onconnectionstatechange =
-    () => {
+  peer.onconnectionstatechange =
+    ()=>{
 
       const state =
-        callPeer.connectionState;
-
-
-      console.log(
-        "Call connection:",
-        state
-      );
+        peer.connectionState;
 
 
       if(
@@ -4202,10 +4349,9 @@ function createRaztaraPeer(){
         callState =
           "connected";
 
-
-        $("callStatus").textContent =
+        $("callStatus")
+          .textContent =
           "Connected";
-
 
       }
 
@@ -4219,7 +4365,7 @@ function createRaztaraPeer(){
           "Call connection failed"
         );
 
-        endRaztaraCall();
+        cleanupCall();
 
       }
 
@@ -4229,35 +4375,108 @@ function createRaztaraPeer(){
         "disconnected"
       ){
 
-        setTimeout(
-          () => {
-
-            if(
-              callState ===
-              "connected"
-            ){
-
-              endRaztaraCall();
-
-            }
-
-          },
-          3000
-        );
+        $("callStatus")
+          .textContent =
+          "Disconnected";
 
       }
 
     };
 
+
+  return peer;
+
 }
 
 
-/* =========================================================
-   SEND CALL SIGNAL
-========================================================= */
+/* =========================
+   SIGNALING SUBSCRIPTION
+   ========================= */
+
+async function startRaztaraCallSignaling(){
+
+  if(callSubscription){
+
+    try{
+
+      await supabaseClient
+        .removeChannel(
+          callSubscription
+        );
+
+    }catch(e){}
+
+    callSubscription =
+      null;
+
+  }
+
+
+  if(
+    !callConversationId
+  ){
+    return;
+  }
+
+
+  const conversationId =
+    callConversationId;
+
+
+  callSubscription =
+    supabaseClient
+      .channel(
+        "raztara-call-" +
+        conversationId +
+        "-" +
+        Date.now()
+      )
+      .on(
+        "postgres_changes",
+        {
+          event:"INSERT",
+          schema:"public",
+          table:
+            "call_signals",
+
+          filter:
+            "conversation_id=eq." +
+            conversationId
+        },
+        async payload=>{
+
+          if(
+            !payload.new
+          ){
+            return;
+          }
+
+
+          if(
+            payload.new.sender_id ===
+            currentUser.id
+          ){
+            return;
+          }
+
+
+          await handleRaztaraCallSignal(
+            payload.new
+          );
+
+        }
+      )
+      .subscribe();
+
+}
+
+
+/* =========================
+   SEND SIGNAL
+   ========================= */
 
 async function sendRaztaraCallSignal(
-  type,
+  signalType,
   payload
 ){
 
@@ -4265,173 +4484,158 @@ async function sendRaztaraCallSignal(
     !currentUser ||
     !callConversationId
   ){
-
     return;
   }
 
 
-  try{
+  const {
+    error
+  } =
+  await supabaseClient
+    .from("call_signals")
+    .insert({
+      conversation_id:
+        callConversationId,
 
-    const { error } =
-      await supabaseClient
-        .from("call_signals")
-        .insert({
+      sender_id:
+        currentUser.id,
 
-          conversation_id:
-            callConversationId,
+      signal_type:
+        signalType,
 
-          sender_id:
-            currentUser.id,
-
-          type:
-            type,
-
-          payload:
-            payload
-
-        });
+      payload:
+        payload || {}
+    });
 
 
-    if(error){
-      throw error;
-    }
-
-
-  }catch(error){
+  if(error){
 
     console.error(
       "Call signal error:",
       error
     );
 
+    throw error;
+
   }
 
 }
 
 
-/* =========================================================
-   CALL SIGNALING SUBSCRIPTION
-========================================================= */
-
-function startRaztaraCallSignaling(){
-
-  if(!currentUser){
-    return;
-  }
-
-
-  if(callSubscription){
-
-    supabaseClient
-      .removeChannel(
-        callSubscription
-      );
-
-  }
-
-
-  callSubscription =
-    supabaseClient
-      .channel(
-        "raztara-call-signals-" +
-        currentUser.id
-      )
-      .on(
-
-        "postgres_changes",
-
-        {
-          event:"INSERT",
-          schema:"public",
-          table:"call_signals"
-        },
-
-        async payload => {
-
-          await handleRaztaraCallSignal(
-            payload.new
-          );
-
-        }
-
-      )
-      .subscribe();
-
-}
-
-
-/* =========================================================
-   HANDLE CALL SIGNAL
-========================================================= */
+/* =========================
+   RECEIVE SIGNAL
+   ========================= */
 
 async function handleRaztaraCallSignal(
   signal
 ){
 
-  if(!signal){
-    return;
-  }
-
-
   if(
-    signal.sender_id ===
-    currentUser.id
+    !signal ||
+    !signal.signal_type
   ){
-
     return;
   }
 
 
-  const payload =
-    signal.payload || {};
-
+  /*
+    Incoming offer
+  */
 
   if(
-    signal.type ===
+    signal.signal_type ===
     "offer"
   ){
+
+    if(
+      callState !==
+      "idle"
+    ){
+
+      /*
+        আমি already call-এ থাকলে busy পাঠাই
+      */
+
+      try{
+
+        const oldConversation =
+          callConversationId;
+
+        callConversationId =
+          signal.conversation_id;
+
+        await sendRaztaraCallSignal(
+          "busy",
+          {}
+        );
+
+        callConversationId =
+          oldConversation;
+
+      }catch(error){
+
+        console.error(
+          error
+        );
+
+      }
+
+      return;
+
+    }
+
 
     await receiveRaztaraOffer(
       signal
     );
 
     return;
+
   }
 
 
+  /*
+    Answer
+  */
+
   if(
-    signal.type ===
+    signal.signal_type ===
     "answer"
   ){
 
     if(
-      !callPeer ||
-      !payload.answer
+      !callPeer
     ){
-
       return;
     }
 
 
     try{
 
+      const description =
+        new RTCSessionDescription({
+          type:
+            signal.payload.type,
+
+          sdp:
+            signal.payload.sdp
+        });
+
+
       await callPeer
         .setRemoteDescription(
-          new RTCSessionDescription(
-            payload.answer
-          )
+          description
         );
 
 
       callState =
         "connected";
 
-
-      $("callStatus").textContent =
+      $("callStatus")
+        .textContent =
         "Connected";
 
-
-      await addPendingIce();
+      await flushPendingIce();
 
     }catch(error){
 
@@ -4443,18 +4647,25 @@ async function handleRaztaraCallSignal(
     }
 
     return;
+
   }
 
 
+  /*
+    ICE
+  */
+
   if(
-    signal.type ===
+    signal.signal_type ===
     "ice"
   ){
 
-    if(
-      !payload.candidate
-    ){
+    const candidate =
+      signal.payload
+        ?.candidate;
 
+
+    if(!candidate){
       return;
     }
 
@@ -4469,7 +4680,7 @@ async function handleRaztaraCallSignal(
         await callPeer
           .addIceCandidate(
             new RTCIceCandidate(
-              payload.candidate
+              candidate
             )
           );
 
@@ -4486,311 +4697,236 @@ async function handleRaztaraCallSignal(
 
       pendingIceCandidates
         .push(
-          payload.candidate
+          candidate
         );
 
     }
 
     return;
+
   }
 
 
+  /*
+    Busy
+  */
+
   if(
-    signal.type ===
+    signal.signal_type ===
+    "busy"
+  ){
+
+    $("callStatus")
+      .textContent =
+      "User is busy";
+
+    showToast(
+      "User এখন অন্য call-এ আছেন"
+    );
+
+    setTimeout(
+      ()=>{
+        cleanupCall();
+      },
+      1200
+    );
+
+    return;
+
+  }
+
+
+  /*
+    Reject
+  */
+
+  if(
+    signal.signal_type ===
     "reject"
   ){
 
+    $("callStatus")
+      .textContent =
+      "Call rejected";
+
     showToast(
-      "Call rejected"
+      "Call reject করা হয়েছে"
     );
 
-
-    await endRaztaraCall();
+    setTimeout(
+      ()=>{
+        cleanupCall();
+      },
+      1000
+    );
 
     return;
+
   }
 
 
+  /*
+    Hangup
+  */
+
   if(
-    signal.type ===
-    "end"
+    signal.signal_type ===
+    "hangup"
   ){
 
-    await endRaztaraCall();
+    showToast(
+      "Call শেষ হয়েছে"
+    );
+
+    await cleanupCall();
 
     return;
+
   }
 
 }
 
 
-/* =========================================================
+/* =========================
    RECEIVE OFFER
-========================================================= */
+   ========================= */
 
 async function receiveRaztaraOffer(
   signal
 ){
 
-  const payload =
-    signal.payload || {};
-
-
-  if(!payload.offer){
-    return;
-  }
-
-
-  if(
-    callState !==
-    "idle"
-  ){
-
-    return;
-  }
-
-
-  const senderProfile =
-    await getProfileById(
-      signal.sender_id
-    );
-
-
-  pendingCall = {
-
-    signal:signal,
-
-    senderId:
-      signal.sender_id,
-
-    conversationId:
-      signal.conversation_id,
-
-    offer:
-      payload.offer,
-
-    mode:
-      payload.mode ||
-      "audio",
-
-    profile:
-      senderProfile
-
-  };
-
-
-  callConversationId =
-    signal.conversation_id;
-
-  callMode =
-    pendingCall.mode;
-
-  callState =
-    "incoming";
-
-
-  showRaztaraCallUI(
-    true
-  );
-
-
-  const profile =
-    senderProfile || {};
-
-
-  $("callTitle").textContent =
-    profile.full_name ||
-    profile.username ||
-    "Incoming Call";
-
-
-  $("callStatus").textContent =
-    pendingCall.mode === "video"
-      ? "Incoming video call..."
-      : "Incoming audio call...";
-
-
-  $("callIncomingAvatar").textContent =
-    initials(
-      profile.full_name ||
-      profile.username ||
-      "R"
-    );
-
-}
-
-
-/* =========================================================
-   GET PROFILE
-========================================================= */
-
-async function getProfileById(
-  userId
-){
-
   try{
 
-    const { data,error } =
-      await supabaseClient
-        .from("profiles")
-        .select("*")
-        .eq(
-          "id",
-          userId
-        )
-        .maybeSingle();
+    pendingCall =
+      signal;
 
 
-    if(error){
+    callConversationId =
+      signal.conversation_id;
 
-      console.error(
-        "Get profile error:",
-        error
+
+    callMode =
+      signal.payload?.mode ||
+      "audio";
+
+
+    callState =
+      "incoming";
+
+
+    const senderProfile =
+      await getProfileById(
+        signal.sender_id
       );
 
-      return null;
-    }
+
+    pendingCall.senderProfile =
+      senderProfile;
 
 
-    return data;
+    showRaztaraCallUI(
+      "incoming",
+      senderProfile
+    );
+
+
+    await startRaztaraCallSignaling();
+
 
   }catch(error){
 
     console.error(
+      "Receive offer error:",
       error
     );
 
-    return null;
-  }
-
-}
-
-
-/* =========================================================
-   SHOW CALL UI
-========================================================= */
-
-function showRaztaraCallUI(
-  incoming
-){
-
-  $("callOverlay")
-    .classList
-    .remove("hidden");
-
-
-  $("callVideos")
-    .classList
-    .toggle(
-      "hidden",
-      callMode !== "video"
-    );
-
-
-  if(!incoming){
-
-    $("callActions").innerHTML = `
-
-      <button
-        class="callAction end"
-        onclick="endRaztaraCall()"
-      >
-        🔴 End
-      </button>
-
-    `;
-
-  }else{
-
-    $("callActions").innerHTML = `
-
-      <button
-        class="callAction accept"
-        onclick="acceptRaztaraCall()"
-      >
-        📞 Accept
-      </button>
-
-      <button
-        class="callAction reject"
-        onclick="rejectRaztaraCall()"
-      >
-        ❌ Reject
-      </button>
-
-    `;
+    await cleanupCall();
 
   }
 
 }
 
 
-/* =========================================================
-   ACCEPT CALL
-========================================================= */
+/* =========================
+   ACCEPT
+   ========================= */
 
 async function acceptRaztaraCall(){
 
-  if(!pendingCall){
-
+  if(
+    !pendingCall
+  ){
     return;
   }
 
 
   try{
 
-    callState =
-      "connecting";
+    const signal =
+      pendingCall;
 
 
-    $("callStatus").textContent =
-      "Connecting...";
+    callMode =
+      signal.payload?.mode ||
+      "audio";
+
+
+    const constraints =
+      callMode === "video"
+        ? {
+            audio:true,
+            video:true
+          }
+        : {
+            audio:true,
+            video:false
+          };
 
 
     callLocalStream =
-      await navigator.mediaDevices
-        .getUserMedia({
-
-          audio:true,
-
-          video:
-            pendingCall.mode ===
-            "video"
-
-        });
+      await navigator
+        .mediaDevices
+        .getUserMedia(
+          constraints
+        );
 
 
-    if(
-      pendingCall.mode ===
-      "video"
-    ){
+    $("acceptCallBtn")
+      .classList.add(
+        "hidden"
+      );
 
-      $("callVideos")
-        .classList
-        .remove("hidden");
+    $("rejectCallBtn")
+      .classList.add(
+        "hidden"
+      );
+
+    $("endCallBtn")
+      .classList.remove(
+        "hidden"
+      );
 
 
-      $("callLocalVideo")
-        .srcObject =
-        callLocalStream;
-
-    }
+    await createRaztaraPeer();
 
 
-    createRaztaraPeer();
+    const remoteDescription =
+      new RTCSessionDescription({
+        type:
+          signal.payload.type,
+
+        sdp:
+          signal.payload.sdp
+      });
 
 
     await callPeer
       .setRemoteDescription(
-
-        new RTCSessionDescription(
-          pendingCall.offer
-        )
-
+        remoteDescription
       );
 
 
-    await addPendingIce();
+    await flushPendingIce();
 
 
     const answer =
@@ -4804,20 +4940,25 @@ async function acceptRaztaraCall(){
       );
 
 
-    await sendRaztaraCallSignal(
-      "answer",
-      {
-        answer:answer
-      }
-    );
-
-
     callState =
       "connected";
 
 
-    $("callStatus").textContent =
-      "Connected";
+    $("callStatus")
+      .textContent =
+      "Connecting...";
+
+
+    await sendRaztaraCallSignal(
+      "answer",
+      {
+        type:
+          answer.type,
+
+        sdp:
+          answer.sdp
+      }
+    );
 
 
     pendingCall =
@@ -4831,34 +4972,48 @@ async function acceptRaztaraCall(){
       error
     );
 
-
     showToast(
       error.message ||
       "Call accept করা যায়নি"
     );
 
-
-    await endRaztaraCall();
+    await cleanupCall();
 
   }
 
 }
 
 
-/* =========================================================
-   REJECT CALL
-========================================================= */
+/* =========================
+   REJECT
+   ========================= */
 
 async function rejectRaztaraCall(){
 
   if(
-    pendingCall &&
-    callConversationId
+    !pendingCall
   ){
+    await cleanupCall();
+    return;
+  }
+
+
+  try{
+
+    callConversationId =
+      pendingCall
+        .conversation_id;
+
 
     await sendRaztaraCallSignal(
       "reject",
       {}
+    );
+
+  }catch(error){
+
+    console.error(
+      error
     );
 
   }
@@ -4868,22 +5023,21 @@ async function rejectRaztaraCall(){
     null;
 
 
-  await endRaztaraCall();
+  await cleanupCall();
 
 }
 
 
-/* =========================================================
-   ADD PENDING ICE
-========================================================= */
+/* =========================
+   ICE QUEUE
+   ========================= */
 
-async function addPendingIce(){
+async function flushPendingIce(){
 
   if(
     !callPeer ||
     !callPeer.remoteDescription
   ){
-
     return;
   }
 
@@ -4891,13 +5045,14 @@ async function addPendingIce(){
   if(
     !pendingIceCandidates.length
   ){
-
     return;
   }
 
 
-  const candidates =
-    [...pendingIceCandidates];
+  const list =
+    [
+      ...pendingIceCandidates
+    ];
 
 
   pendingIceCandidates =
@@ -4905,7 +5060,7 @@ async function addPendingIce(){
 
 
   for(
-    const candidate of candidates
+    const candidate of list
   ){
 
     try{
@@ -4920,7 +5075,7 @@ async function addPendingIce(){
     }catch(error){
 
       console.error(
-        "Pending ICE error:",
+        "Queued ICE error:",
         error
       );
 
@@ -4931,25 +5086,148 @@ async function addPendingIce(){
 }
 
 
-/* =========================================================
-   END CALL
-========================================================= */
+/* =========================
+   CALL UI
+   ========================= */
 
-async function endRaztaraCall(
-  sendSignal = true
+function showRaztaraCallUI(
+  type,
+  profile=null
 ){
+
+  const overlay =
+    $("callOverlay");
+
+
+  overlay.classList
+    .add("show");
+
+
+  const name =
+    profile?.full_name ||
+    profile?.username ||
+    currentChatProfile?.full_name ||
+    currentChatProfile?.username ||
+    "User";
+
+
+  $("callTitle")
+    .textContent =
+    name;
+
+
+  $("callIncomingAvatar")
+    .innerHTML =
+    profile
+      ? avatarHtml(
+          profile,
+          "avatar"
+        )
+      : "👤";
+
+
+  $("callRemoteVideo")
+    .style.display =
+    callMode ===
+    "video"
+      ? "block"
+      : "none";
+
+
+  $("callLocalVideo")
+    .style.display =
+    callMode ===
+    "video"
+      ? "block"
+      : "none";
+
+
+  $("callAudioAvatar")
+    .style.display =
+    callMode ===
+    "video"
+      ? "none"
+      : "flex";
+
+
+  if(type === "incoming"){
+
+    $("callStatus")
+      .textContent =
+      (
+        callMode ===
+        "video"
+          ? "Incoming video call"
+          : "Incoming audio call"
+      );
+
+
+    $("acceptCallBtn")
+      .classList.remove(
+        "hidden"
+      );
+
+    $("rejectCallBtn")
+      .classList.remove(
+        "hidden"
+      );
+
+    $("endCallBtn")
+      .classList.add(
+        "hidden"
+      );
+
+  }else{
+
+    $("callStatus")
+      .textContent =
+      "Calling...";
+
+
+    $("acceptCallBtn")
+      .classList.add(
+        "hidden"
+      );
+
+    $("rejectCallBtn")
+      .classList.add(
+        "hidden"
+      );
+
+    $("endCallBtn")
+      .classList.remove(
+        "hidden"
+      );
+
+  }
+
+
+  if(callLocalStream){
+
+    $("callLocalVideo")
+      .srcObject =
+      callLocalStream;
+
+  }
+
+}
+
+
+/* =========================
+   END CALL
+   ========================= */
+
+async function endRaztaraCall(){
 
   try{
 
     if(
-      sendSignal &&
       callConversationId &&
-      currentUser &&
-      callState !== "idle"
+      currentUser
     ){
 
       await sendRaztaraCallSignal(
-        "end",
+        "hangup",
         {}
       );
 
@@ -4958,9 +5236,55 @@ async function endRaztaraCall(
   }catch(error){
 
     console.error(
-      "End signal error:",
+      "Hangup error:",
       error
     );
+
+  }
+
+
+  await cleanupCall();
+
+}
+
+
+/* =========================
+   CLEANUP
+   ========================= */
+
+async function cleanupCall(){
+
+  callState =
+    "idle";
+
+
+  pendingCall =
+    null;
+
+
+  pendingIceCandidates =
+    [];
+
+
+  if(callSubscription){
+
+    try{
+
+      await supabaseClient
+        .removeChannel(
+          callSubscription
+        );
+
+    }catch(error){
+
+      console.error(
+        error
+      );
+
+    }
+
+    callSubscription =
+      null;
 
   }
 
@@ -4968,6 +5292,12 @@ async function endRaztaraCall(
   if(callPeer){
 
     try{
+
+      callPeer.ontrack =
+        null;
+
+      callPeer.onicecandidate =
+        null;
 
       callPeer.close();
 
@@ -4978,6 +5308,9 @@ async function endRaztaraCall(
       );
 
     }
+
+    callPeer =
+      null;
 
   }
 
@@ -4991,6 +5324,9 @@ async function endRaztaraCall(
           track.stop()
       );
 
+    callLocalStream =
+      null;
+
   }
 
 
@@ -5003,17 +5339,46 @@ async function endRaztaraCall(
           track.stop()
       );
 
+    callRemoteStream =
+      null;
+
   }
 
 
-  callPeer =
+  $("callRemoteVideo")
+    .srcObject =
     null;
 
-  callLocalStream =
+  $("callLocalVideo")
+    .srcObject =
     null;
 
-  callRemoteStream =
-    null;
+
+  $("callOverlay")
+    .classList
+    .remove(
+      "show"
+    );
+
+
+  $("acceptCallBtn")
+    .classList
+    .remove(
+      "hidden"
+    );
+
+  $("rejectCallBtn")
+    .classList
+    .remove(
+      "hidden"
+    );
+
+  $("endCallBtn")
+    .classList
+    .add(
+      "hidden"
+    );
+
 
   callConversationId =
     null;
@@ -5021,93 +5386,45 @@ async function endRaztaraCall(
   callMode =
     null;
 
-  callState =
-    "idle";
-
-  pendingCall =
-    null;
-
-  pendingIceCandidates =
-    [];
-
-
-  $("callRemoteVideo").srcObject =
-    null;
-
-  $("callLocalVideo").srcObject =
-    null;
-
-
-  $("callOverlay")
-    .classList
-    .add("hidden");
-
-
-  $("callVideos")
-    .classList
-    .add("hidden");
-
-
-  $("callActions").innerHTML =
-    "";
-
-
-  $("callStatus").textContent =
-    "Connecting...";
-
 }
 
 
-/* =========================================================
-   CLEANUP
-========================================================= */
-
-window.addEventListener(
-  "beforeunload",
-  () => {
-
-    if(callPeer){
-
-      try{
-        callPeer.close();
-      }catch{}
-
-    }
-
-
-    if(callLocalStream){
-
-      callLocalStream
-        .getTracks()
-        .forEach(
-          track =>
-            track.stop()
-        );
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   GLOBAL ERROR HANDLER
-========================================================= */
+/* =========================
+   GLOBAL ERROR
+   ========================= */
 
 window.addEventListener(
   "error",
-  event => {
+  event=>{
 
     console.error(
       "Global error:",
-      event.error
+      event.error ||
+      event.message
     );
 
   }
 );
 
-</script>
 
+window.addEventListener(
+  "unhandledrejection",
+  event=>{
+
+    console.error(
+      "Unhandled promise:",
+      event.reason
+    );
+
+  }
+);
+
+
+/* =========================================================
+   END RAZTARA
+   ========================================================= */ 
+   </script>
 
 </body>
-</html>
+
+</html
