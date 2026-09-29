@@ -958,7 +958,6 @@ async function loginUser(){
             password: password
         });
     
-       alert("Supabase LOGIN পর্যন্ত এসেছে");
     
     if(error){
 
@@ -973,15 +972,12 @@ async function loginUser(){
         return;
     }
 
-   if(data.session){
+if(data.session){
 
     loginBtn.disabled = false;
 
     loginBtn.textContent = "LOGIN";
 
-    alert("LOGIN SUCCESS");
-
-    showApp();
 }
 
 }
