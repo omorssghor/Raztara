@@ -954,14 +954,15 @@ async function loginUser(){
         return;
     }
 
-    if(data.session){
+   if(data.session){
 
-        loginBtn.disabled = false;
+    loginBtn.disabled = false;
 
-        loginBtn.textContent = "LOGIN";
+    loginBtn.textContent = "LOGIN";
 
-        showApp();
-    }
+    alert("LOGIN SUCCESS");
+
+    showApp();
 }
 
 
