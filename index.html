@@ -496,102 +496,43 @@ button{
             ☰
         </button>
 
-       <div class="appTitle">
-    RAZTARA
-</div>
+        <div class="appTitle">
+            RAZTARA
+        </div>
 
-<div id="headerUserName"></div>
+        <div id="headerUserName"></div>
 
-<button
-    class="profileBtn"
-    type="button"
-    onclick="openProfile()"
->
-    <img
-        id="headerProfilePhoto"
-        src="https://i.pravatar.cc/100?img=12"
-        alt="Profile"
-    >
-</button>
+        <button
+            class="profileBtn"
+            type="button"
+            onclick="openProfile()"
+        >
+            <img
+                id="headerProfilePhoto"
+                src="https://i.pravatar.cc/100?img=12"
+                alt="Profile"
+            >
+        </button>
 
     </header>
 
     <div class="search">
         <input
+            id="userSearch"
             type="search"
             placeholder="🔍 Search people or chats"
+            oninput="filterUsers()"
         >
     </div>
 
-    <div class="chatList">
+    <!-- Real registered users -->
+    <div class="chatList" id="chatList">
 
-        <div class="chat">
-            <div class="avatar">R</div>
-
-            <div class="chatInfo">
-                <div class="chatTop">
-                    <div class="chatName">Rahim</div>
-                    <div class="chatTime">10:25</div>
-                </div>
-
-                <div class="lastMessage">
-                    Assalamu Alaikum...
-                </div>
-            </div>
-
-            <div class="badge">2</div>
-        </div>
-
-
-        <div class="chat">
-            <div class="avatar">K</div>
-
-            <div class="chatInfo">
-                <div class="chatTop">
-                    <div class="chatName">Karim</div>
-                    <div class="chatTime">9:48</div>
-                </div>
-
-                <div class="lastMessage">
-                    📷 Photo
-                </div>
-            </div>
-        </div>
-
-
-        <div class="chat">
-            <div class="avatar">H</div>
-
-            <div class="chatInfo">
-                <div class="chatTop">
-                    <div class="chatName">Hasan</div>
-                    <div class="chatTime">8:30</div>
-                </div>
-
-                <div class="lastMessage">
-                    Are you there?
-                </div>
-            </div>
-        </div>
-
-
-        <div class="chat">
-            <div class="avatar">S</div>
-
-            <div class="chatInfo">
-                <div class="chatTop">
-                    <div class="chatName">Sakib</div>
-                    <div class="chatTime">7:15</div>
-                </div>
-
-                <div class="lastMessage">
-                    🎙️ Voice message
-                </div>
-            </div>
+        <div style="padding:20px;text-align:center;color:#777;">
+            Users loading...
         </div>
 
     </div>
-
 
     <nav class="bottomNav">
 
@@ -605,13 +546,14 @@ button{
             Calls
         </button>
 
-<a href="profile.html" class="navBtn">
-    <span>👤</span>
-    Profile
-</a>
+        <a href="profile.html" class="navBtn">
+            <span>👤</span>
+            Profile
+        </a>
+
+    </nav>
 
 </section>
-
 
 <!-- ================= SIDE MENU ================= -->
 
@@ -673,7 +615,178 @@ let currentProfile = null;
 
 const loginScreen =
 document.getElementById("loginScreen");
+/* ================= LOAD USERS ================= */
 
+let allUsers = [];
+
+async function loadUsers(){
+
+    const chatList =
+        document.getElementById("chatList");
+
+    if(!chatList) return;
+
+    const { data: authData, error: authError } =
+        await supabaseClient.auth.getUser();
+
+    if(authError || !authData.user){
+
+        chatList.innerHTML =
+            `<div style="padding:20px;text-align:center;color:#777;">
+                Login required
+            </div>`;
+
+        return;
+    }
+
+    const myId = authData.user.id;
+
+    const { data: users, error } =
+        await supabaseClient
+            .from("profiles")
+            .select(
+                "id, username, full_name, avatar_url, bio"
+            )
+            .neq("id", myId)
+            .order("full_name", {
+                ascending: true
+            });
+
+    if(error){
+
+        console.error(
+            "Users load error:",
+            error
+        );
+
+        chatList.innerHTML =
+            `<div style="padding:20px;text-align:center;color:#d00;">
+                Users load করা যাচ্ছে না।
+            </div>`;
+
+        return;
+    }
+
+    allUsers = users || [];
+
+    displayUsers(allUsers);
+}
+
+
+function displayUsers(users){
+
+    const chatList =
+        document.getElementById("chatList");
+
+    if(!chatList) return;
+
+    if(users.length === 0){
+
+        chatList.innerHTML =
+            `<div style="padding:20px;text-align:center;color:#777;">
+                অন্য কোনো User পাওয়া যায়নি।
+            </div>`;
+
+        return;
+    }
+
+    chatList.innerHTML = "";
+
+    users.forEach(user => {
+
+        const name =
+            user.full_name ||
+            user.username ||
+            "User";
+
+        const firstLetter =
+            name.charAt(0).toUpperCase();
+
+        const avatarHTML =
+            user.avatar_url
+            ?
+            `<img
+                src="${user.avatar_url}"
+                alt="Profile"
+            >`
+            :
+            firstLetter;
+
+        const chat =
+            document.createElement("div");
+
+        chat.className = "chat";
+
+        chat.innerHTML = `
+
+            <div class="avatar">
+                ${avatarHTML}
+            </div>
+
+            <div class="chatInfo">
+
+                <div class="chatTop">
+
+                    <div class="chatName">
+                        ${name}
+                    </div>
+
+                </div>
+
+                <div class="lastMessage">
+                    ${user.bio || "Start a conversation"}
+                </div>
+
+            </div>
+
+        `;
+
+        chat.onclick = function(){
+
+            openChat(user.id);
+
+        };
+
+        chatList.appendChild(chat);
+
+    });
+}
+
+
+function filterUsers(){
+
+    const search =
+        document
+        .getElementById("userSearch")
+        .value
+        .toLowerCase()
+        .trim();
+
+    const filtered =
+        allUsers.filter(user => {
+
+            const name =
+                (
+                    user.full_name ||
+                    user.username ||
+                    ""
+                ).toLowerCase();
+
+            return name.includes(search);
+
+        });
+
+    displayUsers(filtered);
+}
+
+
+function openChat(userId){
+
+    window.location.href =
+        "chat.html?user=" +
+        encodeURIComponent(userId);
+
+}
 const appScreen =
 document.getElementById("appScreen");
 
@@ -825,6 +938,8 @@ function showApp(){
     appScreen.style.display = "block";
 
     loadMyProfile();
+    
+    loadUsers();
 
 }
 
