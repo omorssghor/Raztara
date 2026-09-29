@@ -927,67 +927,95 @@ async function saveProfile(){
            upsert ব্যবহার করছি না।
         ========================== */
 
-        if(selectedPhoto){
+  if(selectedPhoto){
 
-            const extension =
-                selectedPhoto.name
-                .split(".")
-                .pop()
-                .toLowerCase();
+    console.log("Selected file:", {
+        name: selectedPhoto.name,
+        type: selectedPhoto.type,
+        size: selectedPhoto.size
+    });
 
+    let uploadFile = selectedPhoto;
 
-            const filePath =
-                currentUser.id +
-                "/profile-" +
-                Date.now() +
-                "." +
-                extension;
+    if(
+        !selectedPhoto.type ||
+        !selectedPhoto.type.startsWith("image/")
+    ){
+        throw new Error(
+            "দয়া করে একটি ছবি নির্বাচন করুন।"
+        );
+    }
 
+    const extension =
+        selectedPhoto.type === "image/png"
+        ? "png"
+        : "jpg";
 
-            const {
-    data: uploadData,
-    error: uploadError
-} = await supabaseClient
-    .storage
-    .from("avatars")
-    .upload(
+    const contentType =
+        selectedPhoto.type === "image/png"
+        ? "image/png"
+        : "image/jpeg";
+
+    const filePath =
+        currentUser.id +
+        "/profile-" +
+        Date.now() +
+        "." +
+        extension;
+
+    console.log("Uploading:", {
         filePath,
-        selectedPhoto,
-        {
-            cacheControl: "3600",
-            upsert: false
-        }
-    );
+        contentType
+    });
 
-if(uploadError){
-    console.error(
-        "AVATAR UPLOAD ERROR:",
-        uploadError
-    );
-
-    throw uploadError;
-}
-
-            if(uploadError){
-                throw uploadError;
+    const {
+        data: uploadData,
+        error: uploadError
+    } =
+        await supabaseClient
+        .storage
+        .from("avatars")
+        .upload(
+            filePath,
+            uploadFile,
+            {
+                cacheControl: "3600",
+                contentType: contentType,
+                upsert: false
             }
+        );
 
+    if(uploadError){
 
-            const {
-                data: publicData
-            } =
-                supabaseClient
-                .storage
-                .from("avatars")
-                .getPublicUrl(
-                    filePath
-                );
+        console.error(
+            "AVATAR UPLOAD ERROR:",
+            uploadError
+        );
 
+        throw new Error(
+            "ছবি Upload হয়নি: " +
+            uploadError.message
+        );
+    }
 
-            avatarURL =
-                publicData.publicUrl;
-        }
+    console.log(
+        "Avatar upload successful:",
+        uploadData
+    );
 
+    const {
+        data: publicData
+    } =
+        supabaseClient
+        .storage
+        .from("avatars")
+        .getPublicUrl(
+            filePath
+        );
+
+    avatarURL =
+        publicData.publicUrl;
+}
 
         /* =========================
            PROFILE UPDATE ONLY
