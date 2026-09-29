@@ -919,23 +919,19 @@ async function saveProfile(){
             currentProfile.avatar_url ||
             null;
 
+       /* =========================
+   PHOTO UPLOAD
+========================= */
 
-        /* =========================
-           PHOTO UPLOAD
-           
-           নতুন file name ব্যবহার করছি।
-           upsert ব্যবহার করছি না।
-        ========================== */
+if(selectedPhoto){
 
-  if(selectedPhoto){
+    alert("ছবি Upload শুরু হচ্ছে...");
 
-    console.log("Selected file:", {
+    console.log("FILE INFO:", {
         name: selectedPhoto.name,
         type: selectedPhoto.type,
         size: selectedPhoto.size
     });
-
-    let uploadFile = selectedPhoto;
 
     if(
         !selectedPhoto.type ||
@@ -946,77 +942,77 @@ async function saveProfile(){
         );
     }
 
-    const extension =
-        selectedPhoto.type === "image/png"
-        ? "png"
-        : "jpg";
-
-    const contentType =
-        selectedPhoto.type === "image/png"
-        ? "image/png"
-        : "image/jpeg";
-
     const filePath =
         currentUser.id +
         "/profile-" +
         Date.now() +
-        "." +
-        extension;
+        ".jpg";
 
-    console.log("Uploading:", {
-        filePath,
-        contentType
-    });
-    alert("ছবি Upload শুরু হচ্ছে...");
-    const {
-        data: uploadData,
-        error: uploadError
-    } =
-        await supabaseClient
-        .storage
-        .from("avatars")
-        .upload(
-            filePath,
-            uploadFile,
-            {
-                cacheControl: "3600",
-                contentType: contentType,
-                upsert: false
-            }
+    console.log("FILE PATH:", filePath);
+
+    try {
+
+        const result =
+            await supabaseClient
+            .storage
+            .from("avatars")
+            .upload(
+                filePath,
+                selectedPhoto,
+                {
+                    cacheControl: "3600",
+                    contentType: selectedPhoto.type,
+                    upsert: false
+                }
+            );
+
+        console.log("STORAGE RESULT:", result);
+
+        if(result.error){
+
+            alert(
+                "❌ Storage Upload Error:\n\n" +
+                result.error.message
+            );
+
+            throw result.error;
+        }
+
+        alert("✅ ছবি Upload সফল হয়েছে!");
+
+        const {
+            data: publicData
+        } =
+            supabaseClient
+            .storage
+            .from("avatars")
+            .getPublicUrl(
+                filePath
+            );
+
+        avatarURL =
+            publicData.publicUrl;
+
+        console.log(
+            "PUBLIC URL:",
+            avatarURL
         );
 
-      alert("Upload response পাওয়া গেছে");
-      
-    if(uploadError){
+    } catch(uploadError){
 
         console.error(
-            "AVATAR UPLOAD ERROR:",
+            "❌ AVATAR UPLOAD FAILED:",
             uploadError
         );
 
-        throw new Error(
-            "ছবি Upload হয়নি: " +
-            uploadError.message
+        alert(
+            "❌ ছবি Upload করা যায়নি:\n\n" +
+            (uploadError.message ||
+             "Unknown upload error")
         );
+
+        throw uploadError;
     }
-
-    console.log(
-        "Avatar upload successful:",
-        uploadData
-    );
-
-    const {
-        data: publicData
-    } =
-        supabaseClient
-        .storage
-        .from("avatars")
-        .getPublicUrl(
-            filePath
-        );
-
-    avatarURL =
-        publicData.publicUrl;
 }
 
         /* =========================
