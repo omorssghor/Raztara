@@ -702,15 +702,16 @@ function displayUsers(users){
         const firstLetter =
             name.charAt(0).toUpperCase();
 
-        const avatarHTML =
-            user.avatar_url
-            ?
-            `<img
-                src="${user.avatar_url}"
-                alt="Profile"
-            >`
-            :
-            firstLetter;
+       const avatarHTML =
+    user.avatar_url
+    ?
+    `<img
+        src="${user.avatar_url}"
+        alt="${name}"
+        onerror="this.style.display='none'; this.parentElement.textContent='${firstLetter}'"
+    >`
+    :
+    firstLetter;
 
         const chat =
             document.createElement("div");
