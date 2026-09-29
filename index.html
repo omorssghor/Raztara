@@ -710,6 +710,110 @@ async function loadUsers(){
 
     displayUsers(allUsers);
 }
+function displayUsers(users){
+
+    const chatList =
+        document.getElementById("chatList");
+
+    if(!chatList) return;
+
+    if(users.length === 0){
+
+        chatList.innerHTML =
+            `<div style="padding:20px;text-align:center;color:#777;">
+                অন্য কোনো User পাওয়া যায়নি।
+            </div>`;
+
+        return;
+    }
+
+    chatList.innerHTML = "";
+
+    users.forEach(user => {
+
+        const name =
+            user.full_name ||
+            user.username ||
+            "User";
+
+        const firstLetter =
+            name.charAt(0).toUpperCase();
+
+        const avatarHTML =
+            user.avatar_url
+            ?
+            `<img
+                src="${user.avatar_url}"
+                alt="${name}"
+                onerror="this.style.display='none'; this.parentElement.textContent='${firstLetter}'"
+            >`
+            :
+            firstLetter;
+
+        const unread =
+            Number(user.unread_count || 0);
+
+        const unreadHTML =
+            unread > 0
+            ?
+            `<span style="
+                min-width:22px;
+                height:22px;
+                padding:0 6px;
+                border-radius:50%;
+                background:#25d366;
+                color:white;
+                font-size:12px;
+                font-weight:bold;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+            ">${unread}</span>`
+            :
+            "";
+
+        const chat =
+            document.createElement("div");
+
+        chat.className = "chat";
+
+        chat.innerHTML = `
+
+            <div class="avatar">
+                ${avatarHTML}
+            </div>
+
+            <div class="chatInfo">
+
+                <div class="chatTop">
+
+                    <div class="chatName">
+                        ${name}
+                    </div>
+
+                    ${unreadHTML}
+
+                </div>
+
+                <div class="lastMessage">
+                    ${user.bio || "Start a conversation"}
+                </div>
+
+            </div>
+
+        `;
+
+        chat.onclick = function(){
+
+            openChat(user.id);
+
+        };
+
+        chatList.appendChild(chat);
+
+    });
+}
+
     
 /* ================= MESSAGE ================= */
 
