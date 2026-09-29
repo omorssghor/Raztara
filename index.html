@@ -675,41 +675,10 @@ async function loadUsers(){
 
     allUsers = users || [];
 
-    /* Unread message count আনছি */
-
-    const {
-        data: unreadData,
-        error: unreadError
-    } =
-    await supabaseClient
-        .rpc("get_unread_message_counts");
-
-    if(unreadError){
-
-        console.error(
-            "Unread count error:",
-            unreadError
-        );
-    }
-
-    const unreadMap = {};
-
-    (unreadData || []).forEach(item => {
-
-        unreadMap[item.sender_id] =
-            Number(item.unread_count);
-
-    });
-
-    allUsers.forEach(user => {
-
-        user.unread_count =
-            unreadMap[user.id] || 0;
-
-    });
-
     displayUsers(allUsers);
 }
+
+
 function displayUsers(users){
 
     const chatList =
@@ -750,28 +719,6 @@ function displayUsers(users){
             :
             firstLetter;
 
-        const unread =
-            Number(user.unread_count || 0);
-
-        const unreadHTML =
-            unread > 0
-            ?
-            `<span style="
-                min-width:22px;
-                height:22px;
-                padding:0 6px;
-                border-radius:50%;
-                background:#25d366;
-                color:white;
-                font-size:12px;
-                font-weight:bold;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-            ">${unread}</span>`
-            :
-            "";
-
         const chat =
             document.createElement("div");
 
@@ -790,8 +737,6 @@ function displayUsers(users){
                     <div class="chatName">
                         ${name}
                     </div>
-
-                    ${unreadHTML}
 
                 </div>
 
