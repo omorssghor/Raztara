@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>RAZTARA Chat</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f1f5f6;
+    color:#102b34;
+}
+
+.chatHeader{
+    height:62px;
+    background:#075e54;
+    color:white;
+    display:flex;
+    align-items:center;
+    padding:8px 12px;
+    gap:10px;
+    position:sticky;
+    top:0;
+    z-index:10;
+}
+
+.backBtn{
+    width:42px;
+    height:42px;
+    border:0;
+    background:transparent;
+    color:white;
+    font-size:27px;
+    cursor:pointer;
+}
+
+.chatAvatar{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#ddd;
+}
+
+.chatUserInfo{
+    flex:1;
+    min-width:0;
+}
+
+.chatUserName{
+    font-size:16px;
+    font-weight:bold;
+}
+
+.chatUserStatus{
+    font-size:12px;
+    opacity:.8;
+    margin-top:3px;
+}
+
+.callBtn{
+    width:42px;
+    height:42px;
+    border:0;
+    background:transparent;
+    color:white;
+    font-size:21px;
+}
+
+.messages{
+    min-height:calc(100vh - 122px);
+    padding:15px 12px 80px;
+    overflow-y:auto;
+}
+
+.message{
+    max-width:78%;
+    padding:9px 12px;
+    margin-bottom:8px;
+    border-radius:12px;
+    font-size:15px;
+    line-height:1.4;
+    word-break:break-word;
+}
+
+.message.me{
+    margin-left:auto;
+    background:#d9fdd3;
+    border-bottom-right-radius:3px;
+}
+
+.message.other{
+    margin-right:auto;
+    background:white;
+    border-bottom-left-radius:3px;
+}
+
+.messageTime{
+    font-size:10px;
+    color:#777;
+    margin-top:4px;
+    text-align:right;
+}
+
+.chatInputArea{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    min-height:60px;
+    background:#f0f2f5;
+    border-top:1px solid #ddd;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:7px;
+}
+
+.attachBtn,
+.voiceBtn,
+.sendBtn{
+    width:42px;
+    height:42px;
+    border:0;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:19px;
+}
+
+.attachBtn{
+    background:white;
+}
+
+.voiceBtn{
+    background:white;
+}
+
+.sendBtn{
+    background:#075e54;
+    color:white;
+}
+
+.messageInput{
+    flex:1;
+    min-width:0;
+    height:42px;
+    border:0;
+    outline:0;
+    border-radius:22px;
+    padding:0 15px;
+    font-size:15px;
+    background:white;
+}
+
+.emptyChat{
+    text-align:center;
+    color:#777;
+    margin-top:40vh;
+    font-size:14px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="chatHeader">
+
+    <button
+        class="backBtn"
+        type="button"
+        onclick="goBack()"
+    >
+        ‹
+    </button>
+
+    <img
+        id="chatAvatar"
+        class="chatAvatar"
+        src=""
+        alt="Profile"
+    >
+
+    <div class="chatUserInfo">
+
+        <div
+            id="chatUserName"
+            class="chatUserName"
+        >
+            Chat
+        </div>
+
+        <div
+            id="chatUserStatus"
+            class="chatUserStatus"
+        >
+            RAZTARA
+        </div>
+
+    </div>
+
+    <button
+        class="callBtn"
+        type="button"
+        onclick="startCall()"
+    >
+        📞
+    </button>
+
+</header>
+
+
+<main
+    id="messages"
+    class="messages"
+>
+
+    <div
+        id="emptyChat"
+        class="emptyChat"
+    >
+        কোনো মেসেজ নেই
+    </div>
+
+</main>
+
+
+<div class="chatInputArea">
+
+    <button
+        class="attachBtn"
+        type="button"
+        onclick="openAttachment()"
+    >
+        📎
+    </button>
+
+    <input
+        id="messageInput"
+        class="messageInput"
+        type="text"
+        placeholder="Message"
+        autocomplete="off"
+    >
+
+    <button
+        class="voiceBtn"
+        type="button"
+        onclick="startVoice()"
+    >
+        🎤
+    </button>
+
+    <button
+        class="sendBtn"
+        type="button"
+        onclick="sendMessage()"
+    >
+        ➤
+    </button>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+"https://pqyicaqpmojijjskpzcp.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+let currentUser = null;
+
+
+async function initChat(){
+
+    const { data, error } =
+        await supabaseClient.auth.getUser();
+
+    if(error || !data.user){
+
+        window.location.href = "index.html";
+
+        return;
+    }
+
+    currentUser = data.user;
+
+    await loadChatUser();
+
+}
+
+
+async function loadChatUser(){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const userId =
+        params.get("user");
+
+    if(!userId){
+
+        document.getElementById(
+            "chatUserName"
+        ).textContent = "New Chat";
+
+        return;
+    }
+
+
+    const { data, error } =
+        await supabaseClient
+            .from("profiles")
+            .select(
+                "id, username, full_name, avatar_url"
+            )
+            .eq("id", userId)
+            .maybeSingle();
+
+
+    if(error){
+
+        console.error(
+            "Profile load error:",
+            error
+        );
+
+        return;
+    }
+
+
+    if(!data) return;
+
+
+    document.getElementById(
+        "chatUserName"
+    ).textContent =
+        data.full_name ||
+        data.username ||
+        "User";
+
+
+    document.getElementById(
+        "chatUserStatus"
+    ).textContent =
+        data.username
+        ? "@" + data.username
+        : "RAZTARA";
+
+
+    const avatar =
+        document.getElementById(
+            "chatAvatar"
+        );
+
+
+    if(data.avatar_url){
+
+        avatar.src =
+            data.avatar_url;
+
+    }else{
+
+        avatar.src =
+            "https://i.pravatar.cc/100?img=12";
+    }
+
+
+    await loadMessages(userId);
+
+}
+
+
+async function getConversationId(userId){
+
+    const { data, error } =
+        await supabaseClient
+            .rpc(
+                "get_or_create_direct_conversation",
+                {
+                    other_user_id: userId
+                }
+            );
+
+
+    if(error){
+
+        console.error(
+            "Conversation error:",
+            error
+        );
+
+        return null;
+    }
+
+
+    return data;
+}
+
+
+async function loadMessages(userId){
+
+    const conversationId =
+        await getConversationId(userId);
+
+    if(!conversationId) return;
+
+
+    const { data, error } =
+        await supabaseClient
+            .from("messages")
+            .select(
+                "id, sender_id, content, message_type, created_at"
+            )
+            .eq(
+                "conversation_id",
+                conversationId
+            )
+            .order(
+                "created_at",
+                {
+                    ascending:true
+                }
+            );
+
+
+    if(error){
+
+        console.error(
+            "Message load error:",
+            error
+        );
+
+        return;
+    }
+
+
+    const container =
+        document.getElementById(
+            "messages"
+        );
+
+
+    const empty =
+        document.getElementById(
+            "emptyChat"
+        );
+
+
+    if(data && data.length){
+
+        empty.style.display =
+            "none";
+
+        container
+            .querySelectorAll(
+                ".message"
+            )
+            .forEach(
+                el => el.remove()
+            );
+
+
+        data.forEach(
+            message => {
+
+                addMessageToScreen(
+                    message
+                );
+
+            }
+        );
+
+    }
+
+}
+
+
+function addMessageToScreen(message){
+
+    const container =
+        document.getElementById(
+            "messages"
+        );
+
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.className =
+        "message " +
+        (
+            message.sender_id === currentUser.id
+            ? "me"
+            : "other"
+        );
+
+
+    const content =
+        document.createElement(
+            "div"
+        );
+
+
+    content.textContent =
+        message.content || "";
+
+
+    const time =
+        document.createElement(
+            "div"
+        );
+
+
+    time.className =
+        "messageTime";
+
+
+    time.textContent =
+        new Date(
+            message.created_at
+        ).toLocaleTimeString(
+            "bn-BD",
+            {
+                hour:"2-digit",
+                minute:"2-digit"
+            }
+        );
+
+
+    div.appendChild(content);
+
+    div.appendChild(time);
+
+    container.appendChild(div);
+
+
+    container.scrollTop =
+        container.scrollHeight;
+
+}
+
+
+async function sendMessage(){
+
+    const input =
+        document.getElementById(
+            "messageInput"
+        );
+
+
+    const content =
+        input.value.trim();
+
+
+    if(!content) return;
+
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const userId =
+        params.get("user");
+
+
+    if(!userId){
+
+        alert(
+            "প্রথমে একজন User নির্বাচন করুন।"
+        );
+
+        return;
+    }
+
+
+    const conversationId =
+        await getConversationId(
+            userId
+        );
+
+
+    if(!conversationId) return;
+
+
+    const { data, error } =
+        await supabaseClient
+            .from("messages")
+            .insert({
+                conversation_id:
+                    conversationId,
+
+                sender_id:
+                    currentUser.id,
+
+                content:
+                    content,
+
+                message_type:
+                    "text"
+            })
+            .select()
+            .single();
+
+
+    if(error){
+
+        console.error(
+            "Send message error:",
+            error
+        );
+
+        alert(
+            "মেসেজ পাঠানো যায়নি।"
+        );
+
+        return;
+    }
+
+
+    input.value = "";
+
+    addMessageToScreen(data);
+
+}
+
+
+document
+    .getElementById(
+        "messageInput"
+    )
+    .addEventListener(
+        "keydown",
+        function(event){
+
+            if(event.key === "Enter"){
+
+                event.preventDefault();
+
+                sendMessage();
+
+            }
+
+        }
+    );
+
+
+function goBack(){
+
+    window.location.href =
+        "index.html";
+
+}
+
+
+function startCall(){
+
+    alert(
+        "Call feature পরের ধাপে যোগ করা হবে।"
+    );
+
+}
+
+
+function openAttachment(){
+
+    alert(
+        "Photo / Video / File sharing পরের ধাপে যোগ করা হবে।"
+    );
+
+}
+
+
+function startVoice(){
+
+    alert(
+        "Voice message পরের ধাপে যোগ করা হবে।"
+    );
+
+}
+
+
+initChat();
+
+</script>
+
+</body>
+</html>
