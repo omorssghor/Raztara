@@ -49,6 +49,7 @@ body{
     border-radius:50%;
     object-fit:cover;
     background:#ddd;
+    display:block;
 }
 
 .chatUserInfo{
@@ -186,7 +187,7 @@ body{
     <img
         id="chatAvatar"
         class="chatAvatar"
-        src=""
+        src="https://i.pravatar.cc/100?img=1"
         alt="Profile"
     >
 
@@ -290,54 +291,106 @@ window.supabase.createClient(
 
 let currentUser = null;
 
+let chatUserId = null;
+
+let chatUserProfile = null;
+
+
+/* =========================
+   INIT CHAT
+========================= */
 
 async function initChat(){
 
-    const { data, error } =
-        await supabaseClient.auth.getUser();
+    const {
+        data,
+        error
+    } =
+    await supabaseClient.auth.getUser();
+
 
     if(error || !data.user){
 
-        window.location.href = "index.html";
+        window.location.href =
+            "index.html";
 
         return;
     }
 
-    currentUser = data.user;
 
-    await loadChatUser();
+    currentUser =
+        data.user;
 
-}
-
-
-async function loadChatUser(){
 
     const params =
         new URLSearchParams(
             window.location.search
         );
 
-    const userId =
+
+    chatUserId =
         params.get("user");
 
-    if(!userId){
+
+    if(!chatUserId){
 
         document.getElementById(
             "chatUserName"
-        ).textContent = "New Chat";
+        ).textContent =
+            "New Chat";
 
         return;
     }
 
 
-    const { data, error } =
-        await supabaseClient
-            .from("profiles")
-            .select(
-                "id, username, full_name, avatar_url"
-            )
-            .eq("id", userId)
-            .maybeSingle();
+    /* নিজের সাথে chat বন্ধ */
+
+    if(chatUserId === currentUser.id){
+
+        document.getElementById(
+            "chatUserName"
+        ).textContent =
+            "Invalid User";
+
+        return;
+    }
+
+
+    await loadChatUser(
+        chatUserId
+    );
+
+}
+
+
+/* =========================
+   LOAD SELECTED USER
+========================= */
+
+async function loadChatUser(
+    userId
+){
+
+    console.log(
+        "CHAT USER ID:",
+        userId
+    );
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("profiles")
+        .select(
+            "id, username, full_name, avatar_url, bio"
+        )
+        .eq(
+            "id",
+            userId
+        )
+        .maybeSingle();
 
 
     if(error){
@@ -347,20 +400,51 @@ async function loadChatUser(){
             error
         );
 
+        document.getElementById(
+            "chatUserName"
+        ).textContent =
+            "Profile Load Error";
+
         return;
     }
 
 
-    if(!data) return;
+    if(!data){
+
+        document.getElementById(
+            "chatUserName"
+        ).textContent =
+            "User পাওয়া যায়নি";
+
+        return;
+    }
+
+
+    /*
+       খুব গুরুত্বপূর্ণ:
+       এখানে শুধু URL-এর user ID-এর
+       profile ব্যবহার হচ্ছে।
+    */
+
+    chatUserProfile =
+        data;
+
+
+    /* USER NAME */
+
+    const userName =
+        data.full_name ||
+        data.username ||
+        "User";
 
 
     document.getElementById(
         "chatUserName"
     ).textContent =
-        data.full_name ||
-        data.username ||
-        "User";
+        userName;
 
+
+    /* USER STATUS */
 
     document.getElementById(
         "chatUserStatus"
@@ -370,6 +454,8 @@ async function loadChatUser(){
         : "RAZTARA";
 
 
+    /* USER PROFILE PHOTO */
+
     const avatar =
         document.getElementById(
             "chatAvatar"
@@ -378,31 +464,70 @@ async function loadChatUser(){
 
     if(data.avatar_url){
 
+        /*
+           Supabase Storage থেকে
+           ওই User-এর নিজের ছবি
+        */
+
         avatar.src =
             data.avatar_url;
 
     }else{
 
+        /*
+           ওই User-এর ছবি না থাকলে
+           শুধু default avatar
+        */
+
         avatar.src =
-            "https://i.pravatar.cc/100?img=12";
+            "https://i.pravatar.cc/100?img=1";
+
     }
 
 
-    await loadMessages(userId);
+    /*
+       ছবি লোড হতে না পারলে
+       অন্য কারও ছবি দেখাবে না
+    */
+
+    avatar.onerror =
+        function(){
+
+            this.onerror = null;
+
+            this.src =
+                "https://i.pravatar.cc/100?img=1";
+
+        };
+
+
+    await loadMessages(
+        userId
+    );
 
 }
 
 
-async function getConversationId(userId){
+/* =========================
+   GET CONVERSATION
+========================= */
 
-    const { data, error } =
-        await supabaseClient
-            .rpc(
-                "get_or_create_direct_conversation",
-                {
-                    other_user_id: userId
-                }
-            );
+async function getConversationId(
+    userId
+){
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .rpc(
+            "get_or_create_direct_conversation",
+            {
+                other_user_id:
+                    userId
+            }
+        );
 
 
     if(error){
@@ -417,33 +542,49 @@ async function getConversationId(userId){
 
 
     return data;
+
 }
 
 
-async function loadMessages(userId){
+/* =========================
+   LOAD MESSAGES
+========================= */
+
+async function loadMessages(
+    userId
+){
 
     const conversationId =
-        await getConversationId(userId);
+        await getConversationId(
+            userId
+        );
 
-    if(!conversationId) return;
+
+    if(!conversationId){
+
+        return;
+    }
 
 
-    const { data, error } =
-        await supabaseClient
-            .from("messages")
-            .select(
-                "id, sender_id, content, message_type, created_at"
-            )
-            .eq(
-                "conversation_id",
-                conversationId
-            )
-            .order(
-                "created_at",
-                {
-                    ascending:true
-                }
-            );
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("messages")
+        .select(
+            "id, sender_id, content, message_type, created_at"
+        )
+        .eq(
+            "conversation_id",
+            conversationId
+        )
+        .order(
+            "created_at",
+            {
+                ascending:true
+            }
+        );
 
 
     if(error){
@@ -469,18 +610,20 @@ async function loadMessages(userId){
         );
 
 
+    container
+        .querySelectorAll(
+            ".message"
+        )
+        .forEach(
+            el =>
+                el.remove()
+        );
+
+
     if(data && data.length){
 
         empty.style.display =
             "none";
-
-        container
-            .querySelectorAll(
-                ".message"
-            )
-            .forEach(
-                el => el.remove()
-            );
 
 
         data.forEach(
@@ -493,12 +636,23 @@ async function loadMessages(userId){
             }
         );
 
+    }else{
+
+        empty.style.display =
+            "block";
+
     }
 
 }
 
 
-function addMessageToScreen(message){
+/* =========================
+   ADD MESSAGE
+========================= */
+
+function addMessageToScreen(
+    message
+){
 
     const container =
         document.getElementById(
@@ -515,7 +669,8 @@ function addMessageToScreen(message){
     div.className =
         "message " +
         (
-            message.sender_id === currentUser.id
+            message.sender_id ===
+            currentUser.id
             ? "me"
             : "other"
         );
@@ -553,11 +708,19 @@ function addMessageToScreen(message){
         );
 
 
-    div.appendChild(content);
+    div.appendChild(
+        content
+    );
 
-    div.appendChild(time);
 
-    container.appendChild(div);
+    div.appendChild(
+        time
+    );
+
+
+    container.appendChild(
+        div
+    );
 
 
     container.scrollTop =
@@ -565,6 +728,10 @@ function addMessageToScreen(message){
 
 }
 
+
+/* =========================
+   SEND MESSAGE
+========================= */
 
 async function sendMessage(){
 
@@ -578,20 +745,13 @@ async function sendMessage(){
         input.value.trim();
 
 
-    if(!content) return;
+    if(!content){
+
+        return;
+    }
 
 
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
-
-
-    const userId =
-        params.get("user");
-
-
-    if(!userId){
+    if(!chatUserId){
 
         alert(
             "প্রথমে একজন User নির্বাচন করুন।"
@@ -603,31 +763,39 @@ async function sendMessage(){
 
     const conversationId =
         await getConversationId(
-            userId
+            chatUserId
         );
 
 
-    if(!conversationId) return;
+    if(!conversationId){
+
+        return;
+    }
 
 
-    const { data, error } =
-        await supabaseClient
-            .from("messages")
-            .insert({
-                conversation_id:
-                    conversationId,
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("messages")
+        .insert({
 
-                sender_id:
-                    currentUser.id,
+            conversation_id:
+                conversationId,
 
-                content:
-                    content,
+            sender_id:
+                currentUser.id,
 
-                message_type:
-                    "text"
-            })
-            .select()
-            .single();
+            content:
+                content,
+
+            message_type:
+                "text"
+
+        })
+        .select()
+        .single();
 
 
     if(error){
@@ -647,10 +815,17 @@ async function sendMessage(){
 
     input.value = "";
 
-    addMessageToScreen(data);
+
+    addMessageToScreen(
+        data
+    );
 
 }
 
+
+/* =========================
+   ENTER SEND
+========================= */
 
 document
     .getElementById(
@@ -672,6 +847,10 @@ document
     );
 
 
+/* =========================
+   BACK
+========================= */
+
 function goBack(){
 
     window.location.href =
@@ -679,6 +858,10 @@ function goBack(){
 
 }
 
+
+/* =========================
+   CALL
+========================= */
 
 function startCall(){
 
@@ -689,6 +872,10 @@ function startCall(){
 }
 
 
+/* =========================
+   ATTACHMENT
+========================= */
+
 function openAttachment(){
 
     alert(
@@ -698,6 +885,10 @@ function openAttachment(){
 }
 
 
+/* =========================
+   VOICE
+========================= */
+
 function startVoice(){
 
     alert(
@@ -706,6 +897,10 @@ function startVoice(){
 
 }
 
+
+/* =========================
+   START
+========================= */
 
 initChat();
 
