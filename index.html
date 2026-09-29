@@ -675,141 +675,42 @@ async function loadUsers(){
 
     allUsers = users || [];
 
-    displayUsers(allUsers);
-}
+    /* Unread message count আনছি */
 
+    const {
+        data: unreadData,
+        error: unreadError
+    } =
+    await supabaseClient
+        .rpc("get_unread_message_counts");
 
-function displayUsers(users){
+    if(unreadError){
 
-    const chatList =
-        document.getElementById("chatList");
-
-    if(!chatList) return;
-
-    if(users.length === 0){
-
-        chatList.innerHTML =
-            `<div style="padding:20px;text-align:center;color:#777;">
-                অন্য কোনো User পাওয়া যায়নি।
-            </div>`;
-
-        return;
+        console.error(
+            "Unread count error:",
+            unreadError
+        );
     }
 
-    chatList.innerHTML = "";
+    const unreadMap = {};
 
-    users.forEach(user => {
+    (unreadData || []).forEach(item => {
 
-        const name =
-            user.full_name ||
-            user.username ||
-            "User";
-
-        const firstLetter =
-            name.charAt(0).toUpperCase();
-
-       const avatarHTML =
-    user.avatar_url
-    ?
-    `<img
-        src="${user.avatar_url}"
-        alt="${name}"
-        onerror="this.style.display='none'; this.parentElement.textContent='${firstLetter}'"
-    >`
-    :
-    firstLetter;
-
-        const chat =
-            document.createElement("div");
-
-        chat.className = "chat";
-
-        chat.innerHTML = `
-
-            <div class="avatar">
-                ${avatarHTML}
-            </div>
-
-            <div class="chatInfo">
-
-                <div class="chatTop">
-
-                    <div class="chatName">
-                        ${name}
-                    </div>
-
-                </div>
-
-                <div class="lastMessage">
-                    ${user.bio || "Start a conversation"}
-                </div>
-
-            </div>
-
-        `;
-
-        chat.onclick = function(){
-
-            openChat(user.id);
-
-        };
-
-        chatList.appendChild(chat);
+        unreadMap[item.sender_id] =
+            Number(item.unread_count);
 
     });
+
+    allUsers.forEach(user => {
+
+        user.unread_count =
+            unreadMap[user.id] || 0;
+
+    });
+
+    displayUsers(allUsers);
 }
-
-
-function filterUsers(){
-
-    const search =
-        document
-        .getElementById("userSearch")
-        .value
-        .toLowerCase()
-        .trim();
-
-    const filtered =
-        allUsers.filter(user => {
-
-            const name =
-                (
-                    user.full_name ||
-                    user.username ||
-                    ""
-                ).toLowerCase();
-
-            return name.includes(search);
-
-        });
-
-    displayUsers(filtered);
-}
-
-
-function openChat(userId){
-
-    window.location.href =
-        "chat.html?user=" +
-        encodeURIComponent(userId);
-
-}
-const appScreen =
-document.getElementById("appScreen");
-
-const emailInput =
-document.getElementById("email");
-
-const passwordInput =
-document.getElementById("password");
-
-const loginBtn =
-document.getElementById("loginBtn");
-
-const messageBox =
-document.getElementById("message");
-
-
+    
 /* ================= MESSAGE ================= */
 
 function showMessage(text,type="error"){
