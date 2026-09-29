@@ -474,7 +474,7 @@ button{
       <button
     class="loginBtn"
     id="loginBtn"
-    onclick="alert('LOGIN BUTTON কাজ করছে'); loginUser()"
+    onclick="loginUser()"
 >
     LOGIN
 </button>
@@ -941,7 +941,9 @@ async function loginUser(){
             email: email,
             password: password
         });
-
+    
+       alert("Supabase LOGIN পর্যন্ত এসেছে");
+    
     if(error){
 
         loginBtn.disabled = false;
