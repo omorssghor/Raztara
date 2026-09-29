@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ki<!DOCTYPE html>
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
@@ -967,7 +967,7 @@ async function saveProfile(){
         filePath,
         contentType
     });
-
+    alert("ছবি Upload শুরু হচ্ছে...");
     const {
         data: uploadData,
         error: uploadError
@@ -985,6 +985,8 @@ async function saveProfile(){
             }
         );
 
+      alert("Upload response পাওয়া গেছে");
+      
     if(uploadError){
 
         console.error(
