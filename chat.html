@@ -1040,14 +1040,31 @@ async function openAttachment(){
                 data
             );
 
-            const { data: publicData } =
-    supabaseClient
+            const { data: signedData, error: signedError } =
+    await supabaseClient
         .storage
         .from("chat-files")
-        .getPublicUrl(filePath);
+        .createSignedUrl(
+            filePath,
+            60 * 60 * 24
+        );
+
+if(signedError){
+
+    console.error(
+        "Signed URL error:",
+        signedError
+    );
+
+    alert(
+        "ছবির URL তৈরি করা যায়নি।"
+    );
+
+    return;
+}
 
 const fileUrl =
-    publicData.publicUrl;
+    signedData.signedUrl;
 
 const conversationId =
     await getConversationId(
