@@ -912,14 +912,16 @@ function startRealtimeChat(conversationId){
         realtimeChannel = null;
     }
 
+    const channelName =
+        "chat-" +
+        conversationId +
+        "-" +
+        Date.now();
+
     realtimeChannel =
         supabaseClient
-            .channel(
-                "chat-" +
-                conversationId +
-                "-" +
-                Date.now()
-            )
+            .channel(channelName)
+
             .on(
                 "postgres_changes",
                 {
@@ -930,17 +932,14 @@ function startRealtimeChat(conversationId){
                         "conversation_id=eq." +
                         conversationId
                 },
+
                 (payload) => {
 
                     console.log(
-                        "NEW REALTIME MESSAGE:",
+                        "REALTIME NEW MESSAGE:",
                         payload.new
                     );
 
-                    /*
-                       নিজের পাঠানো message
-                       আবার screen-এ দেখাবে না
-                    */
                     if(
                         payload.new.sender_id ===
                         currentUser.id
@@ -951,31 +950,27 @@ function startRealtimeChat(conversationId){
                     addMessageToScreen(
                         payload.new
                     );
-
                 }
             )
-            .subscribe(
-                (status, err) => {
 
-                    console.log(
-                        "REALTIME STATUS:",
-                        status
+            .subscribe((status, error) => {
+
+                console.log(
+                    "REALTIME STATUS:",
+                    status
+                );
+
+                if(error){
+
+                    console.error(
+                        "REALTIME ERROR:",
+                        error
                     );
 
-                    if(err){
-
-                        console.error(
-                            "REALTIME ERROR:",
-                            err
-                        );
-
-                    }
-
                 }
-            );
 
+            });
 }
-
 /* =========================
    VOICE
 ========================= */
