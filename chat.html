@@ -952,7 +952,15 @@ function startRealtimeChat(conversationId){
 
                 }
             )
-            .subscribe();
+            .subscribe((status, err) => {
+
+    console.log("Realtime status:", status);
+
+    if(err){
+        console.error("Realtime error:", err);
+    }
+
+});
 
 }
 
