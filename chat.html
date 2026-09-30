@@ -657,51 +657,152 @@ async function loadMessages(
    ADD MESSAGE
 ========================= */
 
-function addMessageToScreen(
-    message
-){
+function addMessageToScreen(message){
 
     const container =
-        document.getElementById(
-            "messages"
-        );
-
+        document.getElementById("messages");
 
     const div =
-        document.createElement(
-            "div"
-        );
-
+        document.createElement("div");
 
     div.className =
         "message " +
         (
-            message.sender_id ===
-            currentUser.id
+            message.sender_id === currentUser.id
             ? "me"
             : "other"
         );
 
+    /* =========================
+       IMAGE
+    ========================= */
 
-    const content =
-        document.createElement(
-            "div"
-        );
+    if(message.message_type === "image" && message.file_url){
+
+        const img =
+            document.createElement("img");
+
+        img.src =
+            message.file_url;
+
+        img.style.maxWidth =
+            "240px";
+
+        img.style.maxHeight =
+            "300px";
+
+        img.style.borderRadius =
+            "10px";
+
+        img.style.display =
+            "block";
+
+        img.style.cursor =
+            "pointer";
+
+        img.onclick =
+            function(){
+
+                window.open(
+                    message.file_url,
+                    "_blank"
+                );
+
+            };
+
+        div.appendChild(img);
+
+    }
+
+    /* =========================
+       VIDEO
+    ========================= */
+
+    else if(
+        message.message_type === "video" &&
+        message.file_url
+    ){
+
+        const video =
+            document.createElement("video");
+
+        video.src =
+            message.file_url;
+
+        video.controls =
+            true;
+
+        video.style.maxWidth =
+            "260px";
+
+        video.style.borderRadius =
+            "10px";
+
+        div.appendChild(video);
+
+    }
+
+    /* =========================
+       FILE
+    ========================= */
+
+    else if(
+        message.message_type === "file" &&
+        message.file_url
+    ){
+
+        const link =
+            document.createElement("a");
+
+        link.href =
+            message.file_url;
+
+        link.target =
+            "_blank";
+
+        link.textContent =
+            "📎 " +
+            (message.content || "File");
+
+        link.style.color =
+            "#075e54";
+
+        link.style.fontWeight =
+            "bold";
+
+        link.style.textDecoration =
+            "none";
+
+        div.appendChild(link);
+
+    }
+
+    /* =========================
+       NORMAL TEXT
+    ========================= */
+
+    else{
+
+        const content =
+            document.createElement("div");
+
+        content.textContent =
+            message.content || "";
+
+        div.appendChild(content);
+
+    }
 
 
-    content.textContent =
-        message.content || "";
-
+    /* =========================
+       TIME
+    ========================= */
 
     const time =
-        document.createElement(
-            "div"
-        );
-
+        document.createElement("div");
 
     time.className =
         "messageTime";
-
 
     time.textContent =
         new Date(
@@ -714,27 +815,13 @@ function addMessageToScreen(
             }
         );
 
+    div.appendChild(time);
 
-    div.appendChild(
-        content
-    );
-
-
-    div.appendChild(
-        time
-    );
-
-
-    container.appendChild(
-        div
-    );
-
+    container.appendChild(div);
 
     container.scrollTop =
         container.scrollHeight;
-
 }
-
 
 /* =========================
    SEND MESSAGE
@@ -952,6 +1039,76 @@ async function openAttachment(){
                 "FILE UPLOADED:",
                 data
             );
+
+            const { data: publicData } =
+    supabaseClient
+        .storage
+        .from("chat-files")
+        .getPublicUrl(filePath);
+
+const fileUrl =
+    publicData.publicUrl;
+
+const conversationId =
+    await getConversationId(
+        chatUserId
+    );
+
+if(!conversationId){
+
+    alert("Conversation পাওয়া যায়নি।");
+    return;
+
+}
+
+const {
+    data: messageData,
+    error: messageError
+} =
+await supabaseClient
+    .from("messages")
+    .insert({
+
+        conversation_id:
+            conversationId,
+
+        sender_id:
+            currentUser.id,
+
+        content:
+            file.name,
+
+        message_type:
+            file.type.startsWith("image/")
+            ? "image"
+            : file.type.startsWith("video/")
+            ? "video"
+            : "file",
+
+        file_url:
+            fileUrl
+
+    })
+    .select()
+    .single();
+
+if(messageError){
+
+    console.error(
+        "File message error:",
+        messageError
+    );
+
+    alert(
+        "ফাইল Upload হয়েছে, কিন্তু Chat-এ পাঠানো যায়নি।"
+    );
+
+    return;
+}
+
+addMessageToScreen(
+    messageData
+);
 
             alert(
                 "ফাইল সফলভাবে Upload হয়েছে।"
