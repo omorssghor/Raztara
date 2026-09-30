@@ -580,7 +580,7 @@ async function loadMessages(
     await supabaseClient
     .from("messages")
     .select(
-        "id, sender_id, content, message_type, file_url, created_at"
+        "id, sender_id, content, message_type, created_at"
     )
         )
         .eq(
