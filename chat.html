@@ -359,7 +359,14 @@ async function initChat(){
     await loadChatUser(
         chatUserId
     );
+const conversationId =
+    await getConversationId(
+        chatUserId
+    );
 
+startRealtimeChat(
+    conversationId
+);
 }
 
 
