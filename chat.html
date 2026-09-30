@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#087f5b">
+<title>Chat | RAZTARA</title>
 
-<title>RAZTARA Chat</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
 *{
     box-sizing:border-box;
     margin:0;
@@ -15,266 +16,449 @@
 }
 
 body{
-    font-family:Arial,sans-serif;
-    background:#f1f5f6;
-    color:#102b34;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+    background:#f0f2f5;
+    color:#222;
+    height:100vh;
+    overflow:hidden;
 }
 
+button,
+input{
+    font:inherit;
+}
+
+button{
+    border:0;
+    cursor:pointer;
+}
+
+.chatApp{
+    width:100%;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:#efeae2;
+}
+
+/* HEADER */
 .chatHeader{
-    height:62px;
-    background:#075e54;
+    height:64px;
+    background:#087f5b;
     color:white;
     display:flex;
     align-items:center;
-    padding:8px 12px;
+    padding:8px 10px;
     gap:10px;
-    position:sticky;
-    top:0;
-    z-index:10;
+    flex-shrink:0;
 }
 
 .backBtn{
     width:42px;
     height:42px;
-    border:0;
     background:transparent;
     color:white;
-    font-size:27px;
-    cursor:pointer;
+    font-size:32px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
-.chatAvatar{
-    width:42px;
-    height:42px;
+.userAvatar{
+    width:44px;
+    height:44px;
     border-radius:50%;
     object-fit:cover;
     background:#ddd;
-    display:block;
+    flex-shrink:0;
 }
 
-.chatUserInfo{
-    flex:1;
+.userInfo{
     min-width:0;
+    flex:1;
 }
 
-.chatUserName{
-    font-size:16px;
-    font-weight:bold;
+.userName{
+    font-size:17px;
+    font-weight:700;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
 }
 
-.chatUserStatus{
+.userStatus{
     font-size:12px;
-    opacity:.8;
-    margin-top:3px;
+    opacity:.95;
+    margin-top:2px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
 }
 
 .callBtn{
     width:42px;
     height:42px;
-    border:0;
+    border-radius:50%;
     background:transparent;
     color:white;
-    font-size:21px;
+    font-size:22px;
 }
 
+/* MESSAGES */
 .messages{
-    min-height:calc(100vh - 122px);
-    padding:15px 12px 80px;
+    flex:1;
     overflow-y:auto;
+    padding:12px 10px 10px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    -webkit-overflow-scrolling:touch;
 }
 
-.message{
-    max-width:78%;
-    padding:9px 12px;
-    margin-bottom:8px;
+.emptyChat{
+    margin:auto;
+    text-align:center;
+    color:#777;
+    background:rgba(255,255,255,.8);
+    padding:15px 20px;
     border-radius:12px;
-    font-size:15px;
-    line-height:1.4;
+}
+
+.dateSeparator{
+    align-self:center;
+    background:#d8e6dd;
+    color:#4b6257;
+    font-size:12px;
+    padding:6px 12px;
+    border-radius:12px;
+    margin:9px 0 5px;
+}
+
+.messageRow{
+    display:flex;
+    width:100%;
+}
+
+.messageRow.mine{
+    justify-content:flex-end;
+}
+
+.messageRow.theirs{
+    justify-content:flex-start;
+}
+
+.messageBubble{
+    max-width:82%;
+    min-width:70px;
+    padding:7px 9px 5px;
+    border-radius:10px;
+    box-shadow:0 1px 1px rgba(0,0,0,.08);
+    position:relative;
     word-break:break-word;
 }
 
-.message.me{
-    margin-left:auto;
+.mine .messageBubble{
     background:#d9fdd3;
-    border-bottom-right-radius:3px;
+    border-top-right-radius:3px;
 }
 
-.message.other{
-    margin-right:auto;
+.theirs .messageBubble{
     background:white;
-    border-bottom-left-radius:3px;
+    border-top-left-radius:3px;
 }
 
-.messageTime{
+.messageText{
+    font-size:15px;
+    line-height:1.4;
+    white-space:pre-wrap;
+}
+
+.messageMeta{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:4px;
+    margin-top:3px;
     font-size:10px;
-    color:#777;
-    margin-top:4px;
-    text-align:right;
+    color:#667;
 }
 
-.chatInputArea{
-    position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
-    min-height:60px;
-    background:#f0f2f5;
-    border-top:1px solid #ddd;
+.readStatus{
+    font-weight:700;
+    font-size:14px;
+}
+
+.readStatus.seen{
+    color:#087fcb;
+}
+
+.messageMedia{
+    max-width:100%;
+    border-radius:8px;
+    display:block;
+    margin-bottom:4px;
+}
+
+.messageImage{
+    max-height:320px;
+}
+
+.messageVideo{
+    max-height:320px;
+}
+
+.fileLink{
     display:flex;
     align-items:center;
-    gap:6px;
+    gap:8px;
+    text-decoration:none;
+    color:#075e54;
+    font-weight:600;
+    padding:8px;
+    background:rgba(255,255,255,.5);
+    border-radius:8px;
+}
+
+.audioPlayer{
+    width:230px;
+    max-width:100%;
+}
+
+/* ATTACHMENT PREVIEW */
+.previewArea{
+    display:none;
+    background:white;
+    border-top:1px solid #ddd;
+    padding:8px 10px;
+}
+
+.previewArea.show{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.previewContent{
+    flex:1;
+    min-width:0;
+}
+
+.previewImage,
+.previewVideo{
+    max-width:90px;
+    max-height:70px;
+    border-radius:7px;
+    object-fit:cover;
+}
+
+.previewFile{
+    font-size:13px;
+    color:#444;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.previewCancel{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:#eee;
+    color:#444;
+    font-size:20px;
+}
+
+/* COMPOSER */
+.composer{
+    background:#f0f2f5;
     padding:7px;
+    display:flex;
+    align-items:flex-end;
+    gap:6px;
+    flex-shrink:0;
+    border-top:1px solid #ddd;
 }
 
 .attachBtn,
 .voiceBtn,
 .sendBtn{
-    width:42px;
-    height:42px;
-    border:0;
+    width:43px;
+    height:43px;
     border-radius:50%;
-    cursor:pointer;
-    font-size:19px;
+    flex-shrink:0;
 }
 
 .attachBtn{
-    background:white;
+    background:transparent;
+    font-size:24px;
 }
 
 .voiceBtn{
     background:white;
+    font-size:20px;
 }
 
-.sendBtn{
-    background:#075e54;
+.voiceBtn.recording{
+    background:#e53935;
     color:white;
 }
 
-.messageInput{
+.sendBtn{
+    background:#087f5b;
+    color:white;
+    font-size:19px;
+}
+
+.textInputWrap{
     flex:1;
-    min-width:0;
-    height:42px;
+    background:white;
+    border-radius:22px;
+    padding:0 14px;
+    display:flex;
+    align-items:center;
+    min-height:43px;
+}
+
+#messageInput{
+    width:100%;
     border:0;
     outline:0;
-    border-radius:22px;
-    padding:0 15px;
+    resize:none;
+    max-height:110px;
+    padding:11px 0;
+    background:transparent;
     font-size:15px;
-    background:white;
 }
 
-.emptyChat{
+/* LOADING */
+.loading{
     text-align:center;
+    padding:30px;
     color:#777;
-    margin-top:40vh;
-    font-size:14px;
 }
 
+/* HIDDEN FILE */
+#fileInput{
+    display:none;
+}
+
+/* MOBILE */
+@media(min-width:700px){
+    .chatApp{
+        max-width:760px;
+        margin:auto;
+        box-shadow:0 0 15px rgba(0,0,0,.15);
+    }
+}
 </style>
 </head>
 
 <body>
 
-<header class="chatHeader">
+<div class="chatApp">
 
-    <button
-        class="backBtn"
-        type="button"
-        onclick="goBack()"
-    >
-        ‹
-    </button>
+    <!-- HEADER -->
+    <header class="chatHeader">
 
-    <img
-        id="chatAvatar"
-        class="chatAvatar"
-        src="https://i.pravatar.cc/100?img=1"
-        alt="Profile"
-    >
+        <button class="backBtn" onclick="goBack()" aria-label="Back">
+            ‹
+        </button>
 
-    <div class="chatUserInfo">
-
-        <div
-            id="chatUserName"
-            class="chatUserName"
+        <img
+            id="chatUserAvatar"
+            class="userAvatar"
+            src="https://i.pravatar.cc/100?img=12"
+            alt="User"
         >
-            Chat
+
+        <div class="userInfo">
+            <div id="chatUserName" class="userName">
+                Loading...
+            </div>
+
+            <div id="chatUserStatus" class="userStatus">
+                Checking status...
+            </div>
         </div>
 
-        <div
-            id="chatUserStatus"
-            class="chatUserStatus"
+        <button
+            class="callBtn"
+            onclick="startCall()"
+            aria-label="Call"
+            title="Call">
+            📞
+        </button>
+
+    </header>
+
+    <!-- MESSAGES -->
+    <main id="messages" class="messages">
+        <div class="loading">
+            Messages loading...
+        </div>
+    </main>
+
+    <!-- PREVIEW -->
+    <div id="previewArea" class="previewArea">
+        <div id="previewContent" class="previewContent"></div>
+
+        <button
+            class="previewCancel"
+            onclick="cancelPendingAttachment()">
+            ×
+        </button>
+    </div>
+
+    <!-- COMPOSER -->
+    <div class="composer">
+
+        <button
+            class="attachBtn"
+            onclick="document.getElementById('fileInput').click()"
+            title="Attach">
+            📎
+        </button>
+
+        <input
+            id="fileInput"
+            type="file"
+            accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar"
+            onchange="handleFileSelect(event)"
         >
-            RAZTARA
+
+        <div class="textInputWrap">
+            <textarea
+                id="messageInput"
+                rows="1"
+                placeholder="মেসেজ লিখুন..."
+                oninput="autoResize(this)"
+                onkeydown="handleEnter(event)"
+            ></textarea>
         </div>
 
+        <button
+            id="voiceBtn"
+            class="voiceBtn"
+            onclick="toggleVoiceRecording()"
+            title="Voice message">
+            🎤
+        </button>
+
+        <button
+            class="sendBtn"
+            onclick="sendMessage()"
+            title="Send">
+            ➤
+        </button>
+
     </div>
-
-    <button
-        class="callBtn"
-        type="button"
-        onclick="startCall()"
-    >
-        📞
-    </button>
-
-</header>
-
-
-<main
-    id="messages"
-    class="messages"
->
-
-    <div
-        id="emptyChat"
-        class="emptyChat"
-    >
-        কোনো মেসেজ নেই
-    </div>
-
-</main>
-
-
-<div class="chatInputArea">
-
-    <button
-        class="attachBtn"
-        type="button"
-        onclick="openAttachment()"
-    >
-        📎
-    </button>
-
-    <input
-        id="messageInput"
-        class="messageInput"
-        type="text"
-        placeholder="Message"
-        autocomplete="off"
-    >
-
-    <button
-        class="voiceBtn"
-        type="button"
-        onclick="startVoice()"
-    >
-        🎤
-    </button>
-
-    <button
-        class="sendBtn"
-        type="button"
-        onclick="sendMessage()"
-    >
-        ➤
-    </button>
 
 </div>
 
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
+/* =========================================================
+   SUPABASE
+========================================================= */
 
 const SUPABASE_URL =
 "https://pqyicaqpmojijjskpzcp.supabase.co";
@@ -289,971 +473,2030 @@ window.supabase.createClient(
 );
 
 
+/* =========================================================
+   GLOBAL VARIABLES
+========================================================= */
+
 let currentUser = null;
+let chatUser = null;
+let conversationId = null;
 
-let chatUserId = null;
+let messagesChannel = null;
+let presenceChannel = null;
 
-let chatUserProfile = null;
+let pendingFile = null;
+let pendingVoiceBlob = null;
+let pendingVoiceMime = null;
 
+let mediaRecorder = null;
+let voiceChunks = [];
+let isRecording = false;
 
-/* =========================
-   INIT CHAT
-========================= */
+let onlineUsers = new Set();
 
-async function initChat(){
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient.auth.getUser();
-
-
-    if(error || !data.user){
-
-        window.location.href =
-            "index.html";
-
-        return;
-    }
+let lastDateKey = null;
 
 
-    currentUser =
-        data.user;
+/* =========================================================
+   START
+========================================================= */
 
+document.addEventListener("DOMContentLoaded", async () => {
 
-    const params =
-        new URLSearchParams(
+    try{
+
+        const {
+            data: { session }
+        } = await supabaseClient.auth.getSession();
+
+        if(!session){
+            window.location.href = "index.html";
+            return;
+        }
+
+        currentUser = session.user;
+
+        const params = new URLSearchParams(
             window.location.search
         );
 
+        const userId = params.get("user");
 
-    chatUserId =
-        params.get("user");
+        if(!userId){
+            alert("Chat user পাওয়া যায়নি।");
+            window.location.href = "index.html";
+            return;
+        }
 
+        if(userId === currentUser.id){
+            alert("নিজের সাথে chat করা যাবে না।");
+            window.location.href = "index.html";
+            return;
+        }
 
-    if(!chatUserId){
+        await loadChatUser(userId);
 
-        document.getElementById(
-            "chatUserName"
-        ).textContent =
-            "New Chat";
+        await getOrCreateConversation();
 
-        return;
+        await loadMessages();
+
+        subscribeToMessages();
+
+        await setupPresence();
+
+        await updateMyLastSeen();
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "Chat চালু করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।"
+        );
     }
+});
 
 
-    /* নিজের সাথে chat বন্ধ */
+/* =========================================================
+   LOAD CHAT USER
+========================================================= */
 
-    if(chatUserId === currentUser.id){
-
-        document.getElementById(
-            "chatUserName"
-        ).textContent =
-            "Invalid User";
-
-        return;
-    }
-
-
-    await loadChatUser(
-        chatUserId
-    );
-const conversationId =
-    await getConversationId(
-        chatUserId
-    );
-
-startRealtimeChat(
-    conversationId
-);
-}
-
-
-/* =========================
-   LOAD SELECTED USER
-========================= */
-
-async function loadChatUser(
-    userId
-){
-
-    console.log(
-        "CHAT USER ID:",
-        userId
-    );
-
+async function loadChatUser(userId){
 
     const {
         data,
         error
-    } =
-    await supabaseClient
+    } = await supabaseClient
         .from("profiles")
-        .select(
-            "id, username, full_name, avatar_url, bio"
-        )
-        .eq(
-            "id",
-            userId
-        )
-        .maybeSingle();
-
+        .select(`
+            id,
+            username,
+            full_name,
+            avatar_url,
+            bio,
+            last_seen_at
+        `)
+        .eq("id", userId)
+        .single();
 
     if(error){
-
-        console.error(
-            "Profile load error:",
-            error
-        );
-
-        document.getElementById(
-            "chatUserName"
-        ).textContent =
-            "Profile Load Error";
-
-        return;
+        console.error(error);
+        throw error;
     }
 
+    chatUser = data;
 
-    if(!data){
-
-        document.getElementById(
-            "chatUserName"
-        ).textContent =
-            "User পাওয়া যায়নি";
-
-        return;
-    }
-
-
-    /*
-       খুব গুরুত্বপূর্ণ:
-       এখানে শুধু URL-এর user ID-এর
-       profile ব্যবহার হচ্ছে।
-    */
-
-    chatUserProfile =
-        data;
-
-
-    /* USER NAME */
-
-    const userName =
+    document.getElementById("chatUserName").textContent =
         data.full_name ||
         data.username ||
         "User";
 
+    document.getElementById("chatUserAvatar").src =
+        data.avatar_url ||
+        "https://i.pravatar.cc/100?img=12";
 
-    document.getElementById(
-        "chatUserName"
-    ).textContent =
-        userName;
-
-
-    /* USER STATUS */
-
-    document.getElementById(
-        "chatUserStatus"
-    ).textContent =
-        data.username
-        ? "@" + data.username
-        : "RAZTARA";
+    updateUserStatus();
+}
 
 
-    /* USER PROFILE PHOTO */
+/* =========================================================
+   CREATE / FIND CONVERSATION
+========================================================= */
 
-    const avatar =
-        document.getElementById(
-            "chatAvatar"
+async function getOrCreateConversation(){
+
+    /*
+       First try to find a conversation
+       where current user and target user are members.
+    */
+
+    const {
+        data: myMemberships,
+        error: membershipError
+    } = await supabaseClient
+        .from("conversation_members")
+        .select("conversation_id")
+        .eq("user_id", currentUser.id);
+
+    if(membershipError){
+        console.error(membershipError);
+        throw membershipError;
+    }
+
+    const ids =
+        (myMemberships || []).map(
+            item => item.conversation_id
         );
 
+    if(ids.length > 0){
 
-    if(data.avatar_url){
+        const {
+            data: otherMemberships,
+            error: otherError
+        } = await supabaseClient
+            .from("conversation_members")
+            .select("conversation_id")
+            .eq("user_id", chatUser.id)
+            .in("conversation_id", ids);
 
-        /*
-           Supabase Storage থেকে
-           ওই User-এর নিজের ছবি
-        */
+        if(otherError){
+            console.error(otherError);
+            throw otherError;
+        }
 
-        avatar.src =
-            data.avatar_url;
+        const possibleIds =
+            (otherMemberships || []).map(
+                item => item.conversation_id
+            );
 
-    }else{
+        if(possibleIds.length > 0){
 
-        /*
-           ওই User-এর ছবি না থাকলে
-           শুধু default avatar
-        */
+            const {
+                data: conversations,
+                error: conversationError
+            } = await supabaseClient
+                .from("conversations")
+                .select("id,is_group")
+                .in("id", possibleIds)
+                .eq("is_group", false)
+                .order("created_at", {
+                    ascending:true
+                });
 
-        avatar.src =
-            "https://i.pravatar.cc/100?img=1";
+            if(conversationError){
+                console.error(conversationError);
+                throw conversationError;
+            }
 
+            if(conversations && conversations.length){
+
+                conversationId =
+                    conversations[0].id;
+
+                return;
+            }
+        }
     }
 
 
     /*
-       ছবি লোড হতে না পারলে
-       অন্য কারও ছবি দেখাবে না
+       No existing conversation.
+       IMPORTANT:
+       created_by MUST be currentUser.id
+       because of Supabase RLS.
     */
 
-    avatar.onerror =
-        function(){
+    const {
+        data: newConversation,
+        error: createError
+    } = await supabaseClient
+        .from("conversations")
+        .insert({
+            created_by: currentUser.id,
+            is_group: false
+        })
+        .select("id")
+        .single();
 
-            this.onerror = null;
+    if(createError){
+        console.error(createError);
+        throw createError;
+    }
 
-            this.src =
-                "https://i.pravatar.cc/100?img=1";
-
-        };
+    conversationId =
+        newConversation.id;
 
 
-    await loadMessages(
-        userId
-    );
+    /*
+       Add current user.
+    */
 
+    const {
+        error: addMeError
+    } = await supabaseClient
+        .from("conversation_members")
+        .insert({
+            conversation_id: conversationId,
+            user_id: currentUser.id
+        });
+
+    if(addMeError){
+        console.error(addMeError);
+
+        /*
+           If it already exists, continue.
+        */
+        if(addMeError.code !== "23505"){
+            throw addMeError;
+        }
+    }
+
+
+    /*
+       Add other user.
+    */
+
+    const {
+        error: addOtherError
+    } = await supabaseClient
+        .from("conversation_members")
+        .insert({
+            conversation_id: conversationId,
+            user_id: chatUser.id
+        });
+
+    if(addOtherError){
+        console.error(addOtherError);
+
+        if(addOtherError.code !== "23505"){
+            throw addOtherError;
+        }
+    }
 }
 
 
-/* =========================
-   GET CONVERSATION
-========================= */
+/* =========================================================
+   LOAD MESSAGES
+========================================================= */
 
-async function getConversationId(
-    userId
-){
+async function loadMessages(){
+
+    const messagesBox =
+        document.getElementById("messages");
+
+    messagesBox.innerHTML =
+        `<div class="loading">Messages loading...</div>`;
 
     const {
         data,
         error
-    } =
-    await supabaseClient
-        .rpc(
-            "get_or_create_direct_conversation",
-            {
-                other_user_id:
-                    userId
-            }
-        );
-
-
-    if(error){
-
-        console.error(
-            "Conversation error:",
-            error
-        );
-
-        return null;
-    }
-
-
-    return data;
-
-}
-
-
-/* =========================
-   LOAD MESSAGES
-========================= */
-
-async function loadMessages(
-    userId
-){
-
-    const conversationId =
-        await getConversationId(
-            userId
-        );
-
-
-    if(!conversationId){
-
-        return;
-    }
-
-
-    const {
-    data,
-    error
-} =
-    await supabaseClient
+    } = await supabaseClient
         .from("messages")
-        .select(
-            "id, sender_id, content, message_type, file_url, created_at"
-        )
-        .eq(
-            "conversation_id",
-            conversationId
-        )
-        .order(
-            "created_at",
-            {
-                ascending:true
-            }
-        );
-
+        .select(`
+            id,
+            conversation_id,
+            sender_id,
+            content,
+            message_type,
+            file_url,
+            created_at,
+            is_read
+        `)
+        .eq("conversation_id", conversationId)
+        .order("created_at", {
+            ascending:true
+        });
 
     if(error){
+        console.error(error);
+        throw error;
+    }
 
-        console.error(
-            "Message load error:",
-            error
-        );
+    messagesBox.innerHTML = "";
+
+    lastDateKey = null;
+
+    if(!data || data.length === 0){
+
+        messagesBox.innerHTML =
+            `<div class="emptyChat">
+                এখনো কোনো মেসেজ নেই।<br>
+                প্রথম মেসেজটি পাঠান।
+            </div>`;
 
         return;
     }
 
+    for(const message of data){
 
-    const container =
-        document.getElementById(
-            "messages"
+        renderDateSeparator(
+            message.created_at
         );
 
-
-    const empty =
-        document.getElementById(
-            "emptyChat"
+        renderMessage(
+            message,
+            false
         );
-
-
-    container
-        .querySelectorAll(
-            ".message"
-        )
-        .forEach(
-            el =>
-                el.remove()
-        );
-
-
-    if(data && data.length){
-
-        empty.style.display =
-            "none";
-
-
-        data.forEach(
-            message => {
-
-                addMessageToScreen(
-                    message
-                );
-
-            }
-        );
-
-    }else{
-
-        empty.style.display =
-            "block";
-
     }
 
+    /*
+       Incoming unread messages are marked as read
+       only when the chat page is visible.
+    */
+
+    if(document.visibilityState === "visible"){
+        await markIncomingMessagesAsRead(data);
+    }
+
+    scrollToBottom(false);
 }
 
 
-/* =========================
-   ADD MESSAGE
-========================= */
+/* =========================================================
+   RENDER DATE SEPARATOR
+========================================================= */
 
-function addMessageToScreen(message){
+function renderDateSeparator(createdAt){
 
-    const container =
-        document.getElementById("messages");
+    const date =
+        new Date(createdAt);
 
-    const div =
+    const key =
+        date.getFullYear() +
+        "-" +
+        String(date.getMonth()+1).padStart(2,"0") +
+        "-" +
+        String(date.getDate()).padStart(2,"0");
+
+    if(key === lastDateKey){
+        return;
+    }
+
+    lastDateKey = key;
+
+    const separator =
         document.createElement("div");
 
-    div.className =
-        "message " +
-        (
-            message.sender_id === currentUser.id
-            ? "me"
-            : "other"
+    separator.className =
+        "dateSeparator";
+
+    separator.textContent =
+        formatDateSeparator(date);
+
+    document
+        .getElementById("messages")
+        .appendChild(separator);
+}
+
+
+/* =========================================================
+   DATE TEXT
+========================================================= */
+
+function formatDateSeparator(date){
+
+    const now =
+        new Date();
+
+    const today =
+        new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate()
         );
 
-    /* =========================
-       IMAGE
-    ========================= */
+    const target =
+        new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate()
+        );
 
-    if(message.message_type === "image" && message.file_url){
+    const difference =
+        Math.round(
+            (today - target) /
+            (1000 * 60 * 60 * 24)
+        );
 
-        const img =
-            document.createElement("img");
+    if(difference === 0){
+        return "আজ";
+    }
 
-        img.src =
-            message.file_url;
+    if(difference === 1){
+        return "গতকাল";
+    }
 
-        img.style.maxWidth =
-            "240px";
+    const weekdays = [
+        "রবিবার",
+        "সোমবার",
+        "মঙ্গলবার",
+        "বুধবার",
+        "বৃহস্পতিবার",
+        "শুক্রবার",
+        "শনিবার"
+    ];
 
-        img.style.maxHeight =
-            "300px";
+    const months = [
+        "জানুয়ারি",
+        "ফেব্রুয়ারি",
+        "মার্চ",
+        "এপ্রিল",
+        "মে",
+        "জুন",
+        "জুলাই",
+        "আগস্ট",
+        "সেপ্টেম্বর",
+        "অক্টোবর",
+        "নভেম্বর",
+        "ডিসেম্বর"
+    ];
 
-        img.style.borderRadius =
-            "10px";
+    return (
+        weekdays[date.getDay()] +
+        " • " +
+        date.getDate() +
+        " " +
+        months[date.getMonth()] +
+        " " +
+        date.getFullYear()
+    );
+}
 
-        img.style.display =
-            "block";
 
-        img.style.cursor =
-            "pointer";
+/* =========================================================
+   RENDER MESSAGE
+========================================================= */
 
-        img.onclick =
-            function(){
+function renderMessage(message, scroll=true){
 
+    const messagesBox =
+        document.getElementById("messages");
+
+    const row =
+        document.createElement("div");
+
+    const mine =
+        message.sender_id === currentUser.id;
+
+    row.className =
+        "messageRow " +
+        (mine ? "mine" : "theirs");
+
+    row.dataset.messageId =
+        message.id;
+
+
+    const bubble =
+        document.createElement("div");
+
+    bubble.className =
+        "messageBubble";
+
+
+    /* MEDIA */
+
+    if(message.file_url){
+
+        if(message.message_type === "image"){
+
+            const img =
+                document.createElement("img");
+
+            img.src =
+                message.file_url;
+
+            img.className =
+                "messageMedia messageImage";
+
+            img.loading = "lazy";
+
+            img.onclick = () => {
                 window.open(
                     message.file_url,
                     "_blank"
                 );
-
             };
 
-        div.appendChild(img);
+            bubble.appendChild(img);
+        }
 
+
+        else if(message.message_type === "video"){
+
+            const video =
+                document.createElement("video");
+
+            video.src =
+                message.file_url;
+
+            video.controls = true;
+
+            video.playsInline = true;
+
+            video.className =
+                "messageMedia messageVideo";
+
+            bubble.appendChild(video);
+        }
+
+
+        else if(message.message_type === "audio"){
+
+            const audio =
+                document.createElement("audio");
+
+            audio.src =
+                message.file_url;
+
+            audio.controls = true;
+
+            audio.className =
+                "audioPlayer";
+
+            bubble.appendChild(audio);
+        }
+
+
+        else if(message.message_type === "file"){
+
+            const link =
+                document.createElement("a");
+
+            link.href =
+                message.file_url;
+
+            link.target = "_blank";
+
+            link.rel = "noopener";
+
+            link.className =
+                "fileLink";
+
+            link.innerHTML =
+                "📄 <span>" +
+                escapeHtml(
+                    message.content ||
+                    "File"
+                ) +
+                "</span>";
+
+            bubble.appendChild(link);
+        }
     }
 
-    /* =========================
-       VIDEO
-    ========================= */
 
-    else if(
-        message.message_type === "video" &&
-        message.file_url
-    ){
+    /* LOCATION */
 
-        const video =
-            document.createElement("video");
-
-        video.src =
-            message.file_url;
-
-        video.controls =
-            true;
-
-        video.style.maxWidth =
-            "260px";
-
-        video.style.borderRadius =
-            "10px";
-
-        div.appendChild(video);
-
-    }
-
-    /* =========================
-       FILE
-    ========================= */
-
-    else if(
-        message.message_type === "file" &&
-        message.file_url
-    ){
+    if(message.message_type === "location"){
 
         const link =
             document.createElement("a");
 
         link.href =
-            message.file_url;
+            message.content;
 
-        link.target =
-            "_blank";
+        link.target = "_blank";
 
-        link.textContent =
-            "📎 " +
-            (message.content || "File");
+        link.rel = "noopener";
 
-        link.style.color =
-            "#075e54";
+        link.className =
+            "fileLink";
 
-        link.style.fontWeight =
-            "bold";
+        link.innerHTML =
+            "📍 Location খুলুন";
 
-        link.style.textDecoration =
-            "none";
-
-        div.appendChild(link);
-
+        bubble.appendChild(link);
     }
 
-    /* =========================
-       NORMAL TEXT
-    ========================= */
 
-    else{
+    /* TEXT */
 
-        const content =
+    if(
+        message.content &&
+        message.message_type !== "file" &&
+        message.message_type !== "location"
+    ){
+
+        const text =
             document.createElement("div");
 
-        content.textContent =
-            message.content || "";
+        text.className =
+            "messageText";
 
-        div.appendChild(content);
+        text.textContent =
+            message.content;
 
+        bubble.appendChild(text);
     }
 
 
-    /* =========================
-       TIME
-    ========================= */
+    /* META */
 
-    const time =
+    const meta =
         document.createElement("div");
 
-    time.className =
-        "messageTime";
+    meta.className =
+        "messageMeta";
+
+    const time =
+        document.createElement("span");
 
     time.textContent =
-        new Date(
+        formatTime(
             message.created_at
-        ).toLocaleTimeString(
-            "bn-BD",
-            {
-                hour:"2-digit",
-                minute:"2-digit"
-            }
         );
 
-    div.appendChild(time);
+    meta.appendChild(time);
 
-    container.appendChild(div);
 
-    container.scrollTop =
-        container.scrollHeight;
+    if(mine){
+
+        const status =
+            document.createElement("span");
+
+        status.className =
+            "readStatus";
+
+        if(message.is_read){
+
+            status.classList.add("seen");
+
+            status.textContent =
+                "✓✓";
+
+        }else{
+
+            status.textContent =
+                "✓";
+        }
+
+        meta.appendChild(status);
+    }
+
+
+    bubble.appendChild(meta);
+
+    row.appendChild(bubble);
+
+    messagesBox.appendChild(row);
+
+
+    if(scroll){
+        scrollToBottom(true);
+    }
 }
 
-/* =========================
+
+/* =========================================================
+   TIME
+========================================================= */
+
+function formatTime(createdAt){
+
+    const date =
+        new Date(createdAt);
+
+    return date.toLocaleTimeString(
+        "bn-BD",
+        {
+            hour:"numeric",
+            minute:"2-digit"
+        }
+    );
+}
+
+
+/* =========================================================
    SEND MESSAGE
-========================= */
+========================================================= */
 
 async function sendMessage(){
 
+    if(!currentUser || !conversationId){
+        return;
+    }
+
     const input =
-        document.getElementById(
-            "messageInput"
-        );
+        document.getElementById("messageInput");
 
-
-    const content =
+    const text =
         input.value.trim();
 
 
-    if(!content){
+    /*
+       Attachment / voice first.
+    */
+
+    if(pendingFile){
+
+        await sendPendingFile();
 
         return;
     }
 
 
-    if(!chatUserId){
+    if(pendingVoiceBlob){
 
-        alert(
-            "প্রথমে একজন User নির্বাচন করুন।"
-        );
+        await sendPendingVoice();
 
         return;
     }
 
 
-    const conversationId =
-        await getConversationId(
-            chatUserId
-        );
-
-
-    if(!conversationId){
-
+    if(!text){
         return;
     }
 
 
     const {
-        data,
         error
-    } =
-    await supabaseClient
+    } = await supabaseClient
         .from("messages")
         .insert({
-
-            conversation_id:
-                conversationId,
-
-            sender_id:
-                currentUser.id,
-
-            content:
-                content,
-
-            message_type:
-                "text"
-
-        })
-        .select()
-        .single();
-
+            conversation_id: conversationId,
+            sender_id: currentUser.id,
+            content: text,
+            message_type: "text",
+            is_read: false
+        });
 
     if(error){
 
-        console.error(
-            "Send message error:",
-            error
-        );
+        console.error(error);
 
         alert(
-            "মেসেজ পাঠানো যায়নি।"
+            "Message পাঠানো যায়নি।"
         );
 
         return;
     }
 
-
     input.value = "";
 
-
-    addMessageToScreen(
-        data
-    );
-
+    autoResize(input);
 }
 
 
-/* =========================
-   ENTER SEND
-========================= */
+/* =========================================================
+   REALTIME MESSAGES
+========================================================= */
 
-document
-    .getElementById(
-        "messageInput"
-    )
-    .addEventListener(
-        "keydown",
-        function(event){
+function subscribeToMessages(){
 
-            if(event.key === "Enter"){
+    if(messagesChannel){
+        supabaseClient
+            .removeChannel(messagesChannel);
+    }
 
-                event.preventDefault();
+    messagesChannel =
+        supabaseClient
+            .channel(
+                "chat-messages-" +
+                conversationId
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event:"INSERT",
+                    schema:"public",
+                    table:"messages",
+                    filter:
+                        "conversation_id=eq." +
+                        conversationId
+                },
+                async payload => {
 
-                sendMessage();
+                    const message =
+                        payload.new;
 
+                    /*
+                       Avoid duplicate rendering if
+                       the same message already exists.
+                    */
+
+                    if(
+                        document.querySelector(
+                            `[data-message-id="${message.id}"]`
+                        )
+                    ){
+                        return;
+                    }
+
+                    const empty =
+                        document.querySelector(
+                            ".emptyChat"
+                        );
+
+                    if(empty){
+                        empty.remove();
+                    }
+
+                    renderDateSeparator(
+                        message.created_at
+                    );
+
+                    renderMessage(
+                        message,
+                        true
+                    );
+
+
+                    /*
+                       If message is from other user
+                       and page is visible, mark read.
+                    */
+
+                    if(
+                        message.sender_id !==
+                        currentUser.id &&
+                        document.visibilityState ===
+                        "visible"
+                    ){
+
+                        await markMessageAsRead(
+                            message.id
+                        );
+                    }
+                }
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event:"UPDATE",
+                    schema:"public",
+                    table:"messages",
+                    filter:
+                        "conversation_id=eq." +
+                        conversationId
+                },
+                payload => {
+
+                    const message =
+                        payload.new;
+
+                    updateRenderedMessageStatus(
+                        message
+                    );
+                }
+            )
+            .subscribe();
+}
+
+
+/* =========================================================
+   READ RECEIPTS
+========================================================= */
+
+async function markIncomingMessagesAsRead(
+    messages
+){
+
+    const unreadIds =
+        messages
+            .filter(
+                message =>
+                    message.sender_id !==
+                    currentUser.id &&
+                    !message.is_read
+            )
+            .map(
+                message => message.id
+            );
+
+    for(const id of unreadIds){
+
+        await markMessageAsRead(id);
+    }
+}
+
+
+async function markMessageAsRead(messageId){
+
+    const {
+        error
+    } = await supabaseClient
+        .from("messages")
+        .update({
+            is_read:true
+        })
+        .eq("id", messageId)
+        .eq("conversation_id", conversationId)
+        .eq("is_read", false);
+
+    if(error){
+        console.error(
+            "Read receipt error:",
+            error
+        );
+    }
+}
+
+
+function updateRenderedMessageStatus(
+    message
+){
+
+    const row =
+        document.querySelector(
+            `[data-message-id="${message.id}"]`
+        );
+
+    if(!row){
+        return;
+    }
+
+    if(
+        message.sender_id !==
+        currentUser.id
+    ){
+        return;
+    }
+
+    const status =
+        row.querySelector(
+            ".readStatus"
+        );
+
+    if(!status){
+        return;
+    }
+
+    if(message.is_read){
+
+        status.textContent =
+            "✓✓";
+
+        status.classList.add(
+            "seen"
+        );
+
+    }else{
+
+        status.textContent =
+            "✓";
+
+        status.classList.remove(
+            "seen"
+        );
+    }
+}
+
+
+/* =========================================================
+   PRESENCE / ONLINE
+========================================================= */
+
+async function setupPresence(){
+
+    if(presenceChannel){
+
+        await supabaseClient
+            .removeChannel(
+                presenceChannel
+            );
+    }
+
+
+    presenceChannel =
+        supabaseClient
+            .channel(
+                "raztara-online",
+                {
+                    config:{
+                        presence:{
+                            key:currentUser.id
+                        }
+                    }
+                }
+            );
+
+
+    presenceChannel
+        .on(
+            "presence",
+            {
+                event:"sync"
+            },
+            () => {
+
+                const state =
+                    presenceChannel.presenceState();
+
+                onlineUsers =
+                    new Set(
+                        Object.keys(state)
+                    );
+
+                updateUserStatus();
             }
+        )
+        .on(
+            "presence",
+            {
+                event:"join"
+            },
+            ({ key }) => {
 
-        }
-    );
+                onlineUsers.add(key);
+
+                updateUserStatus();
+            }
+        )
+        .on(
+            "presence",
+            {
+                event:"leave"
+            },
+            ({ key }) => {
+
+                onlineUsers.delete(key);
+
+                updateUserStatus();
+            }
+        );
 
 
-/* =========================
-   BACK
-========================= */
+    const status =
+        await new Promise(resolve => {
 
-function goBack(){
+            presenceChannel.subscribe(
+                async status => {
 
-    window.location.href =
-        "index.html";
+                    if(status === "SUBSCRIBED"){
 
+                        await presenceChannel.track({
+                            user_id:currentUser.id,
+                            online_at:new Date().toISOString()
+                        });
+
+                        resolve(status);
+                    }
+                }
+            );
+        });
+
+    return status;
 }
 
 
-/* =========================
-   CALL
-========================= */
+/* =========================================================
+   STATUS
+========================================================= */
 
-function startCall(){
+function updateUserStatus(){
 
-    alert(
-        "Call feature পরের ধাপে যোগ করা হবে।"
-    );
+    if(!chatUser){
+        return;
+    }
 
+    const statusElement =
+        document.getElementById(
+            "chatUserStatus"
+        );
+
+
+    if(
+        onlineUsers.has(
+            chatUser.id
+        )
+    ){
+
+        statusElement.textContent =
+            "🟢 Online";
+
+        return;
+    }
+
+
+    if(chatUser.last_seen_at){
+
+        statusElement.textContent =
+            "Offline • শেষ দেখা " +
+            formatLastSeen(
+                chatUser.last_seen_at
+            );
+
+    }else{
+
+        statusElement.textContent =
+            "Offline";
+    }
 }
 
 
-/* =========================
-   ATTACHMENT
-========================= */
+function formatLastSeen(dateString){
 
-async function openAttachment(){
+    const date =
+        new Date(dateString);
 
-    const input =
-        document.createElement("input");
+    const now =
+        new Date();
 
-    input.type = "file";
+    const sameDay =
+        date.toDateString() ===
+        now.toDateString();
 
-    input.accept =
-        "image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt";
+    if(sameDay){
 
-    input.onchange = async function(){
+        return (
+            "আজ " +
+            formatTime(dateString)
+        );
+    }
 
-        const file =
-            input.files[0];
 
-        if(!file){
-            return;
-        }
+    const yesterday =
+        new Date();
 
-        if(!currentUser){
-            alert("আগে Login করুন।");
-            return;
-        }
+    yesterday.setDate(
+        yesterday.getDate() - 1
+    );
+
+    if(
+        date.toDateString() ===
+        yesterday.toDateString()
+    ){
+
+        return (
+            "গতকাল " +
+            formatTime(dateString)
+        );
+    }
+
+
+    return (
+        date.toLocaleDateString(
+            "bn-BD"
+        ) +
+        " " +
+        formatTime(dateString)
+    );
+}
+
+
+/* =========================================================
+   UPDATE OWN LAST SEEN
+========================================================= */
+
+async function updateMyLastSeen(){
+
+    const {
+        error
+    } = await supabaseClient
+        .from("profiles")
+        .update({
+            last_seen_at:
+                new Date().toISOString()
+        })
+        .eq(
+            "id",
+            currentUser.id
+        );
+
+    if(error){
+        console.error(
+            "Last seen update error:",
+            error
+        );
+    }
+}
+
+
+/* =========================================================
+   FILE SELECT
+========================================================= */
+
+function handleFileSelect(event){
+
+    const file =
+        event.target.files &&
+        event.target.files[0];
+
+    if(!file){
+        return;
+    }
+
+
+    if(file.size > 6 * 1024 * 1024){
+
+        alert(
+            "File সর্বোচ্চ 6 MB হতে হবে।"
+        );
+
+        event.target.value = "";
+
+        return;
+    }
+
+
+    pendingFile = file;
+
+    pendingVoiceBlob = null;
+
+    showFilePreview(file);
+}
+
+
+function showFilePreview(file){
+
+    const area =
+        document.getElementById(
+            "previewArea"
+        );
+
+    const content =
+        document.getElementById(
+            "previewContent"
+        );
+
+    content.innerHTML = "";
+
+
+    if(file.type.startsWith("image/")){
+
+        const img =
+            document.createElement("img");
+
+        img.src =
+            URL.createObjectURL(file);
+
+        img.className =
+            "previewImage";
+
+        content.appendChild(img);
+
+    }
+
+
+    else if(file.type.startsWith("video/")){
+
+        const video =
+            document.createElement("video");
+
+        video.src =
+            URL.createObjectURL(file);
+
+        video.controls = true;
+
+        video.className =
+            "previewVideo";
+
+        content.appendChild(video);
+
+    }
+
+
+    else{
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "previewFile";
+
+        div.textContent =
+            "📄 " + file.name;
+
+        content.appendChild(div);
+    }
+
+
+    area.classList.add("show");
+}
+
+
+/* =========================================================
+   SEND FILE
+========================================================= */
+
+async function sendPendingFile(){
+
+    if(!pendingFile){
+        return;
+    }
+
+    const file =
+        pendingFile;
+
+    try{
+
+        const extension =
+            file.name.includes(".")
+                ? file.name
+                    .split(".")
+                    .pop()
+                    .toLowerCase()
+                : "file";
 
         const filePath =
             currentUser.id +
             "/" +
             Date.now() +
-            "_" +
-            file.name.replace(
-                /[^a-zA-Z0-9._-]/g,
-                "_"
+            "-" +
+            Math.random()
+                .toString(36)
+                .slice(2) +
+            "." +
+            extension;
+
+
+        const {
+            error: uploadError
+        } = await supabaseClient
+            .storage
+            .from("chat-files")
+            .upload(
+                filePath,
+                file,
+                {
+                    cacheControl:"3600",
+                    upsert:false,
+                    contentType:
+                        file.type ||
+                        "application/octet-stream"
+                }
             );
 
-        try{
 
-            const {
-                data,
-                error
-            } =
-            await supabaseClient
-                .storage
-                .from("chat-files")
-                .upload(
-                    filePath,
-                    file,
-                    {
-                        upsert:false
-                    }
-                );
-
-            if(error){
-
-                console.error(
-                    "File upload error:",
-                    error
-                );
-
-                alert(
-                    "ফাইল Upload করা যায়নি।"
-                );
-
-                return;
-            }
-
-            console.log(
-                "FILE UPLOADED:",
-                data
-            );
-
-            const { data: signedData, error: signedError } =
-    await supabaseClient
-        .storage
-        .from("chat-files")
-        .createSignedUrl(
-            filePath,
-            60 * 60 * 24
-        );
-
-if(signedError){
-
-    console.error(
-        "Signed URL error:",
-        signedError
-    );
-
-    alert(
-        "ছবির URL তৈরি করা যায়নি।"
-    );
-
-    return;
-}
-
-const { data: publicData } =
-    supabaseClient
-        .storage
-        .from("chat-files")
-        .getPublicUrl(filePath);
-
-const fileUrl =
-    publicData.publicUrl;
-const conversationId =
-    await getConversationId(
-        chatUserId
-    );
-
-if(!conversationId){
-
-    alert("Conversation পাওয়া যায়নি।");
-    return;
-
-}
-
-const {
-    data: messageData,
-    error: messageError
-} =
-await supabaseClient
-    .from("messages")
-    .insert({
-
-        conversation_id:
-            conversationId,
-
-        sender_id:
-            currentUser.id,
-
-        content:
-            file.name,
-
-        message_type:
-            file.type.startsWith("image/")
-            ? "image"
-            : file.type.startsWith("video/")
-            ? "video"
-            : "file",
-
-        file_url:
-            fileUrl
-
-    })
-    .select()
-    .single();
-
-if(messageError){
-
-    console.error(
-        "File message error:",
-        messageError
-    );
-
-    alert(
-        "ফাইল Upload হয়েছে, কিন্তু Chat-এ পাঠানো যায়নি।"
-    );
-
-    return;
-}
-
-addMessageToScreen(
-    messageData
-);
+        if(uploadError){
+            console.error(uploadError);
 
             alert(
-                "ফাইল সফলভাবে Upload হয়েছে।"
+                "File upload করা যায়নি।"
             );
 
-        }catch(error){
-
-            console.error(
-                "Upload error:",
-                error
-            );
-
-            alert(
-                "ফাইল Upload করার সময় সমস্যা হয়েছে।"
-            );
-
+            return;
         }
 
-    };
 
-    input.click();
+        const {
+            data: publicData
+        } = supabaseClient
+            .storage
+            .from("chat-files")
+            .getPublicUrl(filePath);
 
+
+        const publicUrl =
+            publicData.publicUrl;
+
+
+        let messageType =
+            "file";
+
+        if(
+            file.type.startsWith(
+                "image/"
+            )
+        ){
+            messageType = "image";
+
+        }else if(
+            file.type.startsWith(
+                "video/"
+            )
+        ){
+            messageType = "video";
+        }
+
+
+        const {
+            error: messageError
+        } = await supabaseClient
+            .from("messages")
+            .insert({
+                conversation_id:
+                    conversationId,
+                sender_id:
+                    currentUser.id,
+                content:
+                    file.name,
+                message_type:
+                    messageType,
+                file_url:
+                    publicUrl,
+                is_read:false
+            });
+
+
+        if(messageError){
+
+            console.error(
+                messageError
+            );
+
+            alert(
+                "File message পাঠানো যায়নি।"
+            );
+
+            return;
+        }
+
+
+        cancelPendingAttachment();
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "File পাঠাতে সমস্যা হয়েছে।"
+        );
+    }
 }
 
-/* =========================
-   REALTIME CHAT
-========================= */
 
-let realtimeChannel = null;
+/* =========================================================
+   CANCEL PREVIEW
+========================================================= */
 
-function startRealtimeChat(conversationId){
+function cancelPendingAttachment(){
 
-    if(!conversationId){
-        console.error("No conversation ID");
+    pendingFile = null;
+
+    pendingVoiceBlob = null;
+
+    pendingVoiceMime = null;
+
+
+    const fileInput =
+        document.getElementById(
+            "fileInput"
+        );
+
+    fileInput.value = "";
+
+
+    const area =
+        document.getElementById(
+            "previewArea"
+        );
+
+    const content =
+        document.getElementById(
+            "previewContent"
+        );
+
+    content.innerHTML = "";
+
+    area.classList.remove(
+        "show"
+    );
+}
+
+
+/* =========================================================
+   VOICE RECORDING
+========================================================= */
+
+async function toggleVoiceRecording(){
+
+    if(isRecording){
+
+        stopVoiceRecording();
+
         return;
     }
 
-    if(realtimeChannel){
 
-        supabaseClient.removeChannel(
-            realtimeChannel
+    if(
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+    ){
+
+        alert(
+            "আপনার browser voice recording support করছে না।"
         );
 
-        realtimeChannel = null;
+        return;
     }
 
-    const channelName =
-        "chat-" +
-        conversationId +
-        "-" +
-        Date.now();
 
-    realtimeChannel =
-        supabaseClient
-            .channel(channelName)
+    try{
 
-            .on(
-                "postgres_changes",
-                {
-                    event: "INSERT",
-                    schema: "public",
-                    table: "messages",
-                    filter:
-                        "conversation_id=eq." +
-                        conversationId
-                },
+        const stream =
+            await navigator.mediaDevices
+                .getUserMedia({
+                    audio:true
+                });
 
-                (payload) => {
 
-                    console.log(
-                        "REALTIME NEW MESSAGE:",
-                        payload.new
-                    );
+        let mimeType = "";
 
-                    if(
-                        payload.new.sender_id ===
-                        currentUser.id
-                    ){
-                        return;
-                    }
-
-                    addMessageToScreen(
-                        payload.new
-                    );
-                }
+        if(
+            window.MediaRecorder &&
+            MediaRecorder.isTypeSupported(
+                "audio/webm"
             )
+        ){
 
-            .subscribe((status, error) => {
+            mimeType =
+                "audio/webm";
 
-                console.log(
-                    "REALTIME STATUS:",
-                    status
-                );
+        }else if(
+            window.MediaRecorder &&
+            MediaRecorder.isTypeSupported(
+                "audio/mp4"
+            )
+        ){
 
-                if(error){
+            mimeType =
+                "audio/mp4";
+        }
 
-                    console.error(
-                        "REALTIME ERROR:",
-                        error
+
+        mediaRecorder =
+            mimeType
+                ? new MediaRecorder(
+                    stream,
+                    { mimeType }
+                  )
+                : new MediaRecorder(
+                    stream
+                  );
+
+
+        voiceChunks = [];
+
+        isRecording = true;
+
+
+        const voiceBtn =
+            document.getElementById(
+                "voiceBtn"
+            );
+
+        voiceBtn.classList.add(
+            "recording"
+        );
+
+        voiceBtn.textContent =
+            "⏹️";
+
+
+        mediaRecorder.ondataavailable =
+            event => {
+
+                if(event.data.size > 0){
+
+                    voiceChunks.push(
+                        event.data
+                    );
+                }
+            };
+
+
+        mediaRecorder.onstop =
+            () => {
+
+                const actualType =
+                    mediaRecorder.mimeType ||
+                    mimeType ||
+                    "audio/webm";
+
+                pendingVoiceBlob =
+                    new Blob(
+                        voiceChunks,
+                        {
+                            type:actualType
+                        }
                     );
 
-                }
+                pendingVoiceMime =
+                    actualType;
 
-            });
+
+                stream
+                    .getTracks()
+                    .forEach(
+                        track =>
+                            track.stop()
+                    );
+
+
+                showVoicePreview();
+            };
+
+
+        mediaRecorder.start();
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "Microphone permission দেওয়া হয়নি অথবা recording চালু করা যায়নি।"
+        );
+    }
 }
-/* =========================
-   VOICE
-========================= */
 
-function startVoice(){
 
-    alert(
-        "Voice message পরের ধাপে যোগ করা হবে।"
+function stopVoiceRecording(){
+
+    if(
+        mediaRecorder &&
+        mediaRecorder.state !== "inactive"
+    ){
+
+        mediaRecorder.stop();
+    }
+
+    isRecording = false;
+
+    const voiceBtn =
+        document.getElementById(
+            "voiceBtn"
+        );
+
+    voiceBtn.classList.remove(
+        "recording"
     );
 
+    voiceBtn.textContent =
+        "🎤";
 }
 
 
-/* =========================
-   START
-========================= */
+/* =========================================================
+   VOICE PREVIEW
+========================================================= */
 
-initChat();
+function showVoicePreview(){
+
+    const area =
+        document.getElementById(
+            "previewArea"
+        );
+
+    const content =
+        document.getElementById(
+            "previewContent"
+        );
+
+    content.innerHTML = "";
+
+
+    const audio =
+        document.createElement(
+            "audio"
+        );
+
+    audio.controls = true;
+
+    audio.src =
+        URL.createObjectURL(
+            pendingVoiceBlob
+        );
+
+    audio.style.width =
+        "230px";
+
+    content.appendChild(audio);
+
+
+    const label =
+        document.createElement(
+            "span"
+        );
+
+    label.style.marginLeft =
+        "8px";
+
+    label.textContent =
+        "🎤 Voice message";
+
+    content.appendChild(label);
+
+
+    area.classList.add(
+        "show"
+    );
+}
+
+
+/* =========================================================
+   SEND VOICE
+========================================================= */
+
+async function sendPendingVoice(){
+
+    if(!pendingVoiceBlob){
+        return;
+    }
+
+
+    try{
+
+        let extension = "webm";
+
+        if(
+            pendingVoiceMime &&
+            pendingVoiceMime.includes(
+                "mp4"
+            )
+        ){
+            extension = "mp4";
+        }
+
+
+        const filePath =
+            currentUser.id +
+            "/" +
+            Date.now() +
+            "-voice." +
+            extension;
+
+
+        const {
+            error: uploadError
+        } = await supabaseClient
+            .storage
+            .from("chat-files")
+            .upload(
+                filePath,
+                pendingVoiceBlob,
+                {
+                    cacheControl:"3600",
+                    upsert:false,
+                    contentType:
+                        pendingVoiceMime ||
+                        "audio/webm"
+                }
+            );
+
+
+        if(uploadError){
+
+            console.error(
+                uploadError
+            );
+
+            alert(
+                "Voice upload করা যায়নি।"
+            );
+
+            return;
+        }
+
+
+        const {
+            data: publicData
+        } = supabaseClient
+            .storage
+            .from("chat-files")
+            .getPublicUrl(filePath);
+
+
+        const {
+            error
+        } = await supabaseClient
+            .from("messages")
+            .insert({
+                conversation_id:
+                    conversationId,
+                sender_id:
+                    currentUser.id,
+                content:
+                    "Voice message",
+                message_type:
+                    "audio",
+                file_url:
+                    publicData.publicUrl,
+                is_read:false
+            });
+
+
+        if(error){
+
+            console.error(error);
+
+            alert(
+                "Voice message পাঠানো যায়নি।"
+            );
+
+            return;
+        }
+
+
+        cancelPendingAttachment();
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "Voice message পাঠাতে সমস্যা হয়েছে।"
+        );
+    }
+}
+
+
+/* =========================================================
+   TEXT INPUT
+========================================================= */
+
+function autoResize(element){
+
+    element.style.height =
+        "auto";
+
+    element.style.height =
+        Math.min(
+            element.scrollHeight,
+            110
+        ) + "px";
+}
+
+
+function handleEnter(event){
+
+    if(
+        event.key === "Enter" &&
+        !event.shiftKey
+    ){
+
+        event.preventDefault();
+
+        sendMessage();
+    }
+}
+
+
+/* =========================================================
+   SCROLL
+========================================================= */
+
+function scrollToBottom(smooth=true){
+
+    const box =
+        document.getElementById(
+            "messages"
+        );
+
+    box.scrollTo({
+        top:box.scrollHeight,
+        behavior:
+            smooth
+                ? "smooth"
+                : "auto"
+    });
+}
+
+
+/* =========================================================
+   BACK
+========================================================= */
+
+function goBack(){
+
+    window.location.href =
+        "index.html";
+}
+
+
+/* =========================================================
+   CALL BUTTON
+========================================================= */
+
+function startCall(){
+
+    /*
+       Real WebRTC Audio/Video calling is NOT
+       falsely marked as active here.
+
+       The database already contains:
+       calls
+       call_signals
+
+       Actual WebRTC calling can be connected
+       later using those tables.
+    */
+
+    alert(
+        "Audio/Video Call system পরের ধাপে চালু করা হবে।"
+    );
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(value){
+
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+
+
+/* =========================================================
+   PAGE VISIBILITY
+========================================================= */
+
+document.addEventListener(
+    "visibilitychange",
+    async () => {
+
+        if(
+            document.visibilityState ===
+            "visible"
+        ){
+
+            /*
+               Update own last seen.
+            */
+
+            await updateMyLastSeen();
+
+
+            /*
+               Mark currently unread incoming
+               messages as read.
+            */
+
+            if(conversationId){
+
+                const {
+                    data
+                } = await supabaseClient
+                    .from("messages")
+                    .select(`
+                        id,
+                        sender_id,
+                        is_read
+                    `)
+                    .eq(
+                        "conversation_id",
+                        conversationId
+                    )
+                    .eq(
+                        "sender_id",
+                        chatUser?.id
+                    )
+                    .eq(
+                        "is_read",
+                        false
+                    );
+
+                if(data){
+
+                    for(
+                        const message of data
+                    ){
+
+                        await markMessageAsRead(
+                            message.id
+                        );
+                    }
+                }
+            }
+        }
+    }
+);
+
+
+/* =========================================================
+   BEFORE UNLOAD
+========================================================= */
+
+window.addEventListener(
+    "beforeunload",
+    () => {
+
+        if(presenceChannel){
+
+            /*
+               Best effort only.
+            */
+
+            presenceChannel.untrack();
+        }
+    }
+);
 
 </script>
 
