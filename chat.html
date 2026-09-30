@@ -885,11 +885,41 @@ function startCall(){
 
 function openAttachment(){
 
-    alert(
-        "Photo / Video / File sharing পরের ধাপে যোগ করা হবে।"
-    );
+    const input =
+        document.createElement("input");
+
+    input.type = "file";
+
+    input.accept =
+        "image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt";
+
+    input.onchange = function(){
+
+        const file =
+            input.files[0];
+
+        if(!file){
+            return;
+        }
+
+        console.log(
+            "Selected file:",
+            file.name,
+            file.type,
+            file.size
+        );
+
+        alert(
+            "ফাইল নির্বাচন হয়েছে: " +
+            file.name
+        );
+
+    };
+
+    input.click();
 
 }
+    
 /* =========================
    REALTIME CHAT
 ========================= */
