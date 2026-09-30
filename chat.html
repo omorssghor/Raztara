@@ -890,20 +890,6 @@ function openAttachment(){
     );
 
 }
-
-
-/* =========================
-   VOICE
-========================= */
-
-function startVoice(){
-
-    alert(
-        "Voice message পরের ধাপে যোগ করা হবে।"
-    );
-
-}
-
 /* =========================
    REALTIME CHAT
 ========================= */
@@ -913,6 +899,7 @@ let realtimeChannel = null;
 function startRealtimeChat(conversationId){
 
     if(!conversationId){
+        console.error("No conversation ID");
         return;
     }
 
@@ -922,12 +909,16 @@ function startRealtimeChat(conversationId){
             realtimeChannel
         );
 
+        realtimeChannel = null;
     }
 
     realtimeChannel =
         supabaseClient
             .channel(
-                "chat-" + conversationId
+                "chat-" +
+                conversationId +
+                "-" +
+                Date.now()
             )
             .on(
                 "postgres_changes",
@@ -941,34 +932,62 @@ function startRealtimeChat(conversationId){
                 },
                 (payload) => {
 
-    console.log(
-        "Realtime message:",
-        payload.new
-    );
+                    console.log(
+                        "NEW REALTIME MESSAGE:",
+                        payload.new
+                    );
 
-    if(payload.new.sender_id === currentUser.id){
+                    /*
+                       নিজের পাঠানো message
+                       আবার screen-এ দেখাবে না
+                    */
+                    if(
+                        payload.new.sender_id ===
+                        currentUser.id
+                    ){
+                        return;
+                    }
 
-        return;
+                    addMessageToScreen(
+                        payload.new
+                    );
 
-    }
-
-    addMessageToScreen(
-        payload.new
-    );
-
-}
+                }
             )
-            .subscribe((status, err) => {
+            .subscribe(
+                (status, err) => {
 
-    console.log("Realtime status:", status);
+                    console.log(
+                        "REALTIME STATUS:",
+                        status
+                    );
 
-    if(err){
-        console.error("Realtime error:", err);
-    }
+                    if(err){
 
-});
+                        console.error(
+                            "REALTIME ERROR:",
+                            err
+                        );
+
+                    }
+
+                }
+            );
 
 }
+
+/* =========================
+   VOICE
+========================= */
+
+function startVoice(){
+
+    alert(
+        "Voice message পরের ধাপে যোগ করা হবে।"
+    );
+
+}
+
 
 /* =========================
    START
