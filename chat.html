@@ -1063,9 +1063,14 @@ if(signedError){
     return;
 }
 
-const fileUrl =
-    signedData.signedUrl;
+const { data: publicData } =
+    supabaseClient
+        .storage
+        .from("chat-files")
+        .getPublicUrl(filePath);
 
+const fileUrl =
+    publicData.publicUrl;
 const conversationId =
     await getConversationId(
         chatUserId
