@@ -941,16 +941,22 @@ function startRealtimeChat(conversationId){
                 },
                 (payload) => {
 
-                    console.log(
-                        "Realtime message:",
-                        payload.new
-                    );
+    console.log(
+        "Realtime message:",
+        payload.new
+    );
 
-                    addMessageToScreen(
-                        payload.new
-                    );
+    if(payload.new.sender_id === currentUser.id){
 
-                }
+        return;
+
+    }
+
+    addMessageToScreen(
+        payload.new
+    );
+
+}
             )
             .subscribe((status, err) => {
 
