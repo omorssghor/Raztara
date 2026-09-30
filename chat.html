@@ -883,7 +883,7 @@ function startCall(){
    ATTACHMENT
 ========================= */
 
-function openAttachment(){
+async function openAttachment(){
 
     const input =
         document.createElement("input");
@@ -893,7 +893,7 @@ function openAttachment(){
     input.accept =
         "image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt";
 
-    input.onchange = function(){
+    input.onchange = async function(){
 
         const file =
             input.files[0];
@@ -902,24 +902,80 @@ function openAttachment(){
             return;
         }
 
-        console.log(
-            "Selected file:",
-            file.name,
-            file.type,
-            file.size
-        );
+        if(!currentUser){
+            alert("আগে Login করুন।");
+            return;
+        }
 
-        alert(
-            "ফাইল নির্বাচন হয়েছে: " +
-            file.name
-        );
+        const filePath =
+            currentUser.id +
+            "/" +
+            Date.now() +
+            "_" +
+            file.name.replace(
+                /[^a-zA-Z0-9._-]/g,
+                "_"
+            );
+
+        try{
+
+            const {
+                data,
+                error
+            } =
+            await supabaseClient
+                .storage
+                .from("chat-files")
+                .upload(
+                    filePath,
+                    file,
+                    {
+                        upsert:false
+                    }
+                );
+
+            if(error){
+
+                console.error(
+                    "File upload error:",
+                    error
+                );
+
+                alert(
+                    "ফাইল Upload করা যায়নি।"
+                );
+
+                return;
+            }
+
+            console.log(
+                "FILE UPLOADED:",
+                data
+            );
+
+            alert(
+                "ফাইল সফলভাবে Upload হয়েছে।"
+            );
+
+        }catch(error){
+
+            console.error(
+                "Upload error:",
+                error
+            );
+
+            alert(
+                "ফাইল Upload করার সময় সমস্যা হয়েছে।"
+            );
+
+        }
 
     };
 
     input.click();
 
 }
-    
+
 /* =========================
    REALTIME CHAT
 ========================= */
