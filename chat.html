@@ -1472,7 +1472,6 @@ async function ensureConversation(){
 /* =========================================================
    OTHER USER
 ========================================================= */
-
 async function loadOtherUser(){
 
   const {
@@ -1511,6 +1510,75 @@ async function loadOtherUser(){
   updateStatusFromPresence();
 }
 
+
+function updateStatusFromPresence(){
+
+  if(!otherUser){
+    return;
+  }
+
+  if(
+    $("chatUserStatus").textContent ===
+    "Typing..."
+  ){
+    return;
+  }
+
+  let online = false;
+
+  try{
+
+    if(presenceChannel){
+
+      const state =
+        presenceChannel.presenceState();
+
+      online =
+        !!state[otherUserId];
+    }
+
+  }catch{}
+
+  if(online){
+
+    $("chatUserStatus").textContent =
+      "Online";
+
+    return;
+  }
+
+  const lastSeen =
+    otherUser.last_seen_at;
+
+  if(lastSeen){
+
+    $("chatUserStatus").textContent =
+      "Last seen " +
+      formatLastSeen(lastSeen);
+
+  }else{
+
+    $("chatUserStatus").textContent =
+      "Offline";
+  }
+}
+
+
+function formatLastSeen(date){
+
+  const d =
+    new Date(date);
+
+  return d.toLocaleString(
+    "bn-BD",
+    {
+      day:"numeric",
+      month:"short",
+      hour:"numeric",
+      minute:"2-digit"
+    }
+  );
+}
 /* =========================================================
    BLOCK
 ========================================================= */
