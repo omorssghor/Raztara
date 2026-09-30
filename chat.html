@@ -578,9 +578,10 @@ async function loadMessages(
         error
     } =
     await supabaseClient
-        .from("messages")
-        .select(
-            "id, sender_id, content, message_type, created_at"
+    .from("messages")
+    .select(
+        "id, sender_id, content, message_type, file_url, created_at"
+    )
         )
         .eq(
             "conversation_id",
