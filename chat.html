@@ -897,6 +897,57 @@ function startVoice(){
 
 }
 
+/* =========================
+   REALTIME CHAT
+========================= */
+
+let realtimeChannel = null;
+
+function startRealtimeChat(conversationId){
+
+    if(!conversationId){
+        return;
+    }
+
+    if(realtimeChannel){
+
+        supabaseClient.removeChannel(
+            realtimeChannel
+        );
+
+    }
+
+    realtimeChannel =
+        supabaseClient
+            .channel(
+                "chat-" + conversationId
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "INSERT",
+                    schema: "public",
+                    table: "messages",
+                    filter:
+                        "conversation_id=eq." +
+                        conversationId
+                },
+                (payload) => {
+
+                    console.log(
+                        "Realtime message:",
+                        payload.new
+                    );
+
+                    addMessageToScreen(
+                        payload.new
+                    );
+
+                }
+            )
+            .subscribe();
+
+}
 
 /* =========================
    START
