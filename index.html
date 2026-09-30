@@ -775,6 +775,25 @@ function displayUsers(users){
 
     });
 }
+    
+/* =========================
+   OPEN CHAT
+========================= */
+
+function openChat(userId){
+
+    if(!userId){
+
+        return;
+
+    }
+
+    window.location.href =
+
+        "chat.html?user=" + encodeURIComponent(userId);
+
+}
+
 
     
 /* ================= MESSAGE ================= */
