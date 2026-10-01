@@ -6,6 +6,8 @@
 
 <title>RAZTARA — Profile</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{
     box-sizing:border-box;
@@ -26,6 +28,10 @@ body{
     "Noto Sans Bengali",Arial,sans-serif;
     background:#f3f7f5;
     color:#17231e;
+}
+
+button{
+    font-family:inherit;
 }
 
 .page{
@@ -101,11 +107,11 @@ body{
     overflow-y:auto;
     -webkit-overflow-scrolling:touch;
 
-    padding:20px 14px;
+    padding:18px 14px 20px;
 }
 
 /* =========================
-   PROFILE HEADER
+   PROFILE CARD
 ========================= */
 
 .profileCard{
@@ -134,7 +140,7 @@ body{
     justify-content:center;
 
     color:#087f5b;
-    font-size:45px;
+    font-size:44px;
     font-weight:700;
 
     overflow:hidden;
@@ -161,10 +167,12 @@ body{
     color:#6d7772;
 
     font-size:14px;
+
+    word-break:break-word;
 }
 
 .status{
-    margin-top:9px;
+    margin:9px auto 0;
 
     display:inline-flex;
     align-items:center;
@@ -252,6 +260,7 @@ body{
 
 .infoValue{
     font-size:15px;
+    line-height:1.45;
 
     word-break:break-word;
 }
@@ -259,6 +268,68 @@ body{
 .private{
     color:#929b97;
     font-style:italic;
+}
+
+/* =========================
+   BIO
+========================= */
+
+.bioText{
+    white-space:pre-wrap;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.loading{
+    text-align:center;
+    padding:55px 20px;
+
+    color:#6d7772;
+}
+
+.spinner{
+    width:30px;
+    height:30px;
+
+    margin:0 auto 12px;
+
+    border:3px solid #dce9e4;
+    border-top-color:#087f5b;
+
+    border-radius:50%;
+
+    animation:spin .8s linear infinite;
+}
+
+@keyframes spin{
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+.errorBox{
+    background:white;
+
+    border-radius:18px;
+
+    padding:30px 20px;
+
+    text-align:center;
+
+    box-shadow:0 3px 14px rgba(0,0,0,.06);
+}
+
+.errorIcon{
+    font-size:42px;
+    margin-bottom:10px;
+}
+
+.errorText{
+    color:#b42318;
+    font-size:14px;
+    line-height:1.6;
 }
 
 /* =========================
@@ -308,22 +379,8 @@ body{
     color:white;
 }
 
-/* =========================
-   LOADING
-========================= */
-
-.loading{
-    text-align:center;
-    padding:50px 20px;
-
-    color:#6d7772;
-}
-
-.error{
-    text-align:center;
-    padding:40px 20px;
-
-    color:#b42318;
+.bottomButton:disabled{
+    opacity:.5;
 }
 
 /* =========================
@@ -333,7 +390,7 @@ body{
 @media(max-width:380px){
 
     .scrollArea{
-        padding:15px 10px;
+        padding:15px 10px 18px;
     }
 
     .profileCard{
@@ -356,17 +413,20 @@ body{
 
 <div class="page">
 
-    <!-- TOP -->
+    <!-- TOP BAR -->
     <header class="topBar">
 
         <button
             class="backButton"
             type="button"
-            onclick="goBack()">
+            id="backButton"
+            aria-label="Back">
             ←
         </button>
 
-        <div class="pageTitle">
+        <div
+            class="pageTitle"
+            id="pageTitle">
             Profile
         </div>
 
@@ -379,7 +439,13 @@ body{
         <div id="profileContent">
 
             <div class="loading">
-                Profile loading...
+
+                <div class="spinner"></div>
+
+                <div id="loadingText">
+                    Profile loading...
+                </div>
+
             </div>
 
         </div>
@@ -393,14 +459,14 @@ body{
         <button
             class="bottomButton"
             type="button"
-            onclick="goBack()">
+            id="bottomBackButton">
             ← Back
         </button>
 
         <button
             class="bottomButton primary"
             type="button"
-            onclick="startChat()">
+            id="messageButton">
             💬 Message
         </button>
 
@@ -411,88 +477,955 @@ body{
 
 <script>
 
-/*
-    এখন database code নেই।
-    পরের ধাপে Supabase profile data
-    এই page-এর সাথে যুক্ত করব।
-*/
+/* =====================================================
+   SUPABASE
+===================================================== */
 
+const SUPABASE_URL =
+    "https://pqyicaqpmojijjskpzcp.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+/* =====================================================
+   LANGUAGE
+===================================================== */
+
+const language =
+    localStorage.getItem("raztara_language") || "bn";
+
+const TEXT = {
+
+    bn:{
+        profile:"Profile",
+        loading:"Profile loading...",
+        back:"← Back",
+        message:"💬 Message",
+
+        private:"Private",
+
+        name:"Name",
+        username:"Username",
+        phone:"Phone",
+        email:"Email",
+        address:"Address",
+        bio:"Bio",
+
+        online:"Online",
+        lastSeen:"Last seen",
+        hidden:"Hidden",
+
+        noBio:"No bio available",
+
+        userNotFound:"User পাওয়া যায়নি।",
+        loginRequired:"Profile দেখতে Login করতে হবে।",
+        loadError:"Profile লোড করতে সমস্যা হয়েছে।",
+        messageError:"User পাওয়া যায়নি।",
+
+        userPrivate:"This user's profile information is private."
+    },
+
+    en:{
+        profile:"Profile",
+        loading:"Profile loading...",
+        back:"← Back",
+        message:"💬 Message",
+
+        private:"Private",
+
+        name:"Name",
+        username:"Username",
+        phone:"Phone",
+        email:"Email",
+        address:"Address",
+        bio:"Bio",
+
+        online:"Online",
+        lastSeen:"Last seen",
+        hidden:"Hidden",
+
+        noBio:"No bio available",
+
+        userNotFound:"User not found.",
+        loginRequired:"Please login to view this profile.",
+        loadError:"Unable to load profile.",
+        messageError:"User not found.",
+
+        userPrivate:"This user's profile information is private."
+    }
+
+};
+
+const T = TEXT[language] || TEXT.bn;
+
+document.documentElement.lang =
+    language === "en" ? "en" : "bn";
+
+document.getElementById("pageTitle").textContent =
+    T.profile;
+
+document.getElementById("loadingText").textContent =
+    T.loading;
+
+document.getElementById("bottomBackButton").textContent =
+    T.back;
+
+document.getElementById("messageButton").textContent =
+    T.message;
+
+
+/* =====================================================
+   URL USER ID
+===================================================== */
+
+const params =
+    new URLSearchParams(window.location.search);
+
+const targetUserId =
+    params.get("user");
+
+
+/* =====================================================
+   CURRENT USER
+===================================================== */
+
+let currentUser = null;
+let isFriend = false;
+let targetProfile = null;
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+function escapeHtml(value){
+
+    if(value === null || value === undefined){
+        return "";
+    }
+
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+
+function formatDate(dateValue){
+
+    if(!dateValue){
+        return "";
+    }
+
+    const date =
+        new Date(dateValue);
+
+    if(Number.isNaN(date.getTime())){
+        return "";
+    }
+
+    return date.toLocaleString(
+        language === "en" ? "en-US" : "bn-BD",
+        {
+            day:"numeric",
+            month:"short",
+            year:"numeric",
+            hour:"numeric",
+            minute:"2-digit"
+        }
+    );
+}
+
+
+function isVisible(
+    privacyValue,
+    ownProfile
+){
+
+    if(ownProfile){
+        return true;
+    }
+
+    if(privacyValue === "public"){
+        return true;
+    }
+
+    if(
+        privacyValue === "friend" &&
+        isFriend
+    ){
+        return true;
+    }
+
+    return false;
+}
+
+
+function privateText(){
+
+    return `<span class="private">${escapeHtml(T.private)}</span>`;
+
+}
+
+
+/* =====================================================
+   BACK
+===================================================== */
 
 function goBack(){
 
-    if(history.length > 1){
+    if(
+        document.referrer &&
+        history.length > 1
+    ){
 
         history.back();
 
     }else{
 
-        window.location.href = "index.html";
+        window.location.href =
+            "index.html";
 
     }
 
 }
 
+document
+    .getElementById("backButton")
+    .addEventListener(
+        "click",
+        goBack
+    );
+
+document
+    .getElementById("bottomBackButton")
+    .addEventListener(
+        "click",
+        goBack
+    );
+
+
+/* =====================================================
+   MESSAGE
+===================================================== */
 
 function startChat(){
 
-    const params =
-        new URLSearchParams(window.location.search);
+    if(!targetUserId){
 
-    const userId =
-        params.get("user");
-
-    if(!userId){
-
-        alert("User পাওয়া যায়নি।");
+        alert(T.messageError);
         return;
 
     }
 
     window.location.href =
         "chat.html?user=" +
-        encodeURIComponent(userId);
+        encodeURIComponent(targetUserId);
+
+}
+
+document
+    .getElementById("messageButton")
+    .addEventListener(
+        "click",
+        startChat
+    );
+
+
+/* =====================================================
+   FRIEND CHECK
+===================================================== */
+
+async function checkFriendship(){
+
+    if(!currentUser || !targetUserId){
+        return false;
+    }
+
+    if(
+        currentUser.id ===
+        targetUserId
+    ){
+        return false;
+    }
+
+    const { data, error } =
+        await supabaseClient
+            .from("friendships")
+            .select("id,status")
+            .eq("status","accepted")
+            .or(
+                "and(requester_id.eq." +
+                currentUser.id +
+                ",addressee_id.eq." +
+                targetUserId +
+                "),and(requester_id.eq." +
+                targetUserId +
+                ",addressee_id.eq." +
+                currentUser.id +
+                ")"
+            )
+            .limit(1);
+
+    if(error){
+
+        console.warn(
+            "Friendship check:",
+            error.message
+        );
+
+        return false;
+    }
+
+    return Array.isArray(data) &&
+           data.length > 0;
 
 }
 
 
-/*
-    Temporary profile UI
-    শুধু design পরীক্ষা করার জন্য।
-*/
+/* =====================================================
+   LOAD PROFILE
+===================================================== */
 
-function showDemoProfile(){
+async function loadProfile(){
+
+    try{
+
+        /* -------------------------
+           Login/session
+        ------------------------- */
+
+        const { data: authData } =
+            await supabaseClient.auth.getUser();
+
+        currentUser =
+            authData?.user || null;
+
+        if(!currentUser){
+
+            showError(
+                T.loginRequired
+            );
+
+            return;
+        }
+
+
+        /* -------------------------
+           Target user
+        ------------------------- */
+
+        if(!targetUserId){
+
+            showError(
+                T.userNotFound
+            );
+
+            return;
+        }
+
+
+        /* -------------------------
+           Check friendship
+        ------------------------- */
+
+        isFriend =
+            await checkFriendship();
+
+
+        const ownProfile =
+            currentUser.id === targetUserId;
+
+
+        /* -------------------------
+           Profile
+        ------------------------- */
+
+        const {
+            data: profile,
+            error: profileError
+        } =
+            await supabaseClient
+                .from("profiles")
+                .select(`
+                    id,
+                    username,
+                    full_name,
+                    avatar_url,
+                    bio,
+                    online_visibility,
+                    last_seen_at
+                `)
+                .eq("id",targetUserId)
+                .maybeSingle();
+
+
+        if(profileError){
+
+            throw profileError;
+
+        }
+
+
+        if(!profile){
+
+            showError(
+                T.userNotFound
+            );
+
+            return;
+        }
+
+
+        targetProfile =
+            profile;
+
+
+        /* -------------------------
+           Privacy
+        ------------------------- */
+
+        let privacy = null;
+
+        const {
+            data: privacyData,
+            error: privacyError
+        } =
+            await supabaseClient
+                .from("profile_privacy")
+                .select(`
+                    profile_photo,
+                    profile_info,
+                    email,
+                    phone,
+                    address,
+                    bio
+                `)
+                .eq("user_id",targetUserId)
+                .maybeSingle();
+
+
+        if(privacyError){
+
+            console.warn(
+                "Privacy:",
+                privacyError.message
+            );
+
+        }else{
+
+            privacy =
+                privacyData;
+
+        }
+
+
+        /*
+          যদি privacy row না থাকে,
+          নিরাপদ default ব্যবহার করা হবে।
+        */
+
+        if(!privacy){
+
+            privacy = {
+
+                profile_photo:"public",
+                profile_info:"public",
+                email:"only_me",
+                phone:"public",
+                address:"public",
+                bio:"public"
+
+            };
+
+        }
+
+
+        /* -------------------------
+           Phone
+        ------------------------- */
+
+        let phone = null;
+
+        const {
+            data: phoneData,
+            error: phoneError
+        } =
+            await supabaseClient
+                .from("profile_phone")
+                .select("phone,visibility")
+                .eq("user_id",targetUserId)
+                .maybeSingle();
+
+
+        if(phoneError){
+
+            console.warn(
+                "Phone:",
+                phoneError.message
+            );
+
+        }else{
+
+            phone =
+                phoneData;
+
+        }
+
+
+        /* -------------------------
+           Address
+        ------------------------- */
+
+        let address = null;
+
+        const {
+            data: addressData,
+            error: addressError
+        } =
+            await supabaseClient
+                .from("profile_address")
+                .select("address,visibility")
+                .eq("user_id",targetUserId)
+                .maybeSingle();
+
+
+        if(addressError){
+
+            console.warn(
+                "Address:",
+                addressError.message
+            );
+
+        }else{
+
+            address =
+                addressData;
+
+        }
+
+
+        /* -------------------------
+           Render
+        ------------------------- */
+
+        renderProfile({
+            profile,
+            privacy,
+            phone,
+            address,
+            ownProfile
+        });
+
+    }catch(error){
+
+        console.error(
+            "Profile error:",
+            error
+        );
+
+        showError(
+            T.loadError +
+            " " +
+            (
+                error?.message ||
+                ""
+            )
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   RENDER PROFILE
+===================================================== */
+
+function renderProfile({
+    profile,
+    privacy,
+    phone,
+    address,
+    ownProfile
+}){
 
     const content =
-        document.getElementById("profileContent");
+        document.getElementById(
+            "profileContent"
+        );
+
+
+    /* =========================
+       PROFILE INFO PRIVACY
+    ========================== */
+
+    const infoAllowed =
+        isVisible(
+            privacy.profile_info,
+            ownProfile
+        );
+
+
+    /* =========================
+       PHOTO PRIVACY
+    ========================== */
+
+    const photoAllowed =
+        isVisible(
+            privacy.profile_photo,
+            ownProfile
+        );
+
+
+    /* =========================
+       BIO PRIVACY
+    ========================== */
+
+    const bioAllowed =
+        isVisible(
+            privacy.bio,
+            ownProfile
+        );
+
+
+    /* =========================
+       PHONE PRIVACY
+
+       profile_phone RLS also
+       protects the actual row.
+    ========================== */
+
+    let phoneAllowed = false;
+
+    if(ownProfile){
+
+        phoneAllowed = true;
+
+    }else if(
+        phone &&
+        isVisible(
+            privacy.phone,
+            false
+        ) &&
+        isVisible(
+            phone.visibility || privacy.phone,
+            false
+        )
+    ){
+
+        phoneAllowed = true;
+
+    }
+
+
+    /* =========================
+       ADDRESS PRIVACY
+    ========================== */
+
+    let addressAllowed = false;
+
+    if(ownProfile){
+
+        addressAllowed = true;
+
+    }else if(
+        address &&
+        isVisible(
+            privacy.address,
+            false
+        ) &&
+        isVisible(
+            address.visibility || privacy.address,
+            false
+        )
+    ){
+
+        addressAllowed = true;
+
+    }
+
+
+    /* =========================
+       PHOTO
+    ========================== */
+
+    let avatarHtml = "";
+
+    if(photoAllowed && profile.avatar_url){
+
+        avatarHtml = `
+            <img
+                src="${escapeHtml(profile.avatar_url)}"
+                alt="Profile photo"
+                loading="eager">
+        `;
+
+    }else{
+
+        avatarHtml = "👤";
+
+    }
+
+
+    /* =========================
+       NAME / USERNAME
+    ========================== */
+
+    let nameHtml = "";
+    let usernameHtml = "";
+
+    if(infoAllowed){
+
+        nameHtml = escapeHtml(
+            profile.full_name ||
+            profile.username ||
+            "User"
+        );
+
+        if(profile.username){
+
+            usernameHtml =
+                "@" +
+                escapeHtml(
+                    profile.username
+                );
+
+        }
+
+    }else{
+
+        nameHtml =
+            escapeHtml(
+                T.private
+            );
+
+        usernameHtml = "";
+
+    }
+
+
+    /* =========================
+       ONLINE STATUS
+    ========================== */
+
+    let statusHtml = "";
+
+    const onlineVisibility =
+        profile.online_visibility ||
+        "everyone";
+
+
+    let onlineAllowed = false;
+
+    if(ownProfile){
+
+        onlineAllowed = true;
+
+    }else if(
+        onlineVisibility ===
+        "everyone"
+    ){
+
+        onlineAllowed = true;
+
+    }else if(
+        onlineVisibility ===
+        "friends" &&
+        isFriend
+    ){
+
+        onlineAllowed = true;
+
+    }
+
+
+    if(onlineAllowed){
+
+        /*
+          last_seen_at-এর ভিত্তিতে
+          শুধু status দেখানো হচ্ছে।
+        */
+
+        const lastSeen =
+            profile.last_seen_at;
+
+        if(lastSeen){
+
+            statusHtml = `
+                <div class="status">
+                    <span class="statusDot"></span>
+                    ${escapeHtml(T.lastSeen)}
+                    ${escapeHtml(formatDate(lastSeen))}
+                </div>
+            `;
+
+        }else{
+
+            statusHtml = `
+                <div class="status">
+                    <span class="statusDot"></span>
+                    ${escapeHtml(T.online)}
+                </div>
+            `;
+
+        }
+
+    }else{
+
+        statusHtml = `
+            <div class="status">
+                ${escapeHtml(T.hidden)}
+            </div>
+        `;
+
+    }
+
+
+    /* =========================
+       PHONE
+    ========================== */
+
+    let phoneValue =
+        privateText();
+
+    if(
+        phoneAllowed &&
+        phone?.phone
+    ){
+
+        phoneValue =
+            escapeHtml(
+                phone.phone
+            );
+
+    }
+
+
+    /* =========================
+       ADDRESS
+    ========================== */
+
+    let addressValue =
+        privateText();
+
+    if(
+        addressAllowed &&
+        address?.address
+    ){
+
+        addressValue =
+            escapeHtml(
+                address.address
+            );
+
+    }
+
+
+    /* =========================
+       EMAIL
+       
+       Current auth email can safely
+       be shown for own profile.
+       
+       For another user, auth.users
+       email is intentionally NOT
+       fetched/exposed from frontend.
+    ========================== */
+
+    let emailValue =
+        privateText();
+
+    if(
+        ownProfile &&
+        currentUser.email
+    ){
+
+        emailValue =
+            escapeHtml(
+                currentUser.email
+            );
+
+    }
+
+
+    /*
+      For another user, even if
+      profile_privacy.email says public,
+      there is currently no dedicated
+      public email table in this schema.
+      Therefore keep it Private.
+    */
+
+
+    /* =========================
+       BIO
+    ========================== */
+
+    let bioValue =
+        privateText();
+
+    if(bioAllowed){
+
+        bioValue =
+            profile.bio
+            ? `
+                <span class="bioText">
+                    ${escapeHtml(profile.bio)}
+                </span>
+              `
+            : `
+                <span class="private">
+                    ${escapeHtml(T.noBio)}
+                </span>
+              `;
+
+    }
+
+
+    /* =========================
+       FULL HTML
+    ========================== */
 
     content.innerHTML = `
 
         <section class="profileCard">
 
             <div class="avatar">
-                👤
+                ${avatarHtml}
             </div>
 
             <div class="name">
-                Chat User
+                ${nameHtml}
             </div>
 
-            <div class="username">
-                @username
-            </div>
+            ${
+                usernameHtml
+                ? `
+                    <div class="username">
+                        ${usernameHtml}
+                    </div>
+                  `
+                : ""
+            }
 
-            <div class="status">
-
-                <span class="statusDot"></span>
-
-                Online
-
-            </div>
+            ${statusHtml}
 
         </section>
 
 
         <section class="infoCard">
+
+            <!-- NAME -->
 
             <div class="infoRow">
 
@@ -503,17 +1436,52 @@ function showDemoProfile(){
                 <div class="infoContent">
 
                     <div class="infoLabel">
-                        Name
+                        ${escapeHtml(T.name)}
                     </div>
 
                     <div class="infoValue">
-                        Chat User
+                        ${nameHtml}
                     </div>
 
                 </div>
 
             </div>
 
+
+            <!-- USERNAME -->
+
+            ${
+                profile.username
+                ? `
+                    <div class="infoRow">
+
+                        <div class="infoIcon">
+                            @
+                        </div>
+
+                        <div class="infoContent">
+
+                            <div class="infoLabel">
+                                ${escapeHtml(T.username)}
+                            </div>
+
+                            <div class="infoValue">
+                                ${
+                                    infoAllowed
+                                    ? "@"+escapeHtml(profile.username)
+                                    : privateText()
+                                }
+                            </div>
+
+                        </div>
+
+                    </div>
+                  `
+                : ""
+            }
+
+
+            <!-- PHONE -->
 
             <div class="infoRow">
 
@@ -524,17 +1492,19 @@ function showDemoProfile(){
                 <div class="infoContent">
 
                     <div class="infoLabel">
-                        Phone
+                        ${escapeHtml(T.phone)}
                     </div>
 
                     <div class="infoValue">
-                        Private
+                        ${phoneValue}
                     </div>
 
                 </div>
 
             </div>
 
+
+            <!-- EMAIL -->
 
             <div class="infoRow">
 
@@ -545,17 +1515,19 @@ function showDemoProfile(){
                 <div class="infoContent">
 
                     <div class="infoLabel">
-                        Email
+                        ${escapeHtml(T.email)}
                     </div>
 
-                    <div class="infoValue private">
-                        Private
+                    <div class="infoValue">
+                        ${emailValue}
                     </div>
 
                 </div>
 
             </div>
 
+
+            <!-- ADDRESS -->
 
             <div class="infoRow">
 
@@ -566,17 +1538,19 @@ function showDemoProfile(){
                 <div class="infoContent">
 
                     <div class="infoLabel">
-                        Address
+                        ${escapeHtml(T.address)}
                     </div>
 
-                    <div class="infoValue private">
-                        Private
+                    <div class="infoValue">
+                        ${addressValue}
                     </div>
 
                 </div>
 
             </div>
 
+
+            <!-- BIO -->
 
             <div class="infoRow">
 
@@ -587,11 +1561,11 @@ function showDemoProfile(){
                 <div class="infoContent">
 
                     <div class="infoLabel">
-                        Bio
+                        ${escapeHtml(T.bio)}
                     </div>
 
                     <div class="infoValue">
-                        No bio available
+                        ${bioValue}
                     </div>
 
                 </div>
@@ -605,8 +1579,41 @@ function showDemoProfile(){
 }
 
 
-/* Demo profile দেখানো */
-showDemoProfile();
+/* =====================================================
+   ERROR
+===================================================== */
+
+function showError(message){
+
+    const content =
+        document.getElementById(
+            "profileContent"
+        );
+
+    content.innerHTML = `
+
+        <div class="errorBox">
+
+            <div class="errorIcon">
+                ⚠️
+            </div>
+
+            <div class="errorText">
+                ${escapeHtml(message)}
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+loadProfile();
 
 </script>
 
