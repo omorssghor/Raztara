@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#087f5b">
+
+<title>Profile Privacy | Raztara</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f5f7f8;
+    color:#222;
+}
+
+.topbar{
+    height:60px;
+    background:#087f5b;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    padding:0 12px;
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    z-index:100;
+    box-shadow:0 2px 6px rgba(0,0,0,.12);
+}
+
+.back{
+    width:42px;
+    height:42px;
+    border:0;
+    background:transparent;
+    color:#fff;
+    font-size:30px;
+    cursor:pointer;
+}
+
+.title{
+    font-size:19px;
+    font-weight:bold;
+    margin-left:4px;
+}
+
+.container{
+    max-width:650px;
+    margin:auto;
+    padding:76px 14px 30px;
+}
+
+.intro{
+    background:#e9f7f2;
+    color:#075b42;
+    padding:14px;
+    border-radius:12px;
+    margin-bottom:14px;
+    font-size:14px;
+    line-height:1.5;
+}
+
+.section{
+    background:#fff;
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 1px 5px rgba(0,0,0,.08);
+    margin-bottom:14px;
+}
+
+.section-title{
+    padding:15px;
+    border-bottom:1px solid #eee;
+    font-weight:bold;
+    color:#087f5b;
+    font-size:16px;
+}
+
+.item{
+    padding:15px;
+    border-bottom:1px solid #eee;
+}
+
+.item:last-child{
+    border-bottom:0;
+}
+
+.item-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+}
+
+.info{
+    flex:1;
+}
+
+.name{
+    font-size:15px;
+    font-weight:bold;
+}
+
+.desc{
+    margin-top:5px;
+    color:#777;
+    font-size:12px;
+    line-height:1.4;
+}
+
+select{
+    min-width:125px;
+    padding:9px 10px;
+    border:1px solid #ccc;
+    border-radius:9px;
+    background:#fff;
+    font-size:13px;
+    outline:none;
+}
+
+select:focus{
+    border-color:#087f5b;
+}
+
+.save{
+    width:100%;
+    border:0;
+    border-radius:12px;
+    background:#087f5b;
+    color:#fff;
+    padding:14px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.save:disabled{
+    opacity:.6;
+}
+
+.loading{
+    text-align:center;
+    padding:35px 10px;
+    color:#777;
+}
+
+.message{
+    position:fixed;
+    left:15px;
+    right:15px;
+    bottom:20px;
+    background:#222;
+    color:#fff;
+    padding:13px 15px;
+    border-radius:10px;
+    text-align:center;
+    display:none;
+    z-index:500;
+    font-size:14px;
+}
+
+.message.show{
+    display:block;
+}
+
+@media(max-width:480px){
+
+    .item-row{
+        align-items:flex-start;
+    }
+
+    select{
+        min-width:115px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <button
+        class="back"
+        id="backBtn"
+        aria-label="Back">
+        ‹
+    </button>
+
+    <div class="title">
+        🔒 Profile Privacy
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <div
+        id="loading"
+        class="loading">
+        Profile Privacy লোড হচ্ছে...
+    </div>
+
+
+    <div id="content" style="display:none;">
+
+        <div class="intro">
+            আপনার Profile-এর কোন তথ্য কে দেখতে পারবে
+            তা এখান থেকে নিয়ন্ত্রণ করুন।
+        </div>
+
+
+        <!-- PROFILE -->
+        <section class="section">
+
+            <div class="section-title">
+                👤 Profile
+            </div>
+
+
+            <!-- Profile Photo -->
+            <div class="item">
+
+                <div class="item-row">
+
+                    <div class="info">
+
+                        <div class="name">
+                            🖼️ Profile Photo
+                        </div>
+
+                        <div class="desc">
+                            আপনার Profile Photo কে দেখতে পারবে
+                        </div>
+
+                    </div>
+
+
+                    <select id="profilePhoto">
+
+                        <option value="public">
+                            Everyone
+                        </option>
+
+                        <option value="friend">
+                            Friends
+                        </option>
+
+                        <option value="only_me">
+                            Only me
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- Profile Information -->
+            <div class="item">
+
+                <div class="item-row">
+
+                    <div class="info">
+
+                        <div class="name">
+                            👤 Profile Information
+                        </div>
+
+                        <div class="desc">
+                            আপনার নাম ও username কে দেখতে পারবে
+                        </div>
+
+                    </div>
+
+
+                    <select id="profileInfo">
+
+                        <option value="public">
+                            Everyone
+                        </option>
+
+                        <option value="friend">
+                            Friends
+                        </option>
+
+                        <option value="only_me">
+                            Only me
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- Bio -->
+            <div class="item">
+
+                <div class="item-row">
+
+                    <div class="info">
+
+                        <div class="name">
+                            📝 Bio
+                        </div>
+
+                        <div class="desc">
+                            আপনার Bio কে দেখতে পারবে
+                        </div>
+
+                    </div>
+
+
+                    <select id="bio">
+
+                        <option value="public">
+                            Everyone
+                        </option>
+
+                        <option value="friend">
+                            Friends
+                        </option>
+
+                        <option value="only_me">
+                            Only me
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- CONTACT -->
+        <section class="section">
+
+            <div class="section-title">
+                📞 Contact Information
+            </div>
+
+
+            <!-- Email -->
+            <div class="item">
+
+                <div class="item-row">
+
+                    <div class="info">
+
+                        <div class="name">
+                            📧 Email
+                        </div>
+
+                        <div class="desc">
+                            আপনার Email কে দেখতে পারবে
+                        </div>
+
+                    </div>
+
+
+                    <select id="email">
+
+                        <option value="public">
+                            Everyone
+                        </option>
+
+                        <option value="friend">
+                            Friends
+                        </option>
+
+                        <option value="only_me">
+                            Only me
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- Phone -->
+            <div class="item">
+
+                <div class="item-row">
+
+                    <div class="info">
+
+                        <div class="name">
+                            📱 Phone Number
+                        </div>
+
+                        <div class="desc">
+                            আপনার ফোন নম্বর কে দেখতে পারবে
+                        </div>
+
+                    </div>
+
+
+                    <select id="phone">
+
+                        <option value="public">
+                            Everyone
+                        </option>
+
+                        <option value="friend">
+                            Friends
+                        </option>
+
+                        <option value="only_me">
+                            Only me
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- Address -->
+            <div class="item">
+
+                <div class="item-row">
+
+                    <div class="info">
+
+                        <div class="name">
+                            🏠 Address
+                        </div>
+
+                        <div class="desc">
+                            আপনার Address কে দেখতে পারবে
+                        </div>
+
+                    </div>
+
+
+                    <select id="address">
+
+                        <option value="public">
+                            Everyone
+                        </option>
+
+                        <option value="friend">
+                            Friends
+                        </option>
+
+                        <option value="only_me">
+                            Only me
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <button
+            class="save"
+            id="saveBtn">
+            💾 Save Privacy Settings
+        </button>
+
+    </div>
+
+</main>
+
+
+<div
+    class="message"
+    id="message">
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+    "https://pqyicaqpmojijjskpzcp.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+const $ = id =>
+    document.getElementById(id);
+
+
+let currentUser = null;
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function showMessage(text){
+
+    const box = $("message");
+
+    box.textContent = text;
+
+    box.classList.add("show");
+
+    setTimeout(() => {
+
+        box.classList.remove("show");
+
+    },3000);
+}
+
+
+/* =========================
+   CHECK LOGIN
+========================= */
+
+async function checkUser(){
+
+    const {
+        data,
+        error
+    } = await supabaseClient.auth.getUser();
+
+
+    if(error || !data.user){
+
+        window.location.href =
+            "login.html";
+
+        return false;
+    }
+
+
+    currentUser = data.user;
+
+    return true;
+}
+
+
+/* =========================
+   LOAD PRIVACY
+========================= */
+
+async function loadPrivacy(){
+
+    try{
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("profile_privacy")
+            .select(`
+                user_id,
+                profile_photo,
+                profile_info,
+                email,
+                phone,
+                address,
+                bio
+            `)
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .maybeSingle();
+
+
+        if(error){
+
+            throw error;
+        }
+
+
+        /*
+         * যদি নতুন user-এর row না থাকে,
+         * তাহলে default settings তৈরি হবে।
+         */
+
+        if(!data){
+
+            const {
+                data:newData,
+                error:insertError
+            } = await supabaseClient
+                .from("profile_privacy")
+                .insert({
+
+                    user_id:
+                        currentUser.id,
+
+                    profile_photo:
+                        "public",
+
+                    profile_info:
+                        "public",
+
+                    email:
+                        "only_me",
+
+                    phone:
+                        "public",
+
+                    address:
+                        "public",
+
+                    bio:
+                        "public"
+
+                })
+                .select()
+                .single();
+
+
+            if(insertError){
+
+                throw insertError;
+            }
+
+
+            setValues(newData);
+
+        }else{
+
+            setValues(data);
+        }
+
+
+        $("loading").style.display =
+            "none";
+
+        $("content").style.display =
+            "block";
+
+
+    }catch(error){
+
+        console.error(
+            "Privacy load error:",
+            error
+        );
+
+
+        $("loading").textContent =
+            "Profile Privacy লোড করতে সমস্যা হয়েছে: " +
+            (
+                error.message ||
+                "Unknown error"
+            );
+    }
+}
+
+
+/* =========================
+   SET VALUES
+========================= */
+
+function setValues(data){
+
+    $("profilePhoto").value =
+        data.profile_photo ||
+        "public";
+
+
+    $("profileInfo").value =
+        data.profile_info ||
+        "public";
+
+
+    $("bio").value =
+        data.bio ||
+        "public";
+
+
+    $("email").value =
+        data.email ||
+        "only_me";
+
+
+    $("phone").value =
+        data.phone ||
+        "public";
+
+
+    $("address").value =
+        data.address ||
+        "public";
+}
+
+
+/* =========================
+   SAVE
+========================= */
+
+async function savePrivacy(){
+
+    const button =
+        $("saveBtn");
+
+
+    button.disabled = true;
+
+    button.textContent =
+        "Saving...";
+
+
+    try{
+
+        const {
+            error
+        } = await supabaseClient
+            .from("profile_privacy")
+            .upsert({
+
+                user_id:
+                    currentUser.id,
+
+                profile_photo:
+                    $("profilePhoto").value,
+
+                profile_info:
+                    $("profileInfo").value,
+
+                email:
+                    $("email").value,
+
+                phone:
+                    $("phone").value,
+
+                address:
+                    $("address").value,
+
+                bio:
+                    $("bio").value,
+
+                updated_at:
+                    new Date().toISOString()
+
+            },{
+                onConflict:
+                    "user_id"
+            });
+
+
+        if(error){
+
+            throw error;
+        }
+
+
+        showMessage(
+            "✅ Profile Privacy Save হয়েছে"
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Privacy save error:",
+            error
+        );
+
+
+        showMessage(
+            "❌ Save করতে সমস্যা হয়েছে: " +
+            (
+                error.message ||
+                "Unknown error"
+            )
+        );
+
+
+    }finally{
+
+        button.disabled = false;
+
+        button.textContent =
+            "💾 Save Privacy Settings";
+    }
+}
+
+
+/* =========================
+   BACK
+========================= */
+
+$("backBtn").addEventListener(
+    "click",
+    () => {
+
+        if(
+            document.referrer &&
+            history.length > 1
+        ){
+
+            history.back();
+
+        }else{
+
+            window.location.href =
+                "index.html";
+        }
+
+    }
+);
+
+
+/* =========================
+   SAVE BUTTON
+========================= */
+
+$("saveBtn").addEventListener(
+    "click",
+    savePrivacy
+);
+
+
+/* =========================
+   START
+========================= */
+
+(async function(){
+
+    const loggedIn =
+        await checkUser();
+
+
+    if(!loggedIn){
+
+        return;
+    }
+
+
+    await loadPrivacy();
+
+})();
+
+</script>
+
+</body>
+</html>
