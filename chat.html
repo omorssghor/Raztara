@@ -900,17 +900,35 @@ const supabaseClient =
 
 
 let currentUser = null;
-let otherUserId = null;
+let otherUserId = "";
 let targetUser = null;
 let isBlocked = false;
 
-const params =
-    new URLSearchParams(location.search);
+
+/* =========================
+   TARGET USER ID
+========================= */
+
+function getTargetUserId(){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const userId =
+        params.get("user") ||
+        params.get("id") ||
+        params.get("user_id") ||
+        params.get("uid") ||
+        "";
+
+    return String(userId).trim();
+}
+
 
 otherUserId =
-    params.get("user") ||
-    params.get("id") ||
-    "";
+    getTargetUserId();
 
 
 /* =========================
@@ -1178,11 +1196,6 @@ async function loadBlockStatus(){
 
     if(error){
 
-        /*
-         * যদি row না পাওয়া যায়,
-         * PGRST116 নয়—maybeSingle-এর কারণে
-         * data null হবে।
-         */
         if(error.code !== "PGRST116"){
             throw error;
         }
@@ -1195,7 +1208,6 @@ async function loadBlockStatus(){
 
 
 function updateBlockedUI(){
-
 
     const blockedBox =
         document.getElementById(
@@ -1212,12 +1224,15 @@ function updateBlockedUI(){
             "profileBlockButton"
         );
 
+    /*
+     * এখানে আগের messageButton
+     * reference সরানো হয়েছে।
+     *
+     * কারণ chat.html-এ ওই button
+     * আর নেই।
+     */
+
     if(isBlocked){
-
-        messageButton.disabled = true;
-
-        messageButton.textContent =
-            "🚫 Block করা আছে";
 
         blockedBox.style.display =
             "block";
@@ -1229,11 +1244,6 @@ function updateBlockedUI(){
             "🔓 Unblock";
 
     }else{
-
-        messageButton.disabled = false;
-
-        messageButton.textContent =
-            "💬 মেসেজ খুলুন";
 
         blockedBox.style.display =
             "none";
@@ -1384,7 +1394,11 @@ async function unblockUser(){
 function openMessages(){
 
     if(!otherUserId){
-        showError("User ID পাওয়া যায়নি।");
+
+        showError(
+            "User ID পাওয়া যায়নি।"
+        );
+
         return;
     }
 
@@ -1399,7 +1413,9 @@ function openMessages(){
 
     location.href =
         "messages.html?user=" +
-        encodeURIComponent(otherUserId);
+        encodeURIComponent(
+            otherUserId
+        );
 }
 
 
@@ -1420,7 +1436,9 @@ function openGallery(){
 
     location.href =
         "gallery.html?user=" +
-        encodeURIComponent(otherUserId);
+        encodeURIComponent(
+            otherUserId
+        );
 }
 
 
@@ -1439,11 +1457,6 @@ function startAudioCall(){
         return;
     }
 
-    /*
-     * এখানে এখনো WebRTC signaling নেই।
-     * তাই ভুলভাবে fake call শুরু না করে
-     * প্রস্তুত বার্তা দেখানো হচ্ছে।
-     */
     showToast(
         "📞 Audio Call system প্রস্তুত করা হয়েছে।"
     );
@@ -1465,10 +1478,6 @@ function startVideoCall(){
         return;
     }
 
-    /*
-     * WebRTC signaling/server flow
-     * এখনো আলাদা করে implement করা হয়নি।
-     */
     showToast(
         "📹 Video Call system প্রস্তুত করা হয়েছে।"
     );
@@ -1605,12 +1614,12 @@ document
     );
 
 
-document
-    .getElementById("openMessageButton")
-    .addEventListener(
-        "click",
-        openMessages
-    );
+/*
+ * openMessageButton-এর listener
+ * সরানো হয়েছে।
+ *
+ * কারণ HTML-এ ওই button নেই।
+ */
 
 
 document
