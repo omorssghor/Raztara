@@ -2,9 +2,11 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 
 <title>RAZTARA — Chat</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{
@@ -16,258 +18,1971 @@
 html,
 body{
     width:100%;
-    height:100%;
+    min-height:100%;
 }
 
 body{
-    margin:0;
-    background:#f3f7f5;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",
-    Roboto,"Noto Sans Bengali",Arial,sans-serif;
-    color:#17231e;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:#f2f5f7;
+    color:#17212b;
 }
 
-.loading{
-    width:100%;
-    height:100dvh;
+button{
+    font:inherit;
+}
 
+button:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+}
+
+.header{
+    position:sticky;
+    top:0;
+    z-index:30;
+    height:64px;
+    background:#087f5b;
+    color:#fff;
     display:flex;
-    flex-direction:column;
     align-items:center;
-    justify-content:center;
-
-    gap:14px;
+    gap:10px;
+    padding:0 12px;
+    box-shadow:0 2px 8px rgba(0,0,0,.16);
 }
 
-.loader{
+.back-btn{
     width:42px;
     height:42px;
-
-    border:4px solid #d9eee7;
-    border-top-color:#087f5b;
-
+    border:0;
     border-radius:50%;
-
-    animation:spin .8s linear infinite;
+    background:rgba(255,255,255,.12);
+    color:#fff;
+    font-size:31px;
+    line-height:1;
+    cursor:pointer;
+    flex:none;
 }
 
-.loadingText{
-    font-size:15px;
-    color:#087f5b;
-    font-weight:600;
+.header-avatar{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#dce5e1;
+    flex:none;
 }
 
-.errorBox{
-    display:none;
+.header-info{
+    flex:1;
+    min-width:0;
+}
 
-    position:fixed;
-    left:50%;
-    top:50%;
+.header-name{
+    font-size:17px;
+    font-weight:800;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
 
-    transform:translate(-50%,-50%);
+.header-status{
+    margin-top:2px;
+    font-size:11px;
+    opacity:.88;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
 
-    width:calc(100% - 40px);
-    max-width:420px;
+.header-actions{
+    display:flex;
+    align-items:center;
+    gap:4px;
+}
 
-    background:white;
+.header-action{
+    width:38px;
+    height:38px;
+    border:0;
+    border-radius:50%;
+    background:rgba(255,255,255,.12);
+    color:#fff;
+    cursor:pointer;
+    font-size:18px;
+}
 
-    border-radius:18px;
+.menu-btn{
+    font-size:23px;
+}
 
-    padding:24px 20px;
+.page{
+    max-width:700px;
+    margin:auto;
+    padding:16px;
+}
 
+.main-card{
+    background:#fff;
+    border-radius:20px;
+    padding:24px 18px;
     text-align:center;
-
-    box-shadow:0 8px 30px rgba(0,0,0,.12);
+    box-shadow:0 3px 12px rgba(0,0,0,.07);
 }
 
-.errorBox.show{
+.big-avatar{
+    width:110px;
+    height:110px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#e4ebe8;
+    margin:4px auto 14px;
     display:block;
 }
 
-.errorIcon{
-    font-size:42px;
-    margin-bottom:12px;
+.main-name{
+    font-size:23px;
+    font-weight:800;
 }
 
-.errorTitle{
-    font-size:18px;
-    font-weight:700;
-    margin-bottom:8px;
+.main-username{
+    color:#718096;
+    font-size:13px;
+    margin-top:4px;
 }
 
-.errorText{
-    color:#66736d;
+.main-bio{
+    margin:13px auto 18px;
+    max-width:520px;
+    color:#52606d;
+    line-height:1.55;
     font-size:14px;
-    line-height:1.6;
 }
 
-.backButton{
-    margin-top:18px;
+.main-status{
+    color:#087f5b;
+    font-size:13px;
+    font-weight:700;
+    margin-bottom:18px;
+}
 
+.open-message{
     width:100%;
-    height:46px;
-
     border:0;
-    border-radius:23px;
-
     background:#087f5b;
-    color:white;
-
+    color:#fff;
+    border-radius:13px;
+    padding:13px;
+    font-weight:800;
+    cursor:pointer;
     font-size:15px;
+}
+
+.blocked-box{
+    display:none;
+    margin-top:13px;
+    background:#fff1f2;
+    color:#9f1239;
+    border-radius:12px;
+    padding:12px;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.error-box{
+    display:none;
+    background:#fee2e2;
+    color:#991b1b;
+    border-radius:12px;
+    padding:12px;
+    margin-bottom:13px;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.toast{
+    position:fixed;
+    z-index:200;
+    left:50%;
+    bottom:25px;
+    transform:translateX(-50%) translateY(20px);
+    background:#17212b;
+    color:#fff;
+    padding:11px 16px;
+    border-radius:12px;
+    font-size:13px;
+    opacity:0;
+    pointer-events:none;
+    transition:.25s;
+    max-width:90%;
+    text-align:center;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+}
+
+/* MENU */
+
+.menu-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:80;
+    background:rgba(0,0,0,.35);
+}
+
+.menu-overlay.show{
+    display:block;
+}
+
+.menu-sheet{
+    position:absolute;
+    right:12px;
+    top:67px;
+    width:245px;
+    max-width:calc(100vw - 24px);
+    background:#fff;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 8px 30px rgba(0,0,0,.22);
+}
+
+.menu-item{
+    width:100%;
+    border:0;
+    background:#fff;
+    text-align:left;
+    padding:14px 16px;
+    color:#17212b;
+    cursor:pointer;
+    font-size:14px;
+    border-bottom:1px solid #edf0f2;
+}
+
+.menu-item:last-child{
+    border-bottom:0;
+}
+
+.menu-item:active{
+    background:#f1f5f7;
+}
+
+/* PROFILE */
+
+.profile-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:100;
+    background:rgba(0,0,0,.48);
+    align-items:flex-end;
+}
+
+.profile-overlay.show{
+    display:flex;
+}
+
+.profile-sheet{
+    width:100%;
+    max-height:88vh;
+    overflow:auto;
+    background:#fff;
+    border-radius:22px 22px 0 0;
+    padding:20px 16px calc(20px + env(safe-area-inset-bottom));
+    animation:sheetUp .22s ease;
+}
+
+@keyframes sheetUp{
+    from{
+        transform:translateY(100%);
+    }
+    to{
+        transform:translateY(0);
+    }
+}
+
+.profile-top{
+    text-align:center;
+    margin-bottom:18px;
+}
+
+.profile-avatar{
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#e5ebe8;
+}
+
+.profile-name{
+    margin-top:10px;
+    font-size:20px;
+    font-weight:800;
+}
+
+.profile-username{
+    color:#718096;
+    font-size:13px;
+    margin-top:3px;
+}
+
+.profile-bio{
+    color:#52606d;
+    font-size:14px;
+    line-height:1.5;
+    margin-top:10px;
+}
+
+.profile-actions{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:9px;
+    margin-top:18px;
+}
+
+.profile-action{
+    border:0;
+    border-radius:12px;
+    padding:12px 8px;
+    background:#edf6f2;
+    color:#087f5b;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.profile-action.danger{
+    background:#fff1f2;
+    color:#b42318;
+}
+
+.profile-close{
+    width:100%;
+    border:0;
+    background:#eef1f3;
+    color:#374151;
+    border-radius:12px;
+    padding:12px;
+    margin-top:12px;
+    cursor:pointer;
     font-weight:700;
 }
 
-@keyframes spin{
-    to{
-        transform:rotate(360deg);
+/* INFO */
+
+.info-box{
+    margin-top:18px;
+    background:#f6f8f9;
+    border-radius:14px;
+    padding:14px;
+    text-align:left;
+}
+
+.info-row{
+    padding:9px 0;
+    border-bottom:1px solid #e7ebee;
+}
+
+.info-row:last-child{
+    border-bottom:0;
+}
+
+.info-label{
+    color:#6b7280;
+    font-size:11px;
+}
+
+.info-value{
+    margin-top:3px;
+    font-size:14px;
+    word-break:break-word;
+}
+
+/* BLOCK CONFIRM */
+
+.confirm-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:150;
+    background:rgba(0,0,0,.48);
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.confirm-overlay.show{
+    display:flex;
+}
+
+.confirm-box{
+    width:100%;
+    max-width:360px;
+    background:#fff;
+    border-radius:18px;
+    padding:20px;
+}
+
+.confirm-title{
+    font-size:18px;
+    font-weight:800;
+}
+
+.confirm-text{
+    margin-top:8px;
+    color:#64748b;
+    line-height:1.5;
+    font-size:13px;
+}
+
+.confirm-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:18px;
+}
+
+.confirm-actions button{
+    border:0;
+    border-radius:11px;
+    padding:11px;
+    cursor:pointer;
+    font-weight:700;
+}
+
+.cancel-btn{
+    background:#eef1f3;
+}
+
+.confirm-danger{
+    background:#b42318;
+    color:#fff;
+}
+
+/* SMALL SCREEN */
+
+@media(max-width:520px){
+
+    .header{
+        padding-left:8px;
+        padding-right:8px;
     }
+
+    .header-action{
+        width:35px;
+        height:35px;
+    }
+
+    .header-name{
+        font-size:15px;
+    }
+
+    .header-status{
+        font-size:10px;
+    }
+
+    .page{
+        padding:12px;
+    }
+
+    .main-card{
+        padding:22px 14px;
+    }
+
 }
 </style>
 </head>
 
 <body>
 
-<div
-    class="loading"
-    id="loading">
-
-    <div class="loader"></div>
-
-    <div class="loadingText">
-        Chat চালু হচ্ছে...
-    </div>
-
-</div>
-
-<div
-    class="errorBox"
-    id="errorBox">
-
-    <div class="errorIcon">
-        ⚠️
-    </div>
-
-    <div class="errorTitle">
-        Chat খোলা যাচ্ছে না
-    </div>
-
-    <div
-        class="errorText"
-        id="errorText">
-    </div>
+<header class="header">
 
     <button
-        class="backButton"
+        class="back-btn"
+        id="backButton"
         type="button"
-        onclick="goHome()">
-        ফিরে যান
-    </button>
+        aria-label="Back"
+    >‹</button>
+
+    <img
+        id="headerAvatar"
+        class="header-avatar"
+        src=""
+        alt=""
+    >
+
+    <div class="header-info">
+
+        <div
+            id="headerName"
+            class="header-name"
+        >
+            লোড হচ্ছে...
+        </div>
+
+        <div
+            id="headerStatus"
+            class="header-status"
+        >
+            অপেক্ষা করুন...
+        </div>
+
+    </div>
+
+    <div class="header-actions">
+
+        <button
+            class="header-action"
+            id="audioCallButton"
+            type="button"
+            title="Audio Call"
+        >📞</button>
+
+        <button
+            class="header-action"
+            id="videoCallButton"
+            type="button"
+            title="Video Call"
+        >📹</button>
+
+        <button
+            class="header-action menu-btn"
+            id="menuButton"
+            type="button"
+            title="Menu"
+        >⋮</button>
+
+    </div>
+
+</header>
+
+
+<main class="page">
+
+    <div
+        id="errorBox"
+        class="error-box"
+    ></div>
+
+    <section class="main-card">
+
+        <img
+            id="bigAvatar"
+            class="big-avatar"
+            src=""
+            alt=""
+        >
+
+        <div
+            id="mainName"
+            class="main-name"
+        >
+            লোড হচ্ছে...
+        </div>
+
+        <div
+            id="mainUsername"
+            class="main-username"
+        ></div>
+
+        <div
+            id="mainBio"
+            class="main-bio"
+        ></div>
+
+        <div
+            id="mainStatus"
+            class="main-status"
+        ></div>
+
+        <button
+            id="openMessageButton"
+            class="open-message"
+            type="button"
+        >
+            💬 মেসেজ খুলুন
+        </button>
+
+        <div
+            id="blockedBox"
+            class="blocked-box"
+        >
+            🚫 আপনি এই ব্যবহারকারীকে Block করেছেন।
+            <br>
+            Message ও Call বন্ধ আছে।
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- MENU -->
+
+<div
+    id="menuOverlay"
+    class="menu-overlay"
+>
+
+    <div
+        id="menuSheet"
+        class="menu-sheet"
+    >
+
+        <button
+            class="menu-item"
+            id="profileMenuButton"
+            type="button"
+        >
+            👤 Profile দেখুন
+        </button>
+
+        <button
+            class="menu-item"
+            id="messageMenuButton"
+            type="button"
+        >
+            💬 Message
+        </button>
+
+        <button
+            class="menu-item"
+            id="audioMenuButton"
+            type="button"
+        >
+            📞 Audio Call
+        </button>
+
+        <button
+            class="menu-item"
+            id="videoMenuButton"
+            type="button"
+        >
+            📹 Video Call
+        </button>
+
+        <button
+            class="menu-item"
+            id="galleryMenuButton"
+            type="button"
+        >
+            📁 Gallery
+        </button>
+
+        <button
+            class="menu-item"
+            id="blockMenuButton"
+            type="button"
+        >
+            🚫 Block User
+        </button>
+
+    </div>
 
 </div>
 
+
+<!-- PROFILE -->
+
+<div
+    id="profileOverlay"
+    class="profile-overlay"
+>
+
+    <div class="profile-sheet">
+
+        <div class="profile-top">
+
+            <img
+                id="profileAvatar"
+                class="profile-avatar"
+                src=""
+                alt=""
+            >
+
+            <div
+                id="profileName"
+                class="profile-name"
+            ></div>
+
+            <div
+                id="profileUsername"
+                class="profile-username"
+            ></div>
+
+            <div
+                id="profileBio"
+                class="profile-bio"
+            ></div>
+
+        </div>
+
+        <div class="profile-actions">
+
+            <button
+                class="profile-action"
+                id="profileMessageButton"
+                type="button"
+            >
+                💬 Message
+            </button>
+
+            <button
+                class="profile-action"
+                id="profileAudioButton"
+                type="button"
+            >
+                📞 Audio
+            </button>
+
+            <button
+                class="profile-action"
+                id="profileVideoButton"
+                type="button"
+            >
+                📹 Video
+            </button>
+
+            <button
+                class="profile-action"
+                id="profileInfoButton"
+                type="button"
+            >
+                ℹ️ Info
+            </button>
+
+            <button
+                class="profile-action"
+                id="profileGalleryButton"
+                type="button"
+            >
+                📁 Gallery
+            </button>
+
+            <button
+                class="profile-action danger"
+                id="profileBlockButton"
+                type="button"
+            >
+                🚫 Block
+            </button>
+
+        </div>
+
+        <div
+            id="profileInfoBox"
+            class="info-box"
+            style="display:none;"
+        >
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Name
+                </div>
+
+                <div
+                    id="infoName"
+                    class="info-value"
+                ></div>
+
+            </div>
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Username
+                </div>
+
+                <div
+                    id="infoUsername"
+                    class="info-value"
+                ></div>
+
+            </div>
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Bio
+                </div>
+
+                <div
+                    id="infoBio"
+                    class="info-value"
+                ></div>
+
+            </div>
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Status
+                </div>
+
+                <div
+                    id="infoStatus"
+                    class="info-value"
+                ></div>
+
+            </div>
+
+        </div>
+
+        <button
+            class="profile-close"
+            id="profileCloseButton"
+            type="button"
+        >
+            বন্ধ করুন
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- BLOCK CONFIRM -->
+
+<div
+    id="confirmOverlay"
+    class="confirm-overlay"
+>
+
+    <div class="confirm-box">
+
+        <div class="confirm-title">
+            🚫 Block User
+        </div>
+
+        <div class="confirm-text">
+            এই ব্যবহারকারীকে Block করলে
+            Message ও Call বন্ধ থাকবে।
+            পরে চাইলে Unblock করতে পারবেন।
+        </div>
+
+        <div class="confirm-actions">
+
+            <button
+                class="cancel-btn"
+                id="cancelBlockButton"
+                type="button"
+            >
+                বাতিল
+            </button>
+
+            <button
+                class="confirm-danger"
+                id="confirmBlockButton"
+                type="button"
+            >
+                Block
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    id="toast"
+    class="toast"
+></div>
+
+
 <script>
-"use strict";
 
-/* =====================================================
-   GET USER ID
-===================================================== */
+const SUPABASE_URL =
+    "https://pqyicaqpmojijjskpzcp.supabase.co";
 
-const params =
-    new URLSearchParams(
-        window.location.search
+const SUPABASE_KEY =
+    "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
     );
 
-const otherUserId =
-    String(
-        params.get("user") ||
-        params.get("id") ||
-        ""
-    ).trim();
+
+let currentUser = null;
+let otherUserId = null;
+let targetUser = null;
+let isBlocked = false;
+
+const params =
+    new URLSearchParams(location.search);
+
+otherUserId =
+    params.get("user") ||
+    params.get("id") ||
+    "";
 
 
-/* =====================================================
-   ERROR
-===================================================== */
+/* =========================
+   HELPERS
+========================= */
 
 function showError(message){
 
-    const loading =
-        document.getElementById("loading");
-
-    const errorBox =
+    const box =
         document.getElementById("errorBox");
 
-    const errorText =
-        document.getElementById("errorText");
+    box.textContent =
+        message || "সমস্যা হয়েছে।";
 
-    if(loading){
-        loading.style.display = "none";
+    box.style.display = "block";
+}
+
+
+function hideError(){
+
+    const box =
+        document.getElementById("errorBox");
+
+    box.textContent = "";
+    box.style.display = "none";
+}
+
+
+function showToast(message){
+
+    const toast =
+        document.getElementById("toast");
+
+    toast.textContent =
+        message || "";
+
+    toast.classList.add("show");
+
+    clearTimeout(
+        window.__raztaraToastTimer
+    );
+
+    window.__raztaraToastTimer =
+        setTimeout(()=>{
+            toast.classList.remove("show");
+        },2500);
+}
+
+
+function getDisplayName(profile){
+
+    if(!profile){
+        return "RAZTARA User";
     }
 
-    if(errorText){
-        errorText.textContent = message;
+    return (
+        profile.full_name ||
+        profile.username ||
+        "RAZTARA User"
+    );
+}
+
+
+function getAvatar(profile){
+
+    const name =
+        getDisplayName(profile);
+
+    return (
+        profile?.avatar_url ||
+        "https://ui-avatars.com/api/?name=" +
+        encodeURIComponent(name)
+    );
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+function getUserStatus(profile){
+
+    if(!profile){
+        return "";
     }
 
-    if(errorBox){
-        errorBox.classList.add("show");
+    if(
+        profile.online_visibility ===
+        "nobody"
+    ){
+        return "অনলাইন তথ্য গোপন";
+    }
+
+    if(profile.last_seen_at){
+
+        const date =
+            new Date(profile.last_seen_at);
+
+        if(!Number.isNaN(date.getTime())){
+
+            return (
+                "শেষ দেখা " +
+                date.toLocaleString(
+                    "bn-BD",
+                    {
+                        day:"numeric",
+                        month:"short",
+                        hour:"numeric",
+                        minute:"2-digit"
+                    }
+                )
+            );
+        }
+    }
+
+    return "শেষ দেখা তথ্য নেই";
+}
+
+
+/* =========================
+   LOAD TARGET
+========================= */
+
+async function loadTargetUser(){
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+        .from("profiles")
+        .select(`
+            id,
+            username,
+            full_name,
+            avatar_url,
+            bio,
+            online_visibility,
+            last_seen_at
+        `)
+        .eq("id",otherUserId)
+        .maybeSingle();
+
+    if(error){
+        throw error;
+    }
+
+    if(!data){
+        throw new Error(
+            "এই User-এর profile পাওয়া যায়নি।"
+        );
+    }
+
+    targetUser = data;
+
+    renderTargetUser();
+}
+
+
+function renderTargetUser(){
+
+    const name =
+        getDisplayName(targetUser);
+
+    const avatar =
+        getAvatar(targetUser);
+
+    const username =
+        targetUser.username
+        ? "@" + targetUser.username
+        : "";
+
+    const bio =
+        targetUser.bio ||
+        "কোনো bio দেওয়া হয়নি।";
+
+    const status =
+        getUserStatus(targetUser);
+
+    document.getElementById(
+        "headerAvatar"
+    ).src = avatar;
+
+    document.getElementById(
+        "headerName"
+    ).textContent = name;
+
+    document.getElementById(
+        "headerStatus"
+    ).textContent = status;
+
+    document.getElementById(
+        "bigAvatar"
+    ).src = avatar;
+
+    document.getElementById(
+        "mainName"
+    ).textContent = name;
+
+    document.getElementById(
+        "mainUsername"
+    ).textContent = username;
+
+    document.getElementById(
+        "mainBio"
+    ).textContent = bio;
+
+    document.getElementById(
+        "mainStatus"
+    ).textContent = status;
+
+    document.getElementById(
+        "profileAvatar"
+    ).src = avatar;
+
+    document.getElementById(
+        "profileName"
+    ).textContent = name;
+
+    document.getElementById(
+        "profileUsername"
+    ).textContent = username;
+
+    document.getElementById(
+        "profileBio"
+    ).textContent = bio;
+
+    document.getElementById(
+        "infoName"
+    ).textContent = name;
+
+    document.getElementById(
+        "infoUsername"
+    ).textContent =
+        username || "নেই";
+
+    document.getElementById(
+        "infoBio"
+    ).textContent =
+        targetUser.bio || "নেই";
+
+    document.getElementById(
+        "infoStatus"
+    ).textContent =
+        status || "নেই";
+}
+
+
+/* =========================
+   BLOCK STATUS
+========================= */
+
+async function loadBlockStatus(){
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+        .from("blocked_users")
+        .select("id")
+        .eq("blocker_id",currentUser.id)
+        .eq("blocked_id",otherUserId)
+        .maybeSingle();
+
+    if(error){
+
+        /*
+         * যদি row না পাওয়া যায়,
+         * PGRST116 নয়—maybeSingle-এর কারণে
+         * data null হবে।
+         */
+        if(error.code !== "PGRST116"){
+            throw error;
+        }
+    }
+
+    isBlocked = !!data;
+
+    updateBlockedUI();
+}
+
+
+function updateBlockedUI(){
+
+    const messageButton =
+        document.getElementById(
+            "openMessageButton"
+        );
+
+    const blockedBox =
+        document.getElementById(
+            "blockedBox"
+        );
+
+    const blockButton =
+        document.getElementById(
+            "blockMenuButton"
+        );
+
+    const profileBlockButton =
+        document.getElementById(
+            "profileBlockButton"
+        );
+
+    if(isBlocked){
+
+        messageButton.disabled = true;
+
+        messageButton.textContent =
+            "🚫 Block করা আছে";
+
+        blockedBox.style.display =
+            "block";
+
+        blockButton.textContent =
+            "🔓 Unblock User";
+
+        profileBlockButton.textContent =
+            "🔓 Unblock";
+
+    }else{
+
+        messageButton.disabled = false;
+
+        messageButton.textContent =
+            "💬 মেসেজ খুলুন";
+
+        blockedBox.style.display =
+            "none";
+
+        blockButton.textContent =
+            "🚫 Block User";
+
+        profileBlockButton.textContent =
+            "🚫 Block";
     }
 }
 
 
-/* =====================================================
-   HOME
-===================================================== */
+/* =========================
+   BLOCK / UNBLOCK
+========================= */
 
-function goHome(){
+function openBlockConfirm(){
 
-    window.location.href = "index.html";
+    closeMenu();
 
+    if(isBlocked){
+
+        unblockUser();
+
+        return;
+    }
+
+    document
+        .getElementById("confirmOverlay")
+        .classList.add("show");
 }
 
 
-/* =====================================================
-   OPEN REAL MESSAGE PAGE
-===================================================== */
+function closeBlockConfirm(){
 
-function openRealMessages(){
+    document
+        .getElementById("confirmOverlay")
+        .classList.remove("show");
+}
+
+
+async function confirmBlock(){
+
+    try{
+
+        if(!currentUser || !otherUserId){
+            return;
+        }
+
+        const {
+            error
+        } =
+            await supabaseClient
+            .from("blocked_users")
+            .insert({
+                blocker_id:currentUser.id,
+                blocked_id:otherUserId
+            });
+
+        if(error){
+
+            if(
+                String(error.message || "")
+                .toLowerCase()
+                .includes("duplicate")
+            ){
+
+                isBlocked = true;
+                updateBlockedUI();
+                closeBlockConfirm();
+
+                showToast(
+                    "User Block করা হয়েছে।"
+                );
+
+                return;
+            }
+
+            throw error;
+        }
+
+        isBlocked = true;
+
+        updateBlockedUI();
+
+        closeBlockConfirm();
+
+        showToast(
+            "User Block করা হয়েছে।"
+        );
+
+    }catch(error){
+
+        console.error(error);
+
+        showError(
+            "Block করতে সমস্যা হয়েছে: " +
+            (error.message || "Unknown error")
+        );
+    }
+}
+
+
+async function unblockUser(){
+
+    try{
+
+        const {
+            error
+        } =
+            await supabaseClient
+            .from("blocked_users")
+            .delete()
+            .eq("blocker_id",currentUser.id)
+            .eq("blocked_id",otherUserId);
+
+        if(error){
+            throw error;
+        }
+
+        isBlocked = false;
+
+        updateBlockedUI();
+
+        closeProfile();
+
+        showToast(
+            "User Unblock করা হয়েছে।"
+        );
+
+    }catch(error){
+
+        console.error(error);
+
+        showError(
+            "Unblock করতে সমস্যা হয়েছে: " +
+            (error.message || "Unknown error")
+        );
+    }
+}
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function openMessages(){
+
+    if(!otherUserId){
+        showError("User ID পাওয়া যায়নি।");
+        return;
+    }
+
+    if(isBlocked){
+
+        showToast(
+            "Block করা User-কে Message করা যাবে না।"
+        );
+
+        return;
+    }
+
+    location.href =
+        "messages.html?user=" +
+        encodeURIComponent(otherUserId);
+}
+
+
+/* =========================
+   GALLERY
+========================= */
+
+function openGallery(){
 
     if(!otherUserId){
 
         showError(
-            "এই Chat-এর user ID পাওয়া যায়নি। " +
-            "দয়া করে আবার Profile থেকে Chat খুলুন।"
+            "Gallery খোলার জন্য User ID পাওয়া যায়নি।"
+        );
+
+        return;
+    }
+
+    location.href =
+        "gallery.html?user=" +
+        encodeURIComponent(otherUserId);
+}
+
+
+/* =========================
+   AUDIO CALL
+========================= */
+
+function startAudioCall(){
+
+    if(isBlocked){
+
+        showToast(
+            "Block করা User-কে Audio Call করা যাবে না।"
         );
 
         return;
     }
 
     /*
-       chat.html এখন আর নিজে কোনো chat UI দেখাবে না।
-
-       সরাসরি messages.html-এ যাবে।
-    */
-
-    const target =
-        "messages.html?user=" +
-        encodeURIComponent(
-            otherUserId
-        );
-
-    /*
-       replace ব্যবহার করা হয়েছে যাতে
-       chat.html আলাদা history entry না রাখে।
-    */
-
-    window.location.replace(target);
-
+     * এখানে এখনো WebRTC signaling নেই।
+     * তাই ভুলভাবে fake call শুরু না করে
+     * প্রস্তুত বার্তা দেখানো হচ্ছে।
+     */
+    showToast(
+        "📞 Audio Call system প্রস্তুত করা হয়েছে।"
+    );
 }
 
 
-/* =====================================================
-   START
-===================================================== */
+/* =========================
+   VIDEO CALL
+========================= */
 
-openRealMessages();
+function startVideoCall(){
+
+    if(isBlocked){
+
+        showToast(
+            "Block করা User-কে Video Call করা যাবে না।"
+        );
+
+        return;
+    }
+
+    /*
+     * WebRTC signaling/server flow
+     * এখনো আলাদা করে implement করা হয়নি।
+     */
+    showToast(
+        "📹 Video Call system প্রস্তুত করা হয়েছে।"
+    );
+}
+
+
+/* =========================
+   PROFILE
+========================= */
+
+function openProfile(){
+
+    closeMenu();
+
+    document
+        .getElementById("profileOverlay")
+        .classList.add("show");
+}
+
+
+function closeProfile(){
+
+    document
+        .getElementById("profileOverlay")
+        .classList.remove("show");
+
+    document
+        .getElementById("profileInfoBox")
+        .style.display = "none";
+}
+
+
+function showProfileInfo(){
+
+    const box =
+        document.getElementById(
+            "profileInfoBox"
+        );
+
+    box.style.display =
+        box.style.display === "none"
+        ? "block"
+        : "none";
+}
+
+
+/* =========================
+   MENU
+========================= */
+
+function toggleMenu(){
+
+    document
+        .getElementById("menuOverlay")
+        .classList.toggle("show");
+}
+
+
+function closeMenu(){
+
+    document
+        .getElementById("menuOverlay")
+        .classList.remove("show");
+}
+
+
+/* =========================
+   BACK
+========================= */
+
+function goBack(){
+
+    if(
+        document
+        .getElementById("profileOverlay")
+        .classList.contains("show")
+    ){
+
+        closeProfile();
+
+        return;
+    }
+
+    if(
+        document
+        .getElementById("menuOverlay")
+        .classList.contains("show")
+    ){
+
+        closeMenu();
+
+        return;
+    }
+
+    if(
+        document
+        .getElementById("confirmOverlay")
+        .classList.contains("show")
+    ){
+
+        closeBlockConfirm();
+
+        return;
+    }
+
+    if(history.length > 1){
+
+        history.back();
+
+    }else{
+
+        location.href = "chat.html";
+    }
+}
+
+
+/* =========================
+   EVENT LISTENERS
+========================= */
+
+document
+    .getElementById("backButton")
+    .addEventListener(
+        "click",
+        goBack
+    );
+
+
+document
+    .getElementById("menuButton")
+    .addEventListener(
+        "click",
+        toggleMenu
+    );
+
+
+document
+    .getElementById("openMessageButton")
+    .addEventListener(
+        "click",
+        openMessages
+    );
+
+
+document
+    .getElementById("messageMenuButton")
+    .addEventListener(
+        "click",
+        ()=>{
+            closeMenu();
+            openMessages();
+        }
+    );
+
+
+document
+    .getElementById("profileMenuButton")
+    .addEventListener(
+        "click",
+        openProfile
+    );
+
+
+document
+    .getElementById("galleryMenuButton")
+    .addEventListener(
+        "click",
+        ()=>{
+            closeMenu();
+            openGallery();
+        }
+    );
+
+
+document
+    .getElementById("audioCallButton")
+    .addEventListener(
+        "click",
+        startAudioCall
+    );
+
+
+document
+    .getElementById("videoCallButton")
+    .addEventListener(
+        "click",
+        startVideoCall
+    );
+
+
+document
+    .getElementById("audioMenuButton")
+    .addEventListener(
+        "click",
+        ()=>{
+            closeMenu();
+            startAudioCall();
+        }
+    );
+
+
+document
+    .getElementById("videoMenuButton")
+    .addEventListener(
+        "click",
+        ()=>{
+            closeMenu();
+            startVideoCall();
+        }
+    );
+
+
+document
+    .getElementById("blockMenuButton")
+    .addEventListener(
+        "click",
+        openBlockConfirm
+    );
+
+
+document
+    .getElementById("profileMessageButton")
+    .addEventListener(
+        "click",
+        ()=>{
+            closeProfile();
+            openMessages();
+        }
+    );
+
+
+document
+    .getElementById("profileAudioButton")
+    .addEventListener(
+        "click",
+        ()=>{
+            closeProfile();
+            startAudioCall();
+        }
+    );
+
+
+document
+    .getElementById("profileVideoButton")
+    .addEventListener(
+        "click",
+        ()=>{
+            closeProfile();
+            startVideoCall();
+        }
+    );
+
+
+document
+    .getElementById("profileInfoButton")
+    .addEventListener(
+        "click",
+        showProfileInfo
+    );
+
+
+document
+    .getElementById("profileGalleryButton")
+    .addEventListener(
+        "click",
+        ()=>{
+            closeProfile();
+            openGallery();
+        }
+    );
+
+
+document
+    .getElementById("profileBlockButton")
+    .addEventListener(
+        "click",
+        ()=>{
+            if(isBlocked){
+
+                unblockUser();
+
+            }else{
+
+                closeProfile();
+                openBlockConfirm();
+            }
+        }
+    );
+
+
+document
+    .getElementById("profileCloseButton")
+    .addEventListener(
+        "click",
+        closeProfile
+    );
+
+
+document
+    .getElementById("cancelBlockButton")
+    .addEventListener(
+        "click",
+        closeBlockConfirm
+    );
+
+
+document
+    .getElementById("confirmBlockButton")
+    .addEventListener(
+        "click",
+        confirmBlock
+    );
+
+
+/* =========================
+   OUTSIDE CLICK
+========================= */
+
+document
+    .getElementById("menuOverlay")
+    .addEventListener(
+        "click",
+        event => {
+
+            if(
+                event.target ===
+                document.getElementById(
+                    "menuOverlay"
+                )
+            ){
+
+                closeMenu();
+            }
+
+        }
+    );
+
+
+document
+    .getElementById("profileOverlay")
+    .addEventListener(
+        "click",
+        event => {
+
+            if(
+                event.target ===
+                document.getElementById(
+                    "profileOverlay"
+                )
+            ){
+
+                closeProfile();
+            }
+
+        }
+    );
+
+
+document
+    .getElementById("confirmOverlay")
+    .addEventListener(
+        "click",
+        event => {
+
+            if(
+                event.target ===
+                document.getElementById(
+                    "confirmOverlay"
+                )
+            ){
+
+                closeBlockConfirm();
+            }
+
+        }
+    );
+
+
+/* =========================
+   ESCAPE
+========================= */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if(event.key !== "Escape"){
+            return;
+        }
+
+        if(
+            document
+            .getElementById("confirmOverlay")
+            .classList.contains("show")
+        ){
+
+            closeBlockConfirm();
+
+            return;
+        }
+
+        if(
+            document
+            .getElementById("profileOverlay")
+            .classList.contains("show")
+        ){
+
+            closeProfile();
+
+            return;
+        }
+
+        if(
+            document
+            .getElementById("menuOverlay")
+            .classList.contains("show")
+        ){
+
+            closeMenu();
+        }
+
+    }
+);
+
+
+/* =========================
+   INIT
+========================= */
+
+async function init(){
+
+    try{
+
+        hideError();
+
+        if(!otherUserId){
+
+            showError(
+                "User ID পাওয়া যায়নি।"
+            );
+
+            return;
+        }
+
+        const {
+            data:{
+                user
+            },
+            error:authError
+        } =
+            await supabaseClient.auth.getUser();
+
+        if(authError){
+            throw authError;
+        }
+
+        if(!user){
+
+            showError(
+                "আপনি Login করা অবস্থায় নেই।"
+            );
+
+            return;
+        }
+
+        currentUser = user;
+
+        if(
+            currentUser.id ===
+            otherUserId
+        ){
+
+            showError(
+                "নিজের Profile থেকে নিজের সাথে Chat খোলা যাবে না।"
+            );
+
+            return;
+        }
+
+        await loadTargetUser();
+
+        await loadBlockStatus();
+
+    }catch(error){
+
+        console.error(
+            "RAZTARA chat init error:",
+            error
+        );
+
+        showError(
+            "Chat load করতে সমস্যা হয়েছে: " +
+            (
+                error.message ||
+                "Unknown error"
+            )
+        );
+    }
+
+}
+
+init();
 
 </script>
 
