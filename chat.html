@@ -2,8 +2,8 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#075e54">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
 <title>RAZTARA — Chat</title>
 
 <style>
@@ -13,40 +13,108 @@
     padding:0;
 }
 
-html,body{
+html,
+body{
     width:100%;
     height:100%;
-    font-family:Arial,"Noto Sans Bengali",sans-serif;
-    background:#f5f7f8;
 }
 
-#loading{
+body{
+    margin:0;
+    background:#f3f7f5;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",
+    Roboto,"Noto Sans Bengali",Arial,sans-serif;
+    color:#17231e;
+}
+
+.loading{
     width:100%;
-    height:100%;
+    height:100dvh;
+
     display:flex;
+    flex-direction:column;
     align-items:center;
     justify-content:center;
-    flex-direction:column;
+
     gap:14px;
-    color:#075e54;
-    font-size:16px;
 }
 
 .loader{
-    width:38px;
-    height:38px;
-    border:4px solid #d8eeee;
-    border-top-color:#075e54;
+    width:42px;
+    height:42px;
+
+    border:4px solid #d9eee7;
+    border-top-color:#087f5b;
+
     border-radius:50%;
+
     animation:spin .8s linear infinite;
 }
 
-#error{
+.loadingText{
+    font-size:15px;
+    color:#087f5b;
+    font-weight:600;
+}
+
+.errorBox{
     display:none;
-    padding:30px;
+
+    position:fixed;
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    width:calc(100% - 40px);
+    max-width:420px;
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:24px 20px;
+
     text-align:center;
-    color:#b00020;
-    font-size:16px;
+
+    box-shadow:0 8px 30px rgba(0,0,0,.12);
+}
+
+.errorBox.show{
+    display:block;
+}
+
+.errorIcon{
+    font-size:42px;
+    margin-bottom:12px;
+}
+
+.errorTitle{
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+.errorText{
+    color:#66736d;
+    font-size:14px;
+    line-height:1.6;
+}
+
+.backButton{
+    margin-top:18px;
+
+    width:100%;
+    height:46px;
+
+    border:0;
+    border-radius:23px;
+
+    background:#087f5b;
+    color:white;
+
+    font-size:15px;
+    font-weight:700;
 }
 
 @keyframes spin{
@@ -59,51 +127,148 @@ html,body{
 
 <body>
 
-<div id="loading">
+<div
+    class="loading"
+    id="loading">
+
     <div class="loader"></div>
-    <div>Chat চালু হচ্ছে...</div>
+
+    <div class="loadingText">
+        Chat চালু হচ্ছে...
+    </div>
+
 </div>
 
-<div id="error"></div>
+<div
+    class="errorBox"
+    id="errorBox">
+
+    <div class="errorIcon">
+        ⚠️
+    </div>
+
+    <div class="errorTitle">
+        Chat খোলা যাচ্ছে না
+    </div>
+
+    <div
+        class="errorText"
+        id="errorText">
+    </div>
+
+    <button
+        class="backButton"
+        type="button"
+        onclick="goHome()">
+        ফিরে যান
+    </button>
+
+</div>
 
 <script>
 "use strict";
 
-const params = new URLSearchParams(window.location.search);
+/* =====================================================
+   GET USER ID
+===================================================== */
 
-const otherUserId = String(
-    params.get("user") ||
-    params.get("id") ||
-    ""
-).trim();
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+const otherUserId =
+    String(
+        params.get("user") ||
+        params.get("id") ||
+        ""
+    ).trim();
+
+
+/* =====================================================
+   ERROR
+===================================================== */
 
 function showError(message){
-    document.getElementById("loading").style.display = "none";
 
-    const errorBox = document.getElementById("error");
-    errorBox.textContent = message;
-    errorBox.style.display = "block";
+    const loading =
+        document.getElementById("loading");
+
+    const errorBox =
+        document.getElementById("errorBox");
+
+    const errorText =
+        document.getElementById("errorText");
+
+    if(loading){
+        loading.style.display = "none";
+    }
+
+    if(errorText){
+        errorText.textContent = message;
+    }
+
+    if(errorBox){
+        errorBox.classList.add("show");
+    }
 }
 
-function openMessages(){
+
+/* =====================================================
+   HOME
+===================================================== */
+
+function goHome(){
+
+    window.location.href = "index.html";
+
+}
+
+
+/* =====================================================
+   OPEN REAL MESSAGE PAGE
+===================================================== */
+
+function openRealMessages(){
 
     if(!otherUserId){
-        showError("Chat user পাওয়া যায়নি। আবার Profile থেকে Chat খুলুন।");
+
+        showError(
+            "এই Chat-এর user ID পাওয়া যায়নি। " +
+            "দয়া করে আবার Profile থেকে Chat খুলুন।"
+        );
+
         return;
     }
 
-    const url =
+    /*
+       chat.html এখন আর নিজে কোনো chat UI দেখাবে না।
+
+       সরাসরি messages.html-এ যাবে।
+    */
+
+    const target =
         "messages.html?user=" +
-        encodeURIComponent(otherUserId);
+        encodeURIComponent(
+            otherUserId
+        );
 
     /*
-      replace ব্যবহার করা হয়েছে যাতে
-      chat.html মাঝখানের history entry না হয়।
+       replace ব্যবহার করা হয়েছে যাতে
+       chat.html আলাদা history entry না রাখে।
     */
-    window.location.replace(url);
+
+    window.location.replace(target);
+
 }
 
-openMessages();
+
+/* =====================================================
+   START
+===================================================== */
+
+openRealMessages();
+
 </script>
 
 </body>
