@@ -28,10 +28,6 @@ body{
     color:#17231e;
 }
 
-/* =========================
-   MAIN
-========================= */
-
 .chatPage{
     width:100%;
     height:100dvh;
@@ -39,10 +35,6 @@ body{
     flex-direction:column;
     background:#f3f7f5;
 }
-
-/* =========================
-   TOP BAR
-========================= */
 
 .chatTop{
     height:68px;
@@ -146,10 +138,6 @@ body{
     opacity:.85;
 }
 
-/* =========================
-   CHAT AREA
-========================= */
-
 .chatBody{
     flex:1;
     min-height:0;
@@ -192,10 +180,6 @@ body{
     font-size:14px;
     line-height:1.6;
 }
-
-/* =========================
-   BOTTOM AREA
-========================= */
 
 .chatBottom{
     padding:
@@ -287,10 +271,6 @@ body{
     transform:scale(.93);
 }
 
-/* =========================
-   MORE MENU
-========================= */
-
 .menu{
     position:fixed;
 
@@ -349,10 +329,6 @@ body{
     font-size:18px;
 }
 
-/* =========================
-   OVERLAY
-========================= */
-
 .overlay{
     position:fixed;
     inset:0;
@@ -365,10 +341,6 @@ body{
 .overlay.show{
     display:block;
 }
-
-/* =========================
-   MOBILE
-========================= */
 
 @media(max-width:380px){
 
@@ -407,10 +379,6 @@ body{
 
 <div class="chatPage">
 
-    <!-- =========================
-         TOP BAR
-    ========================== -->
-
     <header class="chatTop">
 
         <button
@@ -432,11 +400,11 @@ body{
 
             <div class="userInfo">
 
-                <div class="userName">
+                <div class="userName" id="chatUserName">
                     Chat User
                 </div>
 
-                <div class="userStatus">
+                <div class="userStatus" id="chatUserStatus">
                     Online
                 </div>
 
@@ -471,10 +439,6 @@ body{
     </header>
 
 
-    <!-- =========================
-         CHAT BODY
-    ========================== -->
-
     <main class="chatBody">
 
         <div class="emptyChat">
@@ -496,10 +460,6 @@ body{
 
     </main>
 
-
-    <!-- =========================
-         BOTTOM MESSAGE BAR
-    ========================== -->
 
     <footer class="chatBottom">
 
@@ -547,20 +507,12 @@ body{
 </div>
 
 
-<!-- =========================
-     OVERLAY
-========================= -->
-
 <div
     class="overlay"
     id="menuOverlay"
     onclick="closeMenu()">
 </div>
 
-
-<!-- =========================
-     MORE MENU
-========================= -->
 
 <div
     class="menu"
@@ -612,80 +564,201 @@ body{
 <script>
 
 /* =========================
-   BASIC BUTTON ACTIONS
-   এখন শুধু navigation placeholder
+   CHAT USER ID
+========================= */
+
+const chatParams =
+    new URLSearchParams(window.location.search);
+
+const otherUserId =
+    chatParams.get("user");
+
+
+/* =========================
+   USER ID CHECK
+========================= */
+
+function requireUserId(){
+
+    if(!otherUserId){
+
+        alert("এই Chat-এর user পাওয়া যায়নি।");
+
+        return false;
+    }
+
+    return true;
+}
+
+
+/* =========================
+   BACK
 ========================= */
 
 function goBack(){
 
     if(history.length > 1){
+
         history.back();
+
     }else{
+
         window.location.href = "index.html";
+
     }
 
 }
 
 
+/* =========================
+   PROFILE
+========================= */
+
 function openProfile(){
 
     closeMenu();
 
-    window.location.href = "user-profile.html";
+    if(!requireUserId()){
+        return;
+    }
+
+    window.location.href =
+        "user-profile.html?user=" +
+        encodeURIComponent(otherUserId);
 }
 
+
+/* =========================
+   AUDIO CALL
+========================= */
 
 function openAudioCall(){
 
-    window.location.href = "audio-call.html";
+    if(!requireUserId()){
+        return;
+    }
+
+    window.location.href =
+        "audio-call.html?user=" +
+        encodeURIComponent(otherUserId);
 }
 
+
+/* =========================
+   VIDEO CALL
+========================= */
 
 function openVideoCall(){
 
-    window.location.href = "video-call.html";
+    if(!requireUserId()){
+        return;
+    }
+
+    window.location.href =
+        "video-call.html?user=" +
+        encodeURIComponent(otherUserId);
 }
 
+
+/* =========================
+   VOICE
+========================= */
 
 function openVoice(){
 
-    window.location.href = "voice.html";
+    if(!requireUserId()){
+        return;
+    }
+
+    window.location.href =
+        "voice.html?user=" +
+        encodeURIComponent(otherUserId);
 }
 
+
+/* =========================
+   ATTACHMENT
+========================= */
 
 function openAttachment(){
 
-    window.location.href = "attachment.html";
+    if(!requireUserId()){
+        return;
+    }
+
+    window.location.href =
+        "attachment.html?user=" +
+        encodeURIComponent(otherUserId);
 }
 
+
+/* =========================
+   EMOJI
+========================= */
 
 function openEmoji(){
 
-    window.location.href = "emoji.html";
+    if(!requireUserId()){
+        return;
+    }
+
+    window.location.href =
+        "emoji.html?user=" +
+        encodeURIComponent(otherUserId);
 }
 
+
+/* =========================
+   MEDIA
+========================= */
 
 function openMedia(){
 
     closeMenu();
 
-    window.location.href = "media.html";
+    if(!requireUserId()){
+        return;
+    }
+
+    window.location.href =
+        "media.html?user=" +
+        encodeURIComponent(otherUserId);
 }
 
+
+/* =========================
+   CHAT SEARCH
+========================= */
 
 function openChatSearch(){
 
     closeMenu();
 
-    window.location.href = "chat-search.html";
+    if(!requireUserId()){
+        return;
+    }
+
+    window.location.href =
+        "chat-search.html?user=" +
+        encodeURIComponent(otherUserId);
 }
 
+
+/* =========================
+   CHAT SETTINGS
+========================= */
 
 function openChatSettings(){
 
     closeMenu();
 
-    window.location.href = "chat-settings.html";
+    if(!requireUserId()){
+        return;
+    }
+
+    window.location.href =
+        "chat-settings.html?user=" +
+        encodeURIComponent(otherUserId);
 }
 
 
@@ -706,8 +779,8 @@ function sendMessage(){
     }
 
     /*
-      এখন message database-এ যাবে না।
-      পরে আলাদা message system তৈরি করব।
+      এখনো database-এ message save হচ্ছে না।
+      Message system পরে আলাদাভাবে তৈরি করব।
     */
 
     input.value = "";
