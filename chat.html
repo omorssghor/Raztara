@@ -942,11 +942,6 @@ async function blockUser(){
     );
 
 
-    /*
-       BLOCK করার পর Chat আর থাকবে না।
-       Settings → Blocked Users থেকে Unblock করতে হবে।
-    */
-
     setTimeout(()=>{
 
         window.location.href =
@@ -1302,7 +1297,7 @@ async function applyProfilePrivacy(){
 
 
 /* =========================================================
-   ONLINE STATUS
+   LAST SEEN
 ========================================================= */
 
 function updateOnlineStatus(profile){
@@ -1312,11 +1307,6 @@ function updateOnlineStatus(profile){
             "userStatus"
         );
 
-
-    /*
-       এখনো Offline পরিবর্তনের কাজ করা হয়নি।
-       এই ধাপে শুধু Block system পরিবর্তন করা হয়েছে।
-    */
 
     if(!profile){
 
@@ -1334,29 +1324,105 @@ function updateOnlineStatus(profile){
     }
 
 
-    if(profile.last_seen_at){
+    if(!profile.last_seen_at){
 
-        const last =
-            new Date(
-                profile.last_seen_at
-            );
+        status.textContent = "";
 
-        const diff =
-            Date.now() -
-            last.getTime();
-
-
-        if(diff < 120000){
-
-            status.textContent =
-                t("online");
-
-            return;
-        }
+        return;
     }
 
 
-    status.textContent = "";
+    const last =
+        new Date(
+            profile.last_seen_at
+        );
+
+
+    if(isNaN(last.getTime())){
+
+        status.textContent = "";
+
+        return;
+    }
+
+
+    const now =
+        new Date();
+
+
+    const isToday =
+        last.toDateString() ===
+        now.toDateString();
+
+
+    const yesterday =
+        new Date();
+
+    yesterday.setDate(
+        yesterday.getDate() - 1
+    );
+
+
+    const isYesterday =
+        last.toDateString() ===
+        yesterday.toDateString();
+
+
+    const time =
+        last.toLocaleTimeString(
+            currentLanguage === "bn"
+                ? "bn-BD"
+                : "en-US",
+            {
+                hour:"numeric",
+                minute:"2-digit"
+            }
+        );
+
+
+    let dateText;
+
+
+    if(isToday){
+
+        dateText =
+            currentLanguage === "bn"
+                ? "আজ"
+                : "Today";
+
+    }else if(isYesterday){
+
+        dateText =
+            currentLanguage === "bn"
+                ? "গতকাল"
+                : "Yesterday";
+
+    }else{
+
+        dateText =
+            last.toLocaleDateString(
+                currentLanguage === "bn"
+                    ? "bn-BD"
+                    : "en-US",
+                {
+                    day:"numeric",
+                    month:"short",
+                    year:"numeric"
+                }
+            );
+    }
+
+
+    status.textContent =
+        currentLanguage === "bn"
+            ? "শেষ দেখা: " +
+              dateText +
+              " " +
+              time
+            : "Last seen: " +
+              dateText +
+              " " +
+              time;
 }
 
 
@@ -2532,11 +2598,6 @@ function subscribeRealtime(){
                 },
                 payload=>{
 
-                    /*
-                       Block হওয়ার পরে realtime message
-                       এলে আর দেখানো হবে না।
-                    */
-
                     if(blocked){
 
                         return;
@@ -3061,15 +3122,6 @@ async function init(){
         return;
     }
 
-
-    /*
-       IMPORTANT:
-       Profile বা Conversation load করার আগেই
-       Block check হচ্ছে।
-       
-       তাই blocked ID-এর profile/chat
-       আর খুলবে না।
-    */
 
     const isBlocked =
         await checkBlockStatus();
