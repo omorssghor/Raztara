@@ -204,6 +204,7 @@ body{
     word-break:break-word;
     font-size:15px;
     line-height:1.35;
+    cursor:pointer;
 }
 
 .message-row.me .message{
@@ -1908,7 +1909,12 @@ function appendMessage(
             `;
 
             fileBox.onclick =
-                async()=>{
+                async(event)=>{
+
+                    /* Keep file opening separate
+                       from message options */
+
+                    event.stopPropagation();
 
                     const url =
                         await getMediaUrl(
@@ -1937,6 +1943,27 @@ function appendMessage(
                 );
         }
     }
+
+    /* =====================================================
+       MESSAGE OPTIONS
+       Tap message / image / video / audio
+       ===================================================== */
+
+    box.onclick = function(event){
+
+        if(
+            event.target.closest(
+                ".file-box"
+            )
+        ){
+
+            return;
+        }
+
+        openMessageOptions(
+            message
+        );
+    };
 
     const time =
         document.createElement(
@@ -2750,6 +2777,31 @@ function openTipping(){
         "tipping.html?user=" +
         encodeURIComponent(
             otherUserId
+        );
+}
+
+/* =========================================================
+   MESSAGE OPTIONS
+========================================================= */
+
+function openMessageOptions(message){
+
+    if(
+        !message ||
+        blocked
+    ){
+
+        return;
+    }
+
+    window.location.href =
+        "message-options.html?conversation_id=" +
+        encodeURIComponent(
+            message.conversation_id
+        ) +
+        "&message_id=" +
+        encodeURIComponent(
+            message.id
         );
 }
 
