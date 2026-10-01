@@ -1,28 +1,36 @@
 <!DOCTYPE html>
-<!-- TEST-123 -->
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07131a">
+
 <title>RAZTARA</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+
 *{
     box-sizing:border-box;
     margin:0;
     padding:0;
 }
 
+html,
+body{
+    width:100%;
+    min-height:100%;
+}
+
 body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
     background:#07131a;
     color:#fff;
-    min-height:100vh;
 }
 
-button,input{
+button,
+input{
     font:inherit;
 }
 
@@ -30,7 +38,13 @@ button{
     cursor:pointer;
 }
 
-/* ================= LOGIN ================= */
+a{
+    text-decoration:none;
+}
+
+/* =====================================================
+   LOGIN
+===================================================== */
 
 #loginScreen{
     min-height:100vh;
@@ -38,18 +52,29 @@ button{
     align-items:center;
     justify-content:center;
     padding:25px 18px;
+
     background:
-        radial-gradient(circle at top,#123b48 0%,#07131a 45%,#050b0f 100%);
+        radial-gradient(
+            circle at top,
+            #123b48 0%,
+            #07131a 45%,
+            #050b0f 100%
+        );
 }
 
 .loginBox{
     width:100%;
     max-width:410px;
+
     padding:34px 24px 28px;
+
     border:1px solid rgba(255,255,255,.08);
     border-radius:28px;
+
     background:rgba(10,27,35,.92);
-    box-shadow:0 25px 70px rgba(0,0,0,.45);
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.45);
 }
 
 .logo{
@@ -60,14 +85,27 @@ button{
 .logoIcon{
     width:76px;
     height:76px;
+
     margin:auto;
+
     border-radius:24px;
+
     display:flex;
     align-items:center;
     justify-content:center;
+
     font-size:38px;
-    background:linear-gradient(135deg,#00d4a5,#008fa8);
-    box-shadow:0 12px 30px rgba(0,212,165,.25);
+    font-weight:800;
+
+    background:
+        linear-gradient(
+            135deg,
+            #00d4a5,
+            #008fa8
+        );
+
+    box-shadow:
+        0 12px 30px rgba(0,212,165,.25);
 }
 
 .logo h1{
@@ -100,49 +138,82 @@ button{
 .inputBox input{
     width:100%;
     height:54px;
+
     padding:0 48px 0 16px;
+
     border:none;
     outline:none;
+
     border-radius:15px;
+
     color:#fff;
     background:#10252e;
+
     border:1px solid #203b45;
+}
+
+.inputBox input::placeholder{
+    color:#607983;
 }
 
 .inputBox input:focus{
     border-color:#00cda6;
-    box-shadow:0 0 0 3px rgba(0,205,166,.10);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(0,205,166,.10);
 }
 
 .eye{
     position:absolute;
+
     right:14px;
     top:50%;
+
     transform:translateY(-50%);
+
     border:0;
     background:none;
+
     color:#8fa7af;
+
     font-size:20px;
 }
 
 .forgot{
     display:block;
+
     text-align:right;
-    margin:3px 2px 20px;
+
+    margin:
+        3px 2px 20px;
+
     color:#00d4a5;
-    text-decoration:none;
+
     font-size:13px;
 }
 
 .loginBtn{
     width:100%;
     height:54px;
+
     border:0;
     border-radius:15px;
+
     color:#001510;
+
     font-weight:800;
-    background:linear-gradient(135deg,#00e0ad,#00aebd);
-    box-shadow:0 12px 25px rgba(0,212,165,.18);
+
+    background:
+        linear-gradient(
+            135deg,
+            #00e0ad,
+            #00aebd
+        );
+
+    box-shadow:
+        0 12px 25px
+        rgba(0,212,165,.18);
 }
 
 .loginBtn:disabled{
@@ -153,69 +224,117 @@ button{
 .divider{
     display:flex;
     align-items:center;
+
     gap:12px;
+
     margin:25px 0;
+
     color:#66808a;
+
     font-size:12px;
 }
 
 .divider::before,
 .divider::after{
     content:"";
+
     flex:1;
+
     height:1px;
+
     background:#20343c;
 }
 
 .createBtn{
     width:100%;
     height:52px;
+
     border-radius:15px;
+
     border:1px solid #00b998;
+
     background:transparent;
+
     color:#00d4a5;
+
     font-weight:700;
 }
 
 .message{
     display:none;
+
     margin-bottom:16px;
+
     padding:12px 14px;
+
     border-radius:12px;
+
     font-size:13px;
     line-height:1.5;
 }
 
 .error{
-    background:rgba(255,70,70,.10);
-    border:1px solid rgba(255,70,70,.25);
+    background:
+        rgba(255,70,70,.10);
+
+    border:
+        1px solid
+        rgba(255,70,70,.25);
+
     color:#ff9c9c;
 }
 
 .success{
-    background:rgba(0,212,165,.10);
-    border:1px solid rgba(0,212,165,.25);
+    background:
+        rgba(0,212,165,.10);
+
+    border:
+        1px solid
+        rgba(0,212,165,.25);
+
     color:#72f1d2;
 }
 
-/* ================= APP ================= */
+
+/* =====================================================
+   APP
+===================================================== */
 
 #appScreen{
     display:none;
+
     min-height:100vh;
+
     background:#07131a;
+
+    padding-bottom:80px;
 }
 
 .appHeader{
-    height:68px;
-    display:flex;
+    min-height:68px;
+
+    display:grid;
+
+    grid-template-columns:
+        50px
+        1fr
+        auto
+        50px;
+
     align-items:center;
-    justify-content:space-between;
-    padding:0 17px;
-    border-bottom:1px solid #193039;
+
+    gap:8px;
+
+    padding:0 14px;
+
+    border-bottom:
+        1px solid #193039;
+
     background:#0a1b23;
+
     position:sticky;
     top:0;
+
     z-index:10;
 }
 
@@ -223,139 +342,324 @@ button{
 .profileBtn{
     width:42px;
     height:42px;
+
     border:0;
+
     border-radius:50%;
+
     background:#102b34;
+
     color:#fff;
+
     font-size:21px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    overflow:hidden;
+}
+
+.menuBtn:active,
+.profileBtn:active{
+    transform:scale(.95);
 }
 
 .profileBtn img{
     width:100%;
     height:100%;
+
     border-radius:50%;
+
     object-fit:cover;
+
     display:block;
 }
 
 .appTitle{
+    text-align:center;
+
     font-size:21px;
+
     letter-spacing:2px;
+
     font-weight:800;
 }
+
+.headerUserName{
+    max-width:100px;
+
+    overflow:hidden;
+
+    white-space:nowrap;
+
+    text-overflow:ellipsis;
+
+    color:#9bb1b8;
+
+    font-size:12px;
+
+    text-align:right;
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
 
 .search{
     margin:16px;
 }
 
+.searchBox{
+    position:relative;
+}
+
 .search input{
     width:100%;
     height:48px;
+
     border:1px solid #1c3741;
+
     outline:none;
+
     border-radius:15px;
-    padding:0 16px;
+
+    padding:
+        0 45px 0 16px;
+
     color:#fff;
+
     background:#0d222b;
 }
 
+.search input::placeholder{
+    color:#607983;
+}
+
+.search input:focus{
+    border-color:#00cda6;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(0,205,166,.08);
+}
+
+.clearSearch{
+    position:absolute;
+
+    right:10px;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    width:32px;
+    height:32px;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:#17333d;
+
+    color:#b8cbd0;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+}
+
+
+/* =====================================================
+   USERS
+===================================================== */
+
 .chatList{
-    padding:0 10px 90px;
+    padding:
+        0 10px 20px;
 }
 
 .chat{
+    width:100%;
+
     display:flex;
     align-items:center;
+
     gap:13px;
+
     padding:14px 8px;
-    border-bottom:1px solid #142b33;
+
+    border-bottom:
+        1px solid #142b33;
+
+    cursor:pointer;
+
+    border-radius:12px;
+
+    transition:
+        background .15s,
+        transform .1s;
+}
+
+.chat:hover{
+    background:#0d252e;
+}
+
+.chat:active{
+    transform:scale(.99);
+}
+
+.chat:focus{
+    outline:
+        2px solid #00cda6;
+
+    outline-offset:-2px;
 }
 
 .avatar{
     width:52px;
     height:52px;
+
     flex:none;
+
     border-radius:50%;
+
     display:flex;
+
     align-items:center;
     justify-content:center;
-    background:linear-gradient(135deg,#00cda6,#087d99);
+
+    background:
+        linear-gradient(
+            135deg,
+            #00cda6,
+            #087d99
+        );
+
     font-weight:800;
+
+    overflow:hidden;
 }
+
 .avatar img{
     width:52px;
     height:52px;
+
     border-radius:50%;
+
     object-fit:cover;
+
     display:block;
 }
+
 .chatInfo{
     flex:1;
+
     min-width:0;
 }
 
 .chatTop{
     display:flex;
+
     justify-content:space-between;
+
     gap:10px;
 }
 
 .chatName{
     font-weight:700;
+
+    overflow:hidden;
+
+    white-space:nowrap;
+
+    text-overflow:ellipsis;
 }
 
 .chatTime{
     color:#718b94;
+
     font-size:11px;
 }
 
 .lastMessage{
     margin-top:5px;
+
     color:#78919a;
+
     font-size:13px;
+
     white-space:nowrap;
+
     overflow:hidden;
+
     text-overflow:ellipsis;
 }
 
-.badge{
-    min-width:20px;
-    height:20px;
-    padding:0 6px;
-    border-radius:20px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:#00cda6;
-    color:#001510;
-    font-size:11px;
-    font-weight:800;
+.emptyUsers{
+    padding:40px 20px;
+
+    text-align:center;
+
+    color:#718b94;
+
+    line-height:1.7;
 }
+
+
+/* =====================================================
+   BOTTOM NAV
+===================================================== */
 
 .bottomNav{
     position:fixed;
+
     left:0;
     right:0;
     bottom:0;
+
     height:72px;
+
     display:flex;
-    justify-content:space-around;
+
+    justify-content:
+        space-around;
+
     align-items:center;
+
     background:#091a22;
-    border-top:1px solid #1b343d;
+
+    border-top:
+        1px solid #1b343d;
+
+    z-index:50;
+
+    padding-bottom:
+        env(safe-area-inset-bottom);
 }
 
 .navBtn{
+    min-width:70px;
+
     border:0;
+
     background:none;
+
     color:#718b94;
+
     text-align:center;
+
     font-size:12px;
+
+    padding:5px 8px;
 }
 
 .navBtn span{
     display:block;
+
     font-size:23px;
+
     margin-bottom:3px;
 }
 
@@ -363,39 +667,90 @@ button{
     color:#00d4a5;
 }
 
-/* ================= SIDE MENU ================= */
+.navBtn:active{
+    transform:scale(.94);
+}
+
+
+/* =====================================================
+   SIDE MENU
+===================================================== */
 
 #sideMenu{
     display:none;
+
     position:fixed;
+
     inset:0;
+
     z-index:100;
-    background:rgba(0,0,0,.6);
+
+    background:
+        rgba(0,0,0,.65);
 }
 
 .menuPanel{
     width:285px;
+
+    max-width:85vw;
+
     height:100%;
+
+    overflow-y:auto;
+
     background:#0a1c24;
-    padding:22px 16px;
-    box-shadow:10px 0 40px rgba(0,0,0,.35);
+
+    padding:
+        22px 16px;
+
+    box-shadow:
+        10px 0 40px
+        rgba(0,0,0,.35);
+
+    animation:
+        menuIn .18s ease;
+}
+
+@keyframes menuIn{
+
+    from{
+        transform:translateX(-100%);
+    }
+
+    to{
+        transform:translateX(0);
+    }
+
 }
 
 .menuLogo{
     font-size:24px;
+
     font-weight:800;
+
     margin-bottom:28px;
+
     color:#00d4a5;
 }
 
 .menuItem{
     width:100%;
-    padding:15px 12px;
+
+    min-height:50px;
+
+    padding:
+        14px 12px;
+
     border:0;
+
     border-radius:12px;
+
     background:transparent;
+
     color:#fff;
+
     text-align:left;
+
     margin-bottom:5px;
 }
 
@@ -403,54 +758,147 @@ button{
     background:#102b34;
 }
 
+.menuItem:active{
+    transform:scale(.98);
+}
+
 .logout{
     margin-top:20px;
+
     color:#ff8585;
 }
 
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
 @media(max-width:360px){
+
     .loginBox{
-        padding:28px 18px 24px;
+        padding:
+            28px 18px 24px;
     }
 
     .logo h1{
         font-size:26px;
     }
+
+    .appHeader{
+        padding:0 10px;
+    }
+
+    .headerUserName{
+        display:none;
+    }
+
 }
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+.loadingBox{
+    padding:40px 20px;
+
+    text-align:center;
+
+    color:#718b94;
+}
+
+.spinner{
+    width:28px;
+    height:28px;
+
+    margin:
+        0 auto 12px;
+
+    border:
+        3px solid #21404b;
+
+    border-top-color:#00d4a5;
+
+    border-radius:50%;
+
+    animation:
+        spin .8s linear infinite;
+}
+
+@keyframes spin{
+
+    to{
+        transform:rotate(360deg);
+    }
+
+}
+
 </style>
 </head>
 
+
 <body>
 
-<!-- ================= LOGIN SCREEN ================= -->
+
+<!-- =====================================================
+     LOGIN SCREEN
+===================================================== -->
 
 <section id="loginScreen">
 
     <div class="loginBox">
 
         <div class="logo">
-            <div class="logoIcon">R</div>
-            <h1>RAZTARA</h1>
-            <p>Connect • Call • Share</p>
+
+            <div class="logoIcon">
+                R
+            </div>
+
+            <h1>
+                RAZTARA
+            </h1>
+
+            <p>
+                Connect • Call • Share
+            </p>
+
         </div>
 
-        <div id="message" class="message"></div>
+
+        <div
+            id="message"
+            class="message"
+        ></div>
+
 
         <div class="inputGroup">
-            <label>Email</label>
+
+            <label>
+                Email
+            </label>
+
             <div class="inputBox">
+
                 <input
                     id="email"
                     type="email"
                     placeholder="আপনার Email লিখুন"
                     autocomplete="email"
                 >
+
             </div>
+
         </div>
 
+
         <div class="inputGroup">
-            <label>Password</label>
+
+            <label>
+                Password
+            </label>
+
             <div class="inputBox">
+
                 <input
                     id="password"
                     type="password"
@@ -463,26 +911,42 @@ button{
                     type="button"
                     onclick="togglePassword()"
                     id="eyeBtn"
-                >👁️</button>
+                    aria-label="Show password"
+                >
+                    👁️
+                </button>
+
             </div>
+
         </div>
 
-        <a href="forgot-password.html" class="forgot">
+
+        <a
+            href="forgot-password.html"
+            class="forgot"
+        >
             Forgot Password?
         </a>
 
-      <button
-    class="loginBtn"
-    id="loginBtn"
-    onclick="loginUser()"
->
-    LOGIN
-</button>
 
-        <div class="divider">অথবা</div>
+        <button
+            class="loginBtn"
+            id="loginBtn"
+            type="button"
+            onclick="loginUser()"
+        >
+            LOGIN
+        </button>
+
+
+        <div class="divider">
+            অথবা
+        </div>
+
 
         <button
             class="createBtn"
+            type="button"
             onclick="goRegistration()"
         >
             ✚ Create Account
@@ -493,107 +957,222 @@ button{
 </section>
 
 
-<!-- ================= APP SCREEN ================= -->
+
+<!-- =====================================================
+     APP SCREEN
+===================================================== -->
 
 <section id="appScreen">
 
+
+    <!-- HEADER -->
+
     <header class="appHeader">
 
-        <button class="menuBtn" onclick="openMenu()">
+        <button
+            class="menuBtn"
+            type="button"
+            onclick="openMenu()"
+            aria-label="Menu"
+        >
             ☰
         </button>
+
 
         <div class="appTitle">
             RAZTARA
         </div>
 
-        <div id="headerUserName"></div>
+
+        <div
+            id="headerUserName"
+            class="headerUserName"
+        ></div>
+
 
         <button
             class="profileBtn"
             type="button"
             onclick="openProfile()"
+            aria-label="Profile"
         >
+
             <img
                 id="headerProfilePhoto"
                 src="https://i.pravatar.cc/100?img=12"
                 alt="Profile"
             >
+
         </button>
 
     </header>
 
+
+
+    <!-- SEARCH -->
+
     <div class="search">
-        <input
-            id="userSearch"
-            type="search"
-            placeholder="🔍 Search people or chats"
-            oninput="filterUsers()"
-        >
-    </div>
 
-    <!-- Real registered users -->
-    <div class="chatList" id="chatList">
+        <div class="searchBox">
 
-        <div style="padding:20px;text-align:center;color:#777;">
-            Users loading...
+            <input
+                id="userSearch"
+                type="search"
+                placeholder="🔍 Search people or chats"
+                autocomplete="off"
+                oninput="filterUsers()"
+            >
+
+            <button
+                id="clearSearchBtn"
+                class="clearSearch"
+                type="button"
+                onclick="clearSearch()"
+                aria-label="Clear search"
+            >
+                ✕
+            </button>
+
         </div>
 
     </div>
 
+
+
+    <!-- USER LIST -->
+
+    <div
+        class="chatList"
+        id="chatList"
+    >
+
+        <div class="loadingBox">
+
+            <div class="spinner"></div>
+
+            Users loading...
+
+        </div>
+
+    </div>
+
+
+
+    <!-- BOTTOM NAV -->
+
     <nav class="bottomNav">
 
-        <button class="navBtn active">
-            <span>💬</span>
+        <button
+            id="navChats"
+            class="navBtn active"
+            type="button"
+            onclick="openChats()"
+        >
+
+            <span>
+                💬
+            </span>
+
             Chats
+
         </button>
 
-        <button class="navBtn">
-            <span>📞</span>
+
+        <button
+            id="navCalls"
+            class="navBtn"
+            type="button"
+            onclick="openCalls()"
+        >
+
+            <span>
+                📞
+            </span>
+
             Calls
+
         </button>
 
-        <a href="profile.html" class="navBtn">
-            <span>👤</span>
+
+        <button
+            id="navProfile"
+            class="navBtn"
+            type="button"
+            onclick="openProfile()"
+        >
+
+            <span>
+                👤
+            </span>
+
             Profile
-        </a>
+
+        </button>
 
     </nav>
 
 </section>
 
-<!-- ================= SIDE MENU ================= -->
 
-<div id="sideMenu" onclick="closeMenu(event)">
 
-    <div class="menuPanel" onclick="event.stopPropagation()">
+<!-- =====================================================
+     SIDE MENU
+===================================================== -->
+
+<div
+    id="sideMenu"
+    onclick="closeMenu(event)"
+>
+
+    <div
+        class="menuPanel"
+        onclick="event.stopPropagation()"
+    >
 
         <div class="menuLogo">
             RAZTARA
         </div>
 
-        <button class="menuItem">
+
+        <button
+            class="menuItem"
+            type="button"
+            onclick="openProfileFromMenu()"
+        >
             👤 Profile
         </button>
 
-        <button class="menuItem">
+
+        <button
+            class="menuItem"
+            type="button"
+            onclick="openChats()"
+        >
             💬 Chats
         </button>
 
-        <button class="menuItem">
+
+        <button
+            class="menuItem"
+            type="button"
+            onclick="openCalls()"
+        >
             📞 Calls
         </button>
 
-     <button
-    class="menuItem"
-    type="button"
-    onclick="window.location.href='settings.html'"
->
-    ⚙️ Settings
-</button>
+
+        <button
+            class="menuItem"
+            type="button"
+            onclick="openSettings()"
+        >
+            ⚙️ Settings
+        </button>
+
 
         <button
             class="menuItem logout"
+            type="button"
             onclick="logout()"
         >
             🚪 Logout
@@ -604,9 +1183,12 @@ button{
 </div>
 
 
+
 <script>
 
-/* ================= SUPABASE ================= */
+/* =====================================================
+   SUPABASE
+===================================================== */
 
 const SUPABASE_URL =
 "https://pqyicaqpmojijjskpzcp.supabase.co";
@@ -620,328 +1202,146 @@ window.supabase.createClient(
     SUPABASE_KEY
 );
 
+
+/* =====================================================
+   GLOBAL VARIABLES
+===================================================== */
+
 let currentProfile = null;
-
-/* ================= ELEMENTS ================= */
-
-const loginScreen =
-document.getElementById("loginScreen");
-
-const appScreen =
-document.getElementById("appScreen");
-
-const emailInput =
-document.getElementById("email");
-
-const passwordInput =
-document.getElementById("password");
-
-const loginBtn =
-document.getElementById("loginBtn");
-
-const messageBox =
-document.getElementById("message");
-    
-/* ================= LOAD USERS ================= */
 
 let allUsers = [];
 
-async function loadUsers(){
+let currentUserId = null;
 
-    const chatList =
-        document.getElementById("chatList");
 
-    if(!chatList) return;
+/* =====================================================
+   ELEMENTS
+===================================================== */
 
-    const { data: authData, error: authError } =
-        await supabaseClient.auth.getUser();
+const loginScreen =
+document.getElementById(
+    "loginScreen"
+);
 
-    if(authError || !authData.user){
+const appScreen =
+document.getElementById(
+    "appScreen"
+);
 
-        chatList.innerHTML =
-            `<div style="padding:20px;text-align:center;color:#777;">
-                Login required
-            </div>`;
+const emailInput =
+document.getElementById(
+    "email"
+);
 
+const passwordInput =
+document.getElementById(
+    "password"
+);
+
+const loginBtn =
+document.getElementById(
+    "loginBtn"
+);
+
+const messageBox =
+document.getElementById(
+    "message"
+);
+
+const chatList =
+document.getElementById(
+    "chatList"
+);
+
+const userSearch =
+document.getElementById(
+    "userSearch"
+);
+
+const clearSearchBtn =
+document.getElementById(
+    "clearSearchBtn"
+);
+
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+function showMessage(
+    text,
+    type = "error"
+){
+
+    if(!messageBox){
         return;
     }
 
-    const myId = authData.user.id;
-
-    const { data: users, error } =
-        await supabaseClient
-            .from("profiles")
-            .select(
-                "id, username, full_name, avatar_url, bio"
-            )
-            .neq("id", myId)
-            .order("full_name", {
-                ascending: true
-            });
-
-    if(error){
-
-        console.error(
-            "Users load error:",
-            error
-        );
-
-        chatList.innerHTML =
-            `<div style="padding:20px;text-align:center;color:#d00;">
-                Users load করা যাচ্ছে না।
-            </div>`;
-
-        return;
-    }
-
-    allUsers = users || [];
-
-    displayUsers(allUsers);
-}
-
-
-function displayUsers(users){
-
-    const chatList =
-        document.getElementById("chatList");
-
-    if(!chatList) return;
-
-    if(users.length === 0){
-
-        chatList.innerHTML =
-            `<div style="padding:20px;text-align:center;color:#777;">
-                অন্য কোনো User পাওয়া যায়নি।
-            </div>`;
-
-        return;
-    }
-
-    chatList.innerHTML = "";
-
-    users.forEach(user => {
-
-        const name =
-            user.full_name ||
-            user.username ||
-            "User";
-
-        const firstLetter =
-            name.charAt(0).toUpperCase();
-
-        const avatarHTML =
-            user.avatar_url
-            ?
-            `<img
-                src="${user.avatar_url}"
-                alt="${name}"
-                onerror="this.style.display='none'; this.parentElement.textContent='${firstLetter}'"
-            >`
-            :
-            firstLetter;
-
-        const chat =
-            document.createElement("div");
-
-        chat.className = "chat";
-
-        chat.innerHTML = `
-
-            <div class="avatar">
-                ${avatarHTML}
-            </div>
-
-            <div class="chatInfo">
-
-                <div class="chatTop">
-
-                    <div class="chatName">
-                        ${name}
-                    </div>
-
-                </div>
-
-                <div class="lastMessage">
-                    ${user.bio || "Start a conversation"}
-                </div>
-
-            </div>
-
-        `;
-
-        chat.onclick = function(){
-
-            openChat(user.id);
-
-        };
-
-        chatList.appendChild(chat);
-
-    });
-}
-    
-/* =========================
-   OPEN CHAT
-========================= */
-
-function openChat(userId){
-
-    if(!userId){
-
-        return;
-
-    }
-
-    window.location.href =
-
-        "chat.html?user=" + encodeURIComponent(userId);
-
-}
-
-
-    
-/* ================= MESSAGE ================= */
-
-function showMessage(text,type="error"){
-
-    messageBox.textContent = text;
+    messageBox.textContent =
+        text;
 
     messageBox.className =
         "message " + type;
 
-    messageBox.style.display = "block";
+    messageBox.style.display =
+        "block";
 }
+
 
 function hideMessage(){
 
-    messageBox.style.display = "none";
-}
-
-
-/* ================= PASSWORD ================= */
-
-function togglePassword(){
-
-    if(passwordInput.type === "password"){
-
-        passwordInput.type = "text";
-
-        document.getElementById("eyeBtn").textContent = "🙈";
-
-    }else{
-
-        passwordInput.type = "password";
-
-        document.getElementById("eyeBtn").textContent = "👁️";
-    }
-}
-
-
-/* ================= SHOW LOGIN ================= */
-
-function showLogin(){
-
-    loginScreen.style.display = "flex";
-
-    appScreen.style.display = "none";
-}
-
-
-/* ================= SHOW APP ================= */
-
-async function loadMyProfile(){
-
-    const { data, error } =
-        await supabaseClient.auth.getUser();
-
-    if(error || !data.user) return;
-
-    const { data: profile, error: profileError } =
-        await supabaseClient
-            .from("profiles")
-            .select("id, username, full_name, avatar_url, bio")
-            .eq("id", data.user.id)
-            .maybeSingle();
-
-    if(profileError){
-        console.error("Profile load error:", profileError);
+    if(!messageBox){
         return;
     }
 
-    currentProfile = profile || {
-        id: data.user.id,
-        username: null,
-        full_name: data.user.user_metadata?.full_name || null,
-        avatar_url: null,
-        bio: null
-    };
-
-    if(currentProfile.avatar_url){
-
-        const photo =
-            document.getElementById("headerProfilePhoto");
-
-        if(photo){
-            photo.src = currentProfile.avatar_url;
-        }
-    }
-
-    const nameElement =
-        document.getElementById("headerUserName");
-
-    if(nameElement){
-        nameElement.textContent =
-            currentProfile.full_name ||
-            currentProfile.username ||
-            "User";
-    }
+    messageBox.style.display =
+        "none";
 }
 
 
-function updateHomeProfile(){
+/* =====================================================
+   PASSWORD
+===================================================== */
 
-    if(!currentProfile) return;
+function togglePassword(){
 
-    const photo =
-        document.getElementById("headerProfilePhoto");
-
-    if(photo && currentProfile.avatar_url){
-        photo.src = currentProfile.avatar_url;
+    if(
+        !passwordInput
+    ){
+        return;
     }
 
-    const nameElement =
-        document.getElementById("headerUserName");
+    if(
+        passwordInput.type ===
+        "password"
+    ){
 
-    if(nameElement){
-        nameElement.textContent =
-            currentProfile.full_name ||
-            currentProfile.username ||
-            "User";
+        passwordInput.type =
+            "text";
+
+        document.getElementById(
+            "eyeBtn"
+        ).textContent =
+            "🙈";
+
+    }else{
+
+        passwordInput.type =
+            "password";
+
+        document.getElementById(
+            "eyeBtn"
+        ).textContent =
+            "👁️";
+
     }
-}
-
-
-function openProfile(){
-
-    window.location.href = "profile.html";
 
 }
 
 
-function showApp(){
-
-    loginScreen.style.display = "none";
-
-    appScreen.style.display = "block";
-
-    loadMyProfile();
-    
-    loadUsers();
-
-}
-
-
-/* ================= LOGIN ================= */
+/* =====================================================
+   LOGIN
+===================================================== */
 
 async function loginUser(){
 
@@ -953,162 +1353,1213 @@ async function loginUser(){
     const password =
         passwordInput.value;
 
+
     if(!email){
 
-        showMessage("Email লিখুন।");
+        showMessage(
+            "Email লিখুন।"
+        );
 
         emailInput.focus();
 
         return;
     }
 
+
     if(!password){
 
-        showMessage("Password লিখুন।");
+        showMessage(
+            "Password লিখুন।"
+        );
 
         passwordInput.focus();
 
         return;
     }
 
-    loginBtn.disabled = true;
 
-    loginBtn.textContent = "LOGIN হচ্ছে...";
+    loginBtn.disabled =
+        true;
 
-    const { data, error } =
-        await supabaseClient.auth.signInWithPassword({
-            email: email,
-            password: password
-        });
-    
-    
+    loginBtn.textContent =
+        "LOGIN হচ্ছে...";
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth
+            .signInWithPassword({
+
+                email:
+                    email,
+
+                password:
+                    password
+
+            });
+
+
     if(error){
 
-        loginBtn.disabled = false;
+        loginBtn.disabled =
+            false;
 
-        loginBtn.textContent = "LOGIN";
+        loginBtn.textContent =
+            "LOGIN";
 
         showMessage(
-            getLoginError(error.message)
+            getLoginError(
+                error.message
+            )
         );
 
         return;
     }
 
-if(data.session){
 
-    loginBtn.disabled = false;
+    if(data.session){
 
-    loginBtn.textContent = "LOGIN";
+        loginBtn.disabled =
+            false;
+
+        loginBtn.textContent =
+            "LOGIN";
+
+        /*
+         * Supabase auth listener
+         * নিজে থেকেই showApp()
+         * চালাবে।
+         */
+
+    }
 
 }
 
-}
 
+/* =====================================================
+   LOGIN ERROR
+===================================================== */
 
-/* ================= ERROR ================= */
-
-function getLoginError(error){
+function getLoginError(
+    error
+){
 
     const text =
-        String(error || "").toLowerCase();
+        String(
+            error || ""
+        ).toLowerCase();
 
-    if(text.includes("invalid login credentials")){
 
-        return "Email অথবা Password সঠিক নয়।";
+    if(
+        text.includes(
+            "invalid login credentials"
+        )
+    ){
+
+        return (
+            "Email অথবা Password সঠিক নয়।"
+        );
+
     }
 
-    if(text.includes("email not confirmed")){
 
-        return "আপনার Email এখনো verify করা হয়নি।";
+    if(
+        text.includes(
+            "email not confirmed"
+        )
+    ){
+
+        return (
+            "আপনার Email এখনো verify করা হয়নি।"
+        );
+
     }
 
-    if(text.includes("too many requests")){
 
-        return "অনেকবার চেষ্টা হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।";
+    if(
+        text.includes(
+            "too many requests"
+        )
+    ){
+
+        return (
+            "অনেকবার চেষ্টা হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।"
+        );
+
     }
 
-    return error || "Login করা যায়নি। আবার চেষ্টা করুন।";
+
+    return (
+        error ||
+        "Login করা যায়নি। আবার চেষ্টা করুন।"
+    );
+
 }
 
 
-/* ================= REGISTRATION ================= */
+/* =====================================================
+   REGISTRATION
+===================================================== */
 
 function goRegistration(){
 
-    window.location.href =
-        "registration.html";
+    window.location.assign(
+        "registration.html"
+    );
+
 }
 
 
-/* ================= LOGOUT ================= */
+/* =====================================================
+   SHOW LOGIN
+===================================================== */
 
-async function logout(){
+function showLogin(){
 
-    await supabaseClient.auth.signOut();
+    loginScreen.style.display =
+        "flex";
+
+    appScreen.style.display =
+        "none";
+
+    currentProfile =
+        null;
+
+    currentUserId =
+        null;
+
+}
+
+
+/* =====================================================
+   LOAD MY PROFILE
+===================================================== */
+
+async function loadMyProfile(){
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth
+            .getUser();
+
+
+    if(
+        error ||
+        !data ||
+        !data.user
+    ){
+
+        return;
+    }
+
+
+    currentUserId =
+        data.user.id;
+
+
+    const {
+        data: profile,
+        error: profileError
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select(
+                "id, username, full_name, avatar_url, bio"
+            )
+            .eq(
+                "id",
+                data.user.id
+            )
+            .maybeSingle();
+
+
+    if(profileError){
+
+        console.error(
+            "Profile load error:",
+            profileError
+        );
+
+        currentProfile = {
+
+            id:
+                data.user.id,
+
+            username:
+                null,
+
+            full_name:
+                data.user.user_metadata?.full_name ||
+                null,
+
+            avatar_url:
+                null,
+
+            bio:
+                null
+
+        };
+
+    }else{
+
+        currentProfile =
+            profile || {
+
+                id:
+                    data.user.id,
+
+                username:
+                    null,
+
+                full_name:
+                    data.user.user_metadata?.full_name ||
+                    null,
+
+                avatar_url:
+                    null,
+
+                bio:
+                    null
+
+            };
+
+    }
+
+
+    updateHomeProfile();
+
+}
+
+
+/* =====================================================
+   UPDATE HEADER PROFILE
+===================================================== */
+
+function updateHomeProfile(){
+
+    if(!currentProfile){
+        return;
+    }
+
+
+    const photo =
+        document.getElementById(
+            "headerProfilePhoto"
+        );
+
+
+    if(
+        photo &&
+        currentProfile.avatar_url
+    ){
+
+        photo.src =
+            currentProfile.avatar_url;
+
+    }
+
+
+    const nameElement =
+        document.getElementById(
+            "headerUserName"
+        );
+
+
+    if(nameElement){
+
+        nameElement.textContent =
+            currentProfile.full_name ||
+            currentProfile.username ||
+            "User";
+
+    }
+
+}
+
+
+/* =====================================================
+   LOAD USERS
+===================================================== */
+
+async function loadUsers(){
+
+    if(!chatList){
+        return;
+    }
+
+
+    chatList.innerHTML = `
+
+        <div class="loadingBox">
+
+            <div class="spinner"></div>
+
+            Users loading...
+
+        </div>
+
+    `;
+
+
+    const {
+        data: authData,
+        error: authError
+    } =
+        await supabaseClient.auth
+            .getUser();
+
+
+    if(
+        authError ||
+        !authData ||
+        !authData.user
+    ){
+
+        chatList.innerHTML = `
+
+            <div class="emptyUsers">
+
+                Login required
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    currentUserId =
+        authData.user.id;
+
+
+    const {
+        data: users,
+        error
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select(
+                "id, username, full_name, avatar_url, bio"
+            )
+            .neq(
+                "id",
+                currentUserId
+            )
+            .order(
+                "full_name",
+                {
+                    ascending:true,
+                    nullsFirst:false
+                }
+            );
+
+
+    if(error){
+
+        console.error(
+            "Users load error:",
+            error
+        );
+
+
+        chatList.innerHTML = `
+
+            <div class="emptyUsers">
+
+                Users load করা যাচ্ছে না।
+
+                <br>
+
+                আবার চেষ্টা করুন।
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    allUsers =
+        users || [];
+
+
+    displayUsers(
+        allUsers
+    );
+
+}
+
+
+/* =====================================================
+   DISPLAY USERS
+===================================================== */
+
+function displayUsers(
+    users
+){
+
+    if(!chatList){
+        return;
+    }
+
+
+    if(
+        !users ||
+        users.length === 0
+    ){
+
+        chatList.innerHTML = `
+
+            <div class="emptyUsers">
+
+                কোনো User পাওয়া যায়নি।
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    chatList.innerHTML =
+        "";
+
+
+    users.forEach(
+        function(user){
+
+            /*
+             * গুরুত্বপূর্ণ:
+             * user.id সরাসরি ব্যবহার করা হচ্ছে।
+             */
+
+            const targetUserId =
+                String(
+                    user.id || ""
+                ).trim();
+
+
+            if(!targetUserId){
+
+                return;
+            }
+
+
+            const name =
+                user.full_name ||
+                user.username ||
+                "User";
+
+
+            const firstLetter =
+                name
+                    .charAt(0)
+                    .toUpperCase();
+
+
+            const chat =
+                document.createElement(
+                    "div"
+                );
+
+
+            chat.className =
+                "chat";
+
+
+            chat.setAttribute(
+                "role",
+                "button"
+            );
+
+
+            chat.setAttribute(
+                "tabindex",
+                "0"
+            );
+
+
+            chat.dataset.userId =
+                targetUserId;
+
+
+            let avatarHTML =
+                "";
+
+
+            if(user.avatar_url){
+
+                avatarHTML = `
+
+                    <img
+                        src="${escapeHTML(
+                            user.avatar_url
+                        )}"
+                        alt="${escapeHTML(
+                            name
+                        )}"
+                    >
+
+                `;
+
+            }else{
+
+                avatarHTML =
+                    escapeHTML(
+                        firstLetter
+                    );
+
+            }
+
+
+            const bio =
+                user.bio ||
+                "Start a conversation";
+
+
+            chat.innerHTML = `
+
+                <div class="avatar">
+
+                    ${avatarHTML}
+
+                </div>
+
+
+                <div class="chatInfo">
+
+                    <div class="chatTop">
+
+                        <div class="chatName">
+
+                            ${escapeHTML(
+                                name
+                            )}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="lastMessage">
+
+                        ${escapeHTML(
+                            bio
+                        )}
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            const avatarImage =
+                chat.querySelector(
+                    ".avatar img"
+                );
+
+
+            if(avatarImage){
+
+                avatarImage.addEventListener(
+                    "error",
+                    function(){
+
+                        this.style.display =
+                            "none";
+
+                        this.parentElement.textContent =
+                            firstLetter;
+
+                    }
+                );
+
+            }
+
+
+            /*
+             * Mouse / touch click
+             */
+
+            chat.addEventListener(
+                "click",
+                function(){
+
+                    openChat(
+                        chat.dataset.userId
+                    );
+
+                }
+            );
+
+
+            /*
+             * Keyboard support
+             */
+
+            chat.addEventListener(
+                "keydown",
+                function(event){
+
+                    if(
+                        event.key ===
+                            "Enter" ||
+                        event.key ===
+                            " "
+                    ){
+
+                        event.preventDefault();
+
+                        openChat(
+                            chat.dataset.userId
+                        );
+
+                    }
+
+                }
+            );
+
+
+            chatList.appendChild(
+                chat
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHTML(
+    value
+){
+
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* =====================================================
+   OPEN CHAT
+===================================================== */
+
+function openChat(
+    userId
+){
+
+    const targetUserId =
+        String(
+            userId || ""
+        ).trim();
+
+
+    if(!targetUserId){
+
+        alert(
+            "এই User-এর ID পাওয়া যায়নি।"
+        );
+
+        return;
+    }
+
+
+    /*
+     * এখানে অবশ্যই ?user= থাকবে।
+     */
+
+    const chatUrl =
+        "./chat.html?user=" +
+        encodeURIComponent(
+            targetUserId
+        );
+
+
+    window.location.assign(
+        chatUrl
+    );
+
+}
+
+
+/* =====================================================
+   SEARCH USERS
+===================================================== */
+
+function filterUsers(){
+
+    if(!userSearch){
+        return;
+    }
+
+
+    const query =
+        userSearch.value
+            .trim()
+            .toLowerCase();
+
+
+    if(clearSearchBtn){
+
+        clearSearchBtn.style.display =
+            query
+                ? "flex"
+                : "none";
+
+    }
+
+
+    if(!query){
+
+        displayUsers(
+            allUsers
+        );
+
+        return;
+    }
+
+
+    const filtered =
+        allUsers.filter(
+            function(user){
+
+                const name =
+                    String(
+                        user.full_name ||
+                        ""
+                    ).toLowerCase();
+
+
+                const username =
+                    String(
+                        user.username ||
+                        ""
+                    ).toLowerCase();
+
+
+                const bio =
+                    String(
+                        user.bio ||
+                        ""
+                    ).toLowerCase();
+
+
+                return (
+                    name.includes(query) ||
+                    username.includes(query) ||
+                    bio.includes(query)
+                );
+
+            }
+        );
+
+
+    displayUsers(
+        filtered
+    );
+
+}
+
+
+/* =====================================================
+   CLEAR SEARCH
+===================================================== */
+
+function clearSearch(){
+
+    if(userSearch){
+
+        userSearch.value =
+            "";
+
+    }
+
+
+    if(clearSearchBtn){
+
+        clearSearchBtn.style.display =
+            "none";
+
+    }
+
+
+    displayUsers(
+        allUsers
+    );
+
+}
+
+
+/* =====================================================
+   PROFILE
+===================================================== */
+
+function openProfile(){
 
     closeMenu();
 
-    emailInput.value = "";
+    window.location.assign(
+        "profile.html"
+    );
 
-    passwordInput.value = "";
+}
+
+
+function openProfileFromMenu(){
+
+    closeMenu();
+
+    window.location.assign(
+        "profile.html"
+    );
+
+}
+
+
+/* =====================================================
+   CHATS
+===================================================== */
+
+function openChats(){
+
+    closeMenu();
+
+    setActiveNav(
+        "navChats"
+    );
+
+
+    if(
+        window.location.pathname
+            .endsWith(
+                "index.html"
+            ) ||
+        window.location.pathname
+            .endsWith("/")
+    ){
+
+        if(appScreen.style.display !== "none"){
+
+            const search =
+                document.getElementById(
+                    "userSearch"
+                );
+
+            if(search){
+
+                search.focus();
+
+            }
+
+        }
+
+        return;
+
+    }
+
+
+    window.location.assign(
+        "index.html"
+    );
+
+}
+
+
+/* =====================================================
+   CALLS
+===================================================== */
+
+function openCalls(){
+
+    closeMenu();
+
+    setActiveNav(
+        "navCalls"
+    );
+
+
+    /*
+     * Calls page এখনো তৈরি করা হয়নি।
+     * তাই button হারাবে না বা error হবে না।
+     */
+
+    window.location.assign(
+        "calls.html"
+    );
+
+}
+
+
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+function openSettings(){
+
+    closeMenu();
+
+    window.location.assign(
+        "settings.html"
+    );
+
+}
+
+
+/* =====================================================
+   ACTIVE NAV
+===================================================== */
+
+function setActiveNav(
+    activeId
+){
+
+    const navButtons =
+        document.querySelectorAll(
+            ".navBtn"
+        );
+
+
+    navButtons.forEach(
+        function(button){
+
+            button.classList.remove(
+                "active"
+            );
+
+        }
+    );
+
+
+    const activeButton =
+        document.getElementById(
+            activeId
+        );
+
+
+    if(activeButton){
+
+        activeButton.classList.add(
+            "active"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+async function logout(){
+
+    closeMenu();
+
+
+    const {
+        error
+    } =
+        await supabaseClient.auth
+            .signOut();
+
+
+    if(error){
+
+        alert(
+            "Logout করা যায়নি। আবার চেষ্টা করুন।"
+        );
+
+        console.error(
+            "Logout error:",
+            error
+        );
+
+        return;
+    }
+
+
+    emailInput.value =
+        "";
+
+    passwordInput.value =
+        "";
+
 
     showLogin();
+
 
     showMessage(
         "আপনি Logout করেছেন।",
         "success"
     );
+
 }
 
 
-/* ================= MENU ================= */
+/* =====================================================
+   MENU
+===================================================== */
 
 function openMenu(){
 
-    document.getElementById(
-        "sideMenu"
-    ).style.display = "block";
+    const menu =
+        document.getElementById(
+            "sideMenu"
+        );
+
+
+    if(menu){
+
+        menu.style.display =
+            "block";
+
+    }
+
 }
 
-function closeMenu(event){
 
-    if(
-        event &&
-        event.target !==
-        document.getElementById("sideMenu")
-    ){
+function closeMenu(
+    event
+){
+
+    const menu =
+        document.getElementById(
+            "sideMenu"
+        );
+
+
+    if(!menu){
         return;
     }
 
-    document.getElementById(
-        "sideMenu"
-    ).style.display = "none";
+
+    /*
+     * শুধু background-এ click করলে close হবে।
+     * Menu button-এ click করলে event propagation
+     * stop করা আছে।
+     */
+
+    if(
+        event &&
+        event.target !== menu
+    ){
+
+        return;
+
+    }
+
+
+    menu.style.display =
+        "none";
+
 }
 
 
-/* ================= SESSION ================= */
+/* =====================================================
+   SHOW APP
+===================================================== */
+
+async function showApp(){
+
+    loginScreen.style.display =
+        "none";
+
+    appScreen.style.display =
+        "block";
+
+
+    await loadMyProfile();
+
+    await loadUsers();
+
+}
+
+
+/* =====================================================
+   SESSION
+===================================================== */
 
 async function startApp(){
 
-    const { data } =
-        await supabaseClient.auth.getSession();
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth
+            .getSession();
 
-    if(data && data.session){
 
-        showApp();
+    if(error){
+
+        console.error(
+            "Session error:",
+            error
+        );
+
+        showLogin();
+
+        return;
+    }
+
+
+    if(
+        data &&
+        data.session
+    ){
+
+        await showApp();
 
     }else{
 
         showLogin();
+
     }
+
 }
 
 
-/* ================= AUTH LISTENER ================= */
+/* =====================================================
+   AUTH STATE LISTENER
+===================================================== */
 
 supabaseClient.auth.onAuthStateChange(
-    (event, session) => {
+    function(
+        event,
+        session
+    ){
 
         if(session){
 
@@ -1117,12 +2568,16 @@ supabaseClient.auth.onAuthStateChange(
         }else{
 
             showLogin();
+
         }
+
     }
 );
 
 
-/* ================= START ================= */
+/* =====================================================
+   START APP
+===================================================== */
 
 startApp();
 
