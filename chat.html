@@ -2,26 +2,16 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
->
-
-<meta name="theme-color" content="#087f5b">
-
-<title>RAZTARA Chat</title>
+<title>RAZTARA — Chat</title>
 
 <style>
-
-/* =========================
-   RESET
-========================= */
-
 *{
     box-sizing:border-box;
     margin:0;
     padding:0;
+    -webkit-tap-highlight-color:transparent;
 }
 
 html,
@@ -32,1770 +22,750 @@ body{
 }
 
 body{
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Arial,
-        sans-serif;
-
-    background:#f5f7f8;
-    color:#17201c;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
+    "Noto Sans Bengali",Arial,sans-serif;
+    background:#f3f7f5;
+    color:#17231e;
 }
 
-
 /* =========================
-   APP
+   MAIN
 ========================= */
 
-.chatApp{
+.chatPage{
     width:100%;
     height:100dvh;
-    position:relative;
-    overflow:hidden;
-    background:#f5f7f8;
+    display:flex;
+    flex-direction:column;
+    background:#f3f7f5;
 }
-
 
 /* =========================
-   COMMON BUTTON
+   TOP BAR
 ========================= */
 
-button{
-    font-family:inherit;
-    border:0;
-    outline:none;
-    cursor:pointer;
-    -webkit-tap-highlight-color:transparent;
-}
+.chatTop{
+    height:68px;
+    min-height:68px;
+    padding:
+        env(safe-area-inset-top)
+        10px
+        0
+        10px;
 
-.iconButton{
-    width:42px;
-    height:42px;
+    background:#087f5b;
+    color:white;
 
     display:flex;
     align-items:center;
-    justify-content:center;
+    gap:8px;
 
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+    z-index:10;
+}
+
+.topButton{
+    width:44px;
+    height:44px;
+    border:0;
     border-radius:50%;
-    background:transparent;
+
+    background:rgba(255,255,255,.14);
+    color:white;
 
     font-size:22px;
-    color:#087f5b;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-    flex-shrink:0;
+    cursor:pointer;
 }
 
-.iconButton:active{
-    background:rgba(8,127,91,.10);
-    transform:scale(.96);
+.topButton:active{
+    transform:scale(.94);
+    background:rgba(255,255,255,.25);
 }
 
+.userButton{
+    flex:1;
+    min-width:0;
 
-/* =========================
-   CHAT HEADER
-========================= */
-
-.chatHeader{
-    position:fixed;
-
-    top:0;
-    left:0;
-    right:0;
-
-    height:68px;
-
-    padding-top:env(safe-area-inset-top);
-
-    box-sizing:content-box;
+    border:0;
+    background:transparent;
+    color:white;
 
     display:flex;
     align-items:center;
+    gap:10px;
 
-    background:#ffffff;
-
-    border-bottom:1px solid #e5e9e7;
-
-    z-index:1000;
-
-    box-shadow:
-        0 1px 4px rgba(0,0,0,.05);
+    text-align:left;
+    cursor:pointer;
 }
 
-.headerInner{
-    width:100%;
-    height:68px;
-
-    display:flex;
-    align-items:center;
-
-    padding:0 10px;
-}
-
-
-/* =========================
-   BACK BUTTON
-========================= */
-
-.backButton{
+.userAvatar{
     width:42px;
     height:42px;
+    min-width:42px;
+
+    border-radius:50%;
+    background:#d9eee7;
 
     display:flex;
     align-items:center;
     justify-content:center;
 
-    background:transparent;
-
     color:#087f5b;
+    font-size:20px;
+    font-weight:700;
 
-    border-radius:50%;
-
-    font-size:29px;
-    line-height:1;
-
-    flex-shrink:0;
+    overflow:hidden;
 }
 
-.backButton:active{
-    background:rgba(8,127,91,.10);
-}
-
-
-/* =========================
-   USER AREA
-========================= */
-
-.chatUserArea{
-    min-width:0;
-    flex:1;
-
-    display:flex;
-    align-items:center;
-
-    gap:10px;
-
-    padding:0 8px;
-}
-
-.chatAvatar{
-    width:43px;
-    height:43px;
-
-    border-radius:50%;
-
+.userAvatar img{
+    width:100%;
+    height:100%;
     object-fit:cover;
-
-    background:#e7efeb;
-
-    flex-shrink:0;
-
-    border:1px solid #dce6e1;
 }
 
-.chatUserInfo{
+.userInfo{
     min-width:0;
-    flex:1;
 }
 
-.chatUserName{
+.userName{
     font-size:16px;
     font-weight:700;
 
-    color:#17201c;
-
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
 }
 
-.chatUserStatus{
+.userStatus{
     margin-top:2px;
-
     font-size:12px;
+    opacity:.85;
+}
 
-    color:#718078;
+/* =========================
+   CHAT AREA
+========================= */
 
-    white-space:nowrap;
+.chatBody{
+    flex:1;
+    min-height:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
     overflow:hidden;
-    text-overflow:ellipsis;
 }
 
-
-/* =========================
-   HEADER ACTIONS
-========================= */
-
-.headerActions{
-    display:flex;
-    align-items:center;
-    gap:2px;
-
-    flex-shrink:0;
-}
-
-.callButton{
-    width:42px;
-    height:42px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border-radius:50%;
-
-    background:transparent;
-
-    color:#087f5b;
-
-    font-size:21px;
-}
-
-.callButton:active{
-    background:rgba(8,127,91,.10);
-}
-
-
-/* =========================
-   MENU
-========================= */
-
-.menuOverlay{
-    position:fixed;
-
-    inset:0;
-
-    background:transparent;
-
-    display:none;
-
-    z-index:1100;
-}
-
-.menuOverlay.show{
-    display:block;
-}
-
-.chatMenu{
-    position:absolute;
-
-    top:calc(
-        68px +
-        env(safe-area-inset-top)
-    );
-
-    right:10px;
-
-    width:220px;
-
-    background:#ffffff;
-
-    border-radius:14px;
-
-    border:1px solid #e5e9e7;
-
-    box-shadow:
-        0 10px 30px rgba(0,0,0,.16);
-
-    overflow:hidden;
-
-    z-index:1200;
-}
-
-.menuItem{
+.emptyChat{
     width:100%;
+    max-width:360px;
 
-    min-height:50px;
+    padding:28px 20px;
 
-    padding:12px 15px;
+    text-align:center;
 
-    display:flex;
-    align-items:center;
+    background:white;
+    border-radius:20px;
 
-    gap:11px;
-
-    background:#ffffff;
-
-    color:#17201c;
-
-    text-align:left;
-
-    font-size:15px;
-
-    border-bottom:1px solid #edf0ef;
+    box-shadow:0 4px 18px rgba(0,0,0,.07);
 }
 
-.menuItem:last-child{
-    border-bottom:0;
+.emptyIcon{
+    font-size:46px;
+    margin-bottom:12px;
 }
 
-.menuItem:active{
-    background:#f1f7f4;
-}
-
-.menuItem.danger{
-    color:#d93025;
-}
-
-
-/* =========================
-   MESSAGE AREA
-========================= */
-
-.messagesArea{
-    position:absolute;
-
-    top:calc(
-        68px +
-        env(safe-area-inset-top)
-    );
-
-    left:0;
-    right:0;
-
-    bottom:calc(
-        70px +
-        env(safe-area-inset-bottom)
-    );
-
-    overflow-y:auto;
-
-    overflow-x:hidden;
-
-    padding:12px 10px 18px;
-
-    -webkit-overflow-scrolling:touch;
-
-    scroll-behavior:smooth;
-}
-
-.messagesArea::-webkit-scrollbar{
-    width:4px;
-}
-
-.messagesArea::-webkit-scrollbar-thumb{
-    background:#cdd8d3;
-    border-radius:10px;
-}
-
-
-/* =========================
-   DATE SEPARATOR
-========================= */
-
-.dateSeparator{
-    display:flex;
-
-    justify-content:center;
-    align-items:center;
-
-    margin:12px 0 14px;
-}
-
-.dateSeparator span{
-    display:inline-flex;
-
-    align-items:center;
-    justify-content:center;
-
-    min-height:28px;
-
-    padding:5px 12px;
-
-    border-radius:14px;
-
-    background:#e7efeb;
-
-    color:#607069;
-
-    font-size:11px;
-
-    font-weight:600;
-
-    box-shadow:
-        0 1px 2px rgba(0,0,0,.04);
-}
-
-
-/* =========================
-   MESSAGE ROW
-========================= */
-
-.messageRow{
-    width:100%;
-
-    display:flex;
-
+.emptyTitle{
+    font-size:18px;
+    font-weight:700;
     margin-bottom:7px;
 }
 
-.messageRow.mine{
-    justify-content:flex-end;
-}
-
-.messageRow.theirs{
-    justify-content:flex-start;
-}
-
-.messageBubble{
-    max-width:min(78%, 420px);
-
-    padding:9px 11px 7px;
-
-    border-radius:17px;
-
-    word-break:break-word;
-
-    overflow-wrap:anywhere;
-
-    box-shadow:
-        0 1px 2px rgba(0,0,0,.05);
-}
-
-.messageRow.mine .messageBubble{
-    background:#087f5b;
-    color:#ffffff;
-
-    border-bottom-right-radius:5px;
-}
-
-.messageRow.theirs .messageBubble{
-    background:#ffffff;
-    color:#17201c;
-
-    border:1px solid #e8ecea;
-
-    border-bottom-left-radius:5px;
-}
-
-.messageText{
-    white-space:pre-wrap;
-
-    font-size:15px;
-
-    line-height:1.45;
-}
-
-.messageTime{
-    margin-top:4px;
-
-    font-size:10px;
-
-    opacity:.72;
-
-    text-align:right;
-}
-
-
-/* =========================
-   EMPTY / LOADING
-========================= */
-
-.chatLoading,
-.emptyChat{
-    width:100%;
-
-    min-height:180px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    text-align:center;
-
-    color:#748078;
-
+.emptyText{
+    color:#6d7772;
     font-size:14px;
-
-    padding:30px 20px;
+    line-height:1.6;
 }
 
-
 /* =========================
-   BOTTOM COMPOSER
+   BOTTOM AREA
 ========================= */
 
-.messageComposer{
-    position:fixed;
-
-    left:0;
-    right:0;
-    bottom:0;
-
-    min-height:70px;
-
+.chatBottom{
     padding:
-        8px 10px
+        8px
+        10px
         calc(8px + env(safe-area-inset-bottom))
         10px;
 
-    background:#ffffff;
-
-    border-top:1px solid #e5e9e7;
-
-    z-index:1000;
-}
-
-.composerInner{
-    width:100%;
+    background:white;
+    border-top:1px solid #e2e8e5;
 
     display:flex;
-    align-items:flex-end;
-
+    align-items:center;
     gap:7px;
+
+    box-shadow:0 -2px 10px rgba(0,0,0,.05);
 }
 
-.attachButton,
-.voiceButton,
-.sendButton{
-    width:43px;
-    height:43px;
+.bottomButton{
+    width:44px;
+    height:44px;
+    min-width:44px;
 
+    border:0;
     border-radius:50%;
+
+    background:#edf5f2;
+    color:#087f5b;
+
+    font-size:21px;
 
     display:flex;
     align-items:center;
     justify-content:center;
 
-    flex-shrink:0;
-
-    font-size:20px;
+    cursor:pointer;
 }
 
-.attachButton,
-.voiceButton{
-    background:#eef4f1;
-
-    color:#087f5b;
+.bottomButton:active{
+    transform:scale(.93);
+    background:#dcece6;
 }
 
-.sendButton{
-    background:#087f5b;
-
-    color:#ffffff;
-}
-
-.attachButton:active,
-.voiceButton:active,
-.sendButton:active{
-    transform:scale(.95);
-}
-
-
-/* =========================
-   MESSAGE INPUT
-========================= */
-
-.messageInput{
+.messageBox{
     flex:1;
-
     min-width:0;
 
-    min-height:43px;
-    max-height:120px;
+    height:44px;
 
-    resize:none;
-
-    border:1px solid #dfe7e3;
-
+    border:1px solid #d9e3df;
     border-radius:22px;
 
-    background:#f7f9f8;
-
-    padding:
-        11px 14px;
-
-    font-family:inherit;
-
-    font-size:15px;
-
-    line-height:20px;
-
-    color:#17201c;
+    padding:0 16px;
 
     outline:none;
 
-    overflow-y:auto;
+    background:#f7faf9;
+    color:#17231e;
+
+    font-size:15px;
 }
 
-.messageInput:focus{
+.messageBox:focus{
     border-color:#087f5b;
-
-    background:#ffffff;
+    background:white;
 }
 
-.messageInput::placeholder{
-    color:#8b9691;
+.sendButton{
+    width:44px;
+    height:44px;
+    min-width:44px;
+
+    border:0;
+    border-radius:50%;
+
+    background:#087f5b;
+    color:white;
+
+    font-size:20px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
 }
 
+.sendButton:active{
+    transform:scale(.93);
+}
 
 /* =========================
-   RECORDING
+   MORE MENU
 ========================= */
 
-.recordingBar{
-    position:absolute;
+.menu{
+    position:fixed;
 
-    left:10px;
+    top:72px;
     right:10px;
 
-    bottom:calc(
-        70px +
-        env(safe-area-inset-bottom) +
-        8px
-    );
+    width:210px;
 
-    min-height:48px;
+    background:white;
+    border-radius:16px;
+
+    padding:7px;
+
+    box-shadow:0 8px 30px rgba(0,0,0,.18);
+
+    z-index:50;
 
     display:none;
+}
 
+.menu.show{
+    display:block;
+}
+
+.menuButton{
+    width:100%;
+    min-height:46px;
+
+    border:0;
+    border-radius:11px;
+
+    background:white;
+
+    display:flex;
     align-items:center;
-
-    justify-content:space-between;
 
     gap:10px;
 
-    padding:8px 12px;
+    padding:0 12px;
 
-    border-radius:15px;
+    font-size:14px;
+    color:#17231e;
 
-    background:#ffffff;
+    text-align:left;
 
-    border:1px solid #e1e8e4;
-
-    box-shadow:
-        0 5px 20px rgba(0,0,0,.10);
-
-    z-index:1001;
+    cursor:pointer;
 }
 
-.recordingBar.show{
-    display:flex;
+.menuButton:active{
+    background:#edf5f2;
 }
 
-.recordingText{
-    flex:1;
-
-    color:#d93025;
-
-    font-size:13px;
-
-    font-weight:600;
-}
-
-.cancelRecording{
-    padding:8px 12px;
-
-    border-radius:10px;
-
-    background:#fcebea;
-
-    color:#d93025;
-
-    font-size:13px;
-}
-
-
-/* =========================
-   TOAST
-========================= */
-
-.toast{
-    position:fixed;
-
-    left:50%;
-
-    bottom:calc(
-        82px +
-        env(safe-area-inset-bottom)
-    );
-
-    transform:
-        translateX(-50%)
-        translateY(15px);
-
-    max-width:calc(100% - 40px);
-
-    padding:10px 15px;
-
-    border-radius:12px;
-
-    background:#17201c;
-
-    color:#ffffff;
-
-    font-size:13px;
-
+.menuIcon{
+    width:25px;
     text-align:center;
-
-    opacity:0;
-
-    pointer-events:none;
-
-    transition:
-        opacity .2s ease,
-        transform .2s ease;
-
-    z-index:2000;
+    font-size:18px;
 }
-
-.toast.show{
-    opacity:1;
-
-    transform:
-        translateX(-50%)
-        translateY(0);
-}
-
 
 /* =========================
-   FILE INPUT
+   OVERLAY
 ========================= */
 
-.hiddenFileInput{
+.overlay{
+    position:fixed;
+    inset:0;
+
+    z-index:40;
+
     display:none;
 }
 
+.overlay.show{
+    display:block;
+}
 
 /* =========================
    MOBILE
 ========================= */
 
-@media(max-width:420px){
+@media(max-width:380px){
 
-    .chatHeader{
-        height:64px;
+    .chatTop{
+        padding-left:6px;
+        padding-right:6px;
     }
 
-    .headerInner{
-        height:64px;
+    .topButton{
+        width:40px;
+        height:40px;
     }
 
-    .messagesArea{
-        top:calc(
-            64px +
-            env(safe-area-inset-top)
-        );
+    .userAvatar{
+        width:38px;
+        height:38px;
+        min-width:38px;
     }
 
-    .chatMenu{
-        top:calc(
-            64px +
-            env(safe-area-inset-top)
-        );
+    .bottomButton{
+        width:40px;
+        height:40px;
+        min-width:40px;
     }
 
-    .messageBubble{
-        max-width:82%;
+    .sendButton{
+        width:40px;
+        height:40px;
+        min-width:40px;
     }
-
 }
-
-
-/* =========================
-   ACCESSIBILITY
-========================= */
-
-button:disabled{
-    opacity:.55;
-    cursor:not-allowed;
-}
-
 </style>
 </head>
 
-
 <body>
 
-<div class="chatApp">
-
+<div class="chatPage">
 
     <!-- =========================
-         HEADER
+         TOP BAR
     ========================== -->
 
-    <header class="chatHeader">
+    <header class="chatTop">
 
-        <div class="headerInner">
+        <button
+            class="topButton"
+            type="button"
+            aria-label="Back"
+            onclick="goBack()">
+            ←
+        </button>
 
-            <button
-                class="backButton"
-                type="button"
-                aria-label="Back"
-                onclick="goBack()"
-            >
-                ‹
-            </button>
+        <button
+            class="userButton"
+            type="button"
+            onclick="openProfile()">
 
+            <div class="userAvatar">
+                👤
+            </div>
 
-            <div
-                class="chatUserArea"
-                onclick="viewProfile()"
-            >
+            <div class="userInfo">
 
-                <img
-                    id="otherUserAvatar"
-                    class="chatAvatar"
-                    src=""
-                    alt="Profile"
-                >
+                <div class="userName">
+                    Chat User
+                </div>
 
-                <div class="chatUserInfo">
-
-                    <div
-                        id="otherUserName"
-                        class="chatUserName"
-                    >
-                        Chat
-                    </div>
-
-                    <div
-                        id="otherUserStatus"
-                        class="chatUserStatus"
-                    >
-                        ...
-                    </div>
-
+                <div class="userStatus">
+                    Online
                 </div>
 
             </div>
 
+        </button>
 
-            <div class="headerActions">
+        <button
+            class="topButton"
+            type="button"
+            aria-label="Audio Call"
+            onclick="openAudioCall()">
+            📞
+        </button>
 
-                <button
-                    id="callButton"
-                    class="callButton"
-                    type="button"
-                    aria-label="Call"
-                    onclick="startCall()"
-                >
-                    📞
-                </button>
+        <button
+            class="topButton"
+            type="button"
+            aria-label="Video Call"
+            onclick="openVideoCall()">
+            🎥
+        </button>
 
-                <button
-                    class="iconButton"
-                    type="button"
-                    aria-label="Menu"
-                    onclick="toggleMenu()"
-                >
-                    ⋮
-                </button>
-
-            </div>
-
-        </div>
+        <button
+            class="topButton"
+            type="button"
+            aria-label="More"
+            onclick="toggleMenu()">
+            ⋮
+        </button>
 
     </header>
 
 
     <!-- =========================
-         MENU
+         CHAT BODY
     ========================== -->
 
-    <div
-        id="menuOverlay"
-        class="menuOverlay"
-        onclick="closeMenus(event)"
-    >
+    <main class="chatBody">
 
-        <div
-            id="chatMenu"
-            class="chatMenu"
-            onclick="event.stopPropagation()"
-        >
+        <div class="emptyChat">
 
-            <button
-                class="menuItem"
-                type="button"
-                onclick="viewProfile()"
-            >
-                👤
-                <span data-i18n="profile">
-                    Profile
-                </span>
-            </button>
+            <div class="emptyIcon">
+                💬
+            </div>
 
+            <div class="emptyTitle">
+                নতুন Chat
+            </div>
 
-            <button
-                class="menuItem"
-                type="button"
-                onclick="startCall()"
-            >
-                📞
-                <span data-i18n="call">
-                    Call
-                </span>
-            </button>
+            <div class="emptyText">
+                এখানে আপনার মেসেজগুলো দেখা যাবে।
+                প্রতিটি Chat-এর button আলাদাভাবে তৈরি করা হবে।
+            </div>
 
-
-            <button
-                class="menuItem"
-                type="button"
-                onclick="startVideoCall()"
-            >
-                🎥
-                <span data-i18n="videoCall">
-                    Video Call
-                </span>
-            </button>
-
-
-            <button
-                id="blockButton"
-                class="menuItem danger"
-                type="button"
-                onclick="toggleBlockUser()"
-            >
-                🚫
-                <span id="blockButtonText">
-                    Block
-                </span>
-            </button>
-
-
-            <button
-                class="menuItem danger"
-                type="button"
-                onclick="deleteChat()"
-            >
-                🗑️
-                <span data-i18n="deleteChat">
-                    Delete Chat
-                </span>
-            </button>
-
-        </div>
-
-    </div>
-
-
-    <!-- =========================
-         MESSAGES
-    ========================== -->
-
-    <main
-        id="messagesArea"
-        class="messagesArea"
-    >
-
-        <div
-            id="chatLoading"
-            class="chatLoading"
-            data-i18n="loading"
-        >
-            Loading...
         </div>
 
     </main>
 
 
     <!-- =========================
-         RECORDING BAR
+         BOTTOM MESSAGE BAR
     ========================== -->
 
-    <div
-        id="recordingBar"
-        class="recordingBar"
-    >
-
-        <div
-            id="recordingText"
-            class="recordingText"
-        >
-            🔴 Recording...
-        </div>
+    <footer class="chatBottom">
 
         <button
-            class="cancelRecording"
+            class="bottomButton"
             type="button"
-            onclick="cancelRecording()"
-            data-i18n="cancel"
-        >
-            Cancel
+            aria-label="Emoji"
+            onclick="openEmoji()">
+            😊
         </button>
 
-    </div>
+        <button
+            class="bottomButton"
+            type="button"
+            aria-label="Attachment"
+            onclick="openAttachment()">
+            📎
+        </button>
+
+        <input
+            class="messageBox"
+            id="messageInput"
+            type="text"
+            placeholder="মেসেজ লিখুন..."
+            autocomplete="off">
+
+        <button
+            class="bottomButton"
+            type="button"
+            aria-label="Voice"
+            onclick="openVoice()">
+            🎤
+        </button>
+
+        <button
+            class="sendButton"
+            type="button"
+            aria-label="Send"
+            onclick="sendMessage()">
+            ➤
+        </button>
+
+    </footer>
+
+</div>
 
 
-    <!-- =========================
-         MESSAGE COMPOSER
-    ========================== -->
+<!-- =========================
+     OVERLAY
+========================= -->
 
-    <div class="messageComposer">
-
-        <div class="composerInner">
-
-            <button
-                class="attachButton"
-                type="button"
-                onclick="openFilePicker()"
-                aria-label="Attach"
-            >
-                📎
-            </button>
+<div
+    class="overlay"
+    id="menuOverlay"
+    onclick="closeMenu()">
+</div>
 
 
-            <textarea
-                id="messageInput"
-                class="messageInput"
-                rows="1"
-                maxlength="5000"
-                placeholder="Write a message..."
-                data-i18n-placeholder="messagePlaceholder"
-            ></textarea>
+<!-- =========================
+     MORE MENU
+========================= -->
 
+<div
+    class="menu"
+    id="moreMenu">
 
-            <button
-                id="voiceButton"
-                class="voiceButton"
-                type="button"
-                onclick="toggleVoiceRecording()"
-                aria-label="Voice"
-            >
-                🎙️
-            </button>
+    <button
+        class="menuButton"
+        type="button"
+        onclick="openProfile()">
 
+        <span class="menuIcon">👤</span>
+        <span>Profile</span>
 
-            <button
-                id="sendButton"
-                class="sendButton"
-                type="button"
-                onclick="sendMessage()"
-                aria-label="Send"
-            >
-                ➤
-            </button>
+    </button>
 
-        </div>
+    <button
+        class="menuButton"
+        type="button"
+        onclick="openChatSearch()">
 
-    </div>
+        <span class="menuIcon">🔍</span>
+        <span>Search</span>
 
+    </button>
 
-    <!-- =========================
-         FILE INPUT
-    ========================== -->
+    <button
+        class="menuButton"
+        type="button"
+        onclick="openMedia()">
 
-    <input
-        id="fileInput"
-        class="hiddenFileInput"
-        type="file"
-        accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
-        onchange="handleFileSelected(event)"
-    >
+        <span class="menuIcon">🖼️</span>
+        <span>Media & Files</span>
 
+    </button>
 
-    <!-- =========================
-         TOAST
-    ========================== -->
+    <button
+        class="menuButton"
+        type="button"
+        onclick="openChatSettings()">
 
-    <div
-        id="toast"
-        class="toast"
-    ></div>
+        <span class="menuIcon">⚙️</span>
+        <span>Chat Settings</span>
 
+    </button>
 
 </div>
 
 
 <script>
 
-/* =====================================================
-   RAZTARA CHAT
-   PART 1
-===================================================== */
-
-
 /* =========================
-   SUPABASE CONFIG
-========================= */
-
-const SUPABASE_URL =
-    "https://pqyicaqpmojijjskpzcp.supabase.co";
-
-const SUPABASE_KEY =
-    "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
-
-const STORAGE_BUCKET =
-    "chat-files";
-
-
-/* =========================
-   LANGUAGE
-========================= */
-
-function getLanguage(){
-
-    return (
-        localStorage.getItem("raztara_language")
-        || "bn"
-    );
-
-}
-
-
-const translations = {
-
-    bn:{
-
-        profile:"প্রোফাইল",
-
-        call:"কল",
-
-        videoCall:"ভিডিও কল",
-
-        block:"ব্লক",
-
-        unblock:"আনব্লক",
-
-        deleteChat:"চ্যাট মুছুন",
-
-        loading:"লোড হচ্ছে...",
-
-        cancel:"বাতিল",
-
-        recording:"রেকর্ড হচ্ছে...",
-
-        messagePlaceholder:
-            "মেসেজ লিখুন...",
-
-        today:"আজ",
-
-        yesterday:"গতকাল",
-
-        online:"অনলাইন",
-
-        offline:"অফলাইন",
-
-        noMessages:
-            "এখনও কোনো মেসেজ নেই।",
-
-        messageSent:
-            "মেসেজ পাঠানো হয়েছে।",
-
-        blocked:
-            "এই ব্যবহারকারীকে ব্লক করা হয়েছে।",
-
-        unblocked:
-            "ব্লক তুলে দেওয়া হয়েছে।"
-
-    },
-
-    en:{
-
-        profile:"Profile",
-
-        call:"Call",
-
-        videoCall:"Video Call",
-
-        block:"Block",
-
-        unblock:"Unblock",
-
-        deleteChat:"Delete Chat",
-
-        loading:"Loading...",
-
-        cancel:"Cancel",
-
-        recording:"Recording...",
-
-        messagePlaceholder:
-            "Write a message...",
-
-        today:"Today",
-
-        yesterday:"Yesterday",
-
-        online:"Online",
-
-        offline:"Offline",
-
-        noMessages:
-            "No messages yet.",
-
-        messageSent:
-            "Message sent.",
-
-        blocked:
-            "This user has been blocked.",
-
-        unblocked:
-            "Block removed."
-
-    }
-
-};
-
-
-function t(key){
-
-    const lang = getLanguage();
-
-    return (
-        translations[lang] &&
-        translations[lang][key]
-    )
-    ||
-    translations.en[key]
-    ||
-    key;
-
-}
-
-
-/* =========================
-   APPLY LANGUAGE
-========================= */
-
-function applyLanguage(){
-
-    document.documentElement.lang =
-        getLanguage() === "bn"
-        ? "bn"
-        : "en";
-
-
-    document
-        .querySelectorAll("[data-i18n]")
-        .forEach(element => {
-
-            const key =
-                element.getAttribute(
-                    "data-i18n"
-                );
-
-            element.textContent =
-                t(key);
-
-        });
-
-
-    document
-        .querySelectorAll(
-            "[data-i18n-placeholder]"
-        )
-        .forEach(element => {
-
-            const key =
-                element.getAttribute(
-                    "data-i18n-placeholder"
-                );
-
-            element.placeholder =
-                t(key);
-
-        });
-
-
-    updateBlockButtonText();
-
-}
-
-
-/* =========================
-   URL / USER
-========================= */
-
-const urlParams =
-    new URLSearchParams(
-        window.location.search
-    );
-
-const otherUserId =
-    urlParams.get("user");
-
-
-/* =========================
-   STATE
-========================= */
-
-let currentUser = null;
-
-let otherUser = null;
-
-let messages = [];
-
-let realtimeChannel = null;
-
-let mediaRecorder = null;
-
-let recordedChunks = [];
-
-let isRecording = false;
-
-let isBlocked = false;
-
-let lastRenderedDateKey = null;
-
-
-/* =========================
-   DOM
-========================= */
-
-const messagesArea =
-    document.getElementById(
-        "messagesArea"
-    );
-
-const messageInput =
-    document.getElementById(
-        "messageInput"
-    );
-
-const fileInput =
-    document.getElementById(
-        "fileInput"
-    );
-
-const menuOverlay =
-    document.getElementById(
-        "menuOverlay"
-    );
-
-const toastElement =
-    document.getElementById(
-        "toast"
-    );
-
-
-/* =========================
-   DATE / TIME
-   BANGLADESH TIMEZONE
-========================= */
-
-function getDhakaParts(date){
-
-    const parts =
-        new Intl.DateTimeFormat(
-            "en-US",
-            {
-                timeZone:"Asia/Dhaka",
-
-                year:"numeric",
-                month:"2-digit",
-                day:"2-digit",
-
-                hour:"2-digit",
-                minute:"2-digit",
-                second:"2-digit",
-
-                hour12:false
-            }
-        )
-        .formatToParts(
-            new Date(date)
-        );
-
-
-    const result = {};
-
-    parts.forEach(part => {
-
-        if(
-            part.type !== "literal"
-        ){
-
-            result[part.type] =
-                part.value;
-
-        }
-
-    });
-
-    return result;
-
-}
-
-
-function getDateKey(date){
-
-    const parts =
-        getDhakaParts(date);
-
-    return (
-        parts.year +
-        "-" +
-        parts.month +
-        "-" +
-        parts.day
-    );
-
-}
-
-
-function getDhakaDateKeyFromNow(
-    offsetDays = 0
-){
-
-    const nowParts =
-        getDhakaParts(
-            new Date()
-        );
-
-
-    const utcDate =
-        new Date(
-            Date.UTC(
-                Number(nowParts.year),
-                Number(nowParts.month) - 1,
-                Number(nowParts.day) + offsetDays
-            )
-        );
-
-
-    return (
-        utcDate
-            .getUTCFullYear()
-            .toString()
-            .padStart(4,"0")
-        +
-        "-"
-        +
-        String(
-            utcDate.getUTCMonth() + 1
-        ).padStart(2,"0")
-        +
-        "-"
-        +
-        String(
-            utcDate.getUTCDate()
-        ).padStart(2,"0")
-    );
-
-}
-
-
-function formatTime(date){
-
-    return new Intl.DateTimeFormat(
-
-        getLanguage() === "bn"
-        ? "bn-BD"
-        : "en-US",
-
-        {
-            timeZone:"Asia/Dhaka",
-
-            hour:"numeric",
-            minute:"2-digit",
-
-            hour12:true
-        }
-
-    ).format(
-        new Date(date)
-    );
-
-}
-
-
-function formatDateSeparator(date){
-
-    const dateKey =
-        getDateKey(date);
-
-    const todayKey =
-        getDhakaDateKeyFromNow(0);
-
-    const yesterdayKey =
-        getDhakaDateKeyFromNow(-1);
-
-
-    if(dateKey === todayKey){
-
-        return t("today");
-
-    }
-
-
-    if(
-        dateKey === yesterdayKey
-    ){
-
-        return t("yesterday");
-
-    }
-
-
-    const locale =
-        getLanguage() === "bn"
-        ? "bn-BD"
-        : "en-US";
-
-
-    return new Intl.DateTimeFormat(
-        locale,
-        {
-            timeZone:"Asia/Dhaka",
-
-            day:"numeric",
-            month:"long",
-            year:"numeric"
-        }
-    ).format(
-        new Date(date)
-    );
-
-}
-
-
-/* =========================
-   DATE SEPARATOR
-========================= */
-
-function addDateSeparator(
-    date,
-    force = false
-){
-
-    const dateKey =
-        getDateKey(date);
-
-
-    if(
-        !force &&
-        lastRenderedDateKey === dateKey
-    ){
-
-        return;
-
-    }
-
-
-    lastRenderedDateKey =
-        dateKey;
-
-
-    const separator =
-        document.createElement(
-            "div"
-        );
-
-    separator.className =
-        "dateSeparator";
-
-
-    const span =
-        document.createElement(
-            "span"
-        );
-
-    span.textContent =
-        formatDateSeparator(
-            date
-        );
-
-
-    separator.appendChild(span);
-
-    messagesArea.appendChild(
-        separator
-    );
-
-}
-
-
-/* =========================
-   TOAST
-========================= */
-
-let toastTimer = null;
-
-
-function showToast(message){
-
-    if(!toastElement){
-
-        return;
-
-    }
-
-
-    toastElement.textContent =
-        message;
-
-
-    toastElement.classList.add(
-        "show"
-    );
-
-
-    clearTimeout(
-        toastTimer
-    );
-
-
-    toastTimer =
-        setTimeout(() => {
-
-            toastElement.classList.remove(
-                "show"
-            );
-
-        }, 2500);
-
-}
-
-
-/* =========================
-   BACK
+   BASIC BUTTON ACTIONS
+   এখন শুধু navigation placeholder
 ========================= */
 
 function goBack(){
 
-    if(
-        document.referrer &&
-        history.length > 1
-    ){
-
+    if(history.length > 1){
         history.back();
-
     }else{
-
-        window.location.href =
-            "index.html";
-
+        window.location.href = "index.html";
     }
 
 }
 
 
+function openProfile(){
+
+    closeMenu();
+
+    window.location.href = "user-profile.html";
+}
+
+
+function openAudioCall(){
+
+    window.location.href = "audio-call.html";
+}
+
+
+function openVideoCall(){
+
+    window.location.href = "video-call.html";
+}
+
+
+function openVoice(){
+
+    window.location.href = "voice.html";
+}
+
+
+function openAttachment(){
+
+    window.location.href = "attachment.html";
+}
+
+
+function openEmoji(){
+
+    window.location.href = "emoji.html";
+}
+
+
+function openMedia(){
+
+    closeMenu();
+
+    window.location.href = "media.html";
+}
+
+
+function openChatSearch(){
+
+    closeMenu();
+
+    window.location.href = "chat-search.html";
+}
+
+
+function openChatSettings(){
+
+    closeMenu();
+
+    window.location.href = "chat-settings.html";
+}
+
+
 /* =========================
-   MENU
+   SEND
+========================= */
+
+function sendMessage(){
+
+    const input =
+        document.getElementById("messageInput");
+
+    const text =
+        input.value.trim();
+
+    if(!text){
+        return;
+    }
+
+    /*
+      এখন message database-এ যাবে না।
+      পরে আলাদা message system তৈরি করব।
+    */
+
+    input.value = "";
+
+}
+
+
+/* =========================
+   MORE MENU
 ========================= */
 
 function toggleMenu(){
 
-    if(!menuOverlay){
+    const menu =
+        document.getElementById("moreMenu");
 
-        return;
+    const overlay =
+        document.getElementById("menuOverlay");
 
-    }
+    const isOpen =
+        menu.classList.contains("show");
 
+    if(isOpen){
 
-    menuOverlay.classList.toggle(
-        "show"
-    );
+        closeMenu();
 
-}
+    }else{
 
-
-function closeMenus(event){
-
-    if(
-        event &&
-        event.target !== menuOverlay
-    ){
-
-        return;
-
-    }
-
-
-    if(menuOverlay){
-
-        menuOverlay.classList.remove(
-            "show"
-        );
+        menu.classList.add("show");
+        overlay.classList.add("show");
 
     }
 
 }
 
 
-/* =========================
-   VIEW PROFILE
-========================= */
+function closeMenu(){
 
-function viewProfile(){
+    document
+        .getElementById("moreMenu")
+        .classList.remove("show");
 
-    closeMenus();
-
-
-    if(!otherUserId){
-
-        showToast(
-            getLanguage() === "bn"
-            ? "ব্যবহারকারী পাওয়া যায়নি।"
-            : "User not found."
-        );
-
-        return;
-
-    }
-
-
-    window.location.href =
-        "user-profile.html?user=" +
-        encodeURIComponent(
-            otherUserId
-        );
+    document
+        .getElementById("menuOverlay")
+        .classList.remove("show");
 
 }
-
-
-/* =========================
-   FILE PICKER
-========================= */
-
-function openFilePicker(){
-
-    if(fileInput){
-
-        fileInput.click();
-
-    }
-
-}
-
-
-/* =========================
-   AUTO RESIZE INPUT
-========================= */
-
-function resizeMessageInput(){
-
-    if(!messageInput){
-
-        return;
-
-    }
-
-
-    messageInput.style.height =
-        "auto";
-
-
-    messageInput.style.height =
-        Math.min(
-            messageInput.scrollHeight,
-            120
-        ) + "px";
-
-}
-
-
-messageInput.addEventListener(
-    "input",
-    resizeMessageInput
-);
 
 
 /* =========================
    ENTER TO SEND
 ========================= */
 
-messageInput.addEventListener(
-    "keydown",
-    function(event){
+document
+    .getElementById("messageInput")
+    .addEventListener("keydown", function(event){
 
-        if(
-            event.key === "Enter" &&
-            !event.shiftKey
-        ){
+        if(event.key === "Enter"){
 
             event.preventDefault();
 
@@ -1803,3719 +773,7 @@ messageInput.addEventListener(
 
         }
 
-    }
-);
-
-
-/* =========================
-   LANGUAGE CHANGE
-========================= */
-
-window.addEventListener(
-    "storage",
-    function(event){
-
-        if(
-            event.key ===
-            "raztara_language"
-        ){
-
-            applyLanguage();
-
-            rerenderDateSeparators();
-
-        }
-
-    }
-);
-
-
-/* =========================
-   DATE SEPARATOR RERENDER
-========================= */
-
-function rerenderDateSeparators(){
-
-    document
-        .querySelectorAll(
-            ".dateSeparator"
-        )
-        .forEach(separator => {
-
-            const span =
-                separator.querySelector(
-                    "span"
-                );
-
-            if(!span){
-
-                return;
-
-            }
-
-            /*
-             * The actual date is not stored
-             * inside the separator yet.
-             * Full message rendering in Part 2
-             * will create it correctly.
-             */
-
-        });
-
-}
-
-
-/* =========================
-   CALL PLACEHOLDERS
-   FULL LOGIC IN PART 3
-========================= */
-
-function startCall(){
-
-    closeMenus();
-
-    showToast(
-        getLanguage() === "bn"
-        ? "কল সিস্টেম পরের অংশে যুক্ত হবে।"
-        : "Call system will be connected."
-    );
-
-}
-
-
-function startVideoCall(){
-
-    closeMenus();
-
-    showToast(
-        getLanguage() === "bn"
-        ? "ভিডিও কল সিস্টেম পরের অংশে যুক্ত হবে।"
-        : "Video call system will be connected."
-    );
-
-}
-
-
-/* =========================
-   FILE PLACEHOLDER
-   FULL LOGIC IN PART 2
-========================= */
-
-function handleFileSelected(event){
-
-    const file =
-        event.target.files &&
-        event.target.files[0];
-
-
-    if(!file){
-
-        return;
-
-    }
-
-
-    showToast(
-        getLanguage() === "bn"
-        ? "ফাইল প্রস্তুত হচ্ছে..."
-        : "Preparing file..."
-    );
-
-}
-
-
-/* =========================
-   VOICE PLACEHOLDER
-   FULL LOGIC IN PART 2
-========================= */
-
-function toggleVoiceRecording(){
-
-    showToast(
-        getLanguage() === "bn"
-        ? "ভয়েস রেকর্ডিং পরের অংশে সম্পূর্ণ হবে।"
-        : "Voice recording will be completed."
-    );
-
-}
-
-
-function cancelRecording(){
-
-    if(
-        mediaRecorder &&
-        mediaRecorder.state !== "inactive"
-    ){
-
-        mediaRecorder.stop();
-
-    }
-
-
-    recordedChunks = [];
-
-    isRecording = false;
-
-
-    const recordingBar =
-        document.getElementById(
-            "recordingBar"
-        );
-
-
-    if(recordingBar){
-
-        recordingBar.classList.remove(
-            "show"
-        );
-
-    }
-
-}
-
-
-/* =========================
-   SEND PLACEHOLDER
-   FULL LOGIC IN PART 2
-========================= */
-
-async function sendMessage(){
-
-    const text =
-        messageInput.value.trim();
-
-
-    if(!text){
-
-        return;
-
-    }
-
-
-    showToast(
-        getLanguage() === "bn"
-        ? "মেসেজ পাঠানোর সিস্টেম পরের অংশে যুক্ত হবে।"
-        : "Message sending will be connected."
-    );
-
-}
-
-
-/* =========================
-   BLOCK PLACEHOLDERS
-   FULL LOGIC IN PART 3
-========================= */
-
-function updateBlockButtonText(){
-
-    const element =
-        document.getElementById(
-            "blockButtonText"
-        );
-
-
-    if(!element){
-
-        return;
-
-    }
-
-
-    element.textContent =
-        isBlocked
-        ? t("unblock")
-        : t("block");
-
-}
-
-
-function toggleBlockUser(){
-
-    closeMenus();
-
-    showToast(
-        getLanguage() === "bn"
-        ? "ব্লক সিস্টেম পরের অংশে যুক্ত হবে।"
-        : "Block system will be connected."
-    );
-
-}
-
-
-/* =========================
-   DELETE PLACEHOLDER
-   FULL LOGIC IN PART 3
-========================= */
-
-function deleteChat(){
-
-    closeMenus();
-
-    showToast(
-        getLanguage() === "bn"
-        ? "চ্যাট মুছে ফেলার সিস্টেম পরের অংশে যুক্ত হবে।"
-        : "Delete chat system will be connected."
-    );
-
-}
-
-
-/* =========================
-   INITIAL LANGUAGE
-========================= */
-
-applyLanguage();
-
-/* =====================================================
-   PART 2
-   SUPABASE + CHAT DATA + MESSAGE + FILE + VOICE
-===================================================== */
-
-
-/* =========================
-   SUPABASE CLIENT
-========================= */
-
-let supabaseClient = null;
-
-
-/* =========================
-   LOAD SUPABASE LIBRARY
-========================= */
-
-function loadSupabaseLibrary(){
-
-    return new Promise((resolve,reject)=>{
-
-        if(window.supabase){
-
-            resolve();
-
-            return;
-
-        }
-
-
-        const script =
-            document.createElement("script");
-
-        script.src =
-            "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-
-        script.onload = () => {
-
-            try{
-
-                supabaseClient =
-                    window.supabase.createClient(
-                        SUPABASE_URL,
-                        SUPABASE_KEY
-                    );
-
-                resolve();
-
-            }catch(error){
-
-                reject(error);
-
-            }
-
-        };
-
-
-        script.onerror = () => {
-
-            reject(
-                new Error(
-                    "Supabase library load failed."
-                )
-            );
-
-        };
-
-
-        document.head.appendChild(
-            script
-        );
-
     });
-
-}
-
-
-/* =========================
-   INIT SUPABASE
-========================= */
-
-async function initSupabase(){
-
-    try{
-
-        await loadSupabaseLibrary();
-
-
-        if(!supabaseClient){
-
-            supabaseClient =
-                window.supabase.createClient(
-                    SUPABASE_URL,
-                    SUPABASE_KEY
-                );
-
-        }
-
-
-        return true;
-
-    }catch(error){
-
-        console.error(
-            "Supabase init error:",
-            error
-        );
-
-
-        showToast(
-            getLanguage() === "bn"
-            ? "সার্ভার সংযোগ করা যায়নি।"
-            : "Server connection failed."
-        );
-
-
-        return false;
-
-    }
-
-}
-
-
-/* =========================
-   AUTH USER
-========================= */
-
-async function getCurrentUser(){
-
-    if(!supabaseClient){
-
-        return null;
-
-    }
-
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .auth
-            .getUser();
-
-
-    if(error){
-
-        console.error(
-            "Auth user error:",
-            error
-        );
-
-        return null;
-
-    }
-
-
-    return data?.user || null;
-
-}
-
-
-/* =========================
-   LOAD OTHER USER PROFILE
-========================= */
-
-async function loadOtherUser(){
-
-    if(!otherUserId){
-
-        throw new Error(
-            "Chat user ID missing."
-        );
-
-    }
-
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("profiles")
-            .select(
-                `
-                id,
-                username,
-                full_name,
-                avatar_url,
-                bio,
-                online_visibility,
-                last_seen_at
-                `
-            )
-            .eq(
-                "id",
-                otherUserId
-            )
-            .maybeSingle();
-
-
-    if(error){
-
-        throw error;
-
-    }
-
-
-    if(!data){
-
-        throw new Error(
-            "User profile not found."
-        );
-
-    }
-
-
-    otherUser = data;
-
-
-    renderOtherUser();
-
-
-    return data;
-
-}
-
-
-/* =========================
-   RENDER OTHER USER
-========================= */
-
-function renderOtherUser(){
-
-    if(!otherUser){
-
-        return;
-
-    }
-
-
-    const nameElement =
-        document.getElementById(
-            "otherUserName"
-        );
-
-
-    const avatarElement =
-        document.getElementById(
-            "otherUserAvatar"
-        );
-
-
-    const statusElement =
-        document.getElementById(
-            "otherUserStatus"
-        );
-
-
-    const displayName =
-        otherUser.full_name ||
-        otherUser.username ||
-        (
-            getLanguage() === "bn"
-            ? "ব্যবহারকারী"
-            : "User"
-        );
-
-
-    if(nameElement){
-
-        nameElement.textContent =
-            displayName;
-
-    }
-
-
-    if(avatarElement){
-
-        avatarElement.src =
-            otherUser.avatar_url ||
-            createAvatarPlaceholder(
-                displayName
-            );
-
-    }
-
-
-    if(statusElement){
-
-        statusElement.textContent =
-            formatLastSeen(
-                otherUser.last_seen_at
-            );
-
-    }
-
-}
-
-
-/* =========================
-   AVATAR PLACEHOLDER
-========================= */
-
-function createAvatarPlaceholder(name){
-
-    const first =
-        String(name || "U")
-            .trim()
-            .charAt(0)
-            .toUpperCase();
-
-
-    const svg = `
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="100"
-            height="100"
-            viewBox="0 0 100 100"
-        >
-            <rect
-                width="100"
-                height="100"
-                rx="50"
-                fill="#087f5b"
-            />
-
-            <text
-                x="50"
-                y="58"
-                text-anchor="middle"
-                font-size="42"
-                font-family="Arial"
-                fill="white"
-            >
-                ${escapeHtml(first)}
-            </text>
-        </svg>
-    `;
-
-
-    return (
-        "data:image/svg+xml;charset=UTF-8," +
-        encodeURIComponent(svg)
-    );
-
-}
-
-
-/* =========================
-   ESCAPE HTML
-========================= */
-
-function escapeHtml(value){
-
-    return String(value ?? "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-
-}
-
-
-/* =========================
-   LAST SEEN
-========================= */
-
-function formatLastSeen(lastSeen){
-
-    if(!lastSeen){
-
-        return t("offline");
-
-    }
-
-
-    const date =
-        new Date(lastSeen);
-
-
-    if(Number.isNaN(date.getTime())){
-
-        return t("offline");
-
-    }
-
-
-    const diff =
-        Date.now() -
-        date.getTime();
-
-
-    if(diff < 2 * 60 * 1000){
-
-        return t("online");
-
-    }
-
-
-    const minutes =
-        Math.floor(
-            diff / 60000
-        );
-
-
-    if(minutes < 60){
-
-        return getLanguage() === "bn"
-
-            ? `${minutes} মিনিট আগে`
-
-            : `${minutes} min ago`;
-
-    }
-
-
-    const hours =
-        Math.floor(
-            minutes / 60
-        );
-
-
-    if(hours < 24){
-
-        return getLanguage() === "bn"
-
-            ? `${hours} ঘণ্টা আগে`
-
-            : `${hours} hr ago`;
-
-    }
-
-
-    return (
-        getLanguage() === "bn"
-        ? "অফলাইন"
-        : "Offline"
-    );
-
-}
-
-
-/* =========================
-   MESSAGE TABLE DETECTION
-========================= */
-
-const POSSIBLE_MESSAGE_TABLES = [
-
-    "messages",
-    "chat_messages"
-
-];
-
-
-let MESSAGE_TABLE = "messages";
-
-
-/* =========================
-   FIND MESSAGE TABLE
-========================= */
-
-async function findMessageTable(){
-
-    for(
-        const tableName
-        of POSSIBLE_MESSAGE_TABLES
-    ){
-
-        try{
-
-            const {
-                error
-            } =
-                await supabaseClient
-                    .from(tableName)
-                    .select("*")
-                    .limit(1);
-
-
-            if(!error){
-
-                MESSAGE_TABLE =
-                    tableName;
-
-                return tableName;
-
-            }
-
-        }catch(error){
-
-            console.warn(
-                "Table check failed:",
-                tableName,
-                error
-            );
-
-        }
-
-    }
-
-
-    throw new Error(
-        "Message table not found."
-    );
-
-}
-
-
-/* =========================
-   NORMALIZE MESSAGE
-========================= */
-
-function normalizeMessage(row){
-
-    if(!row){
-
-        return null;
-
-    }
-
-
-    const senderId =
-        row.sender_id ??
-        row.from_user_id ??
-        row.user_id ??
-        row.sender;
-
-
-    const receiverId =
-        row.receiver_id ??
-        row.to_user_id ??
-        row.recipient_id ??
-        row.receiver;
-
-
-    const content =
-        row.content ??
-        row.message ??
-        row.text ??
-        "";
-
-
-    const createdAt =
-        row.created_at ??
-        row.sent_at ??
-        row.createdAt;
-
-
-    return {
-
-        ...row,
-
-        id:
-            row.id,
-
-        sender_id:
-            senderId,
-
-        receiver_id:
-            receiverId,
-
-        content:
-            content,
-
-        created_at:
-            createdAt
-
-    };
-
-}
-
-
-/* =========================
-   LOAD MESSAGES
-========================= */
-
-async function loadMessages(){
-
-    if(!currentUser){
-
-        return;
-
-    }
-
-
-    messagesArea.innerHTML = "";
-
-
-    lastRenderedDateKey =
-        null;
-
-
-    const loading =
-        document.createElement(
-            "div"
-        );
-
-    loading.className =
-        "chatLoading";
-
-    loading.textContent =
-        t("loading");
-
-    messagesArea.appendChild(
-        loading
-    );
-
-
-    try{
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from(MESSAGE_TABLE)
-                .select("*")
-                .or(
-                    `and(sender_id.eq.${currentUser.id},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${currentUser.id})`
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending:true
-                    }
-                );
-
-
-        if(error){
-
-            throw error;
-
-        }
-
-
-        messages =
-            (data || [])
-                .map(normalizeMessage)
-                .filter(Boolean);
-
-
-        messagesArea.innerHTML = "";
-
-
-        if(!messages.length){
-
-            const empty =
-                document.createElement(
-                    "div"
-                );
-
-            empty.className =
-                "emptyChat";
-
-            empty.textContent =
-                t("noMessages");
-
-            messagesArea.appendChild(
-                empty
-            );
-
-            return;
-
-        }
-
-
-        messages.forEach(
-            message => {
-
-                renderMessage(
-                    message,
-                    false
-                );
-
-            }
-        );
-
-
-        scrollToBottom(false);
-
-
-    }catch(error){
-
-        console.error(
-            "Load messages error:",
-            error
-        );
-
-
-        messagesArea.innerHTML = "";
-
-
-        const errorBox =
-            document.createElement(
-                "div"
-            );
-
-        errorBox.className =
-            "emptyChat";
-
-        errorBox.textContent =
-            getLanguage() === "bn"
-
-            ? "মেসেজ লোড করা যায়নি।"
-
-            : "Could not load messages.";
-
-
-        messagesArea.appendChild(
-            errorBox
-        );
-
-    }
-
-}
-
-
-/* =========================
-   RENDER MESSAGE
-========================= */
-
-function renderMessage(
-    message,
-    shouldScroll = true
-){
-
-    if(!message){
-
-        return;
-
-    }
-
-
-    const createdAt =
-        message.created_at ||
-        new Date().toISOString();
-
-
-    const dateKey =
-        getDateKey(
-            createdAt
-        );
-
-
-    /*
-     * If the message is the first
-     * message of this day,
-     * create a date separator.
-     */
-
-    if(
-        lastRenderedDateKey !==
-        dateKey
-    ){
-
-        addDateSeparator(
-            createdAt
-        );
-
-    }
-
-
-    const mine =
-        String(message.sender_id) ===
-        String(currentUser.id);
-
-
-    const row =
-        document.createElement(
-            "div"
-        );
-
-    row.className =
-        "messageRow " +
-        (
-            mine
-            ? "mine"
-            : "theirs"
-        );
-
-
-    if(message.id){
-
-        row.dataset.messageId =
-            message.id;
-
-    }
-
-
-    const bubble =
-        document.createElement(
-            "div"
-        );
-
-    bubble.className =
-        "messageBubble";
-
-
-    const text =
-        document.createElement(
-            "div"
-        );
-
-    text.className =
-        "messageText";
-
-
-    text.textContent =
-        message.content || "";
-
-
-    bubble.appendChild(
-        text
-    );
-
-
-    const time =
-        document.createElement(
-            "div"
-        );
-
-    time.className =
-        "messageTime";
-
-
-    time.textContent =
-        formatTime(
-            createdAt
-        );
-
-
-    bubble.appendChild(
-        time
-    );
-
-
-    row.appendChild(
-        bubble
-    );
-
-
-    /*
-     * Remove empty placeholder
-     * when first real message arrives.
-     */
-
-    const empty =
-        messagesArea.querySelector(
-            ".emptyChat"
-        );
-
-
-    if(empty){
-
-        empty.remove();
-
-    }
-
-
-    messagesArea.appendChild(
-        row
-    );
-
-
-    if(shouldScroll){
-
-        scrollToBottom(true);
-
-    }
-
-}
-
-
-/* =========================
-   SCROLL BOTTOM
-========================= */
-
-function scrollToBottom(smooth = true){
-
-    requestAnimationFrame(() => {
-
-        messagesArea.scrollTo({
-
-            top:
-                messagesArea.scrollHeight,
-
-            behavior:
-                smooth
-                ? "smooth"
-                : "auto"
-
-        });
-
-    });
-
-}
-
-
-/* =========================
-   SEND TEXT MESSAGE
-========================= */
-
-async function sendMessage(){
-
-    if(!currentUser){
-
-        return;
-
-    }
-
-
-    if(!otherUserId){
-
-        return;
-
-    }
-
-
-    const text =
-        messageInput.value.trim();
-
-
-    if(!text){
-
-        return;
-
-    }
-
-
-    const sendButton =
-        document.getElementById(
-            "sendButton"
-        );
-
-
-    if(sendButton){
-
-        sendButton.disabled =
-            true;
-
-    }
-
-
-    try{
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from(MESSAGE_TABLE)
-                .insert({
-
-                    sender_id:
-                        currentUser.id,
-
-                    receiver_id:
-                        otherUserId,
-
-                    content:
-                        text
-
-                })
-                .select()
-                .single();
-
-
-        if(error){
-
-            throw error;
-
-        }
-
-
-        messageInput.value = "";
-
-        resizeMessageInput();
-
-
-        /*
-         * Realtime normally renders
-         * the new message.
-         *
-         * If realtime is not ready,
-         * render it here.
-         */
-
-        if(data){
-
-            const exists =
-                messages.some(
-                    item =>
-                        String(item.id) ===
-                        String(data.id)
-                );
-
-
-            if(!exists){
-
-                const normalized =
-                    normalizeMessage(
-                        data
-                    );
-
-
-                messages.push(
-                    normalized
-                );
-
-
-                renderMessage(
-                    normalized,
-                    true
-                );
-
-            }
-
-        }
-
-
-    }catch(error){
-
-        console.error(
-            "Send message error:",
-            error
-        );
-
-
-        showToast(
-            getLanguage() === "bn"
-
-            ? "মেসেজ পাঠানো যায়নি।"
-
-            : "Message could not be sent."
-        );
-
-
-    }finally{
-
-        if(sendButton){
-
-            sendButton.disabled =
-                false;
-
-        }
-
-    }
-
-}
-
-
-/* =========================
-   FILE UPLOAD
-========================= */
-
-async function handleFileSelected(event){
-
-    const file =
-        event.target.files &&
-        event.target.files[0];
-
-
-    if(!file){
-
-        return;
-
-    }
-
-
-    if(!currentUser){
-
-        return;
-
-    }
-
-
-    /*
-     * Maximum 6 MB
-     */
-
-    const MAX_FILE_SIZE =
-        6 * 1024 * 1024;
-
-
-    if(file.size > MAX_FILE_SIZE){
-
-        showToast(
-
-            getLanguage() === "bn"
-
-            ? "ফাইল সর্বোচ্চ ৬ MB হতে পারবে।"
-
-            : "Maximum file size is 6 MB."
-
-        );
-
-
-        fileInput.value = "";
-
-        return;
-
-    }
-
-
-    try{
-
-        showToast(
-
-            getLanguage() === "bn"
-
-            ? "ফাইল আপলোড হচ্ছে..."
-
-            : "Uploading file..."
-
-        );
-
-
-        const safeName =
-            file.name
-                .replace(
-                    /[^a-zA-Z0-9._-]/g,
-                    "_"
-                );
-
-
-        const path =
-            `${currentUser.id}/${Date.now()}_${safeName}`;
-
-
-        const {
-            data:
-                uploadData,
-            error:
-                uploadError
-        } =
-            await supabaseClient
-                .storage
-                .from(STORAGE_BUCKET)
-                .upload(
-                    path,
-                    file,
-                    {
-                        upsert:false,
-
-                        contentType:
-                            file.type ||
-                            "application/octet-stream"
-                    }
-                );
-
-
-        if(uploadError){
-
-            throw uploadError;
-
-        }
-
-
-        const {
-            data:
-                publicData
-        } =
-            supabaseClient
-                .storage
-                .from(STORAGE_BUCKET)
-                .getPublicUrl(
-                    uploadData.path
-                );
-
-
-        const fileUrl =
-            publicData.publicUrl;
-
-
-        const fileMessage =
-            `[FILE] ${file.name}\n${fileUrl}`;
-
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from(MESSAGE_TABLE)
-                .insert({
-
-                    sender_id:
-                        currentUser.id,
-
-                    receiver_id:
-                        otherUserId,
-
-                    content:
-                        fileMessage
-
-                })
-                .select()
-                .single();
-
-
-        if(error){
-
-            throw error;
-
-        }
-
-
-        if(data){
-
-            const normalized =
-                normalizeMessage(
-                    data
-                );
-
-
-            const exists =
-                messages.some(
-                    item =>
-                        String(item.id) ===
-                        String(normalized.id)
-                );
-
-
-            if(!exists){
-
-                messages.push(
-                    normalized
-                );
-
-                renderMessage(
-                    normalized,
-                    true
-                );
-
-            }
-
-        }
-
-
-        showToast(
-
-            getLanguage() === "bn"
-
-            ? "ফাইল পাঠানো হয়েছে।"
-
-            : "File sent."
-
-        );
-
-
-    }catch(error){
-
-        console.error(
-            "File upload error:",
-            error
-        );
-
-
-        showToast(
-
-            getLanguage() === "bn"
-
-            ? "ফাইল পাঠানো যায়নি।"
-
-            : "File could not be sent."
-
-        );
-
-
-    }finally{
-
-        fileInput.value = "";
-
-    }
-
-}
-
-
-/* =========================
-   VOICE RECORDING
-========================= */
-
-async function toggleVoiceRecording(){
-
-    if(isRecording){
-
-        stopVoiceRecording();
-
-        return;
-
-    }
-
-
-    await startVoiceRecording();
-
-}
-
-
-/* =========================
-   START RECORDING
-========================= */
-
-async function startVoiceRecording(){
-
-    if(!navigator.mediaDevices){
-
-        showToast(
-
-            getLanguage() === "bn"
-
-            ? "এই ডিভাইসে রেকর্ডিং চালু করা যাচ্ছে না।"
-
-            : "Recording is not available."
-
-        );
-
-        return;
-
-    }
-
-
-    try{
-
-        const stream =
-            await navigator
-                .mediaDevices
-                .getUserMedia({
-                    audio:true
-                });
-
-
-        recordedChunks = [];
-
-
-        let mimeType =
-            "";
-
-
-        if(
-            MediaRecorder.isTypeSupported(
-                "audio/webm;codecs=opus"
-            )
-        ){
-
-            mimeType =
-                "audio/webm;codecs=opus";
-
-        }
-        else if(
-            MediaRecorder.isTypeSupported(
-                "audio/mp4"
-            )
-        ){
-
-            mimeType =
-                "audio/mp4";
-
-        }
-
-
-        mediaRecorder =
-            mimeType
-
-            ? new MediaRecorder(
-                stream,
-                {
-                    mimeType
-                }
-            )
-
-            : new MediaRecorder(
-                stream
-            );
-
-
-        mediaRecorder.ondataavailable =
-            event => {
-
-                if(
-                    event.data &&
-                    event.data.size > 0
-                ){
-
-                    recordedChunks.push(
-                        event.data
-                    );
-
-                }
-
-            };
-
-
-        mediaRecorder.onstop =
-            async () => {
-
-                stream
-                    .getTracks()
-                    .forEach(
-                        track =>
-                            track.stop()
-                    );
-
-
-                const blob =
-                    new Blob(
-                        recordedChunks,
-                        {
-                            type:
-                                mediaRecorder
-                                    .mimeType ||
-                                "audio/webm"
-                        }
-                    );
-
-
-                isRecording =
-                    false;
-
-
-                const recordingBar =
-                    document.getElementById(
-                        "recordingBar"
-                    );
-
-
-                if(recordingBar){
-
-                    recordingBar.classList.remove(
-                        "show"
-                    );
-
-                }
-
-
-                if(blob.size > 0){
-
-                    await uploadVoice(
-                        blob
-                    );
-
-                }
-
-            };
-
-
-        mediaRecorder.start();
-
-
-        isRecording =
-            true;
-
-
-        const recordingBar =
-            document.getElementById(
-                "recordingBar"
-            );
-
-
-        const recordingText =
-            document.getElementById(
-                "recordingText"
-            );
-
-
-        if(recordingText){
-
-            recordingText.textContent =
-                "🔴 " +
-                t("recording");
-
-        }
-
-
-        if(recordingBar){
-
-            recordingBar.classList.add(
-                "show"
-            );
-
-        }
-
-
-    }catch(error){
-
-        console.error(
-            "Voice recording error:",
-            error
-        );
-
-
-        showToast(
-
-            getLanguage() === "bn"
-
-            ? "মাইক্রোফোনের অনুমতি দিন।"
-
-            : "Please allow microphone access."
-
-        );
-
-    }
-
-}
-
-
-/* =========================
-   STOP RECORDING
-========================= */
-
-function stopVoiceRecording(){
-
-    if(
-        mediaRecorder &&
-        mediaRecorder.state !==
-        "inactive"
-    ){
-
-        mediaRecorder.stop();
-
-    }
-
-}
-
-
-/* =========================
-   CANCEL RECORDING
-========================= */
-
-function cancelRecording(){
-
-    if(
-        mediaRecorder &&
-        mediaRecorder.state !==
-        "inactive"
-    ){
-
-        mediaRecorder.ondataavailable =
-            null;
-
-        mediaRecorder.onstop =
-            null;
-
-        mediaRecorder.stop();
-
-    }
-
-
-    recordedChunks = [];
-
-    isRecording = false;
-
-
-    const recordingBar =
-        document.getElementById(
-            "recordingBar"
-        );
-
-
-    if(recordingBar){
-
-        recordingBar.classList.remove(
-            "show"
-        );
-
-    }
-
-}
-
-
-/* =========================
-   UPLOAD VOICE
-========================= */
-
-async function uploadVoice(blob){
-
-    if(!currentUser){
-
-        return;
-
-    }
-
-
-    try{
-
-        showToast(
-
-            getLanguage() === "bn"
-
-            ? "ভয়েস পাঠানো হচ্ছে..."
-
-            : "Sending voice..."
-
-        );
-
-
-        const extension =
-            blob.type.includes("mp4")
-            ? "mp4"
-            : "webm";
-
-
-        const path =
-            `${currentUser.id}/voice_${Date.now()}.${extension}`;
-
-
-        const {
-            data:
-                uploadData,
-            error:
-                uploadError
-        } =
-            await supabaseClient
-                .storage
-                .from(STORAGE_BUCKET)
-                .upload(
-                    path,
-                    blob,
-                    {
-                        upsert:false,
-
-                        contentType:
-                            blob.type ||
-                            "audio/webm"
-                    }
-                );
-
-
-        if(uploadError){
-
-            throw uploadError;
-
-        }
-
-
-        const {
-            data:
-                publicData
-        } =
-            supabaseClient
-                .storage
-                .from(STORAGE_BUCKET)
-                .getPublicUrl(
-                    uploadData.path
-                );
-
-
-        const voiceUrl =
-            publicData.publicUrl;
-
-
-        const voiceMessage =
-            `[VOICE] ${voiceUrl}`;
-
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from(MESSAGE_TABLE)
-                .insert({
-
-                    sender_id:
-                        currentUser.id,
-
-                    receiver_id:
-                        otherUserId,
-
-                    content:
-                        voiceMessage
-
-                })
-                .select()
-                .single();
-
-
-        if(error){
-
-            throw error;
-
-        }
-
-
-        if(data){
-
-            const normalized =
-                normalizeMessage(
-                    data
-                );
-
-
-            const exists =
-                messages.some(
-                    item =>
-                        String(item.id) ===
-                        String(normalized.id)
-                );
-
-
-            if(!exists){
-
-                messages.push(
-                    normalized
-                );
-
-                renderMessage(
-                    normalized,
-                    true
-                );
-
-            }
-
-        }
-
-
-    }catch(error){
-
-        console.error(
-            "Voice upload error:",
-            error
-        );
-
-
-        showToast(
-
-            getLanguage() === "bn"
-
-            ? "ভয়েস পাঠানো যায়নি।"
-
-            : "Voice could not be sent."
-
-        );
-
-    }
-
-}
-
-
-/* =========================
-   REALTIME CHAT
-========================= */
-
-function subscribeToMessages(){
-
-    if(!supabaseClient){
-
-        return;
-
-    }
-
-
-    if(realtimeChannel){
-
-        try{
-
-            supabaseClient
-                .removeChannel(
-                    realtimeChannel
-                );
-
-        }catch(error){
-
-            console.warn(
-                error
-            );
-
-        }
-
-    }
-
-
-    realtimeChannel =
-        supabaseClient
-            .channel(
-                "chat-" +
-                currentUser.id +
-                "-" +
-                otherUserId
-            )
-            .on(
-                "postgres_changes",
-                {
-                    event:"INSERT",
-
-                    schema:"public",
-
-                    table:
-                        MESSAGE_TABLE
-
-                },
-                payload => {
-
-                    handleRealtimeMessage(
-                        payload.new
-                    );
-
-                }
-            )
-            .subscribe(
-                status => {
-
-                    console.log(
-                        "Realtime status:",
-                        status
-                    );
-
-                }
-            );
-
-}
-
-
-/* =========================
-   HANDLE REALTIME MESSAGE
-========================= */
-
-function handleRealtimeMessage(row){
-
-    if(!row){
-
-        return;
-
-    }
-
-
-    const message =
-        normalizeMessage(
-            row
-        );
-
-
-    if(!message){
-
-        return;
-
-    }
-
-
-    const sender =
-        String(
-            message.sender_id
-        );
-
-
-    const receiver =
-        String(
-            message.receiver_id
-        );
-
-
-    const me =
-        String(
-            currentUser.id
-        );
-
-
-    const other =
-        String(
-            otherUserId
-        );
-
-
-    const belongsToThisChat =
-
-        (
-            sender === me &&
-            receiver === other
-        )
-
-        ||
-
-        (
-            sender === other &&
-            receiver === me
-        );
-
-
-    if(!belongsToThisChat){
-
-        return;
-
-    }
-
-
-    const exists =
-        messages.some(
-            item =>
-                String(item.id) ===
-                String(message.id)
-        );
-
-
-    if(exists){
-
-        return;
-
-    }
-
-
-    messages.push(
-        message
-    );
-
-
-    /*
-     * Remove empty state.
-     */
-
-    const empty =
-        messagesArea.querySelector(
-            ".emptyChat"
-        );
-
-
-    if(empty){
-
-        empty.remove();
-
-    }
-
-
-    renderMessage(
-        message,
-        true
-    );
-
-}
-
-
-/* =========================
-   CLEANUP REALTIME
-========================= */
-
-window.addEventListener(
-    "beforeunload",
-    () => {
-
-        if(
-            realtimeChannel &&
-            supabaseClient
-        ){
-
-            try{
-
-                supabaseClient
-                    .removeChannel(
-                        realtimeChannel
-                    );
-
-            }catch(error){
-
-                console.warn(
-                    error
-                );
-
-            }
-
-        }
-
-    }
-);
-
-
-/* =========================
-   START CHAT
-========================= */
-
-async function initializeChat(){
-
-    applyLanguage();
-
-
-    if(!otherUserId){
-
-        messagesArea.innerHTML = "";
-
-
-        const box =
-            document.createElement(
-                "div"
-            );
-
-        box.className =
-            "emptyChat";
-
-        box.textContent =
-            getLanguage() === "bn"
-
-            ? "চ্যাট ব্যবহারকারী পাওয়া যায়নি।"
-
-            : "Chat user not found.";
-
-
-        messagesArea.appendChild(
-            box
-        );
-
-
-        return;
-
-    }
-
-
-    const ready =
-        await initSupabase();
-
-
-    if(!ready){
-
-        return;
-
-    }
-
-
-    currentUser =
-        await getCurrentUser();
-
-
-    if(!currentUser){
-
-        window.location.href =
-            "index.html";
-
-        return;
-
-    }
-
-
-    if(
-        String(currentUser.id) ===
-        String(otherUserId)
-    ){
-
-        showToast(
-
-            getLanguage() === "bn"
-
-            ? "নিজের সাথে চ্যাট করা যাবে না।"
-
-            : "You cannot chat with yourself."
-
-        );
-
-
-        setTimeout(
-            () => {
-
-                window.location.href =
-                    "index.html";
-
-            },
-            1200
-        );
-
-
-        return;
-
-    }
-
-
-    try{
-
-        await loadOtherUser();
-
-        await findMessageTable();
-
-        await loadMessages();
-
-        subscribeToMessages();
-
-        await loadBlockState();
-
-    }catch(error){
-
-        console.error(
-            "Chat initialization error:",
-            error
-        );
-
-
-        messagesArea.innerHTML = "";
-
-
-        const box =
-            document.createElement(
-                "div"
-            );
-
-        box.className =
-            "emptyChat";
-
-        box.textContent =
-            getLanguage() === "bn"
-
-            ? "চ্যাট লোড করতে সমস্যা হয়েছে।"
-
-            : "There was a problem loading the chat.";
-
-
-        messagesArea.appendChild(
-            box
-        );
-
-    }
-
-}
-
-
-/* =========================
-   START
-========================= */
-
-initializeChat();
-
-/* =====================================================
-   PART 3
-   BLOCK / UNBLOCK / DELETE / MEDIA / PROFILE / FINISH
-===================================================== */
-
-
-/* =========================
-   BLOCK STATE
-========================= */
-
-async function loadBlockState(){
-
-    if(!currentUser || !otherUserId){
-
-        return;
-
-    }
-
-    try{
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("blocked_users")
-                .select("id")
-                .eq(
-                    "blocker_id",
-                    currentUser.id
-                )
-                .eq(
-                    "blocked_id",
-                    otherUserId
-                )
-                .maybeSingle();
-
-
-        if(error){
-
-            /*
-             * If the table/policy does not allow
-             * reading, don't break the chat.
-             */
-            console.warn(
-                "Block state error:",
-                error
-            );
-
-            isBlocked = false;
-
-        }else{
-
-            isBlocked =
-                !!data;
-
-        }
-
-
-        updateBlockButtonText();
-
-    }catch(error){
-
-        console.warn(
-            "Block state check failed:",
-            error
-        );
-
-        isBlocked = false;
-
-        updateBlockButtonText();
-
-    }
-
-}
-
-
-/* =========================
-   BLOCK / UNBLOCK
-========================= */
-
-async function toggleBlockUser(){
-
-    closeMenus();
-
-
-    if(!currentUser || !otherUserId){
-
-        return;
-
-    }
-
-
-    try{
-
-        if(isBlocked){
-
-            const {
-                error
-            } =
-                await supabaseClient
-                    .from("blocked_users")
-                    .delete()
-                    .eq(
-                        "blocker_id",
-                        currentUser.id
-                    )
-                    .eq(
-                        "blocked_id",
-                        otherUserId
-                    );
-
-
-            if(error){
-
-                throw error;
-
-            }
-
-
-            isBlocked = false;
-
-            updateBlockButtonText();
-
-
-            showToast(
-                t("unblocked")
-            );
-
-
-        }else{
-
-            const {
-                error
-            } =
-                await supabaseClient
-                    .from("blocked_users")
-                    .insert({
-
-                        blocker_id:
-                            currentUser.id,
-
-                        blocked_id:
-                            otherUserId
-
-                    });
-
-
-            if(error){
-
-                /*
-                 * Duplicate block can happen if
-                 * the row already exists.
-                 */
-
-                if(
-                    String(error.message || "")
-                        .toLowerCase()
-                        .includes("duplicate")
-                ){
-
-                    isBlocked = true;
-
-                    updateBlockButtonText();
-
-                    return;
-
-                }
-
-                throw error;
-
-            }
-
-
-            isBlocked = true;
-
-            updateBlockButtonText();
-
-
-            showToast(
-                t("blocked")
-            );
-
-        }
-
-    }catch(error){
-
-        console.error(
-            "Block/unblock error:",
-            error
-        );
-
-
-        showToast(
-
-            getLanguage() === "bn"
-
-            ? "ব্লক পরিবর্তন করা যায়নি।"
-
-            : "Could not change block status."
-
-        );
-
-    }
-
-}
-
-
-/* =========================
-   BLOCK BUTTON TEXT
-========================= */
-
-function updateBlockButtonText(){
-
-    const element =
-        document.getElementById(
-            "blockButtonText"
-        );
-
-
-    if(!element){
-
-        return;
-
-    }
-
-
-    element.textContent =
-        isBlocked
-        ? t("unblock")
-        : t("block");
-
-}
-
-
-/* =========================
-   DELETE CHAT
-========================= */
-
-async function deleteChat(){
-
-    closeMenus();
-
-
-    if(!currentUser || !otherUserId){
-
-        return;
-
-    }
-
-
-    const confirmed =
-        window.confirm(
-
-            getLanguage() === "bn"
-
-            ? "এই চ্যাটের সব মেসেজ মুছে ফেলতে চান?"
-
-            : "Delete all messages in this chat?"
-
-        );
-
-
-    if(!confirmed){
-
-        return;
-
-    }
-
-
-    try{
-
-        /*
-         * Delete messages sent by current user
-         * to the other user.
-         */
-
-        const {
-            error:
-                error1
-        } =
-            await supabaseClient
-                .from(MESSAGE_TABLE)
-                .delete()
-                .eq(
-                    "sender_id",
-                    currentUser.id
-                )
-                .eq(
-                    "receiver_id",
-                    otherUserId
-                );
-
-
-        if(error1){
-
-            throw error1;
-
-        }
-
-
-        /*
-         * Delete messages sent by the other
-         * user to current user.
-         */
-
-        const {
-            error:
-                error2
-        } =
-            await supabaseClient
-                .from(MESSAGE_TABLE)
-                .delete()
-                .eq(
-                    "sender_id",
-                    otherUserId
-                )
-                .eq(
-                    "receiver_id",
-                    currentUser.id
-                );
-
-
-        if(error2){
-
-            throw error2;
-
-        }
-
-
-        messages = [];
-
-        lastRenderedDateKey =
-            null;
-
-
-        messagesArea.innerHTML = "";
-
-
-        const empty =
-            document.createElement(
-                "div"
-            );
-
-        empty.className =
-            "emptyChat";
-
-        empty.textContent =
-            t("noMessages");
-
-
-        messagesArea.appendChild(
-            empty
-        );
-
-
-        showToast(
-
-            getLanguage() === "bn"
-
-            ? "চ্যাট মুছে ফেলা হয়েছে।"
-
-            : "Chat deleted."
-
-        );
-
-
-    }catch(error){
-
-        console.error(
-            "Delete chat error:",
-            error
-        );
-
-
-        showToast(
-
-            getLanguage() === "bn"
-
-            ? "চ্যাট মুছে ফেলা যায়নি।"
-
-            : "Chat could not be deleted."
-
-        );
-
-    }
-
-}
-
-
-/* =========================
-   MEDIA MESSAGE PARSER
-========================= */
-
-function parseSpecialMessage(content){
-
-    const text =
-        String(content || "");
-
-
-    if(
-        text.startsWith("[VOICE] ")
-    ){
-
-        return {
-
-            type:"voice",
-
-            url:
-                text.substring(
-                    8
-                ).trim()
-
-        };
-
-    }
-
-
-    if(
-        text.startsWith("[FILE] ")
-    ){
-
-        const value =
-            text.substring(
-                7
-            );
-
-
-        const lines =
-            value.split("\n");
-
-
-        return {
-
-            type:"file",
-
-            name:
-                lines[0] ||
-                "File",
-
-            url:
-                lines[1] ||
-                ""
-
-        };
-
-    }
-
-
-    return {
-
-        type:"text",
-
-        text
-
-    };
-
-}
-
-
-/* =========================
-   FILE TYPE
-========================= */
-
-function getFileType(url){
-
-    const clean =
-        String(url || "")
-            .split("?")[0]
-            .toLowerCase();
-
-
-    if(
-        /\.(jpg|jpeg|png|gif|webp|bmp|heic)$/i
-            .test(clean)
-    ){
-
-        return "image";
-
-    }
-
-
-    if(
-        /\.(mp4|webm|mov|m4v|avi)$/i
-            .test(clean)
-    ){
-
-        return "video";
-
-    }
-
-
-    if(
-        /\.pdf$/i
-            .test(clean)
-    ){
-
-        return "pdf";
-
-    }
-
-
-    return "file";
-
-}
-
-
-/* =========================
-   SAFE URL
-========================= */
-
-function isSafeUrl(url){
-
-    try{
-
-        const parsed =
-            new URL(
-                url,
-                window.location.origin
-            );
-
-
-        return (
-            parsed.protocol === "https:" ||
-            parsed.protocol === "http:"
-        );
-
-    }catch(error){
-
-        return false;
-
-    }
-
-}
-
-
-/* =========================
-   CREATE MEDIA CONTENT
-========================= */
-
-function createMediaContent(
-    special
-){
-
-    if(!special){
-
-        return null;
-
-    }
-
-
-    /*
-     * VOICE
-     */
-
-    if(
-        special.type === "voice"
-    ){
-
-        if(
-            !isSafeUrl(
-                special.url
-            )
-        ){
-
-            return null;
-
-        }
-
-
-        const audio =
-            document.createElement(
-                "audio"
-            );
-
-
-        audio.controls = true;
-
-        audio.preload = "metadata";
-
-        audio.src =
-            special.url;
-
-
-        audio.style.width =
-            "230px";
-
-        audio.style.maxWidth =
-            "100%";
-
-
-        return audio;
-
-    }
-
-
-    /*
-     * FILE
-     */
-
-    if(
-        special.type === "file"
-    ){
-
-        if(
-            !isSafeUrl(
-                special.url
-            )
-        ){
-
-            return null;
-
-        }
-
-
-        const type =
-            getFileType(
-                special.url
-            );
-
-
-        if(type === "image"){
-
-            const image =
-                document.createElement(
-                    "img"
-                );
-
-
-            image.src =
-                special.url;
-
-            image.alt =
-                special.name ||
-                "Image";
-
-            image.loading =
-                "lazy";
-
-
-            image.style.display =
-                "block";
-
-            image.style.maxWidth =
-                "260px";
-
-            image.style.width =
-                "100%";
-
-            image.style.height =
-                "auto";
-
-            image.style.borderRadius =
-                "12px";
-
-            image.style.cursor =
-                "pointer";
-
-
-            image.onclick =
-                () => {
-
-                    window.open(
-                        special.url,
-                        "_blank",
-                        "noopener"
-                    );
-
-                };
-
-
-            return image;
-
-        }
-
-
-        if(type === "video"){
-
-            const video =
-                document.createElement(
-                    "video"
-                );
-
-
-            video.src =
-                special.url;
-
-            video.controls =
-                true;
-
-            video.preload =
-                "metadata";
-
-            video.style.display =
-                "block";
-
-            video.style.width =
-                "260px";
-
-            video.style.maxWidth =
-                "100%";
-
-            video.style.borderRadius =
-                "12px";
-
-
-            return video;
-
-        }
-
-
-        const link =
-            document.createElement(
-                "a"
-            );
-
-
-        link.href =
-            special.url;
-
-        link.target =
-            "_blank";
-
-        link.rel =
-            "noopener noreferrer";
-
-
-        link.textContent =
-            "📎 " +
-            (
-                special.name ||
-                (
-                    getLanguage() === "bn"
-                    ? "ফাইল খুলুন"
-                    : "Open file"
-                )
-            );
-
-
-        link.style.display =
-            "inline-block";
-
-        link.style.padding =
-            "9px 12px";
-
-        link.style.borderRadius =
-            "10px";
-
-        link.style.background =
-            "rgba(8,127,91,.10)";
-
-        link.style.color =
-            "inherit";
-
-        link.style.textDecoration =
-            "none";
-
-
-        return link;
-
-    }
-
-
-    return null;
-
-}
-
-
-/* =========================
-   OVERRIDE MESSAGE RENDER
-   WITH TEXT / FILE / VOICE
-========================= */
-
-function renderMessage(
-    message,
-    shouldScroll = true
-){
-
-    if(!message){
-
-        return;
-
-    }
-
-
-    const createdAt =
-        message.created_at ||
-        new Date().toISOString();
-
-
-    const dateKey =
-        getDateKey(
-            createdAt
-        );
-
-
-    if(
-        lastRenderedDateKey !==
-        dateKey
-    ){
-
-        addDateSeparator(
-            createdAt
-        );
-
-    }
-
-
-    const mine =
-        String(message.sender_id) ===
-        String(currentUser.id);
-
-
-    const row =
-        document.createElement(
-            "div"
-        );
-
-
-    row.className =
-        "messageRow " +
-        (
-            mine
-            ? "mine"
-            : "theirs"
-        );
-
-
-    if(message.id){
-
-        row.dataset.messageId =
-            message.id;
-
-    }
-
-
-    const bubble =
-        document.createElement(
-            "div"
-        );
-
-
-    bubble.className =
-        "messageBubble";
-
-
-    const special =
-        parseSpecialMessage(
-            message.content
-        );
-
-
-    if(
-        special.type === "text"
-    ){
-
-        const text =
-            document.createElement(
-                "div"
-            );
-
-
-        text.className =
-            "messageText";
-
-
-        text.textContent =
-            special.text;
-
-
-        bubble.appendChild(
-            text
-        );
-
-    }else{
-
-        const media =
-            createMediaContent(
-                special
-            );
-
-
-        if(media){
-
-            bubble.appendChild(
-                media
-            );
-
-        }else{
-
-            const fallback =
-                document.createElement(
-                    "div"
-                );
-
-
-            fallback.className =
-                "messageText";
-
-
-            fallback.textContent =
-                getLanguage() === "bn"
-                ? "মিডিয়া ফাইল খোলা যাচ্ছে না।"
-                : "Media file cannot be opened.";
-
-
-            bubble.appendChild(
-                fallback
-            );
-
-        }
-
-    }
-
-
-    const time =
-        document.createElement(
-            "div"
-        );
-
-
-    time.className =
-        "messageTime";
-
-
-    time.textContent =
-        formatTime(
-            createdAt
-        );
-
-
-    bubble.appendChild(
-        time
-    );
-
-
-    row.appendChild(
-        bubble
-    );
-
-
-    const empty =
-        messagesArea.querySelector(
-            ".emptyChat"
-        );
-
-
-    if(empty){
-
-        empty.remove();
-
-    }
-
-
-    messagesArea.appendChild(
-        row
-    );
-
-
-    if(shouldScroll){
-
-        scrollToBottom(true);
-
-    }
-
-}
-
-
-/* =========================
-   PROFILE CLICK
-========================= */
-
-function viewProfile(){
-
-    closeMenus();
-
-
-    if(!otherUserId){
-
-        showToast(
-
-            getLanguage() === "bn"
-
-            ? "ব্যবহারকারী পাওয়া যায়নি।"
-
-            : "User not found."
-
-        );
-
-        return;
-
-    }
-
-
-    window.location.href =
-        "user-profile.html?user=" +
-        encodeURIComponent(
-            otherUserId
-        );
-
-}
-
-
-/* =========================
-   CALL
-========================= */
-
-function startCall(){
-
-    closeMenus();
-
-
-    if(!otherUserId){
-
-        return;
-
-    }
-
-
-    /*
-     * এখানে ভবিষ্যতে WebRTC call
-     * system যুক্ত করা যাবে।
-     */
-
-    showToast(
-
-        getLanguage() === "bn"
-
-        ? "অডিও কল সিস্টেম এখনও সংযুক্ত করা হয়নি।"
-
-        : "Audio call system is not connected yet."
-
-    );
-
-}
-
-
-/* =========================
-   VIDEO CALL
-========================= */
-
-function startVideoCall(){
-
-    closeMenus();
-
-
-    if(!otherUserId){
-
-        return;
-
-    }
-
-
-    /*
-     * এখানে ভবিষ্যতে WebRTC video call
-     * system যুক্ত করা যাবে।
-     */
-
-    showToast(
-
-        getLanguage() === "bn"
-
-        ? "ভিডিও কল সিস্টেম এখনও সংযুক্ত করা হয়নি।"
-
-        : "Video call system is not connected yet."
-
-    );
-
-}
-
-
-/* =========================
-   MESSAGE DATE RECHECK
-========================= */
-
-function refreshMessageLanguage(){
-
-    const rows =
-        messagesArea.querySelectorAll(
-            ".messageRow"
-        );
-
-
-    rows.forEach(row => {
-
-        const messageId =
-            row.dataset.messageId;
-
-
-        if(!messageId){
-
-            return;
-
-        }
-
-
-        const message =
-            messages.find(
-                item =>
-                    String(item.id) ===
-                    String(messageId)
-            );
-
-
-        if(!message){
-
-            return;
-
-        }
-
-
-        const time =
-            row.querySelector(
-                ".messageTime"
-            );
-
-
-        if(time){
-
-            time.textContent =
-                formatTime(
-                    message.created_at
-                );
-
-        }
-
-    });
-
-
-    /*
-     * Rebuild date separators
-     * so Today / Yesterday changes
-     * with language.
-     */
-
-    const currentMessages =
-        [...messages];
-
-
-    messagesArea.innerHTML = "";
-
-    lastRenderedDateKey =
-        null;
-
-
-    if(!currentMessages.length){
-
-        const empty =
-            document.createElement(
-                "div"
-            );
-
-        empty.className =
-            "emptyChat";
-
-        empty.textContent =
-            t("noMessages");
-
-        messagesArea.appendChild(
-            empty
-        );
-
-        return;
-
-    }
-
-
-    currentMessages.forEach(
-        message => {
-
-            renderMessage(
-                message,
-                false
-            );
-
-        }
-    );
-
-
-    scrollToBottom(false);
-
-}
-
-
-/* =========================
-   LANGUAGE STORAGE CHANGE
-========================= */
-
-window.addEventListener(
-    "storage",
-    event => {
-
-        if(
-            event.key ===
-            "raztara_language"
-        ){
-
-            applyLanguage();
-
-            renderOtherUser();
-
-            refreshMessageLanguage();
-
-        }
-
-    }
-);
-
-
-/* =========================
-   PAGE VISIBILITY
-========================= */
-
-document.addEventListener(
-    "visibilitychange",
-    async () => {
-
-        if(
-            !document.hidden &&
-            currentUser &&
-            otherUser
-        ){
-
-            try{
-
-                await loadOtherUser();
-
-            }catch(error){
-
-                console.warn(
-                    "Refresh user status failed:",
-                    error
-                );
-
-            }
-
-        }
-
-    }
-);
-
-
-/* =========================
-   WINDOW FOCUS
-========================= */
-
-window.addEventListener(
-    "focus",
-    async () => {
-
-        if(
-            currentUser &&
-            otherUserId
-        ){
-
-            try{
-
-                await loadOtherUser();
-
-            }catch(error){
-
-                console.warn(
-                    error
-                );
-
-            }
-
-        }
-
-    }
-);
-
-
-/* =========================
-   CLEANUP
-========================= */
-
-window.addEventListener(
-    "pagehide",
-    () => {
-
-        try{
-
-            if(
-                realtimeChannel &&
-                supabaseClient
-            ){
-
-                supabaseClient
-                    .removeChannel(
-                        realtimeChannel
-                    );
-
-            }
-
-        }catch(error){
-
-            console.warn(
-                "Channel cleanup error:",
-                error
-            );
-
-        }
-
-
-        if(
-            mediaRecorder &&
-            mediaRecorder.state !==
-            "inactive"
-        ){
-
-            try{
-
-                mediaRecorder.stop();
-
-            }catch(error){
-
-                console.warn(
-                    error
-                );
-
-            }
-
-        }
-
-    }
-);
-
-
-/* =========================
-   FINAL LANGUAGE APPLY
-========================= */
-
-applyLanguage();
 
 </script>
 
