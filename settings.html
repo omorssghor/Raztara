@@ -28,12 +28,8 @@
 html,
 body{
     width:100%;
-    min-height:100%;
-}
-
-html{
-    overflow-x:hidden;
-    overflow-y:auto;
+    height:100%;
+    overflow:hidden;
 }
 
 body{
@@ -47,30 +43,38 @@ body{
 
     background:#07131a;
     color:#fff;
-
-    min-height:100vh;
-
-    overflow-x:hidden;
-    overflow-y:auto;
-
-    -webkit-overflow-scrolling:touch;
-}
-
-button{
-    font:inherit;
-    cursor:pointer;
-    -webkit-tap-highlight-color:transparent;
 }
 
 
 /* =====================================================
-   HEADER
+   PAGE
+===================================================== */
+
+.page{
+
+    width:100%;
+    height:100vh;
+
+    display:flex;
+    flex-direction:column;
+
+    overflow:hidden;
+}
+
+
+/* =====================================================
+   FIXED TOP HEADER
 ===================================================== */
 
 .header{
 
     width:100%;
+
     height:68px;
+
+    min-height:68px;
+
+    flex:none;
 
     display:flex;
     align-items:center;
@@ -86,9 +90,6 @@ button{
     border-bottom:
         1px solid #193039;
 
-    position:sticky;
-    top:0;
-
     z-index:20;
 }
 
@@ -100,6 +101,7 @@ button{
     flex:none;
 
     border:0;
+
     border-radius:50%;
 
     background:#102b34;
@@ -111,10 +113,14 @@ button{
     display:flex;
     align-items:center;
     justify-content:center;
+
+    -webkit-tap-highlight-color:transparent;
 }
 
 .backBtn:active{
+
     transform:scale(.94);
+
 }
 
 .headerTitle{
@@ -128,20 +134,26 @@ button{
 
 
 /* =====================================================
-   MAIN
+   MIDDLE SCROLL AREA
 ===================================================== */
 
-.container{
+.scrollArea{
 
-    width:100%;
+    flex:1;
+
+    min-height:0;
+
+    overflow-y:auto;
+    overflow-x:hidden;
+
+    -webkit-overflow-scrolling:touch;
+
+    overscroll-behavior-y:contain;
 
     padding:
         20px
         14px
-        80px;
-
-    min-height:
-        calc(100vh - 68px);
+        30px;
 }
 
 
@@ -206,8 +218,7 @@ button{
     gap:14px;
 
     padding:
-        12px
-        15px;
+        12px 15px;
 
     border:0;
 
@@ -223,14 +234,20 @@ button{
     appearance:none;
 
     -webkit-appearance:none;
+
+    -webkit-tap-highlight-color:transparent;
 }
 
 .settingItem:last-child{
+
     border-bottom:0;
+
 }
 
 .settingItem:active{
+
     background:#102b34;
+
 }
 
 
@@ -310,11 +327,6 @@ button{
    LANGUAGE
 ===================================================== */
 
-.languageItem{
-
-    cursor:pointer;
-}
-
 .languageValue{
 
     flex:none;
@@ -332,18 +344,70 @@ button{
 
 
 /* =====================================================
-   LOGOUT
+   FIXED BOTTOM LOGOUT
 ===================================================== */
 
-.logoutItem{
+.bottomLogout{
 
-    color:#ff8b8b;
+    width:100%;
+
+    min-height:76px;
+
+    flex:none;
+
+    padding:
+        10px
+        14px
+        calc(10px + env(safe-area-inset-bottom));
+
+    background:#091a22;
+
+    border-top:
+        1px solid #193039;
+
+    z-index:20;
 }
 
-.logoutItem .settingIcon{
+.logoutBtn{
+
+    width:100%;
+
+    height:54px;
+
+    border:0;
+
+    border-radius:15px;
 
     background:
         rgba(255,70,70,.10);
+
+    border:
+        1px solid rgba(255,100,100,.22);
+
+    color:#ff8b8b;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:9px;
+
+    font-size:15px;
+
+    font-weight:800;
+
+    -webkit-tap-highlight-color:transparent;
+}
+
+.logoutBtn:active{
+
+    transform:scale(.98);
+
+    background:
+        rgba(255,70,70,.16);
+
 }
 
 
@@ -359,11 +423,10 @@ button{
 
     font-size:12px;
 
-    margin-top:35px;
-
     line-height:1.7;
 
-    padding-bottom:20px;
+    padding:
+        5px 0 20px;
 }
 
 
@@ -387,8 +450,6 @@ button{
     align-items:flex-end;
 
     justify-content:center;
-
-    padding:0;
 }
 
 .languagePanel{
@@ -412,10 +473,6 @@ button{
         20px
         16px
         calc(20px + env(safe-area-inset-bottom));
-
-    box-shadow:
-        0 -15px 45px
-        rgba(0,0,0,.45);
 }
 
 .languagePanelTitle{
@@ -440,8 +497,7 @@ button{
     gap:13px;
 
     padding:
-        12px
-        14px;
+        12px 14px;
 
     margin-top:9px;
 
@@ -457,15 +513,11 @@ button{
     text-align:left;
 }
 
-.languageOption:active{
-    background:#15333d;
-}
-
 .languageFlag{
 
-    font-size:23px;
-
     width:32px;
+
+    font-size:23px;
 
     text-align:center;
 }
@@ -483,18 +535,18 @@ button{
 
     width:25px;
 
-    text-align:center;
-
     color:#00d4a5;
 
     font-size:20px;
 
     font-weight:800;
+
+    text-align:center;
 }
 
 
 /* =====================================================
-   MESSAGE
+   TOAST
 ===================================================== */
 
 #toast{
@@ -504,7 +556,7 @@ button{
     left:50%;
 
     bottom:
-        calc(25px + env(safe-area-inset-bottom));
+        calc(95px + env(safe-area-inset-bottom));
 
     transform:
         translate(-50%,20px);
@@ -515,8 +567,7 @@ button{
         calc(100% - 30px);
 
     padding:
-        12px
-        16px;
+        12px 16px;
 
     border-radius:12px;
 
@@ -555,11 +606,11 @@ button{
 
 @media(max-width:360px){
 
-    .container{
+    .scrollArea{
 
         padding-left:10px;
         padding-right:10px;
-        padding-bottom:80px;
+
     }
 
     .settingItem{
@@ -568,20 +619,26 @@ button{
 
         padding-left:12px;
         padding-right:12px;
+
     }
 
     .settingIcon{
 
         width:40px;
         height:40px;
+
     }
 
     .settingName{
+
         font-size:14px;
+
     }
 
     .settingDescription{
+
         font-size:11px;
+
     }
 
 }
@@ -594,374 +651,346 @@ button{
 <body>
 
 
-<!-- =====================================================
-     HEADER
-===================================================== -->
-
-<header class="header">
-
-    <button
-        class="backBtn"
-        type="button"
-        onclick="goBack()"
-        aria-label="Back"
-    >
-        ←
-    </button>
-
-    <div
-        class="headerTitle"
-        id="pageTitle"
-    >
-        ⚙️ Settings
-    </div>
-
-</header>
+<div class="page">
 
 
-<!-- =====================================================
-     MAIN SETTINGS
-===================================================== -->
+    <!-- =================================================
+         FIXED TOP
+    ================================================= -->
 
-<main class="container">
-
-
-    <!-- ================= PRIVACY ================= -->
-
-    <div
-        class="sectionTitle"
-        id="privacySection"
-    >
-        Privacy
-    </div>
-
-
-    <div class="settingsBox">
+    <header class="header">
 
         <button
-            class="settingItem"
+            class="backBtn"
             type="button"
-            onclick="openProfilePrivacy()"
+            onclick="goBack()"
+            aria-label="Back"
         >
-
-            <div class="settingIcon">
-                👤
-            </div>
-
-            <div class="settingText">
-
-                <div
-                    class="settingName"
-                    id="profilePrivacyName"
-                >
-                    Profile Privacy
-                </div>
-
-                <div
-                    class="settingDescription"
-                    id="profilePrivacyDescription"
-                >
-                    আপনার Profile, Photo, Email, Phone ও Address কে দেখতে পারবে
-                </div>
-
-            </div>
-
-            <div class="arrow">
-                ›
-            </div>
-
+            ←
         </button>
 
-    </div>
-
-
-
-    <!-- ================= ACCOUNT ================= -->
-
-    <div
-        class="sectionTitle"
-        id="accountSection"
-    >
-        Account
-    </div>
-
-
-    <div class="settingsBox">
-
-
-        <!-- PROFILE -->
-
-        <button
-            class="settingItem"
-            type="button"
-            onclick="openProfile()"
+        <div
+            class="headerTitle"
+            id="pageTitle"
         >
+            ⚙️ Settings
+        </div>
 
-            <div class="settingIcon">
-                👤
-            </div>
-
-            <div class="settingText">
-
-                <div
-                    class="settingName"
-                    id="profileName"
-                >
-                    Profile
-                </div>
-
-                <div
-                    class="settingDescription"
-                    id="profileDescription"
-                >
-                    আপনার Profile তথ্য পরিবর্তন করুন
-                </div>
-
-            </div>
-
-            <div class="arrow">
-                ›
-            </div>
-
-        </button>
+    </header>
 
 
-        <!-- SECURITY -->
+    <!-- =================================================
+         MIDDLE SCROLL ONLY
+    ================================================= -->
 
-        <button
-            class="settingItem"
-            type="button"
-            onclick="showComingSoon('security')"
+    <main class="scrollArea">
+
+
+        <!-- ================= PRIVACY ================= -->
+
+        <div
+            class="sectionTitle"
+            id="privacySection"
         >
-
-            <div class="settingIcon">
-                🔐
-            </div>
-
-            <div class="settingText">
-
-                <div
-                    class="settingName"
-                    id="securityName"
-                >
-                    Security
-                </div>
-
-                <div
-                    class="settingDescription"
-                    id="securityDescription"
-                >
-                    Password ও Account security
-                </div>
-
-            </div>
-
-            <div class="arrow">
-                ›
-            </div>
-
-        </button>
-
-    </div>
+            Privacy
+        </div>
 
 
+        <div class="settingsBox">
 
-    <!-- ================= APP ================= -->
-
-    <div
-        class="sectionTitle"
-        id="appSection"
-    >
-        App
-    </div>
-
-
-    <div class="settingsBox">
-
-
-        <!-- LANGUAGE -->
-
-        <button
-            class="settingItem languageItem"
-            type="button"
-            onclick="openLanguageModal()"
-        >
-
-            <div class="settingIcon">
-                🌐
-            </div>
-
-            <div class="settingText">
-
-                <div
-                    class="settingName"
-                    id="languageName"
-                >
-                    Language / ভাষা
-                </div>
-
-                <div
-                    class="settingDescription"
-                    id="languageDescription"
-                >
-                    RAZTARA-এর ভাষা পরিবর্তন করুন
-                </div>
-
-            </div>
-
-            <div
-                class="languageValue"
-                id="currentLanguage"
+            <button
+                class="settingItem"
+                type="button"
+                onclick="openProfilePrivacy()"
             >
-                বাংলা
-            </div>
 
-            <div class="arrow">
-                ›
-            </div>
+                <div class="settingIcon">
+                    👤
+                </div>
 
-        </button>
+                <div class="settingText">
+
+                    <div
+                        class="settingName"
+                        id="profilePrivacyName"
+                    >
+                        Profile Privacy
+                    </div>
+
+                    <div
+                        class="settingDescription"
+                        id="profilePrivacyDescription"
+                    >
+                        আপনার Profile, Photo, Email, Phone ও Address কে দেখতে পারবে
+                    </div>
+
+                </div>
+
+                <div class="arrow">
+                    ›
+                </div>
+
+            </button>
+
+        </div>
 
 
-        <!-- NOTIFICATIONS -->
+        <!-- ================= ACCOUNT ================= -->
 
-        <button
-            class="settingItem"
-            type="button"
-            onclick="showComingSoon('notifications')"
+        <div
+            class="sectionTitle"
+            id="accountSection"
         >
+            Account
+        </div>
 
-            <div class="settingIcon">
-                🔔
-            </div>
 
-            <div class="settingText">
+        <div class="settingsBox">
 
-                <div
-                    class="settingName"
-                    id="notificationsName"
-                >
-                    Notifications
+
+            <button
+                class="settingItem"
+                type="button"
+                onclick="openProfile()"
+            >
+
+                <div class="settingIcon">
+                    👤
                 </div>
 
-                <div
-                    class="settingDescription"
-                    id="notificationsDescription"
-                >
-                    Notification settings
+                <div class="settingText">
+
+                    <div
+                        class="settingName"
+                        id="profileName"
+                    >
+                        Profile
+                    </div>
+
+                    <div
+                        class="settingDescription"
+                        id="profileDescription"
+                    >
+                        আপনার Profile তথ্য পরিবর্তন করুন
+                    </div>
+
                 </div>
 
-            </div>
+                <div class="arrow">
+                    ›
+                </div>
 
-            <div class="arrow">
-                ›
-            </div>
-
-        </button>
+            </button>
 
 
-        <!-- ABOUT -->
+            <button
+                class="settingItem"
+                type="button"
+                onclick="showComingSoon('security')"
+            >
 
-        <button
-            class="settingItem"
-            type="button"
-            onclick="showComingSoon('about')"
+                <div class="settingIcon">
+                    🔐
+                </div>
+
+                <div class="settingText">
+
+                    <div
+                        class="settingName"
+                        id="securityName"
+                    >
+                        Security
+                    </div>
+
+                    <div
+                        class="settingDescription"
+                        id="securityDescription"
+                    >
+                        Password ও Account security
+                    </div>
+
+                </div>
+
+                <div class="arrow">
+                    ›
+                </div>
+
+            </button>
+
+        </div>
+
+
+        <!-- ================= APP ================= -->
+
+        <div
+            class="sectionTitle"
+            id="appSection"
         >
+            App
+        </div>
 
-            <div class="settingIcon">
-                ℹ️
-            </div>
 
-            <div class="settingText">
+        <div class="settingsBox">
 
-                <div
-                    class="settingName"
-                    id="aboutName"
-                >
-                    About RAZTARA
+
+            <!-- LANGUAGE -->
+
+            <button
+                class="settingItem"
+                type="button"
+                onclick="openLanguageModal()"
+            >
+
+                <div class="settingIcon">
+                    🌐
+                </div>
+
+                <div class="settingText">
+
+                    <div
+                        class="settingName"
+                        id="languageName"
+                    >
+                        Language / ভাষা
+                    </div>
+
+                    <div
+                        class="settingDescription"
+                        id="languageDescription"
+                    >
+                        RAZTARA-এর ভাষা পরিবর্তন করুন
+                    </div>
+
                 </div>
 
                 <div
-                    class="settingDescription"
-                    id="aboutDescription"
+                    class="languageValue"
+                    id="currentLanguage"
                 >
-                    RAZTARA সম্পর্কে তথ্য
+                    বাংলা
                 </div>
 
-            </div>
+                <div class="arrow">
+                    ›
+                </div>
 
-            <div class="arrow">
-                ›
-            </div>
-
-        </button>
-
-    </div>
+            </button>
 
 
+            <!-- NOTIFICATIONS -->
 
-    <!-- ================= ACCOUNT / LOGOUT ================= -->
+            <button
+                class="settingItem"
+                type="button"
+                onclick="showComingSoon('notifications')"
+            >
 
-    <div
-        class="sectionTitle"
-        id="accountSection2"
-    >
-        Account
-    </div>
+                <div class="settingIcon">
+                    🔔
+                </div>
+
+                <div class="settingText">
+
+                    <div
+                        class="settingName"
+                        id="notificationsName"
+                    >
+                        Notifications
+                    </div>
+
+                    <div
+                        class="settingDescription"
+                        id="notificationsDescription"
+                    >
+                        Notification settings
+                    </div>
+
+                </div>
+
+                <div class="arrow">
+                    ›
+                </div>
+
+            </button>
 
 
-    <div class="settingsBox">
+            <!-- ABOUT -->
+
+            <button
+                class="settingItem"
+                type="button"
+                onclick="showComingSoon('about')"
+            >
+
+                <div class="settingIcon">
+                    ℹ️
+                </div>
+
+                <div class="settingText">
+
+                    <div
+                        class="settingName"
+                        id="aboutName"
+                    >
+                        About RAZTARA
+                    </div>
+
+                    <div
+                        class="settingDescription"
+                        id="aboutDescription"
+                    >
+                        RAZTARA সম্পর্কে তথ্য
+                    </div>
+
+                </div>
+
+                <div class="arrow">
+                    ›
+                </div>
+
+            </button>
+
+        </div>
+
+
+        <div
+            class="footer"
+            id="footerText"
+        >
+            RAZTARA<br>
+            Connect • Call • Share
+        </div>
+
+
+    </main>
+
+
+    <!-- =================================================
+         FIXED BOTTOM LOGOUT
+    ================================================= -->
+
+    <footer class="bottomLogout">
 
         <button
-            class="settingItem logoutItem"
+            class="logoutBtn"
             type="button"
             onclick="logout()"
         >
 
-            <div class="settingIcon">
+            <span>
                 🚪
-            </div>
+            </span>
 
-            <div class="settingText">
-
-                <div
-                    class="settingName"
-                    id="logoutName"
-                >
-                    Logout
-                </div>
-
-                <div
-                    class="settingDescription"
-                    id="logoutDescription"
-                >
-                    এই Account থেকে Logout করুন
-                </div>
-
-            </div>
-
-            <div class="arrow">
-                ›
-            </div>
+            <span id="logoutName">
+                Logout
+            </span>
 
         </button>
 
-    </div>
+    </footer>
 
 
-
-    <!-- ================= FOOTER ================= -->
-
-    <div
-        class="footer"
-        id="footerText"
-    >
-        RAZTARA<br>
-        Connect • Call • Share
-    </div>
-
-</main>
-
+</div>
 
 
 <!-- =====================================================
@@ -973,12 +1002,10 @@ button{
     onclick="closeLanguageModal(event)"
 >
 
-
     <div
         class="languagePanel"
         onclick="event.stopPropagation()"
     >
-
 
         <div
             class="languagePanelTitle"
@@ -987,8 +1014,6 @@ button{
             🌐 ভাষা নির্বাচন করুন
         </div>
 
-
-        <!-- BANGLA -->
 
         <button
             class="languageOption"
@@ -1011,8 +1036,6 @@ button{
 
         </button>
 
-
-        <!-- ENGLISH -->
 
         <button
             class="languageOption"
@@ -1040,13 +1063,11 @@ button{
 </div>
 
 
-
 <!-- =====================================================
      TOAST
 ===================================================== -->
 
 <div id="toast"></div>
-
 
 
 <script>
@@ -1074,7 +1095,6 @@ const supabaseClient =
 
 const LANGUAGE_KEY =
     "raztara_language";
-
 
 let currentLanguage =
     localStorage.getItem(
@@ -1136,9 +1156,6 @@ const translations = {
 
         logout:
             "Logout",
-
-        logoutDescription:
-            "এই Account থেকে Logout করুন",
 
         selectLanguage:
             "🌐 ভাষা নির্বাচন করুন",
@@ -1213,9 +1230,6 @@ const translations = {
 
         logout:
             "Logout",
-
-        logoutDescription:
-            "Log out from this account",
 
         selectLanguage:
             "🌐 Select Language",
@@ -1357,15 +1371,8 @@ function applyLanguage(){
 
 
     document.getElementById(
-        "logoutDescription"
-    ).textContent =
-        t.logoutDescription;
-
-
-    document.getElementById(
         "accountSection2"
-    ).textContent =
-        t.account;
+    )?.remove();
 
 
     document.getElementById(
@@ -1386,7 +1393,7 @@ function applyLanguage(){
 
 
 /* =====================================================
-   CHANGE LANGUAGE
+   LANGUAGE CHANGE
 ===================================================== */
 
 function changeLanguage(language){
@@ -1412,7 +1419,6 @@ function changeLanguage(language){
 
 
     applyLanguage();
-
 
     closeLanguageModal();
 
@@ -1524,9 +1530,7 @@ function openProfile(){
 function goBack(){
 
     if(
-        document.referrer &&
-        document.referrer !==
-        window.location.href
+        window.history.length > 1
     ){
 
         history.back();
@@ -1625,7 +1629,7 @@ function showToast(message){
 
 
 /* =====================================================
-   REAL SUPABASE LOGOUT
+   LOGOUT
 ===================================================== */
 
 async function logout(){
@@ -1649,7 +1653,9 @@ async function logout(){
 
     try{
 
-        const { error } =
+        const {
+            error
+        } =
             await supabaseClient.auth.signOut();
 
 
@@ -1660,6 +1666,7 @@ async function logout(){
                 error
             );
 
+
             showToast(
                 currentLanguage === "bn"
                 ?
@@ -1667,6 +1674,7 @@ async function logout(){
                 :
                 "Logout failed."
             );
+
 
             return;
 
@@ -1684,6 +1692,7 @@ async function logout(){
             "Logout error:",
             error
         );
+
 
         showToast(
             currentLanguage === "bn"
