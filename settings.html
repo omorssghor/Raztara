@@ -1,12 +1,23 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
 <title>Settings | RAZTARA</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
+
+/* =====================================================
+   BASIC
+===================================================== */
 
 *{
     box-sizing:border-box;
@@ -14,77 +25,161 @@
     padding:0;
 }
 
+html,
 body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+    width:100%;
+    min-height:100%;
+}
+
+html{
+    overflow-x:hidden;
+    overflow-y:auto;
+}
+
+body{
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
     background:#07131a;
     color:#fff;
+
     min-height:100vh;
+
+    overflow-x:hidden;
+    overflow-y:auto;
+
+    -webkit-overflow-scrolling:touch;
 }
 
 button{
     font:inherit;
     cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
 }
 
-/* ================= HEADER ================= */
+
+/* =====================================================
+   HEADER
+===================================================== */
 
 .header{
+
+    width:100%;
     height:68px;
 
     display:flex;
     align-items:center;
+
     gap:14px;
 
-    padding:0 16px;
+    padding:
+        0
+        16px;
 
     background:#0a1b23;
-    border-bottom:1px solid #193039;
+
+    border-bottom:
+        1px solid #193039;
 
     position:sticky;
     top:0;
-    z-index:10;
+
+    z-index:20;
 }
 
 .backBtn{
+
     width:42px;
     height:42px;
+
+    flex:none;
 
     border:0;
     border-radius:50%;
 
     background:#102b34;
+
     color:#fff;
 
-    font-size:22px;
+    font-size:23px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.backBtn:active{
+    transform:scale(.94);
 }
 
 .headerTitle{
+
     font-size:20px;
+
     font-weight:800;
+
+    white-space:nowrap;
 }
 
-/* ================= CONTENT ================= */
+
+/* =====================================================
+   MAIN
+===================================================== */
 
 .container{
-    padding:20px 14px 40px;
+
+    width:100%;
+
+    padding:
+        20px
+        14px
+        80px;
+
+    min-height:
+        calc(100vh - 68px);
 }
 
+
+/* =====================================================
+   SECTION TITLE
+===================================================== */
+
 .sectionTitle{
-    margin:10px 8px 10px;
+
+    margin:
+        10px
+        8px
+        10px;
 
     color:#78919a;
 
     font-size:12px;
+
     font-weight:700;
 
     text-transform:uppercase;
+
     letter-spacing:1px;
 }
 
+
+/* =====================================================
+   SETTINGS BOX
+===================================================== */
+
 .settingsBox{
+
+    width:100%;
+
     background:#0a1c24;
 
-    border:1px solid #193039;
+    border:
+        1px solid #193039;
 
     border-radius:18px;
 
@@ -93,44 +188,65 @@ button{
     margin-bottom:24px;
 }
 
-/* ================= SETTING ITEM ================= */
+
+/* =====================================================
+   SETTING ITEM
+===================================================== */
 
 .settingItem{
+
     width:100%;
-    min-height:68px;
+
+    min-height:70px;
 
     display:flex;
+
     align-items:center;
 
     gap:14px;
 
-    padding:12px 15px;
+    padding:
+        12px
+        15px;
 
     border:0;
-    border-bottom:1px solid #193039;
+
+    border-bottom:
+        1px solid #193039;
 
     background:transparent;
 
     color:#fff;
 
     text-align:left;
+
+    appearance:none;
+
+    -webkit-appearance:none;
 }
 
 .settingItem:last-child{
     border-bottom:0;
 }
 
-.settingItem:hover{
+.settingItem:active{
     background:#102b34;
 }
 
+
+/* =====================================================
+   ICON
+===================================================== */
+
 .settingIcon{
+
     width:43px;
     height:43px;
 
     flex:none;
 
     display:flex;
+
     align-items:center;
     justify-content:center;
 
@@ -141,55 +257,102 @@ button{
     font-size:21px;
 }
 
+
+/* =====================================================
+   TEXT
+===================================================== */
+
 .settingText{
+
     flex:1;
+
     min-width:0;
 }
 
 .settingName{
+
     font-size:15px;
+
     font-weight:700;
+
+    line-height:1.3;
 }
 
 .settingDescription{
+
     margin-top:4px;
 
     color:#718b94;
 
     font-size:12px;
-    line-height:1.4;
+
+    line-height:1.45;
 }
+
+
+/* =====================================================
+   ARROW
+===================================================== */
 
 .arrow{
+
+    flex:none;
+
     color:#718b94;
-    font-size:22px;
+
+    font-size:24px;
+
+    line-height:1;
 }
 
-/* ================= LANGUAGE ================= */
+
+/* =====================================================
+   LANGUAGE
+===================================================== */
 
 .languageItem{
+
     cursor:pointer;
 }
 
 .languageValue{
+
+    flex:none;
+
     color:#00d4a5;
-    font-size:13px;
+
+    font-size:12px;
+
     font-weight:700;
+
+    max-width:65px;
+
+    text-align:right;
 }
 
-/* ================= LOGOUT ================= */
+
+/* =====================================================
+   LOGOUT
+===================================================== */
 
 .logoutItem{
+
     color:#ff8b8b;
 }
 
 .logoutItem .settingIcon{
-    background:rgba(255,70,70,.10);
+
+    background:
+        rgba(255,70,70,.10);
 }
 
-/* ================= FOOTER ================= */
+
+/* =====================================================
+   FOOTER
+===================================================== */
 
 .footer{
+
     text-align:center;
 
     color:#506b74;
@@ -199,57 +362,91 @@ button{
     margin-top:35px;
 
     line-height:1.7;
+
+    padding-bottom:20px;
 }
 
-/* ================= LANGUAGE MODAL ================= */
+
+/* =====================================================
+   LANGUAGE MODAL
+===================================================== */
 
 #languageModal{
+
     display:none;
 
     position:fixed;
+
     inset:0;
 
     z-index:100;
 
-    background:rgba(0,0,0,.65);
+    background:
+        rgba(0,0,0,.68);
 
     align-items:flex-end;
+
     justify-content:center;
+
+    padding:0;
 }
 
 .languagePanel{
-    width:100%;
-    max-width:500px;
 
-    padding:20px 16px 25px;
+    width:100%;
+
+    max-width:520px;
 
     background:#0a1c24;
 
-    border-radius:22px 22px 0 0;
+    border-top:
+        1px solid #284650;
 
-    border-top:1px solid #23434d;
+    border-radius:
+        22px
+        22px
+        0
+        0;
+
+    padding:
+        20px
+        16px
+        calc(20px + env(safe-area-inset-bottom));
+
+    box-shadow:
+        0 -15px 45px
+        rgba(0,0,0,.45);
 }
 
 .languagePanelTitle{
+
     font-size:18px;
+
     font-weight:800;
 
     margin-bottom:15px;
 }
 
 .languageOption{
+
     width:100%;
 
+    min-height:58px;
+
     display:flex;
+
     align-items:center;
 
     gap:13px;
 
-    padding:15px;
+    padding:
+        12px
+        14px;
 
-    margin-top:8px;
+    margin-top:9px;
 
-    border:1px solid #193039;
+    border:
+        1px solid #193039;
 
     border-radius:14px;
 
@@ -260,43 +457,146 @@ button{
     text-align:left;
 }
 
-.languageOption:hover{
+.languageOption:active{
     background:#15333d;
 }
 
 .languageFlag{
+
     font-size:23px;
+
+    width:32px;
+
+    text-align:center;
 }
 
 .languageName{
+
     flex:1;
 
     font-size:15px;
+
     font-weight:700;
 }
 
 .check{
+
+    width:25px;
+
+    text-align:center;
+
     color:#00d4a5;
+
     font-size:20px;
+
+    font-weight:800;
 }
 
-/* ================= RESPONSIVE ================= */
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+#toast{
+
+    position:fixed;
+
+    left:50%;
+
+    bottom:
+        calc(25px + env(safe-area-inset-bottom));
+
+    transform:
+        translate(-50%,20px);
+
+    z-index:200;
+
+    max-width:
+        calc(100% - 30px);
+
+    padding:
+        12px
+        16px;
+
+    border-radius:12px;
+
+    background:#102b34;
+
+    border:
+        1px solid #284650;
+
+    color:#fff;
+
+    font-size:13px;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    transition:
+        opacity .2s ease,
+        transform .2s ease;
+
+    text-align:center;
+}
+
+#toast.show{
+
+    opacity:1;
+
+    transform:
+        translate(-50%,0);
+}
+
+
+/* =====================================================
+   SMALL SCREEN
+===================================================== */
 
 @media(max-width:360px){
 
     .container{
+
         padding-left:10px;
         padding-right:10px;
+        padding-bottom:80px;
+    }
+
+    .settingItem{
+
+        gap:11px;
+
+        padding-left:12px;
+        padding-right:12px;
+    }
+
+    .settingIcon{
+
+        width:40px;
+        height:40px;
+    }
+
+    .settingName{
+        font-size:14px;
+    }
+
+    .settingDescription{
+        font-size:11px;
     }
 
 }
 
 </style>
+
 </head>
+
 
 <body>
 
-<!-- ================= HEADER ================= -->
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
 
 <header class="header">
 
@@ -319,11 +619,14 @@ button{
 </header>
 
 
-<!-- ================= SETTINGS ================= -->
+<!-- =====================================================
+     MAIN SETTINGS
+===================================================== -->
 
 <main class="container">
 
-    <!-- PRIVACY -->
+
+    <!-- ================= PRIVACY ================= -->
 
     <div
         class="sectionTitle"
@@ -331,6 +634,7 @@ button{
     >
         Privacy
     </div>
+
 
     <div class="settingsBox">
 
@@ -371,7 +675,8 @@ button{
     </div>
 
 
-    <!-- ACCOUNT -->
+
+    <!-- ================= ACCOUNT ================= -->
 
     <div
         class="sectionTitle"
@@ -380,7 +685,11 @@ button{
         Account
     </div>
 
+
     <div class="settingsBox">
+
+
+        <!-- PROFILE -->
 
         <button
             class="settingItem"
@@ -416,6 +725,8 @@ button{
 
         </button>
 
+
+        <!-- SECURITY -->
 
         <button
             class="settingItem"
@@ -454,7 +765,8 @@ button{
     </div>
 
 
-    <!-- APP -->
+
+    <!-- ================= APP ================= -->
 
     <div
         class="sectionTitle"
@@ -463,7 +775,9 @@ button{
         App
     </div>
 
+
     <div class="settingsBox">
+
 
         <!-- LANGUAGE -->
 
@@ -585,7 +899,8 @@ button{
     </div>
 
 
-    <!-- LOGOUT -->
+
+    <!-- ================= ACCOUNT / LOGOUT ================= -->
 
     <div
         class="sectionTitle"
@@ -593,6 +908,7 @@ button{
     >
         Account
     </div>
+
 
     <div class="settingsBox">
 
@@ -633,6 +949,9 @@ button{
     </div>
 
 
+
+    <!-- ================= FOOTER ================= -->
+
     <div
         class="footer"
         id="footerText"
@@ -644,23 +963,28 @@ button{
 </main>
 
 
-<!-- ================= LANGUAGE MODAL ================= -->
+
+<!-- =====================================================
+     LANGUAGE MODAL
+===================================================== -->
 
 <div
     id="languageModal"
     onclick="closeLanguageModal(event)"
 >
 
+
     <div
         class="languagePanel"
         onclick="event.stopPropagation()"
     >
 
+
         <div
             class="languagePanelTitle"
             id="languagePanelTitle"
         >
-            🌐 Select Language
+            🌐 ভাষা নির্বাচন করুন
         </div>
 
 
@@ -683,9 +1007,7 @@ button{
             <div
                 class="check"
                 id="checkBn"
-            >
-                ✓
-            </div>
+            ></div>
 
         </button>
 
@@ -709,8 +1031,7 @@ button{
             <div
                 class="check"
                 id="checkEn"
-            >
-            </div>
+            ></div>
 
         </button>
 
@@ -719,10 +1040,36 @@ button{
 </div>
 
 
+
+<!-- =====================================================
+     TOAST
+===================================================== -->
+
+<div id="toast"></div>
+
+
+
 <script>
 
 /* =====================================================
-   LANGUAGE SYSTEM
+   SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+    "https://pqyicaqpmojijjskpzcp.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =====================================================
+   LANGUAGE
 ===================================================== */
 
 const LANGUAGE_KEY =
@@ -730,7 +1077,9 @@ const LANGUAGE_KEY =
 
 
 let currentLanguage =
-    localStorage.getItem(LANGUAGE_KEY) || "bn";
+    localStorage.getItem(
+        LANGUAGE_KEY
+    ) || "bn";
 
 
 const translations = {
@@ -810,6 +1159,7 @@ const translations = {
             "আপনি কি Logout করতে চান?"
 
     },
+
 
     en: {
 
@@ -1057,7 +1407,7 @@ function changeLanguage(language){
 
     localStorage.setItem(
         LANGUAGE_KEY,
-        language
+        currentLanguage
     );
 
 
@@ -1076,10 +1426,14 @@ function changeLanguage(language){
 function updateLanguageCheck(){
 
     const checkBn =
-        document.getElementById("checkBn");
+        document.getElementById(
+            "checkBn"
+        );
 
     const checkEn =
-        document.getElementById("checkEn");
+        document.getElementById(
+            "checkEn"
+        );
 
 
     checkBn.textContent = "";
@@ -1089,11 +1443,13 @@ function updateLanguageCheck(){
 
     if(currentLanguage === "bn"){
 
-        checkBn.textContent = "✓";
+        checkBn.textContent =
+            "✓";
 
     }else{
 
-        checkEn.textContent = "✓";
+        checkEn.textContent =
+            "✓";
 
     }
 
@@ -1108,7 +1464,8 @@ function openLanguageModal(){
 
     document.getElementById(
         "languageModal"
-    ).style.display = "flex";
+    ).style.display =
+        "flex";
 
 }
 
@@ -1118,7 +1475,9 @@ function closeLanguageModal(event){
     if(
         event &&
         event.target !==
-        document.getElementById("languageModal")
+        document.getElementById(
+            "languageModal"
+        )
     ){
 
         return;
@@ -1128,13 +1487,14 @@ function closeLanguageModal(event){
 
     document.getElementById(
         "languageModal"
-    ).style.display = "none";
+    ).style.display =
+        "none";
 
 }
 
 
 /* =====================================================
-   NAVIGATION
+   PROFILE PRIVACY
 ===================================================== */
 
 function openProfilePrivacy(){
@@ -1145,6 +1505,10 @@ function openProfilePrivacy(){
 }
 
 
+/* =====================================================
+   PROFILE
+===================================================== */
+
 function openProfile(){
 
     window.location.href =
@@ -1152,6 +1516,10 @@ function openProfile(){
 
 }
 
+
+/* =====================================================
+   BACK
+===================================================== */
 
 function goBack(){
 
@@ -1185,19 +1553,27 @@ function showComingSoon(type){
 
     if(type === "security"){
 
-        alert(t.securityComing);
+        showToast(
+            t.securityComing
+        );
 
     }
+
 
     if(type === "notifications"){
 
-        alert(t.notificationsComing);
+        showToast(
+            t.notificationsComing
+        );
 
     }
 
+
     if(type === "about"){
 
-        alert(t.aboutComing);
+        showToast(
+            t.aboutComing
+        );
 
     }
 
@@ -1205,41 +1581,102 @@ function showComingSoon(type){
 
 
 /* =====================================================
-   LOGOUT
+   TOAST
 ===================================================== */
 
-function logout(){
+let toastTimer = null;
+
+
+function showToast(message){
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+
+    toast.textContent =
+        message;
+
+
+    toast.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(
+            function(){
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            2500
+        );
+
+}
+
+
+/* =====================================================
+   REAL SUPABASE LOGOUT
+===================================================== */
+
+async function logout(){
 
     const t =
         translations[currentLanguage];
 
 
-    const confirmLogout =
-        confirm(t.logoutConfirm);
+    const confirmed =
+        confirm(
+            t.logoutConfirm
+        );
 
 
-    if(!confirmLogout){
+    if(!confirmed){
 
         return;
 
     }
 
 
-    /*
-       Supabase session logout will be handled
-       when index.html loads.
-       We only remove local session keys here.
-    */
-
     try{
 
-        Object.keys(localStorage)
-            .filter(key =>
-                key.startsWith("sb-")
-            )
-            .forEach(key =>
-                localStorage.removeItem(key)
+        const { error } =
+            await supabaseClient.auth.signOut();
+
+
+        if(error){
+
+            console.error(
+                "Logout error:",
+                error
             );
+
+            showToast(
+                currentLanguage === "bn"
+                ?
+                "Logout করা যায়নি।"
+                :
+                "Logout failed."
+            );
+
+            return;
+
+        }
+
+
+        window.location.replace(
+            "index.html"
+        );
+
 
     }catch(error){
 
@@ -1248,11 +1685,15 @@ function logout(){
             error
         );
 
+        showToast(
+            currentLanguage === "bn"
+            ?
+            "Logout করা যায়নি।"
+            :
+            "Logout failed."
+        );
+
     }
-
-
-    window.location.href =
-        "index.html";
 
 }
 
