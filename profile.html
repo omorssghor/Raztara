@@ -17,7 +17,7 @@
 }
 
 body{
-    font-family:Arial, sans-serif;
+    font-family:Arial,sans-serif;
     background:#f4f7f6;
     color:#222;
 }
@@ -28,18 +28,27 @@ body{
     color:#fff;
     display:flex;
     align-items:center;
-    padding:0 15px;
     gap:14px;
+    padding:0 15px;
     position:sticky;
     top:0;
-    z-index:10;
+    z-index:100;
 }
 
 .back{
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     color:#fff;
     text-decoration:none;
-    font-size:25px;
-    width:35px;
+    font-size:30px;
+    border-radius:50%;
+}
+
+.back:active{
+    background:rgba(255,255,255,.15);
 }
 
 .header-title{
@@ -48,9 +57,10 @@ body{
 }
 
 .container{
+    width:100%;
     max-width:650px;
     margin:20px auto;
-    padding:0 15px;
+    padding:0 15px 30px;
 }
 
 .card{
@@ -58,58 +68,57 @@ body{
     border-radius:16px;
     padding:22px;
     box-shadow:0 3px 15px rgba(0,0,0,.08);
-    margin-bottom:18px;
+}
+
+.loading{
+    text-align:center;
+    padding:45px 10px;
+    color:#777;
 }
 
 .profile-top{
     text-align:center;
 }
 
-.avatar-wrap{
-    position:relative;
-    width:110px;
-    height:110px;
-    margin:0 auto 14px;
-}
-
 .avatar{
-    width:110px;
-    height:110px;
+    width:115px;
+    height:115px;
     border-radius:50%;
     object-fit:cover;
     background:#e8eeee;
     border:4px solid #fff;
-    box-shadow:0 2px 10px rgba(0,0,0,.12);
+    box-shadow:0 3px 12px rgba(0,0,0,.15);
 }
 
-.name{
-    font-size:23px;
+.profile-name{
+    margin-top:12px;
+    font-size:24px;
     font-weight:bold;
-    margin-top:5px;
 }
 
-.username{
-    color:#087f5b;
+.profile-username{
     margin-top:5px;
+    color:#087f5b;
     font-size:15px;
 }
 
-.bio{
+.profile-bio{
+    margin:13px auto 0;
     color:#666;
-    margin-top:12px;
-    line-height:1.5;
+    line-height:1.55;
     white-space:pre-wrap;
+    max-width:500px;
 }
 
 .info-list{
-    margin-top:22px;
+    margin-top:25px;
 }
 
 .info-row{
     display:flex;
     align-items:flex-start;
     gap:12px;
-    padding:13px 0;
+    padding:14px 0;
     border-bottom:1px solid #eee;
 }
 
@@ -128,8 +137,8 @@ body{
 }
 
 .info-label{
-    font-size:12px;
     color:#888;
+    font-size:12px;
     margin-bottom:4px;
 }
 
@@ -138,146 +147,50 @@ body{
     word-break:break-word;
 }
 
-.status{
-    margin-top:15px;
-    text-align:center;
-    font-size:14px;
-    min-height:20px;
-}
-
-.status.success{
-    color:#087f5b;
-}
-
-.status.error{
-    color:#d93025;
-}
-
-.status.loading{
-    color:#777;
-}
-
 .buttons{
     display:flex;
     gap:10px;
-    margin-top:20px;
+    margin-top:22px;
 }
 
 button{
     border:none;
     border-radius:10px;
-    padding:12px 16px;
+    padding:13px 16px;
     font-size:15px;
     cursor:pointer;
 }
 
 .primary{
+    flex:1;
     background:#087f5b;
     color:#fff;
-    flex:1;
-}
-
-.secondary{
-    background:#e9efed;
-    color:#222;
-    flex:1;
 }
 
 .danger{
-    background:#fff0f0;
-    color:#d93025;
     width:100%;
     margin-top:10px;
+    background:#fff0f0;
+    color:#d93025;
+}
+
+.status{
+    min-height:20px;
+    margin-top:15px;
+    text-align:center;
+    font-size:14px;
+}
+
+.error{
+    color:#d93025;
+}
+
+.success{
+    color:#087f5b;
 }
 
 .hidden{
     display:none !important;
-}
-
-/* Edit area */
-
-.edit-title{
-    font-size:20px;
-    font-weight:bold;
-    margin-bottom:18px;
-}
-
-.form-group{
-    margin-bottom:16px;
-}
-
-label{
-    display:block;
-    font-size:14px;
-    font-weight:bold;
-    margin-bottom:7px;
-}
-
-input,
-textarea{
-    width:100%;
-    padding:12px;
-    border:1px solid #d6dddd;
-    border-radius:9px;
-    font-size:15px;
-    outline:none;
-    background:#fff;
-}
-
-input:focus,
-textarea:focus{
-    border-color:#087f5b;
-}
-
-input:disabled{
-    background:#f1f3f3;
-    color:#777;
-}
-
-textarea{
-    min-height:100px;
-    resize:vertical;
-}
-
-.photo-section{
-    text-align:center;
-    margin-bottom:20px;
-}
-
-.edit-avatar{
-    width:105px;
-    height:105px;
-    border-radius:50%;
-    object-fit:cover;
-    background:#e8eeee;
-    border:3px solid #087f5b;
-}
-
-.change-photo{
-    display:inline-block;
-    margin-top:10px;
-    padding:9px 14px;
-    border-radius:8px;
-    background:#e8f5f1;
-    color:#087f5b;
-    cursor:pointer;
-    font-size:14px;
-}
-
-#photoInput{
-    display:none;
-}
-
-.note{
-    font-size:12px;
-    color:#777;
-    margin-top:5px;
-}
-
-.loading-box{
-    text-align:center;
-    padding:40px 10px;
-    color:#777;
 }
 </style>
 </head>
@@ -285,95 +198,187 @@ textarea{
 <body>
 
 <header class="header">
-    <a href="index.html" class="back">‹</a>
-    <div class="header-title" id="pageTitle">Profile</div>
+
+    <a href="index.html" class="back" aria-label="Back">
+        ‹
+    </a>
+
+    <div class="header-title" id="pageTitle">
+        Profile
+    </div>
+
 </header>
+
 
 <main class="container">
 
-    <!-- PROFILE VIEW -->
-    <section class="card" id="profileCard">
+    <section class="card">
 
-        <div class="loading-box" id="loadingBox">
+        <div id="loadingBox" class="loading">
             Profile loading...
         </div>
+
 
         <div id="profileContent" class="hidden">
 
             <div class="profile-top">
 
-                <div class="avatar-wrap">
-                    <img
-                        id="profileAvatar"
-                        class="avatar"
-                        src=""
-                        alt="Profile Photo"
-                    >
+                <img
+                    id="profileAvatar"
+                    class="avatar"
+                    src=""
+                    alt="Profile Photo"
+                >
+
+                <div
+                    id="profileName"
+                    class="profile-name"
+                >
+                    —
                 </div>
 
-                <div class="name" id="profileName">—</div>
+                <div
+                    id="profileUsername"
+                    class="profile-username"
+                >
+                </div>
 
-                <div class="username" id="profileUsername"></div>
-
-                <div class="bio" id="profileBio"></div>
+                <div
+                    id="profileBio"
+                    class="profile-bio hidden"
+                >
+                </div>
 
             </div>
+
 
             <div class="info-list">
 
-                <div class="info-row" id="emailRow">
-                    <div class="info-icon">✉️</div>
+                <!-- Email -->
+                <div
+                    id="emailRow"
+                    class="info-row"
+                >
+                    <div class="info-icon">
+                        ✉️
+                    </div>
+
                     <div class="info-content">
-                        <div class="info-label">Email</div>
-                        <div class="info-value" id="profileEmail">—</div>
+                        <div class="info-label">
+                            Email
+                        </div>
+
+                        <div
+                            id="profileEmail"
+                            class="info-value"
+                        >
+                            —
+                        </div>
                     </div>
                 </div>
 
-                <div class="info-row" id="phoneRow">
-                    <div class="info-icon">📱</div>
+
+                <!-- Phone -->
+                <div
+                    id="phoneRow"
+                    class="info-row"
+                >
+                    <div class="info-icon">
+                        📱
+                    </div>
+
                     <div class="info-content">
-                        <div class="info-label">Phone</div>
-                        <div class="info-value" id="profilePhone">—</div>
+                        <div class="info-label">
+                            Phone
+                        </div>
+
+                        <div
+                            id="profilePhone"
+                            class="info-value"
+                        >
+                            Private
+                        </div>
                     </div>
                 </div>
 
-                <div class="info-row" id="addressRow">
-                    <div class="info-icon">📍</div>
+
+                <!-- Address -->
+                <div
+                    id="addressRow"
+                    class="info-row"
+                >
+                    <div class="info-icon">
+                        📍
+                    </div>
+
                     <div class="info-content">
-                        <div class="info-label">Address</div>
-                        <div class="info-value" id="profileAddress">—</div>
+                        <div class="info-label">
+                            Address
+                        </div>
+
+                        <div
+                            id="profileAddress"
+                            class="info-value"
+                        >
+                            Private
+                        </div>
                     </div>
                 </div>
 
-                <div class="info-row" id="onlineRow">
-                    <div class="info-icon">🟢</div>
+
+                <!-- Last Seen -->
+                <div
+                    id="onlineRow"
+                    class="info-row"
+                >
+                    <div class="info-icon">
+                        🟢
+                    </div>
+
                     <div class="info-content">
-                        <div class="info-label">Last seen</div>
-                        <div class="info-value" id="profileLastSeen">—</div>
+                        <div class="info-label">
+                            Last seen
+                        </div>
+
+                        <div
+                            id="profileLastSeen"
+                            class="info-value"
+                        >
+                            —
+                        </div>
                     </div>
                 </div>
 
             </div>
 
-            <div class="status" id="profileStatus"></div>
 
-            <!-- OWN PROFILE BUTTONS -->
-            <div id="ownButtons">
+            <div
+                id="profileStatus"
+                class="status"
+            >
+            </div>
+
+
+            <!-- ONLY OWN PROFILE -->
+            <div id="ownButtons" class="hidden">
 
                 <div class="buttons">
+
                     <button
                         type="button"
                         class="primary"
-                        onclick="openEdit()"
+                        id="editButton"
                     >
                         ✏️ Edit Profile
                     </button>
+
                 </div>
+
 
                 <button
                     type="button"
                     class="danger"
-                    onclick="logout()"
+                    id="logoutButton"
                 >
                     🚪 Logout
                 </button>
@@ -384,173 +389,17 @@ textarea{
 
     </section>
 
-
-    <!-- EDIT PROFILE -->
-    <section class="card hidden" id="editCard">
-
-        <div class="edit-title">
-            Edit Profile
-        </div>
-
-        <div class="photo-section">
-
-            <img
-                id="editAvatar"
-                class="edit-avatar"
-                src=""
-                alt="Profile Photo"
-            >
-
-            <br>
-
-            <label
-                for="photoInput"
-                class="change-photo"
-            >
-                📷 Change Photo
-            </label>
-
-            <input
-                id="photoInput"
-                type="file"
-                accept="image/*"
-            >
-
-            <div class="note">
-                Maximum photo size: 6 MB
-            </div>
-
-        </div>
-
-
-        <div class="form-group">
-            <label for="nameInput">
-                Name
-            </label>
-
-            <input
-                id="nameInput"
-                type="text"
-                autocomplete="name"
-                placeholder="Your name"
-            >
-        </div>
-
-
-        <div class="form-group">
-            <label for="usernameInput">
-                Username
-            </label>
-
-            <input
-                id="usernameInput"
-                type="text"
-                autocomplete="username"
-                placeholder="Username"
-            >
-
-            <div class="note">
-                Username must be unique.
-            </div>
-        </div>
-
-
-        <div class="form-group">
-            <label for="emailInput">
-                Email
-            </label>
-
-            <input
-                id="emailInput"
-                type="email"
-                disabled
-            >
-
-            <div class="note">
-                Login email cannot be changed from this profile page.
-            </div>
-        </div>
-
-
-        <div class="form-group">
-            <label for="phoneInput">
-                Phone
-            </label>
-
-            <input
-                id="phoneInput"
-                type="tel"
-                autocomplete="tel"
-                placeholder="Phone number"
-            >
-        </div>
-
-
-        <div class="form-group">
-            <label for="addressInput">
-                Address
-            </label>
-
-            <textarea
-                id="addressInput"
-                autocomplete="street-address"
-                placeholder="Your address"
-            ></textarea>
-        </div>
-
-
-        <div class="form-group">
-            <label for="bioInput">
-                Bio
-            </label>
-
-            <textarea
-                id="bioInput"
-                placeholder="Write something about yourself..."
-            ></textarea>
-        </div>
-
-
-        <div class="status" id="editStatus"></div>
-
-
-        <div class="buttons">
-
-            <button
-                type="button"
-                class="primary"
-                id="saveButton"
-                onclick="saveProfile()"
-            >
-                💾 Save
-            </button>
-
-            <button
-                type="button"
-                class="secondary"
-                onclick="closeEdit()"
-            >
-                Cancel
-            </button>
-
-        </div>
-
-    </section>
-
 </main>
 
 
 <script>
-
-/* =========================================================
-   SUPABASE
-========================================================= */
 
 const SUPABASE_URL =
     "https://pqyicaqpmojijjskpzcp.supabase.co";
 
 const SUPABASE_KEY =
     "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+
 
 const supabaseClient =
     window.supabase.createClient(
@@ -559,461 +408,67 @@ const supabaseClient =
     );
 
 
-/* =========================================================
-   GLOBAL VARIABLES
-========================================================= */
-
 let currentUser = null;
-let viewedUser = null;
-
 let currentProfile = null;
 let currentPhone = null;
 let currentAddress = null;
 
-let selectedPhoto = null;
-
 let isOwnProfile = false;
 
+
 const params =
-    new URLSearchParams(window.location.search);
+    new URLSearchParams(
+        window.location.search
+    );
 
 const requestedUserId =
     params.get("user");
 
-
-/* =========================================================
-   HELPERS
-========================================================= */
 
 function $(id){
     return document.getElementById(id);
 }
 
 
-function escapeText(value){
-    return value || "";
-}
-
-
-function setStatus(id, text, type=""){
-    const el = $(id);
-
-    if(!el) return;
-
-    el.textContent = text;
-    el.className = "status " + type;
-}
-
-
-/* =========================================================
+/* ================================
    DEFAULT AVATAR
-========================================================= */
+================================ */
 
-function defaultAvatar(name="User"){
+function defaultAvatar(name){
 
-    const letter =
-        String(name || "U")
+    const first =
+        String(name || "User")
         .trim()
         .charAt(0)
-        .toUpperCase();
+        .toUpperCase() || "U";
 
-    return "https://ui-avatars.com/api/?name=" +
-        encodeURIComponent(letter) +
-        "&background=087f5b&color=ffffff&size=256";
+    return (
+        "https://ui-avatars.com/api/" +
+        "?name=" +
+        encodeURIComponent(first) +
+        "&background=087f5b" +
+        "&color=ffffff" +
+        "&size=256"
+    );
 }
 
 
-/* =========================================================
-   LOAD PROFILE
-========================================================= */
-
-async function loadProfile(){
-
-    $("loadingBox").classList.remove("hidden");
-    $("profileContent").classList.add("hidden");
-
-    const {
-        data: {
-            user
-        },
-        error: authError
-    } = await supabaseClient.auth.getUser();
-
-
-    if(authError || !user){
-
-        window.location.href = "index.html";
-        return;
-    }
-
-
-    currentUser = user;
-
-
-    /*
-       profile.html
-       = নিজের profile
-
-       profile.html?user=xxxxx
-       = অন্য user profile
-    */
-
-    const targetId =
-        requestedUserId || currentUser.id;
-
-
-    isOwnProfile =
-        targetId === currentUser.id;
-
-
-    /* Page title */
-
-    $("pageTitle").textContent =
-        isOwnProfile
-            ? "My Profile"
-            : "Profile";
-
-
-    /*
-       Load target profile
-    */
-
-    const {
-        data: profile,
-        error: profileError
-    } = await supabaseClient
-        .from("profiles")
-        .select(`
-            id,
-            username,
-            full_name,
-            avatar_url,
-            bio,
-            online_visibility,
-            last_seen_at
-        `)
-        .eq("id", targetId)
-        .maybeSingle();
-
-
-    if(profileError){
-
-        showLoadError(
-            "Profile load করতে সমস্যা হয়েছে: " +
-            profileError.message
-        );
-
-        return;
-    }
-
-
-    if(!profile){
-
-        showLoadError(
-            "এই Profile পাওয়া যায়নি।"
-        );
-
-        return;
-    }
-
-
-    viewedUser = profile;
-    currentProfile = profile;
-
-
-    /*
-       Phone
-    */
-
-    const {
-        data: phoneData,
-        error: phoneError
-    } = await supabaseClient
-        .from("profile_phone")
-        .select("phone, visibility")
-        .eq("user_id", targetId)
-        .maybeSingle();
-
-
-    if(phoneError){
-        currentPhone = null;
-    }else{
-        currentPhone = phoneData;
-    }
-
-
-    /*
-       Address
-    */
-
-    const {
-        data: addressData,
-        error: addressError
-    } = await supabaseClient
-        .from("profile_address")
-        .select("address, visibility")
-        .eq("user_id", targetId)
-        .maybeSingle();
-
-
-    if(addressError){
-        currentAddress = null;
-    }else{
-        currentAddress = addressData;
-    }
-
-
-    renderProfile();
-
-
-    if(isOwnProfile){
-        prepareEditForm();
-    }
-
-
-    $("loadingBox").classList.add("hidden");
-    $("profileContent").classList.remove("hidden");
-}
-
-
-/* =========================================================
-   LOAD ERROR
-========================================================= */
-
-function showLoadError(message){
-
-    $("loadingBox").textContent =
-        message;
-
-    $("loadingBox").classList.remove("hidden");
-}
-
-
-/* =========================================================
-   RENDER PROFILE
-========================================================= */
-
-function renderProfile(){
-
-    const profile = currentProfile;
-
-
-    const name =
-        profile.full_name ||
-        profile.username ||
-        "User";
-
-
-    /*
-       Avatar
-    */
-
-    $("profileAvatar").src =
-        profile.avatar_url ||
-        defaultAvatar(name);
-
-
-    $("profileAvatar").alt =
-        name;
-
-
-    /*
-       Name
-    */
-
-    $("profileName").textContent =
-        name;
-
-
-    /*
-       Username
-    */
-
-    if(profile.username){
-
-        $("profileUsername").textContent =
-            "@" + profile.username;
-
-    }else{
-
-        $("profileUsername").textContent =
-            "";
-
-    }
-
-
-    /*
-       Bio
-    */
-
-    if(profile.bio){
-
-        $("profileBio").textContent =
-            profile.bio;
-
-        $("profileBio").classList.remove("hidden");
-
-    }else{
-
-        $("profileBio").textContent =
-            "";
-
-        $("profileBio").classList.add("hidden");
-
-    }
-
-
-    /*
-       Email
-
-       Auth email শুধু নিজের profile-এ দেখানো হবে।
-       অন্য user-এর auth email client থেকে query করা যাবে না।
-    */
-
-    if(isOwnProfile){
-
-        $("profileEmail").textContent =
-            currentUser.email || "Not available";
-
-        $("emailRow").classList.remove("hidden");
-
-    }else{
-
-        $("emailRow").classList.add("hidden");
-
-    }
-
-
-    /*
-       Phone
-
-       RLS result না দিলে private.
-    */
-
-    if(currentPhone && currentPhone.phone){
-
-        $("profilePhone").textContent =
-            currentPhone.phone;
-
-    }else{
-
-        $("profilePhone").textContent =
-            "Private";
-
-    }
-
-
-    /*
-       Address
-
-       RLS result না দিলে private.
-    */
-
-    if(currentAddress && currentAddress.address){
-
-        $("profileAddress").textContent =
-            currentAddress.address;
-
-    }else{
-
-        $("profileAddress").textContent =
-            "Private";
-
-    }
-
-
-    /*
-       Last seen / Online visibility
-
-       Database থেকে last_seen_at ব্যবহার করা হচ্ছে।
-    */
-
-    renderLastSeen();
-
-
-    /*
-       Own / Other controls
-    */
-
-    if(isOwnProfile){
-
-        $("ownButtons").classList.remove("hidden");
-
-    }else{
-
-        $("ownButtons").classList.add("hidden");
-
-    }
-}
-
-
-/* =========================================================
-   LAST SEEN
-========================================================= */
-
-function renderLastSeen(){
-
-    const visibility =
-        currentProfile.online_visibility ||
-        "everyone";
-
-
-    /*
-       Own profile
-    */
-
-    if(isOwnProfile){
-
-        $("profileLastSeen").textContent =
-            "Online";
-
-        return;
-    }
-
-
-    /*
-       Nobody
-    */
-
-    if(visibility === "nobody"){
-
-        $("onlineRow").classList.add("hidden");
-
-        return;
-    }
-
-
-    /*
-       Current database last_seen
-    */
-
-    if(currentProfile.last_seen_at){
-
-        $("profileLastSeen").textContent =
-            "Last seen " +
-            formatLastSeen(
-                currentProfile.last_seen_at
-            );
-
-    }else{
-
-        $("profileLastSeen").textContent =
-            "Offline";
-
-    }
-}
-
+/* ================================
+   FORMAT LAST SEEN
+================================ */
 
 function formatLastSeen(value){
 
     const date =
         new Date(value);
 
-
-    if(Number.isNaN(date.getTime())){
+    if(
+        Number.isNaN(
+            date.getTime()
+        )
+    ){
         return "Unknown";
     }
-
 
     return date.toLocaleString(
         "bn-BD",
@@ -1027,11 +482,143 @@ function formatLastSeen(value){
 }
 
 
-/* =========================================================
-   PREPARE EDIT FORM
-========================================================= */
+/* ================================
+   FRIEND CHECK
+================================ */
 
-function prepareEditForm(){
+async function isAcceptedFriend(){
+
+    if(isOwnProfile){
+        return true;
+    }
+
+    if(
+        !currentProfile ||
+        currentProfile.online_visibility !== "friends"
+    ){
+        return false;
+    }
+
+    const { data, error } =
+        await supabaseClient
+        .from("friendships")
+        .select("id")
+        .eq("status","accepted")
+        .or(
+            `and(requester_id.eq.${currentUser.id},addressee_id.eq.${currentProfile.id}),and(requester_id.eq.${currentProfile.id},addressee_id.eq.${currentUser.id})`
+        )
+        .limit(1);
+
+    if(error){
+        return false;
+    }
+
+    return (
+        Array.isArray(data) &&
+        data.length > 0
+    );
+}
+
+
+/* ================================
+   LAST SEEN RENDER
+================================ */
+
+async function renderLastSeen(){
+
+    const row =
+        $("onlineRow");
+
+    if(isOwnProfile){
+
+        row.classList.remove(
+            "hidden"
+        );
+
+        $("profileLastSeen")
+            .textContent = "Online";
+
+        return;
+    }
+
+
+    const visibility =
+        currentProfile.online_visibility ||
+        "everyone";
+
+
+    /* Everyone */
+    if(
+        visibility === "everyone"
+    ){
+
+        row.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    /* Friends */
+    else if(
+        visibility === "friends"
+    ){
+
+        const friend =
+            await isAcceptedFriend();
+
+        if(!friend){
+
+            row.classList.add(
+                "hidden"
+            );
+
+            return;
+        }
+
+        row.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    /* Nobody */
+    else{
+
+        row.classList.add(
+            "hidden"
+        );
+
+        return;
+    }
+
+
+    if(
+        currentProfile.last_seen_at
+    ){
+
+        $("profileLastSeen")
+            .textContent =
+            "Last seen " +
+            formatLastSeen(
+                currentProfile.last_seen_at
+            );
+
+    }else{
+
+        $("profileLastSeen")
+            .textContent =
+            "Offline";
+    }
+}
+
+
+/* ================================
+   RENDER PROFILE
+================================ */
+
+async function renderProfile(){
 
     const profile =
         currentProfile;
@@ -1039,492 +626,209 @@ function prepareEditForm(){
 
     const name =
         profile.full_name ||
-        "";
+        profile.username ||
+        "User";
 
 
-    $("editAvatar").src =
+    /* Avatar */
+
+    $("profileAvatar").src =
         profile.avatar_url ||
-        defaultAvatar(
-            name ||
-            profile.username ||
-            "User"
-        );
+        defaultAvatar(name);
+
+    $("profileAvatar").alt =
+        name;
 
 
-    $("nameInput").value =
-        profile.full_name || "";
+    /* Name */
+
+    $("profileName")
+        .textContent = name;
 
 
-    $("usernameInput").value =
-        profile.username || "";
+    /* Username */
+
+    if(profile.username){
+
+        $("profileUsername")
+            .textContent =
+            "@" + profile.username;
+
+    }else{
+
+        $("profileUsername")
+            .textContent = "";
+    }
 
 
-    $("emailInput").value =
-        currentUser.email || "";
+    /* Bio */
+
+    if(profile.bio){
+
+        $("profileBio")
+            .textContent =
+            profile.bio;
+
+        $("profileBio")
+            .classList.remove(
+                "hidden"
+            );
+
+    }else{
+
+        $("profileBio")
+            .textContent = "";
+
+        $("profileBio")
+            .classList.add(
+                "hidden"
+            );
+    }
 
 
-    $("phoneInput").value =
+    /* Email */
+
+    if(isOwnProfile){
+
+        $("profileEmail")
+            .textContent =
+            currentUser.email ||
+            "Not available";
+
+        $("emailRow")
+            .classList.remove(
+                "hidden"
+            );
+
+    }else{
+
+        $("emailRow")
+            .classList.add(
+                "hidden"
+            );
+    }
+
+
+    /* Phone */
+
+    if(
         currentPhone &&
         currentPhone.phone
-            ? currentPhone.phone
-            : "";
+    ){
+
+        $("profilePhone")
+            .textContent =
+            currentPhone.phone;
+
+    }else{
+
+        $("profilePhone")
+            .textContent =
+            "Private";
+    }
 
 
-    $("addressInput").value =
+    /* Address */
+
+    if(
         currentAddress &&
         currentAddress.address
-            ? currentAddress.address
-            : "";
+    ){
 
+        $("profileAddress")
+            .textContent =
+            currentAddress.address;
 
-    $("bioInput").value =
-        profile.bio || "";
-}
+    }else{
 
-
-/* =========================================================
-   OPEN EDIT
-========================================================= */
-
-function openEdit(){
-
-    if(!isOwnProfile){
-        return;
+        $("profileAddress")
+            .textContent =
+            "Private";
     }
 
 
-    $("editCard").classList.remove("hidden");
+    /* Last seen */
+
+    await renderLastSeen();
 
 
-    window.scrollTo({
-        top:0,
-        behavior:"smooth"
-    });
+    /* Own buttons */
 
+    if(isOwnProfile){
 
-    prepareEditForm();
-}
-
-
-/* =========================================================
-   CLOSE EDIT
-========================================================= */
-
-function closeEdit(){
-
-    $("editCard").classList.add("hidden");
-
-    setStatus(
-        "editStatus",
-        ""
-    );
-
-    selectedPhoto = null;
-
-    $("photoInput").value = "";
-}
-
-
-/* =========================================================
-   PHOTO SELECT
-========================================================= */
-
-$("photoInput").addEventListener(
-    "change",
-    function(){
-
-        const file =
-            this.files &&
-            this.files[0];
-
-
-        if(!file){
-            return;
-        }
-
-
-        if(!file.type.startsWith("image/")){
-
-            setStatus(
-                "editStatus",
-                "শুধু Image file নির্বাচন করুন।",
-                "error"
+        $("ownButtons")
+            .classList.remove(
+                "hidden"
             );
 
-            this.value = "";
-            return;
-        }
+    }else{
 
-
-        /*
-           6 MB limit
-        */
-
-        if(file.size > 6 * 1024 * 1024){
-
-            setStatus(
-                "editStatus",
-                "ছবির size সর্বোচ্চ 6 MB হতে পারবে।",
-                "error"
+        $("ownButtons")
+            .classList.add(
+                "hidden"
             );
-
-            this.value = "";
-            return;
-        }
-
-
-        selectedPhoto = file;
-
-
-        const objectUrl =
-            URL.createObjectURL(file);
-
-
-        $("editAvatar").src =
-            objectUrl;
-
-
-        setStatus(
-            "editStatus",
-            "নতুন photo নির্বাচন করা হয়েছে।",
-            "success"
-        );
     }
-);
+}
 
 
-/* =========================================================
-   SAVE PROFILE
-========================================================= */
+/* ================================
+   LOAD PROFILE
+================================ */
 
-async function saveProfile(){
-
-    if(!currentUser || !isOwnProfile){
-        return;
-    }
-
-
-    const saveButton =
-        $("saveButton");
-
-
-    saveButton.disabled = true;
-    saveButton.textContent =
-        "Saving...";
-
-
-    setStatus(
-        "editStatus",
-        "Profile save হচ্ছে...",
-        "loading"
-    );
-
+async function loadProfile(){
 
     try{
 
-        const fullName =
-            $("nameInput").value.trim();
-
-
-        const username =
-            $("usernameInput").value
-            .trim()
-            .replace(/^@+/, "")
-            .toLowerCase();
-
-
-        const phone =
-            $("phoneInput").value.trim();
-
-
-        const address =
-            $("addressInput").value.trim();
-
-
-        const bio =
-            $("bioInput").value.trim();
-
-
-        /*
-           Basic username validation
-        */
-
-        if(username){
-
-            if(!/^[a-z0-9_.-]{3,30}$/i.test(username)){
-
-                throw new Error(
-                    "Username 3-30 characters হতে হবে। শুধু letters, numbers, _, -, . ব্যবহার করুন।"
-                );
-            }
-        }
-
-
-        /*
-           New avatar
-        */
-
-        let avatarUrl =
-            currentProfile.avatar_url || null;
-
-
-        if(selectedPhoto){
-
-            const extension =
-                selectedPhoto.name
-                .split(".")
-                .pop()
-                .toLowerCase() || "jpg";
-
-
-            const filePath =
-                currentUser.id +
-                "/profile-" +
-                Date.now() +
-                "." +
-                extension;
-
-
-            const {
-                data: uploadData,
-                error: uploadError
-            } = await supabaseClient
-                .storage
-                .from("avatars")
-                .upload(
-                    filePath,
-                    selectedPhoto,
-                    {
-                        cacheControl:"3600",
-                        contentType:selectedPhoto.type,
-                        upsert:false
-                    }
-                );
-
-
-            if(uploadError){
-
-                throw new Error(
-                    "Profile photo upload করা যায়নি: " +
-                    uploadError.message
-                );
-            }
-
-
-            const {
-                data: publicData
-            } = supabaseClient
-                .storage
-                .from("avatars")
-                .getPublicUrl(
-                    uploadData.path
-                );
-
-
-            avatarUrl =
-                publicData.publicUrl;
-        }
-
-
-        /*
-           Update profiles
-        */
-
         const {
-            error: profileError
-        } = await supabaseClient
-            .from("profiles")
-            .update({
-                full_name:
-                    fullName || null,
-
-                username:
-                    username || null,
-
-                bio:
-                    bio || null,
-
-                avatar_url:
-                    avatarUrl,
-
-                updated_at:
-                    new Date().toISOString()
-            })
-            .eq(
-                "id",
-                currentUser.id
-            );
-
-
-        if(profileError){
-
-            if(
-                profileError.message &&
-                profileError.message
-                    .toLowerCase()
-                    .includes("username")
-            ){
-
-                throw new Error(
-                    "এই Username ইতিমধ্যে অন্য একজন ব্যবহার করছে।"
-                );
-            }
-
-
-            throw new Error(
-                "Profile save করতে সমস্যা হয়েছে: " +
-                profileError.message
-            );
-        }
-
-
-        /*
-           Preserve current phone visibility.
-           New row হলে public default হবে।
-        */
-
-        const phoneVisibility =
-            currentPhone &&
-            currentPhone.visibility
-                ? currentPhone.visibility
-                : "public";
-
-
-        const {
-            error: phoneError
-        } = await supabaseClient
-            .from("profile_phone")
-            .upsert(
-                {
-                    user_id:
-                        currentUser.id,
-
-                    phone:
-                        phone || null,
-
-                    visibility:
-                        phoneVisibility,
-
-                    updated_at:
-                        new Date().toISOString()
-                },
-                {
-                    onConflict:"user_id"
-                }
-            );
-
-
-        if(phoneError){
-
-            throw new Error(
-                "Phone save করতে সমস্যা হয়েছে: " +
-                phoneError.message
-            );
-        }
-
-
-        /*
-           Preserve current address visibility.
-           New row হলে public default হবে।
-        */
-
-        const addressVisibility =
-            currentAddress &&
-            currentAddress.visibility
-                ? currentAddress.visibility
-                : "public";
-
-
-        const {
-            error: addressError
-        } = await supabaseClient
-            .from("profile_address")
-            .upsert(
-                {
-                    user_id:
-                        currentUser.id,
-
-                    address:
-                        address || null,
-
-                    visibility:
-                        addressVisibility,
-
-                    updated_at:
-                        new Date().toISOString()
-                },
-                {
-                    onConflict:"user_id"
-                }
-            );
-
-
-        if(addressError){
-
-            throw new Error(
-                "Address save করতে সমস্যা হয়েছে: " +
-                addressError.message
-            );
-        }
-
-
-        /*
-           Reload everything from database.
-        */
-
-        selectedPhoto = null;
-        $("photoInput").value = "";
-
-
-        await reloadOwnProfile();
-
-
-        setStatus(
-            "editStatus",
-            "Profile সফলভাবে Save হয়েছে।",
-            "success"
-        );
-
-
-        setTimeout(
-            () => {
-                closeEdit();
+            data:{
+                user
             },
-            800
-        );
-
-    }catch(error){
-
-        setStatus(
-            "editStatus",
-            error.message ||
-            "Profile save করতে সমস্যা হয়েছে।",
-            "error"
-        );
-
-    }finally{
-
-        saveButton.disabled = false;
-        saveButton.textContent =
-            "💾 Save";
-    }
-}
+            error
+        } =
+        await supabaseClient
+        .auth
+        .getUser();
 
 
-/* =========================================================
-   RELOAD OWN PROFILE
-========================================================= */
+        if(error || !user){
 
-async function reloadOwnProfile(){
+            window.location.replace(
+                "index.html"
+            );
 
-    const targetId =
-        currentUser.id;
+            return;
+        }
 
 
-    const {
-        data: profile,
-        error: profileError
-    } = await supabaseClient
+        currentUser = user;
+
+
+        const targetId =
+            requestedUserId ||
+            currentUser.id;
+
+
+        isOwnProfile =
+            targetId ===
+            currentUser.id;
+
+
+        $("pageTitle")
+            .textContent =
+            isOwnProfile
+                ? "My Profile"
+                : "Profile";
+
+
+        /* ==========================
+           PROFILE
+        ========================== */
+
+        const {
+            data:profile,
+            error:profileError
+        } =
+        await supabaseClient
         .from("profiles")
         .select(`
             id,
@@ -1535,89 +839,178 @@ async function reloadOwnProfile(){
             online_visibility,
             last_seen_at
         `)
-        .eq("id", targetId)
+        .eq("id",targetId)
         .maybeSingle();
 
 
-    if(profileError){
-        throw new Error(
-            profileError.message
-        );
-    }
+        if(profileError){
+
+            throw new Error(
+                "Profile load করতে সমস্যা হয়েছে: " +
+                profileError.message
+            );
+        }
 
 
-    currentProfile =
-        profile;
+        if(!profile){
+
+            throw new Error(
+                "এই Profile পাওয়া যায়নি।"
+            );
+        }
 
 
-    const {
-        data: phoneData
-    } = await supabaseClient
+        currentProfile =
+            profile;
+
+
+        /* ==========================
+           PHONE
+        ========================== */
+
+        const {
+            data:phoneData
+        } =
+        await supabaseClient
         .from("profile_phone")
-        .select("phone, visibility")
-        .eq("user_id", targetId)
+        .select(
+            "phone, visibility"
+        )
+        .eq("user_id",targetId)
         .maybeSingle();
 
 
-    currentPhone =
-        phoneData;
+        currentPhone =
+            phoneData || null;
 
 
-    const {
-        data: addressData
-    } = await supabaseClient
+        /* ==========================
+           ADDRESS
+        ========================== */
+
+        const {
+            data:addressData
+        } =
+        await supabaseClient
         .from("profile_address")
-        .select("address, visibility")
-        .eq("user_id", targetId)
+        .select(
+            "address, visibility"
+        )
+        .eq("user_id",targetId)
         .maybeSingle();
 
 
-    currentAddress =
-        addressData;
+        currentAddress =
+            addressData || null;
 
 
-    renderProfile();
-    prepareEditForm();
+        /* Render */
+
+        await renderProfile();
+
+
+        $("loadingBox")
+            .classList.add(
+                "hidden"
+            );
+
+        $("profileContent")
+            .classList.remove(
+                "hidden"
+            );
+
+
+    }catch(error){
+
+        $("loadingBox")
+            .textContent =
+            error.message ||
+            "Profile load করতে সমস্যা হয়েছে।";
+
+        $("loadingBox")
+            .style.color =
+            "#d93025";
+    }
 }
 
 
-/* =========================================================
+/* ================================
+   EDIT BUTTON
+================================ */
+
+$("editButton")
+.addEventListener(
+    "click",
+    function(){
+
+        if(!isOwnProfile){
+            return;
+        }
+
+        window.location.href =
+            "edit-profile.html";
+    }
+);
+
+
+/* ================================
    LOGOUT
-========================================================= */
+================================ */
 
-async function logout(){
+$("logoutButton")
+.addEventListener(
+    "click",
+    async function(){
 
-    if(!isOwnProfile){
-        return;
-    }
+        if(!isOwnProfile){
+            return;
+        }
+
+        const button =
+            $("logoutButton");
+
+        button.disabled = true;
+        button.textContent =
+            "Logging out...";
 
 
-    const {
-        error
-    } = await supabaseClient.auth.signOut();
+        const {
+            error
+        } =
+        await supabaseClient
+        .auth
+        .signOut();
 
 
-    if(error){
+        if(error){
 
-        setStatus(
-            "profileStatus",
-            "Logout করতে সমস্যা হয়েছে: " +
-            error.message,
-            "error"
+            button.disabled = false;
+            button.textContent =
+                "🚪 Logout";
+
+            $("profileStatus")
+                .textContent =
+                "Logout করতে সমস্যা হয়েছে: " +
+                error.message;
+
+            $("profileStatus")
+                .className =
+                "status error";
+
+            return;
+        }
+
+
+        window.location.replace(
+            "index.html"
         );
-
-        return;
     }
+);
 
 
-    window.location.href =
-        "index.html";
-}
-
-
-/* =========================================================
+/* ================================
    START
-========================================================= */
+================================ */
 
 loadProfile();
 
