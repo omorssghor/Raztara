@@ -6,6 +6,8 @@
 
 <title>RAZTARA — Chat</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{
     box-sizing:border-box;
@@ -36,9 +38,14 @@ body{
     background:#f3f7f5;
 }
 
+/* =========================
+   TOP BAR
+========================= */
+
 .chatTop{
     height:68px;
     min-height:68px;
+
     padding:
         env(safe-area-inset-top)
         10px
@@ -59,6 +66,8 @@ body{
 .topButton{
     width:44px;
     height:44px;
+    min-width:44px;
+
     border:0;
     border-radius:50%;
 
@@ -66,6 +75,7 @@ body{
     color:white;
 
     font-size:22px;
+
     display:flex;
     align-items:center;
     justify-content:center;
@@ -77,6 +87,10 @@ body{
     transform:scale(.94);
     background:rgba(255,255,255,.25);
 }
+
+/* =========================
+   USER BUTTON
+========================= */
 
 .userButton{
     flex:1;
@@ -100,6 +114,7 @@ body{
     min-width:42px;
 
     border-radius:50%;
+
     background:#d9eee7;
 
     display:flex;
@@ -111,12 +126,16 @@ body{
     font-weight:700;
 
     overflow:hidden;
+
+    border:2px solid rgba(255,255,255,.65);
 }
 
 .userAvatar img{
     width:100%;
     height:100%;
+
     object-fit:cover;
+    display:block;
 }
 
 .userInfo{
@@ -134,9 +153,16 @@ body{
 
 .userStatus{
     margin-top:2px;
+
     font-size:12px;
     opacity:.85;
+
+    white-space:nowrap;
 }
+
+/* =========================
+   CHAT BODY
+========================= */
 
 .chatBody{
     flex:1;
@@ -147,6 +173,7 @@ body{
     justify-content:center;
 
     padding:20px;
+
     overflow:hidden;
 }
 
@@ -181,6 +208,10 @@ body{
     line-height:1.6;
 }
 
+/* =========================
+   BOTTOM
+========================= */
+
 .chatBottom{
     padding:
         8px
@@ -189,6 +220,7 @@ body{
         10px;
 
     background:white;
+
     border-top:1px solid #e2e8e5;
 
     display:flex;
@@ -271,6 +303,10 @@ body{
     transform:scale(.93);
 }
 
+/* =========================
+   MORE MENU
+========================= */
+
 .menu{
     position:fixed;
 
@@ -280,6 +316,7 @@ body{
     width:210px;
 
     background:white;
+
     border-radius:16px;
 
     padding:7px;
@@ -329,6 +366,10 @@ body{
     font-size:18px;
 }
 
+/* =========================
+   OVERLAY
+========================= */
+
 .overlay{
     position:fixed;
     inset:0;
@@ -342,6 +383,10 @@ body{
     display:block;
 }
 
+/* =========================
+   SMALL SCREEN
+========================= */
+
 @media(max-width:380px){
 
     .chatTop{
@@ -352,6 +397,7 @@ body{
     .topButton{
         width:40px;
         height:40px;
+        min-width:40px;
     }
 
     .userAvatar{
@@ -379,6 +425,10 @@ body{
 
 <div class="chatPage">
 
+    <!-- =========================
+         TOP BAR
+    ========================== -->
+
     <header class="chatTop">
 
         <button
@@ -389,28 +439,36 @@ body{
             ←
         </button>
 
+
         <button
             class="userButton"
             type="button"
             onclick="openProfile()">
 
-            <div class="userAvatar">
+            <div
+                class="userAvatar"
+                id="chatUserAvatar">
                 👤
             </div>
 
             <div class="userInfo">
 
-                <div class="userName" id="chatUserName">
+                <div
+                    class="userName"
+                    id="chatUserName">
                     Chat User
                 </div>
 
-                <div class="userStatus" id="chatUserStatus">
-                    Online
+                <div
+                    class="userStatus"
+                    id="chatUserStatus">
+                    Loading...
                 </div>
 
             </div>
 
         </button>
+
 
         <button
             class="topButton"
@@ -420,6 +478,7 @@ body{
             📞
         </button>
 
+
         <button
             class="topButton"
             type="button"
@@ -427,6 +486,7 @@ body{
             onclick="openVideoCall()">
             🎥
         </button>
+
 
         <button
             class="topButton"
@@ -438,6 +498,10 @@ body{
 
     </header>
 
+
+    <!-- =========================
+         CHAT BODY
+    ========================== -->
 
     <main class="chatBody">
 
@@ -461,6 +525,10 @@ body{
     </main>
 
 
+    <!-- =========================
+         BOTTOM
+    ========================== -->
+
     <footer class="chatBottom">
 
         <button
@@ -471,6 +539,7 @@ body{
             😊
         </button>
 
+
         <button
             class="bottomButton"
             type="button"
@@ -479,12 +548,14 @@ body{
             📎
         </button>
 
+
         <input
             class="messageBox"
             id="messageInput"
             type="text"
             placeholder="মেসেজ লিখুন..."
             autocomplete="off">
+
 
         <button
             class="bottomButton"
@@ -493,6 +564,7 @@ body{
             onclick="openVoice()">
             🎤
         </button>
+
 
         <button
             class="sendButton"
@@ -507,12 +579,20 @@ body{
 </div>
 
 
+<!-- =========================
+     OVERLAY
+========================= -->
+
 <div
     class="overlay"
     id="menuOverlay"
     onclick="closeMenu()">
 </div>
 
+
+<!-- =========================
+     MORE MENU
+========================= -->
 
 <div
     class="menu"
@@ -528,6 +608,7 @@ body{
 
     </button>
 
+
     <button
         class="menuButton"
         type="button"
@@ -538,6 +619,7 @@ body{
 
     </button>
 
+
     <button
         class="menuButton"
         type="button"
@@ -547,6 +629,7 @@ body{
         <span>Media & Files</span>
 
     </button>
+
 
     <button
         class="menuButton"
@@ -563,9 +646,26 @@ body{
 
 <script>
 
-/* =========================
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+    "https://pqyicaqpmojijjskpzcp.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =====================================================
    CHAT USER ID
-========================= */
+===================================================== */
 
 const chatParams =
     new URLSearchParams(window.location.search);
@@ -574,9 +674,9 @@ const otherUserId =
     chatParams.get("user");
 
 
-/* =========================
+/* =====================================================
    USER ID CHECK
-========================= */
+===================================================== */
 
 function requireUserId(){
 
@@ -591,28 +691,274 @@ function requireUserId(){
 }
 
 
-/* =========================
-   BACK
-========================= */
+/* =====================================================
+   AVATAR URL
+===================================================== */
 
-function goBack(){
+function getAvatarUrl(value){
 
-    if(history.length > 1){
+    const raw =
+        String(value || "").trim();
 
-        history.back();
+    if(!raw){
+        return "";
+    }
 
-    }else{
+    /*
+      যদি avatar_url আগে থেকেই পুরো URL হয়
+      তাহলে সেটাই ব্যবহার হবে।
+    */
 
-        window.location.href = "index.html";
+    if(
+        raw.startsWith("http://") ||
+        raw.startsWith("https://")
+    ){
+
+        return raw;
+    }
+
+    /*
+      যদি শুধু Storage path থাকে,
+      তাহলে avatars bucket থেকে public URL তৈরি হবে।
+    */
+
+    const result =
+        supabaseClient.storage
+            .from("avatars")
+            .getPublicUrl(raw);
+
+    return result?.data?.publicUrl || "";
+}
+
+
+/* =====================================================
+   SHOW USER AVATAR
+===================================================== */
+
+function showUserAvatar(url){
+
+    const avatar =
+        document.getElementById("chatUserAvatar");
+
+    if(!avatar){
+        return;
+    }
+
+    avatar.innerHTML = "";
+
+    if(!url){
+
+        avatar.textContent = "👤";
+
+        return;
+    }
+
+    const img =
+        document.createElement("img");
+
+    img.src = url;
+
+    img.alt = "User";
+
+    img.loading = "eager";
+
+    img.referrerPolicy = "no-referrer";
+
+    img.onload = function(){
+
+        avatar.innerHTML = "";
+
+        avatar.appendChild(img);
+
+    };
+
+    img.onerror = function(){
+
+        avatar.innerHTML = "";
+
+        avatar.textContent = "👤";
+
+    };
+
+    avatar.appendChild(img);
+}
+
+
+/* =====================================================
+   LOAD CHAT USER
+===================================================== */
+
+async function loadChatUser(){
+
+    if(!otherUserId){
+
+        document.getElementById("chatUserName")
+            .textContent = "Chat User";
+
+        document.getElementById("chatUserStatus")
+            .textContent = "User পাওয়া যায়নি";
+
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+        .from("profiles")
+
+        .select(`
+            id,
+            username,
+            full_name,
+            avatar_url,
+            online_visibility,
+            last_seen_at
+        `)
+
+        .eq("id", otherUserId)
+
+        .maybeSingle();
+
+
+    if(error){
+
+        console.error(
+            "Chat user load error:",
+            error
+        );
+
+        document.getElementById("chatUserStatus")
+            .textContent = "User তথ্য পাওয়া যায়নি";
+
+        return;
+    }
+
+
+    if(!data){
+
+        console.warn(
+            "Chat user profile not found:",
+            otherUserId
+        );
+
+        document.getElementById("chatUserName")
+            .textContent = "Unknown User";
+
+        document.getElementById("chatUserStatus")
+            .textContent = "Profile পাওয়া যায়নি";
+
+        showUserAvatar("");
+
+        return;
+    }
+
+
+    /* =========================
+       USER NAME
+    ========================== */
+
+    const name =
+        String(
+            data.full_name ||
+            data.username ||
+            "Chat User"
+        ).trim();
+
+
+    document.getElementById("chatUserName")
+        .textContent = name;
+
+
+    /* =========================
+       USER PHOTO
+    ========================== */
+
+    const avatarUrl =
+        getAvatarUrl(data.avatar_url);
+
+    showUserAvatar(avatarUrl);
+
+
+    /* =========================
+       ONLINE STATUS
+    ========================== */
+
+    const status =
+        document.getElementById(
+            "chatUserStatus"
+        );
+
+
+    if(status){
+
+        if(data.last_seen_at){
+
+            const lastSeen =
+                new Date(
+                    data.last_seen_at
+                );
+
+            const difference =
+                Date.now() -
+                lastSeen.getTime();
+
+
+            if(
+                difference >= 0 &&
+                difference < 120000
+            ){
+
+                status.textContent =
+                    "Online";
+
+            }else{
+
+                status.textContent =
+                    "Last seen recently";
+
+            }
+
+        }else{
+
+            status.textContent =
+                "Online";
+
+        }
 
     }
 
 }
 
 
-/* =========================
+/* =====================================================
+   BACK
+===================================================== */
+
+function goBack(){
+
+    if(
+        document.referrer &&
+        history.length > 1
+    ){
+
+        history.back();
+
+    }else{
+
+        window.location.href =
+            "index.html";
+
+    }
+
+}
+
+
+/* =====================================================
    PROFILE
-========================= */
+===================================================== */
 
 function openProfile(){
 
@@ -624,13 +970,15 @@ function openProfile(){
 
     window.location.href =
         "user-profile.html?user=" +
-        encodeURIComponent(otherUserId);
+        encodeURIComponent(
+            otherUserId
+        );
 }
 
 
-/* =========================
+/* =====================================================
    AUDIO CALL
-========================= */
+===================================================== */
 
 function openAudioCall(){
 
@@ -640,13 +988,15 @@ function openAudioCall(){
 
     window.location.href =
         "audio-call.html?user=" +
-        encodeURIComponent(otherUserId);
+        encodeURIComponent(
+            otherUserId
+        );
 }
 
 
-/* =========================
+/* =====================================================
    VIDEO CALL
-========================= */
+===================================================== */
 
 function openVideoCall(){
 
@@ -656,13 +1006,15 @@ function openVideoCall(){
 
     window.location.href =
         "video-call.html?user=" +
-        encodeURIComponent(otherUserId);
+        encodeURIComponent(
+            otherUserId
+        );
 }
 
 
-/* =========================
+/* =====================================================
    VOICE
-========================= */
+===================================================== */
 
 function openVoice(){
 
@@ -672,13 +1024,15 @@ function openVoice(){
 
     window.location.href =
         "voice.html?user=" +
-        encodeURIComponent(otherUserId);
+        encodeURIComponent(
+            otherUserId
+        );
 }
 
 
-/* =========================
+/* =====================================================
    ATTACHMENT
-========================= */
+===================================================== */
 
 function openAttachment(){
 
@@ -688,13 +1042,15 @@ function openAttachment(){
 
     window.location.href =
         "attachment.html?user=" +
-        encodeURIComponent(otherUserId);
+        encodeURIComponent(
+            otherUserId
+        );
 }
 
 
-/* =========================
+/* =====================================================
    EMOJI
-========================= */
+===================================================== */
 
 function openEmoji(){
 
@@ -704,13 +1060,15 @@ function openEmoji(){
 
     window.location.href =
         "emoji.html?user=" +
-        encodeURIComponent(otherUserId);
+        encodeURIComponent(
+            otherUserId
+        );
 }
 
 
-/* =========================
+/* =====================================================
    MEDIA
-========================= */
+===================================================== */
 
 function openMedia(){
 
@@ -722,13 +1080,15 @@ function openMedia(){
 
     window.location.href =
         "media.html?user=" +
-        encodeURIComponent(otherUserId);
+        encodeURIComponent(
+            otherUserId
+        );
 }
 
 
-/* =========================
+/* =====================================================
    CHAT SEARCH
-========================= */
+===================================================== */
 
 function openChatSearch(){
 
@@ -740,13 +1100,15 @@ function openChatSearch(){
 
     window.location.href =
         "chat-search.html?user=" +
-        encodeURIComponent(otherUserId);
+        encodeURIComponent(
+            otherUserId
+        );
 }
 
 
-/* =========================
+/* =====================================================
    CHAT SETTINGS
-========================= */
+===================================================== */
 
 function openChatSettings(){
 
@@ -758,29 +1120,39 @@ function openChatSettings(){
 
     window.location.href =
         "chat-settings.html?user=" +
-        encodeURIComponent(otherUserId);
+        encodeURIComponent(
+            otherUserId
+        );
 }
 
 
-/* =========================
+/* =====================================================
    SEND
-========================= */
+===================================================== */
 
 function sendMessage(){
 
+    if(!requireUserId()){
+        return;
+    }
+
     const input =
-        document.getElementById("messageInput");
+        document.getElementById(
+            "messageInput"
+        );
 
     const text =
         input.value.trim();
+
 
     if(!text){
         return;
     }
 
+
     /*
-      এখনো database-এ message save হচ্ছে না।
-      Message system পরে আলাদাভাবে তৈরি করব।
+      Message database system
+      পরের ধাপে তৈরি করা হবে।
     */
 
     input.value = "";
@@ -788,20 +1160,28 @@ function sendMessage(){
 }
 
 
-/* =========================
+/* =====================================================
    MORE MENU
-========================= */
+===================================================== */
 
 function toggleMenu(){
 
     const menu =
-        document.getElementById("moreMenu");
+        document.getElementById(
+            "moreMenu"
+        );
 
     const overlay =
-        document.getElementById("menuOverlay");
+        document.getElementById(
+            "menuOverlay"
+        );
+
 
     const isOpen =
-        menu.classList.contains("show");
+        menu.classList.contains(
+            "show"
+        );
+
 
     if(isOpen){
 
@@ -810,6 +1190,7 @@ function toggleMenu(){
     }else{
 
         menu.classList.add("show");
+
         overlay.classList.add("show");
 
     }
@@ -823,6 +1204,7 @@ function closeMenu(){
         .getElementById("moreMenu")
         .classList.remove("show");
 
+
     document
         .getElementById("menuOverlay")
         .classList.remove("show");
@@ -830,23 +1212,33 @@ function closeMenu(){
 }
 
 
-/* =========================
+/* =====================================================
    ENTER TO SEND
-========================= */
+===================================================== */
 
 document
     .getElementById("messageInput")
-    .addEventListener("keydown", function(event){
+    .addEventListener(
+        "keydown",
+        function(event){
 
-        if(event.key === "Enter"){
+            if(event.key === "Enter"){
 
-            event.preventDefault();
+                event.preventDefault();
 
-            sendMessage();
+                sendMessage();
+
+            }
 
         }
+    );
 
-    });
+
+/* =====================================================
+   START
+===================================================== */
+
+loadChatUser();
 
 </script>
 
