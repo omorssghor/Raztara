@@ -2097,7 +2097,8 @@ function appendMessage(
 
     /* =====================================================
        MESSAGE OPTIONS
-       TAP MESSAGE / IMAGE / VIDEO / AUDIO
+       TEXT / IMAGE / AUDIO = NORMAL TAP
+       VIDEO = 3 SECOND LONG PRESS
     ===================================================== */
 
     box.onclick = function(event){
@@ -2117,32 +2118,188 @@ function appendMessage(
         }
 
         /*
-         * Video/audio-এর control চাপলে
-         * Options খুলবে না।
+         * Video-এর normal tap/click-এ
+         * Message Options খুলবে না।
+         *
+         * Native video controls স্বাভাবিকভাবে
+         * কাজ করবে।
          */
 
         if(
             event.target.closest(
                 "video"
-            ) ||
+            )
+        ){
+
+            return;
+        }
+
+        /*
+         * Audio-এর native controls আগের মতো থাকবে।
+         */
+
+        if(
             event.target.closest(
                 "audio"
             )
         ){
 
-            /*
-             * যদি সরাসরি media element-এ
-             * চাপ দেওয়া হয়, তাহলে options
-             * না খুলে media control কাজ করবে।
-             */
-
             return;
         }
+
+        /*
+         * Text / Image / অন্যান্য message
+         * আগের মতো tap করলে Options খুলবে।
+         */
 
         openMessageOptions(
             message
         );
     };
+
+
+    /* =====================================================
+       VIDEO — 3 SECOND LONG PRESS
+    ===================================================== */
+
+    if(
+        message.message_type === "video"
+    ){
+
+        const video =
+            box.querySelector(
+                "video"
+            );
+
+        if(video){
+
+            let videoLongPressTimer =
+                null;
+
+            let videoLongPressTriggered =
+                false;
+
+
+            /*
+             * Video-তে press শুরু হলে
+             * 3 second timer শুরু হবে।
+             */
+
+            video.addEventListener(
+                "pointerdown",
+                function(){
+
+                    clearTimeout(
+                        videoLongPressTimer
+                    );
+
+                    videoLongPressTriggered =
+                        false;
+
+                    videoLongPressTimer =
+                        setTimeout(
+                            async function(){
+
+                                videoLongPressTriggered =
+                                    true;
+
+                                /*
+                                 * ঠিক 3 second পরে
+                                 * Message Options খুলবে।
+                                 */
+
+                                await openMessageOptions(
+                                    message
+                                );
+
+                            },
+                            3000
+                        );
+                }
+            );
+
+
+            /*
+             * 3 second-এর আগে release করলে
+             * Options আসবে না।
+             */
+
+            video.addEventListener(
+                "pointerup",
+                function(){
+
+                    if(
+                        !videoLongPressTriggered
+                    ){
+
+                        clearTimeout(
+                            videoLongPressTimer
+                        );
+                    }
+                }
+            );
+
+
+            /*
+             * Pointer cancel হলে
+             * timer বন্ধ হবে।
+             */
+
+            video.addEventListener(
+                "pointercancel",
+                function(){
+
+                    clearTimeout(
+                        videoLongPressTimer
+                    );
+
+                    videoLongPressTriggered =
+                        false;
+                }
+            );
+
+
+            /*
+             * Video থেকে pointer বাইরে গেলে
+             * 3 second পূর্ণ না হলে timer বন্ধ হবে।
+             */
+
+            video.addEventListener(
+                "pointerleave",
+                function(){
+
+                    if(
+                        !videoLongPressTriggered
+                    ){
+
+                        clearTimeout(
+                            videoLongPressTimer
+                        );
+                    }
+                }
+            );
+
+
+            /*
+             * Long press হওয়ার পরে browser-এর
+             * context menu যেন Options-এর সঙ্গে
+             * conflict না করে।
+             */
+
+            video.addEventListener(
+                "contextmenu",
+                function(event){
+
+                    if(
+                        videoLongPressTriggered
+                    ){
+
+                        event.preventDefault();
+                    }
+                }
+            );
+        }
+    }
 
     const time =
         document.createElement(
