@@ -695,6 +695,8 @@ let realtimeChannel = null;
 
 let blocked = false;
 
+let lastRenderedMessageDate = null;
+
 let mediaRecorder = null;
 let audioChunks = [];
 let recordingStream = null;
@@ -1605,6 +1607,107 @@ async function createConversation(){
 
 
 /* =========================================================
+   MESSAGE DATE
+========================================================= */
+
+function getMessageDateKey(value){
+
+    if(!value){
+
+        return "";
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if(isNaN(date.getTime())){
+
+        return "";
+    }
+
+
+    return (
+        date.getFullYear() +
+        "-" +
+        String(
+            date.getMonth() + 1
+        ).padStart(2,"0") +
+        "-" +
+        String(
+            date.getDate()
+        ).padStart(2,"0")
+    );
+}
+
+
+function formatMessageDate(value){
+
+    if(!value){
+
+        return "";
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if(isNaN(date.getTime())){
+
+        return "";
+    }
+
+
+    const now =
+        new Date();
+
+
+    const yesterday =
+        new Date();
+
+    yesterday.setDate(
+        yesterday.getDate() - 1
+    );
+
+
+    if(
+        date.toDateString() ===
+        now.toDateString()
+    ){
+
+        return currentLanguage === "bn"
+            ? "আজ"
+            : "Today";
+    }
+
+
+    if(
+        date.toDateString() ===
+        yesterday.toDateString()
+    ){
+
+        return currentLanguage === "bn"
+            ? "গতকাল"
+            : "Yesterday";
+    }
+
+
+    return date.toLocaleDateString(
+        currentLanguage === "bn"
+            ? "bn-BD"
+            : "en-US",
+        {
+            day:"numeric",
+            month:"long",
+            year:"numeric"
+        }
+    );
+}
+
+
+/* =========================================================
    LOAD MESSAGES
 ========================================================= */
 
@@ -1614,6 +1717,10 @@ async function loadMessages(){
         document.getElementById(
             "messages"
         );
+
+
+    lastRenderedMessageDate =
+        null;
 
 
     container.innerHTML = `
@@ -1728,6 +1835,57 @@ function appendMessage(
         document.getElementById(
             "messages"
         );
+
+
+    /* DATE DIVIDER */
+
+    const messageDateKey =
+        getMessageDateKey(
+            message.created_at
+        );
+
+
+    if(
+        messageDateKey &&
+        messageDateKey !==
+        lastRenderedMessageDate
+    ){
+
+        const divider =
+            document.createElement(
+                "div"
+            );
+
+
+        divider.className =
+            "date-divider";
+
+
+        const dateSpan =
+            document.createElement(
+                "span"
+            );
+
+
+        dateSpan.textContent =
+            formatMessageDate(
+                message.created_at
+            );
+
+
+        divider.appendChild(
+            dateSpan
+        );
+
+
+        container.appendChild(
+            divider
+        );
+
+
+        lastRenderedMessageDate =
+            messageDateKey;
+    }
 
 
     const row =
@@ -3028,7 +3186,7 @@ function applyLanguage(){
             "blockMenuText"
         )
         .textContent =
-            t("block");
+        t("block");
 }
 
 
