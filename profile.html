@@ -1,1018 +1,1960 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#087f5b">
 
-<title>Profile | Raztara</title>
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0"
+>
+
+<title>RAZTARA | My Profile</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+
 *{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html,
+body{
+  width:100%;
+  height:100%;
 }
 
 body{
-    font-family:Arial,sans-serif;
-    background:#f4f7f6;
-    color:#222;
+  font-family:Arial,sans-serif;
+  background:#f5f7f9;
+  color:#222;
+  overflow:hidden;
 }
 
-.header{
-    height:60px;
-    background:#087f5b;
-    color:#fff;
-    display:flex;
-    align-items:center;
-    gap:14px;
-    padding:0 15px;
-    position:sticky;
-    top:0;
-    z-index:100;
+
+/* =========================
+   TOP BAR
+========================= */
+
+.topbar{
+
+  position:fixed;
+
+  top:0;
+  left:0;
+  right:0;
+
+  height:60px;
+
+  background:#075e54;
+
+  color:white;
+
+  display:flex;
+
+  align-items:center;
+
+  z-index:1000;
+
+  box-shadow:
+    0 2px 8px rgba(0,0,0,.18);
 }
 
-.back{
-    width:38px;
-    height:38px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#fff;
-    text-decoration:none;
-    font-size:30px;
-    border-radius:50%;
+.back-btn{
+
+  width:55px;
+  height:60px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:white;
+
+  text-decoration:none;
+
+  font-size:34px;
 }
 
-.back:active{
-    background:rgba(255,255,255,.15);
+.top-title{
+
+  flex:1;
+
+  text-align:center;
+
+  font-size:20px;
+
+  font-weight:bold;
 }
 
-.header-title{
-    font-size:20px;
-    font-weight:bold;
+.top-space{
+
+  width:55px;
 }
 
-.container{
-    width:100%;
-    max-width:650px;
-    margin:20px auto;
-    padding:0 15px 30px;
+
+/* =========================
+   SCROLL AREA
+========================= */
+
+.scroll-area{
+
+  position:fixed;
+
+  top:60px;
+  bottom:65px;
+
+  left:0;
+  right:0;
+
+  overflow-y:auto;
+
+  padding:
+    20px
+    15px
+    30px;
 }
 
-.card{
-    background:#fff;
-    border-radius:16px;
-    padding:22px;
-    box-shadow:0 3px 15px rgba(0,0,0,.08);
+
+/* =========================
+   PROFILE CARD
+========================= */
+
+.profile-card{
+
+  width:100%;
+  max-width:520px;
+
+  margin:0 auto;
+
+  background:white;
+
+  border-radius:18px;
+
+  padding:25px 20px 30px;
+
+  box-shadow:
+    0 3px 15px rgba(0,0,0,.08);
 }
 
-.loading{
-    text-align:center;
-    padding:45px 10px;
-    color:#777;
-}
 
-.profile-top{
-    text-align:center;
+/* =========================
+   AVATAR
+========================= */
+
+.avatar-area{
+
+  text-align:center;
+
+  margin-bottom:25px;
 }
 
 .avatar{
-    width:115px;
-    height:115px;
-    border-radius:50%;
-    object-fit:cover;
-    background:#e8eeee;
-    border:4px solid #fff;
-    box-shadow:0 3px 12px rgba(0,0,0,.15);
+
+  width:125px;
+  height:125px;
+
+  border-radius:50%;
+
+  object-fit:cover;
+
+  border:4px solid #075e54;
+
+  background:#ddd;
 }
 
-.profile-name{
-    margin-top:12px;
-    font-size:24px;
-    font-weight:bold;
+.default-avatar{
+
+  width:125px;
+  height:125px;
+
+  margin:auto;
+
+  border-radius:50%;
+
+  background:#075e54;
+
+  color:white;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  font-size:52px;
+
+  border:4px solid #075e54;
 }
 
-.profile-username{
-    margin-top:5px;
-    color:#087f5b;
-    font-size:15px;
-}
 
-.profile-bio{
-    margin:13px auto 0;
-    color:#666;
-    line-height:1.55;
-    white-space:pre-wrap;
-    max-width:500px;
-}
-
-.info-list{
-    margin-top:25px;
-}
+/* =========================
+   PROFILE INFO
+========================= */
 
 .info-row{
-    display:flex;
-    align-items:flex-start;
-    gap:12px;
-    padding:14px 0;
-    border-bottom:1px solid #eee;
-}
 
-.info-row:last-child{
-    border-bottom:none;
-}
+  padding:15px 0;
 
-.info-icon{
-    width:30px;
-    font-size:19px;
-}
-
-.info-content{
-    flex:1;
-    min-width:0;
+  border-bottom:
+    1px solid #eeeeee;
 }
 
 .info-label{
-    color:#888;
-    font-size:12px;
-    margin-bottom:4px;
+
+  font-size:13px;
+
+  color:#777;
+
+  margin-bottom:6px;
 }
 
 .info-value{
-    font-size:15px;
-    word-break:break-word;
+
+  font-size:16px;
+
+  font-weight:500;
+
+  word-break:break-word;
+
+  line-height:1.5;
 }
 
-.buttons{
-    display:flex;
-    gap:10px;
-    margin-top:22px;
+.bio-box{
+
+  margin-top:18px;
+
+  padding:15px;
+
+  border-radius:12px;
+
+  background:#f5f7f9;
 }
 
-button{
-    border:none;
-    border-radius:10px;
-    padding:13px 16px;
-    font-size:15px;
-    cursor:pointer;
+.bio-label{
+
+  color:#777;
+
+  font-size:13px;
+
+  margin-bottom:7px;
 }
 
-.primary{
-    flex:1;
-    background:#087f5b;
-    color:#fff;
+.bio-text{
+
+  font-size:15px;
+
+  line-height:1.6;
+
+  white-space:pre-wrap;
 }
 
-.danger{
-    width:100%;
-    margin-top:10px;
-    background:#fff0f0;
-    color:#d93025;
+
+/* =========================
+   EDIT BUTTON
+========================= */
+
+.edit-btn{
+
+  width:100%;
+
+  border:0;
+
+  background:#075e54;
+
+  color:white;
+
+  padding:14px;
+
+  border-radius:10px;
+
+  font-size:16px;
+
+  font-weight:bold;
+
+  cursor:pointer;
+
+  margin-top:22px;
 }
+
+.edit-btn:active{
+
+  transform:scale(.98);
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+.logout-btn{
+
+  width:100%;
+
+  border:
+    1px solid #d9534f;
+
+  background:white;
+
+  color:#d9534f;
+
+  padding:13px;
+
+  border-radius:10px;
+
+  font-size:15px;
+
+  font-weight:bold;
+
+  cursor:pointer;
+
+  margin-top:12px;
+}
+
+
+/* =========================
+   BOTTOM NAV
+========================= */
+
+.bottom-nav{
+
+  position:fixed;
+
+  left:0;
+  right:0;
+  bottom:0;
+
+  height:65px;
+
+  background:white;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-around;
+
+  border-top:
+    1px solid #ddd;
+
+  z-index:1000;
+
+  box-shadow:
+    0 -2px 8px rgba(0,0,0,.08);
+}
+
+.nav-btn{
+
+  flex:1;
+
+  height:65px;
+
+  border:0;
+
+  background:white;
+
+  color:#777;
+
+  font-size:12px;
+
+  cursor:pointer;
+
+  display:flex;
+
+  flex-direction:column;
+
+  align-items:center;
+
+  justify-content:center;
+
+  gap:3px;
+}
+
+.nav-icon{
+
+  font-size:22px;
+}
+
+.nav-btn.active{
+
+  color:#075e54;
+
+  font-weight:bold;
+}
+
+
+/* =========================
+   MODAL
+========================= */
+
+.modal{
+
+  position:fixed;
+
+  inset:0;
+
+  background:
+    rgba(0,0,0,.55);
+
+  display:none;
+
+  align-items:flex-end;
+
+  justify-content:center;
+
+  z-index:3000;
+}
+
+.modal.show{
+
+  display:flex;
+}
+
+.modal-box{
+
+  width:100%;
+
+  max-width:520px;
+
+  max-height:
+    calc(100vh - 30px);
+
+  background:white;
+
+  border-radius:
+    20px 20px 0 0;
+
+  overflow-y:auto;
+
+  padding:20px;
+
+  animation:
+    modalUp .22s ease;
+}
+
+@keyframes modalUp{
+
+  from{
+
+    transform:
+      translateY(100%);
+  }
+
+  to{
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* =========================
+   MODAL HEADER
+========================= */
+
+.modal-header{
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  margin-bottom:20px;
+}
+
+.modal-title{
+
+  font-size:19px;
+
+  font-weight:bold;
+
+  color:#075e54;
+}
+
+.modal-close{
+
+  width:38px;
+  height:38px;
+
+  border:0;
+
+  border-radius:50%;
+
+  background:#f1f1f1;
+
+  font-size:22px;
+
+  cursor:pointer;
+}
+
+
+/* =========================
+   EDIT PHOTO
+========================= */
+
+.edit-photo-area{
+
+  text-align:center;
+
+  margin-bottom:22px;
+}
+
+.edit-avatar{
+
+  width:110px;
+  height:110px;
+
+  border-radius:50%;
+
+  object-fit:cover;
+
+  border:4px solid #075e54;
+
+  background:#ddd;
+}
+
+.change-photo{
+
+  display:inline-block;
+
+  margin-top:12px;
+
+  background:#075e54;
+
+  color:white;
+
+  padding:10px 18px;
+
+  border-radius:25px;
+
+  cursor:pointer;
+
+  font-size:14px;
+}
+
+#photoInput{
+
+  display:none;
+}
+
+
+/* =========================
+   FORM
+========================= */
+
+.field{
+
+  margin-bottom:17px;
+}
+
+.field label{
+
+  display:block;
+
+  font-size:14px;
+
+  font-weight:bold;
+
+  color:#555;
+
+  margin-bottom:7px;
+}
+
+.field input,
+.field textarea{
+
+  width:100%;
+
+  padding:13px;
+
+  border:
+    1px solid #ddd;
+
+  border-radius:10px;
+
+  outline:none;
+
+  font-size:15px;
+
+  font-family:Arial,sans-serif;
+}
+
+.field input:focus,
+.field textarea:focus{
+
+  border-color:#075e54;
+}
+
+.field input:disabled{
+
+  background:#f1f1f1;
+
+  color:#777;
+}
+
+.field textarea{
+
+  min-height:95px;
+
+  resize:vertical;
+}
+
+
+/* =========================
+   MODAL BUTTONS
+========================= */
+
+.save-btn{
+
+  width:100%;
+
+  border:0;
+
+  background:#075e54;
+
+  color:white;
+
+  padding:14px;
+
+  border-radius:10px;
+
+  font-size:16px;
+
+  font-weight:bold;
+
+  cursor:pointer;
+
+  margin-top:5px;
+}
+
+.cancel-btn{
+
+  width:100%;
+
+  border:
+    1px solid #ccc;
+
+  background:white;
+
+  color:#444;
+
+  padding:13px;
+
+  border-radius:10px;
+
+  font-size:15px;
+
+  font-weight:bold;
+
+  cursor:pointer;
+
+  margin-top:10px;
+}
+
+
+/* =========================
+   STATUS
+========================= */
 
 .status{
-    min-height:20px;
-    margin-top:15px;
-    text-align:center;
-    font-size:14px;
+
+  text-align:center;
+
+  font-size:14px;
+
+  min-height:20px;
+
+  margin-top:12px;
 }
 
-.error{
-    color:#d93025;
+
+/* =========================
+   LOADING
+========================= */
+
+.loading{
+
+  text-align:center;
+
+  padding:50px 10px;
+
+  color:#666;
 }
 
-.success{
-    color:#087f5b;
-}
-
-.hidden{
-    display:none !important;
-}
 </style>
+
 </head>
 
 <body>
 
-<header class="header">
 
-    <a href="index.html" class="back" aria-label="Back">
-        ‹
-    </a>
+<!-- =========================
+     FIXED TOP
+========================= -->
 
-    <div class="header-title" id="pageTitle">
-        Profile
+<div class="topbar">
+
+  <a
+    href="index.html"
+    class="back-btn"
+  >
+    ‹
+  </a>
+
+  <div class="top-title">
+    My Profile
+  </div>
+
+  <div class="top-space"></div>
+
+</div>
+
+
+<!-- =========================
+     SCROLL ONLY
+========================= -->
+
+<div class="scroll-area">
+
+  <div
+    id="loadingBox"
+    class="loading"
+  >
+    Profile লোড হচ্ছে...
+  </div>
+
+
+  <div
+    id="profileCard"
+    class="profile-card"
+    style="display:none;"
+  >
+
+
+    <!-- PROFILE PHOTO -->
+
+    <div class="avatar-area">
+
+      <img
+        id="viewAvatar"
+        class="avatar"
+        style="display:none;"
+        alt="Profile"
+      >
+
+      <div
+        id="viewDefaultAvatar"
+        class="default-avatar"
+      >
+        👤
+      </div>
+
     </div>
 
-</header>
+
+    <!-- NAME -->
+
+    <div class="info-row">
+
+      <div class="info-label">
+        Name
+      </div>
+
+      <div
+        id="viewName"
+        class="info-value"
+      >
+        -
+      </div>
+
+    </div>
 
 
-<main class="container">
+    <!-- USERNAME -->
 
-    <section class="card">
+    <div class="info-row">
 
-        <div id="loadingBox" class="loading">
-            Profile loading...
-        </div>
+      <div class="info-label">
+        Username
+      </div>
 
+      <div
+        id="viewUsername"
+        class="info-value"
+      >
+        -
+      </div>
 
-        <div id="profileContent" class="hidden">
-
-            <div class="profile-top">
-
-                <img
-                    id="profileAvatar"
-                    class="avatar"
-                    src=""
-                    alt="Profile Photo"
-                >
-
-                <div
-                    id="profileName"
-                    class="profile-name"
-                >
-                    —
-                </div>
-
-                <div
-                    id="profileUsername"
-                    class="profile-username"
-                >
-                </div>
-
-                <div
-                    id="profileBio"
-                    class="profile-bio hidden"
-                >
-                </div>
-
-            </div>
+    </div>
 
 
-            <div class="info-list">
+    <!-- PHONE -->
 
-                <!-- Email -->
-                <div
-                    id="emailRow"
-                    class="info-row"
-                >
-                    <div class="info-icon">
-                        ✉️
-                    </div>
+    <div class="info-row">
 
-                    <div class="info-content">
-                        <div class="info-label">
-                            Email
-                        </div>
+      <div class="info-label">
+        Phone
+      </div>
 
-                        <div
-                            id="profileEmail"
-                            class="info-value"
-                        >
-                            —
-                        </div>
-                    </div>
-                </div>
+      <div
+        id="viewPhone"
+        class="info-value"
+      >
+        -
+      </div>
+
+    </div>
 
 
-                <!-- Phone -->
-                <div
-                    id="phoneRow"
-                    class="info-row"
-                >
-                    <div class="info-icon">
-                        📱
-                    </div>
+    <!-- EMAIL -->
 
-                    <div class="info-content">
-                        <div class="info-label">
-                            Phone
-                        </div>
+    <div class="info-row">
 
-                        <div
-                            id="profilePhone"
-                            class="info-value"
-                        >
-                            Private
-                        </div>
-                    </div>
-                </div>
+      <div class="info-label">
+        Email
+      </div>
+
+      <div
+        id="viewEmail"
+        class="info-value"
+      >
+        -
+      </div>
+
+    </div>
 
 
-                <!-- Address -->
-                <div
-                    id="addressRow"
-                    class="info-row"
-                >
-                    <div class="info-icon">
-                        📍
-                    </div>
+    <!-- ADDRESS -->
 
-                    <div class="info-content">
-                        <div class="info-label">
-                            Address
-                        </div>
+    <div class="info-row">
 
-                        <div
-                            id="profileAddress"
-                            class="info-value"
-                        >
-                            Private
-                        </div>
-                    </div>
-                </div>
+      <div class="info-label">
+        Address
+      </div>
+
+      <div
+        id="viewAddress"
+        class="info-value"
+      >
+        -
+      </div>
+
+    </div>
 
 
-                <!-- Last Seen -->
-                <div
-                    id="onlineRow"
-                    class="info-row"
-                >
-                    <div class="info-icon">
-                        🟢
-                    </div>
+    <!-- BIO -->
 
-                    <div class="info-content">
-                        <div class="info-label">
-                            Last seen
-                        </div>
+    <div class="bio-box">
 
-                        <div
-                            id="profileLastSeen"
-                            class="info-value"
-                        >
-                            —
-                        </div>
-                    </div>
-                </div>
+      <div class="bio-label">
+        Bio
+      </div>
 
-            </div>
+      <div
+        id="viewBio"
+        class="bio-text"
+      >
+        -
+      </div>
+
+    </div>
 
 
-            <div
-                id="profileStatus"
-                class="status"
-            >
-            </div>
+    <!-- EDIT -->
+
+    <button
+      class="edit-btn"
+      onclick="openEditModal()"
+    >
+      ✏️ Edit Profile
+    </button>
 
 
-            <!-- ONLY OWN PROFILE -->
-            <div id="ownButtons" class="hidden">
+    <!-- LOGOUT -->
 
-                <div class="buttons">
+    <button
+      class="logout-btn"
+      onclick="logout()"
+    >
+      🚪 Logout
+    </button>
 
-                    <button
-                        type="button"
-                        class="primary"
-                        id="editButton"
-                    >
-                        ✏️ Edit Profile
-                    </button>
+  </div>
 
-                </div>
+</div>
 
 
-                <button
-                    type="button"
-                    class="danger"
-                    id="logoutButton"
-                >
-                    🚪 Logout
-                </button>
+<!-- =========================
+     FIXED BOTTOM
+========================= -->
 
-            </div>
+<div class="bottom-nav">
 
-        </div>
+  <button
+    class="nav-btn"
+    onclick="goHome()"
+  >
 
-    </section>
+    <span class="nav-icon">
+      🏠
+    </span>
 
-</main>
+    Home
+
+  </button>
+
+
+  <button
+    class="nav-btn"
+    onclick="goChat()"
+  >
+
+    <span class="nav-icon">
+      💬
+    </span>
+
+    Chat
+
+  </button>
+
+
+  <button
+    class="nav-btn active"
+  >
+
+    <span class="nav-icon">
+      👤
+    </span>
+
+    Profile
+
+  </button>
+
+</div>
+
+
+<!-- =========================
+     EDIT MODAL
+========================= -->
+
+<div
+  id="editModal"
+  class="modal"
+  onclick="closeModalOutside(event)"
+>
+
+  <div
+    class="modal-box"
+    onclick="event.stopPropagation()"
+  >
+
+
+    <div class="modal-header">
+
+      <div class="modal-title">
+        ✏️ Edit Profile
+      </div>
+
+      <button
+        class="modal-close"
+        onclick="closeEditModal()"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <!-- PHOTO -->
+
+    <div class="edit-photo-area">
+
+      <img
+        id="editAvatar"
+        class="edit-avatar"
+        style="display:none;"
+        alt="Profile"
+      >
+
+      <div
+        id="editDefaultAvatar"
+        class="default-avatar"
+        style="
+          width:110px;
+          height:110px;
+          margin:auto;
+          font-size:45px;
+        "
+      >
+        👤
+      </div>
+
+      <br>
+
+      <label
+        for="photoInput"
+        class="change-photo"
+      >
+        🖼️ Change Photo
+      </label>
+
+      <input
+        type="file"
+        id="photoInput"
+        accept="image/*"
+      >
+
+    </div>
+
+
+    <!-- NAME -->
+
+    <div class="field">
+
+      <label>
+        Name
+      </label>
+
+      <input
+        id="nameInput"
+        type="text"
+        placeholder="আপনার নাম"
+      >
+
+    </div>
+
+
+    <!-- USERNAME -->
+
+    <div class="field">
+
+      <label>
+        Username
+      </label>
+
+      <input
+        id="usernameInput"
+        type="text"
+        placeholder="Username"
+      >
+
+    </div>
+
+
+    <!-- PHONE -->
+
+    <div class="field">
+
+      <label>
+        Phone
+      </label>
+
+      <input
+        id="phoneInput"
+        type="tel"
+        placeholder="01XXXXXXXXX"
+      >
+
+    </div>
+
+
+    <!-- EMAIL -->
+
+    <div class="field">
+
+      <label>
+        Email
+      </label>
+
+      <input
+        id="emailInput"
+        type="email"
+        disabled
+      >
+
+    </div>
+
+
+    <!-- ADDRESS -->
+
+    <div class="field">
+
+      <label>
+        Address
+      </label>
+
+      <textarea
+        id="addressInput"
+        placeholder="আপনার ঠিকানা"
+      ></textarea>
+
+    </div>
+
+
+    <!-- BIO -->
+
+    <div class="field">
+
+      <label>
+        Bio
+      </label>
+
+      <textarea
+        id="bioInput"
+        placeholder="আপনার সম্পর্কে কিছু লিখুন..."
+      ></textarea>
+
+    </div>
+
+
+    <button
+      id="saveButton"
+      class="save-btn"
+      onclick="saveProfile()"
+    >
+      💾 Save
+    </button>
+
+
+    <button
+      class="cancel-btn"
+      onclick="closeEditModal()"
+    >
+      Cancel
+    </button>
+
+
+    <div
+      id="status"
+      class="status"
+    ></div>
+
+  </div>
+
+</div>
 
 
 <script>
 
+/* ===============================
+   SUPABASE
+================================ */
+
 const SUPABASE_URL =
-    "https://pqyicaqpmojijjskpzcp.supabase.co";
+  "https://pqyicaqpmojijjskpzcp.supabase.co";
 
 const SUPABASE_KEY =
-    "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
-
+  "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
 
 const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+const STORAGE_BUCKET =
+  "avatars";
 
 
 let currentUser = null;
+
 let currentProfile = null;
-let currentPhone = null;
-let currentAddress = null;
 
-let isOwnProfile = false;
+let selectedPhoto = null;
 
 
-const params =
-    new URLSearchParams(
-        window.location.search
-    );
-
-const requestedUserId =
-    params.get("user");
-
-
-function $(id){
-    return document.getElementById(id);
-}
-
-
-/* ================================
-   DEFAULT AVATAR
+/* ===============================
+   START
 ================================ */
 
-function defaultAvatar(name){
+window.addEventListener(
+  "load",
+  loadProfile
+);
 
-    const first =
-        String(name || "User")
-        .trim()
-        .charAt(0)
-        .toUpperCase() || "U";
 
-    return (
-        "https://ui-avatars.com/api/" +
-        "?name=" +
-        encodeURIComponent(first) +
-        "&background=087f5b" +
-        "&color=ffffff" +
-        "&size=256"
-    );
-}
-
-
-/* ================================
-   FORMAT LAST SEEN
-================================ */
-
-function formatLastSeen(value){
-
-    const date =
-        new Date(value);
-
-    if(
-        Number.isNaN(
-            date.getTime()
-        )
-    ){
-        return "Unknown";
-    }
-
-    return date.toLocaleString(
-        "bn-BD",
-        {
-            day:"numeric",
-            month:"short",
-            hour:"numeric",
-            minute:"2-digit"
-        }
-    );
-}
-
-
-/* ================================
-   FRIEND CHECK
-================================ */
-
-async function isAcceptedFriend(){
-
-    if(isOwnProfile){
-        return true;
-    }
-
-    if(
-        !currentProfile ||
-        currentProfile.online_visibility !== "friends"
-    ){
-        return false;
-    }
-
-    const { data, error } =
-        await supabaseClient
-        .from("friendships")
-        .select("id")
-        .eq("status","accepted")
-        .or(
-            `and(requester_id.eq.${currentUser.id},addressee_id.eq.${currentProfile.id}),and(requester_id.eq.${currentProfile.id},addressee_id.eq.${currentUser.id})`
-        )
-        .limit(1);
-
-    if(error){
-        return false;
-    }
-
-    return (
-        Array.isArray(data) &&
-        data.length > 0
-    );
-}
-
-
-/* ================================
-   LAST SEEN RENDER
-================================ */
-
-async function renderLastSeen(){
-
-    const row =
-        $("onlineRow");
-
-    if(isOwnProfile){
-
-        row.classList.remove(
-            "hidden"
-        );
-
-        $("profileLastSeen")
-            .textContent = "Online";
-
-        return;
-    }
-
-
-    const visibility =
-        currentProfile.online_visibility ||
-        "everyone";
-
-
-    /* Everyone */
-    if(
-        visibility === "everyone"
-    ){
-
-        row.classList.remove(
-            "hidden"
-        );
-
-    }
-
-
-    /* Friends */
-    else if(
-        visibility === "friends"
-    ){
-
-        const friend =
-            await isAcceptedFriend();
-
-        if(!friend){
-
-            row.classList.add(
-                "hidden"
-            );
-
-            return;
-        }
-
-        row.classList.remove(
-            "hidden"
-        );
-
-    }
-
-
-    /* Nobody */
-    else{
-
-        row.classList.add(
-            "hidden"
-        );
-
-        return;
-    }
-
-
-    if(
-        currentProfile.last_seen_at
-    ){
-
-        $("profileLastSeen")
-            .textContent =
-            "Last seen " +
-            formatLastSeen(
-                currentProfile.last_seen_at
-            );
-
-    }else{
-
-        $("profileLastSeen")
-            .textContent =
-            "Offline";
-    }
-}
-
-
-/* ================================
-   RENDER PROFILE
-================================ */
-
-async function renderProfile(){
-
-    const profile =
-        currentProfile;
-
-
-    const name =
-        profile.full_name ||
-        profile.username ||
-        "User";
-
-
-    /* Avatar */
-
-    $("profileAvatar").src =
-        profile.avatar_url ||
-        defaultAvatar(name);
-
-    $("profileAvatar").alt =
-        name;
-
-
-    /* Name */
-
-    $("profileName")
-        .textContent = name;
-
-
-    /* Username */
-
-    if(profile.username){
-
-        $("profileUsername")
-            .textContent =
-            "@" + profile.username;
-
-    }else{
-
-        $("profileUsername")
-            .textContent = "";
-    }
-
-
-    /* Bio */
-
-    if(profile.bio){
-
-        $("profileBio")
-            .textContent =
-            profile.bio;
-
-        $("profileBio")
-            .classList.remove(
-                "hidden"
-            );
-
-    }else{
-
-        $("profileBio")
-            .textContent = "";
-
-        $("profileBio")
-            .classList.add(
-                "hidden"
-            );
-    }
-
-
-    /* Email */
-
-    if(isOwnProfile){
-
-        $("profileEmail")
-            .textContent =
-            currentUser.email ||
-            "Not available";
-
-        $("emailRow")
-            .classList.remove(
-                "hidden"
-            );
-
-    }else{
-
-        $("emailRow")
-            .classList.add(
-                "hidden"
-            );
-    }
-
-
-    /* Phone */
-
-    if(
-        currentPhone &&
-        currentPhone.phone
-    ){
-
-        $("profilePhone")
-            .textContent =
-            currentPhone.phone;
-
-    }else{
-
-        $("profilePhone")
-            .textContent =
-            "Private";
-    }
-
-
-    /* Address */
-
-    if(
-        currentAddress &&
-        currentAddress.address
-    ){
-
-        $("profileAddress")
-            .textContent =
-            currentAddress.address;
-
-    }else{
-
-        $("profileAddress")
-            .textContent =
-            "Private";
-    }
-
-
-    /* Last seen */
-
-    await renderLastSeen();
-
-
-    /* Own buttons */
-
-    if(isOwnProfile){
-
-        $("ownButtons")
-            .classList.remove(
-                "hidden"
-            );
-
-    }else{
-
-        $("ownButtons")
-            .classList.add(
-                "hidden"
-            );
-    }
-}
-
-
-/* ================================
+/* ===============================
    LOAD PROFILE
 ================================ */
 
 async function loadProfile(){
 
-    try{
+  try{
 
-        const {
-            data:{
-                user
-            },
-            error
-        } =
-        await supabaseClient
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
         .auth
         .getUser();
 
 
-        if(error || !user){
+    if(error){
 
-            window.location.replace(
-                "index.html"
-            );
-
-            return;
-        }
+      throw error;
+    }
 
 
-        currentUser = user;
+    currentUser =
+      data.user;
 
 
-        const targetId =
-            requestedUserId ||
-            currentUser.id;
+    if(!currentUser){
+
+      window.location.href =
+        "index.html";
+
+      return;
+    }
 
 
-        isOwnProfile =
-            targetId ===
-            currentUser.id;
-
-
-        $("pageTitle")
-            .textContent =
-            isOwnProfile
-                ? "My Profile"
-                : "Profile";
-
-
-        /* ==========================
-           PROFILE
-        ========================== */
-
-        const {
-            data:profile,
-            error:profileError
-        } =
-        await supabaseClient
+    const {
+      data:profile,
+      error:profileError
+    } =
+      await supabaseClient
         .from("profiles")
         .select(`
-            id,
-            username,
-            full_name,
-            avatar_url,
-            bio,
-            online_visibility,
-            last_seen_at
+          id,
+          username,
+          full_name,
+          avatar_url,
+          bio,
+          phone,
+          address
         `)
-        .eq("id",targetId)
-        .maybeSingle();
-
-
-        if(profileError){
-
-            throw new Error(
-                "Profile load করতে সমস্যা হয়েছে: " +
-                profileError.message
-            );
-        }
-
-
-        if(!profile){
-
-            throw new Error(
-                "এই Profile পাওয়া যায়নি।"
-            );
-        }
-
-
-        currentProfile =
-            profile;
-
-
-        /* ==========================
-           PHONE
-        ========================== */
-
-        const {
-            data:phoneData
-        } =
-        await supabaseClient
-        .from("profile_phone")
-        .select(
-            "phone, visibility"
+        .eq(
+          "id",
+          currentUser.id
         )
-        .eq("user_id",targetId)
         .maybeSingle();
 
 
-        currentPhone =
-            phoneData || null;
+    if(profileError){
 
-
-        /* ==========================
-           ADDRESS
-        ========================== */
-
-        const {
-            data:addressData
-        } =
-        await supabaseClient
-        .from("profile_address")
-        .select(
-            "address, visibility"
-        )
-        .eq("user_id",targetId)
-        .maybeSingle();
-
-
-        currentAddress =
-            addressData || null;
-
-
-        /* Render */
-
-        await renderProfile();
-
-
-        $("loadingBox")
-            .classList.add(
-                "hidden"
-            );
-
-        $("profileContent")
-            .classList.remove(
-                "hidden"
-            );
-
-
-    }catch(error){
-
-        $("loadingBox")
-            .textContent =
-            error.message ||
-            "Profile load করতে সমস্যা হয়েছে।";
-
-        $("loadingBox")
-            .style.color =
-            "#d93025";
+      throw profileError;
     }
+
+
+    if(!profile){
+
+      throw new Error(
+        "Profile record পাওয়া যায়নি।"
+      );
+    }
+
+
+    currentProfile =
+      profile;
+
+
+    renderProfile();
+
+
+    fillEditForm();
+
+
+    document.getElementById(
+      "loadingBox"
+    ).style.display =
+      "none";
+
+
+    document.getElementById(
+      "profileCard"
+    ).style.display =
+      "block";
+
+
+  }catch(error){
+
+    console.error(
+      "PROFILE LOAD ERROR:",
+      error
+    );
+
+
+    document.getElementById(
+      "loadingBox"
+    ).innerHTML =
+      "Profile লোড করতে সমস্যা হয়েছে:<br><br>" +
+      error.message;
+  }
 }
 
 
-/* ================================
-   EDIT BUTTON
+/* ===============================
+   RENDER PROFILE
 ================================ */
 
-$("editButton")
-.addEventListener(
-    "click",
-    function(){
+function renderProfile(){
 
-        if(!isOwnProfile){
-            return;
-        }
+  const p =
+    currentProfile;
 
-        window.location.href =
-            "edit-profile.html";
+
+  document.getElementById(
+    "viewName"
+  ).textContent =
+    p.full_name ||
+    "নাম দেওয়া হয়নি";
+
+
+  document.getElementById(
+    "viewUsername"
+  ).textContent =
+    p.username
+      ? "@" + p.username
+      : "Username দেওয়া হয়নি";
+
+
+  document.getElementById(
+    "viewPhone"
+  ).textContent =
+    p.phone ||
+    "Phone দেওয়া হয়নি";
+
+
+  document.getElementById(
+    "viewEmail"
+  ).textContent =
+    currentUser.email ||
+    "Email নেই";
+
+
+  document.getElementById(
+    "viewAddress"
+  ).textContent =
+    p.address ||
+    "ঠিকানা দেওয়া হয়নি";
+
+
+  document.getElementById(
+    "viewBio"
+  ).textContent =
+    p.bio ||
+    "কোনো Bio দেওয়া হয়নি";
+
+
+  setAvatar(
+    "viewAvatar",
+    "viewDefaultAvatar",
+    p.avatar_url
+  );
+}
+
+
+/* ===============================
+   FILL EDIT FORM
+================================ */
+
+function fillEditForm(){
+
+  const p =
+    currentProfile;
+
+
+  document.getElementById(
+    "nameInput"
+  ).value =
+    p.full_name || "";
+
+
+  document.getElementById(
+    "usernameInput"
+  ).value =
+    p.username || "";
+
+
+  document.getElementById(
+    "phoneInput"
+  ).value =
+    p.phone || "";
+
+
+  document.getElementById(
+    "emailInput"
+  ).value =
+    currentUser.email || "";
+
+
+  document.getElementById(
+    "addressInput"
+  ).value =
+    p.address || "";
+
+
+  document.getElementById(
+    "bioInput"
+  ).value =
+    p.bio || "";
+
+
+  setAvatar(
+    "editAvatar",
+    "editDefaultAvatar",
+    p.avatar_url
+  );
+}
+
+
+/* ===============================
+   AVATAR
+================================ */
+
+function setAvatar(
+  imageId,
+  defaultId,
+  url
+){
+
+  const image =
+    document.getElementById(
+      imageId
+    );
+
+  const defaultAvatar =
+    document.getElementById(
+      defaultId
+    );
+
+
+  if(url){
+
+    image.src =
+      url;
+
+    image.style.display =
+      "inline-block";
+
+    defaultAvatar.style.display =
+      "none";
+
+  }else{
+
+    image.style.display =
+      "none";
+
+    defaultAvatar.style.display =
+      "flex";
+  }
+}
+
+
+/* ===============================
+   OPEN MODAL
+================================ */
+
+function openEditModal(){
+
+  fillEditForm();
+
+  selectedPhoto =
+    null;
+
+  document.getElementById(
+    "photoInput"
+  ).value =
+    "";
+
+
+  document.getElementById(
+    "status"
+  ).textContent =
+    "";
+
+
+  document.getElementById(
+    "editModal"
+  ).classList.add(
+    "show"
+  );
+
+
+  document.body.style.overflow =
+    "hidden";
+}
+
+
+/* ===============================
+   CLOSE MODAL
+================================ */
+
+function closeEditModal(){
+
+  document.getElementById(
+    "editModal"
+  ).classList.remove(
+    "show"
+  );
+
+
+  document.body.style.overflow =
+    "hidden";
+
+
+  selectedPhoto =
+    null;
+
+
+  document.getElementById(
+    "photoInput"
+  ).value =
+    "";
+}
+
+
+/* ===============================
+   OUTSIDE MODAL
+================================ */
+
+function closeModalOutside(event){
+
+  if(
+    event.target.id ===
+    "editModal"
+  ){
+
+    closeEditModal();
+  }
+}
+
+
+/* ===============================
+   PHOTO SELECT
+================================ */
+
+document.getElementById(
+  "photoInput"
+).addEventListener(
+  "change",
+  function(event){
+
+    const file =
+      event.target.files?.[0];
+
+
+    if(!file){
+
+      selectedPhoto =
+        null;
+
+      return;
     }
+
+
+    if(
+      !file.type ||
+      !file.type.startsWith(
+        "image/"
+      )
+    ){
+
+      showStatus(
+        "শুধু ছবি নির্বাচন করুন।",
+        "red"
+      );
+
+      event.target.value =
+        "";
+
+      selectedPhoto =
+        null;
+
+      return;
+    }
+
+
+    if(
+      file.size >
+      6 * 1024 * 1024
+    ){
+
+      showStatus(
+        "ছবির সাইজ ৬ MB-এর বেশি হতে পারবে না।",
+        "red"
+      );
+
+      event.target.value =
+        "";
+
+      selectedPhoto =
+        null;
+
+      return;
+    }
+
+
+    selectedPhoto =
+      file;
+
+
+    const previewURL =
+      URL.createObjectURL(
+        file
+      );
+
+
+    setAvatar(
+      "editAvatar",
+      "editDefaultAvatar",
+      previewURL
+    );
+
+  }
 );
 
 
-/* ================================
+/* ===============================
+   SAVE PROFILE
+================================ */
+
+async function saveProfile(){
+
+  if(!currentUser){
+
+    showStatus(
+      "আপনি লগইন করা নেই।",
+      "red"
+    );
+
+    return;
+  }
+
+
+  const saveButton =
+    document.getElementById(
+      "saveButton"
+    );
+
+
+  saveButton.disabled =
+    true;
+
+
+  saveButton.textContent =
+    "Saving...";
+
+
+  try{
+
+    const fullName =
+      document.getElementById(
+        "nameInput"
+      ).value.trim();
+
+
+    const username =
+      document.getElementById(
+        "usernameInput"
+      ).value.trim();
+
+
+    const phone =
+      document.getElementById(
+        "phoneInput"
+      ).value.trim();
+
+
+    const address =
+      document.getElementById(
+        "addressInput"
+      ).value.trim();
+
+
+    const bio =
+      document.getElementById(
+        "bioInput"
+      ).value.trim();
+
+
+    let avatarURL =
+      currentProfile.avatar_url ||
+      null;
+
+
+    /* =========================
+       PHOTO UPLOAD
+    ========================== */
+
+    if(selectedPhoto){
+
+      const ext =
+        (
+          selectedPhoto.name
+            .split(".")
+            .pop() ||
+          "jpg"
+        ).toLowerCase();
+
+
+      const filePath =
+        currentUser.id +
+        "/profile-" +
+        Date.now() +
+        "-" +
+        crypto.randomUUID() +
+        "." +
+        ext;
+
+
+      const {
+        error:uploadError
+      } =
+        await supabaseClient
+          .storage
+          .from(
+            STORAGE_BUCKET
+          )
+          .upload(
+            filePath,
+            selectedPhoto,
+            {
+              cacheControl:
+                "3600",
+
+              contentType:
+                selectedPhoto.type,
+
+              upsert:false
+            }
+          );
+
+
+      if(uploadError){
+
+        throw uploadError;
+      }
+
+
+      const {
+        data:publicData
+      } =
+        supabaseClient
+          .storage
+          .from(
+            STORAGE_BUCKET
+          )
+          .getPublicUrl(
+            filePath
+          );
+
+
+      avatarURL =
+        publicData.publicUrl;
+    }
+
+
+    /* =========================
+       UPDATE PROFILE
+    ========================== */
+
+    const updateData = {
+
+      full_name:
+        fullName || null,
+
+      username:
+        username || null,
+
+      phone:
+        phone || null,
+
+      address:
+        address || null,
+
+      bio:
+        bio || null,
+
+      updated_at:
+        new Date().toISOString()
+    };
+
+
+    if(avatarURL){
+
+      updateData.avatar_url =
+        avatarURL;
+    }
+
+
+    const {
+      data:updatedProfile,
+      error:updateError
+    } =
+      await supabaseClient
+        .from("profiles")
+        .update(
+          updateData
+        )
+        .eq(
+          "id",
+          currentUser.id
+        )
+        .select(`
+          id,
+          username,
+          full_name,
+          avatar_url,
+          bio,
+          phone,
+          address
+        `)
+        .single();
+
+
+    if(updateError){
+
+      throw updateError;
+    }
+
+
+    currentProfile =
+      updatedProfile;
+
+
+    /* =========================
+       UPDATE PAGE
+    ========================== */
+
+    renderProfile();
+
+    fillEditForm();
+
+
+    selectedPhoto =
+      null;
+
+
+    document.getElementById(
+      "photoInput"
+    ).value =
+      "";
+
+
+    showStatus(
+      "Profile সফলভাবে Save হয়েছে।",
+      "green"
+    );
+
+
+    setTimeout(
+      () => {
+
+        closeEditModal();
+
+      },
+      600
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "PROFILE UPDATE ERROR:",
+      error
+    );
+
+
+    showStatus(
+      "❌ Profile Update করতে সমস্যা হয়েছে: " +
+      (
+        error?.message ||
+        "Unknown error"
+      ),
+      "red"
+    );
+
+
+  }finally{
+
+    saveButton.disabled =
+      false;
+
+    saveButton.textContent =
+      "💾 Save";
+  }
+}
+
+
+/* ===============================
+   STATUS
+================================ */
+
+function showStatus(
+  message,
+  color
+){
+
+  const status =
+    document.getElementById(
+      "status"
+    );
+
+
+  status.textContent =
+    message;
+
+
+  status.style.color =
+    color === "green"
+      ? "#16803c"
+      : "#d93025";
+}
+
+
+/* ===============================
    LOGOUT
 ================================ */
 
-$("logoutButton")
-.addEventListener(
-    "click",
-    async function(){
+async function logout(){
 
-        if(!isOwnProfile){
-            return;
-        }
-
-        const button =
-            $("logoutButton");
-
-        button.disabled = true;
-        button.textContent =
-            "Logging out...";
+  const {
+    error
+  } =
+    await supabaseClient
+      .auth
+      .signOut();
 
 
-        const {
-            error
-        } =
-        await supabaseClient
-        .auth
-        .signOut();
+  if(error){
+
+    alert(
+      "Logout করতে সমস্যা হয়েছে:\n" +
+      error.message
+    );
+
+    return;
+  }
 
 
-        if(error){
-
-            button.disabled = false;
-            button.textContent =
-                "🚪 Logout";
-
-            $("profileStatus")
-                .textContent =
-                "Logout করতে সমস্যা হয়েছে: " +
-                error.message;
-
-            $("profileStatus")
-                .className =
-                "status error";
-
-            return;
-        }
+  window.location.href =
+    "index.html";
+}
 
 
-        window.location.replace(
-            "index.html"
-        );
-    }
-);
-
-
-/* ================================
-   START
+/* ===============================
+   NAVIGATION
 ================================ */
 
-loadProfile();
+function goHome(){
+
+  window.location.href =
+    "index.html";
+}
+
+
+function goChat(){
+
+  window.location.href =
+    "chat.html";
+}
 
 </script>
 
