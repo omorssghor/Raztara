@@ -493,7 +493,6 @@ input[type=file]{
     </div>
 </div>
 
-
 <div id="menu" class="menu">
 
     <button onclick="openProfile();closeMenu()">
@@ -504,12 +503,15 @@ input[type=file]{
         🖼️ Gallery
     </button>
 
+    <button onclick="openTipping();closeMenu()">
+        💰 <span id="tippingMenuText">Tipping</span>
+    </button>
+
     <button onclick="blockUser();closeMenu()">
         🚫 <span id="blockMenuText">Block</span>
     </button>
 
 </div>
-
 
 <div id="chatBoard" class="chat-board">
 
@@ -522,7 +524,6 @@ input[type=file]{
     </div>
 
 </div>
-
 
 <div class="composer">
 
@@ -565,7 +566,6 @@ input[type=file]{
 
 </div>
 
-
 <input id="photoInput"
        type="file"
        accept="image/*"
@@ -579,7 +579,6 @@ input[type=file]{
 <input id="fileInput"
        type="file"
        onchange="handleFile(this.files[0],'file')">
-
 
 <div id="recordingBox" class="recording">
 
@@ -595,7 +594,6 @@ input[type=file]{
     </button>
 
 </div>
-
 
 <div id="profileOverlay"
      class="overlay"
@@ -659,9 +657,7 @@ input[type=file]{
     </div>
 </div>
 
-
 <div id="toast" class="toast"></div>
-
 
 <script>
 
@@ -680,7 +676,6 @@ const supabaseClient =
         SUPABASE_URL,
         SUPABASE_KEY
     );
-
 
 /* =========================================================
    VARIABLES
@@ -704,7 +699,6 @@ let recordingStream = null;
 let currentLanguage =
     localStorage.getItem("raztara_language") || "bn";
 
-
 /* =========================================================
    LANGUAGE
 ========================================================= */
@@ -717,6 +711,7 @@ const translations = {
         profile:"প্রোফাইল",
         gallery:"গ্যালারি",
         block:"ব্লক",
+        tipping:"টিপিং",
         loading:"লোড হচ্ছে...",
         noMessages:"এখনও কোনো মেসেজ নেই",
         recording:"রেকর্ড হচ্ছে...",
@@ -737,6 +732,7 @@ const translations = {
         profile:"Profile",
         gallery:"Gallery",
         block:"Block",
+        tipping:"Tipping",
         loading:"Loading...",
         noMessages:"No messages yet",
         recording:"Recording...",
@@ -753,14 +749,12 @@ const translations = {
 
 };
 
-
 function t(key){
 
     return translations[currentLanguage]?.[key]
         || translations.bn[key]
         || key;
 }
-
 
 /* =========================================================
    AUTH
@@ -788,7 +782,6 @@ async function getCurrentUser(){
     return data.user;
 }
 
-
 /* =========================================================
    GET OTHER USER
 ========================================================= */
@@ -807,7 +800,6 @@ function getOtherUserId(){
     );
 }
 
-
 /* =========================================================
    BLOCK CHECK
    IMPORTANT:
@@ -820,7 +812,6 @@ async function checkBlockStatus(){
 
         return false;
     }
-
 
     /* I BLOCKED THIS USER */
 
@@ -849,7 +840,6 @@ async function checkBlockStatus(){
         return true;
     }
 
-
     /* THIS USER BLOCKED ME */
 
     const {
@@ -877,12 +867,10 @@ async function checkBlockStatus(){
         return true;
     }
 
-
     blocked = false;
 
     return false;
 }
-
 
 /* =========================================================
    BLOCK USER
@@ -896,7 +884,6 @@ async function blockUser(){
         return;
     }
 
-
     const alreadyBlocked =
         await checkBlockStatus();
 
@@ -904,7 +891,6 @@ async function blockUser(){
 
         return;
     }
-
 
     const ok =
         confirm(
@@ -916,7 +902,6 @@ async function blockUser(){
         return;
     }
 
-
     const {
         error
     } = await supabaseClient
@@ -925,7 +910,6 @@ async function blockUser(){
             blocker_id:currentUser.id,
             blocked_id:otherUserId
         });
-
 
     if(error){
 
@@ -936,13 +920,11 @@ async function blockUser(){
         return;
     }
 
-
     blocked = true;
 
     showToast(
         t("blockSuccess")
     );
-
 
     setTimeout(()=>{
 
@@ -951,7 +933,6 @@ async function blockUser(){
 
     },500);
 }
-
 
 /* =========================================================
    LOAD PROFILE
@@ -963,7 +944,6 @@ async function loadOtherProfile(){
 
         return;
     }
-
 
     const {
         data,
@@ -984,7 +964,6 @@ async function loadOtherProfile(){
         .eq("id",otherUserId)
         .maybeSingle();
 
-
     if(error){
 
         console.error(error);
@@ -994,25 +973,20 @@ async function loadOtherProfile(){
         return;
     }
 
-
     otherProfile = data;
-
 
     const name =
         data?.full_name ||
         data?.username ||
         "RAZTARA User";
 
-
     document.getElementById(
         "userName"
     ).textContent = name;
 
-
     document.getElementById(
         "sheetName"
     ).textContent = name;
-
 
     document.getElementById(
         "sheetUsername"
@@ -1020,7 +994,6 @@ async function loadOtherProfile(){
         data?.username
             ? "@" + data.username
             : "";
-
 
     if(data?.avatar_url){
 
@@ -1033,10 +1006,8 @@ async function loadOtherProfile(){
         ).src = data.avatar_url;
     }
 
-
     updateOnlineStatus(data);
 }
-
 
 /* =========================================================
    PRIVACY
@@ -1056,7 +1027,6 @@ async function getPrivacy(){
         };
     }
 
-
     const {
         data,
         error
@@ -1072,7 +1042,6 @@ async function getPrivacy(){
         `)
         .eq("user_id",otherUserId)
         .maybeSingle();
-
 
     if(error){
 
@@ -1091,7 +1060,6 @@ async function getPrivacy(){
         };
     }
 
-
     return data || {
         profile_photo:"public",
         profile_info:"public",
@@ -1101,7 +1069,6 @@ async function getPrivacy(){
         bio:"public"
     };
 }
-
 
 /* =========================================================
    FRIEND CHECK
@@ -1113,7 +1080,6 @@ async function areFriends(){
 
         return false;
     }
-
 
     const {
         data,
@@ -1127,19 +1093,16 @@ async function areFriends(){
         )
         .limit(1);
 
-
     if(error){
 
         return false;
     }
-
 
     return !!(
         data &&
         data.length
     );
 }
-
 
 /* =========================================================
    PRIVACY CHECK
@@ -1152,22 +1115,18 @@ async function canSeePrivacyValue(value){
         return true;
     }
 
-
     if(value === "only_me"){
 
         return false;
     }
-
 
     if(value === "friend"){
 
         return await areFriends();
     }
 
-
     return false;
 }
-
 
 /* =========================================================
    APPLY PROFILE PRIVACY
@@ -1180,16 +1139,13 @@ async function applyProfilePrivacy(){
         return;
     }
 
-
     const privacy =
         await getPrivacy();
-
 
     const canSeePhoto =
         await canSeePrivacyValue(
             privacy.profile_photo
         );
-
 
     if(!canSeePhoto){
 
@@ -1204,21 +1160,17 @@ async function applyProfilePrivacy(){
             "https://i.pravatar.cc/150?img=12";
     }
 
-
     const canSeeInfo =
         await canSeePrivacyValue(
             privacy.profile_info
         );
-
 
     const rows =
         document.getElementById(
             "profileInfoRows"
         );
 
-
     rows.innerHTML = "";
-
 
     if(canSeeInfo){
 
@@ -1242,7 +1194,6 @@ async function applyProfilePrivacy(){
             }
         }
 
-
         if(otherProfile.phone){
 
             const canSeePhone =
@@ -1261,7 +1212,6 @@ async function applyProfilePrivacy(){
                 `;
             }
         }
-
 
         if(otherProfile.address){
 
@@ -1297,7 +1247,6 @@ async function applyProfilePrivacy(){
     }
 }
 
-
 /* =========================================================
    LAST SEEN
 ========================================================= */
@@ -1309,14 +1258,12 @@ function updateOnlineStatus(profile){
             "userStatus"
         );
 
-
     if(!profile){
 
         status.textContent = "";
 
         return;
     }
-
 
     if(profile.online_visibility === false){
 
@@ -1325,7 +1272,6 @@ function updateOnlineStatus(profile){
         return;
     }
 
-
     if(!profile.last_seen_at){
 
         status.textContent = "";
@@ -1333,12 +1279,10 @@ function updateOnlineStatus(profile){
         return;
     }
 
-
     const last =
         new Date(
             profile.last_seen_at
         );
-
 
     if(isNaN(last.getTime())){
 
@@ -1347,15 +1291,12 @@ function updateOnlineStatus(profile){
         return;
     }
 
-
     const now =
         new Date();
-
 
     const isToday =
         last.toDateString() ===
         now.toDateString();
-
 
     const yesterday =
         new Date();
@@ -1364,11 +1305,9 @@ function updateOnlineStatus(profile){
         yesterday.getDate() - 1
     );
 
-
     const isYesterday =
         last.toDateString() ===
         yesterday.toDateString();
-
 
     const time =
         last.toLocaleTimeString(
@@ -1381,9 +1320,7 @@ function updateOnlineStatus(profile){
             }
         );
 
-
     let dateText;
-
 
     if(isToday){
 
@@ -1414,7 +1351,6 @@ function updateOnlineStatus(profile){
             );
     }
 
-
     status.textContent =
         currentLanguage === "bn"
             ? "শেষ দেখা: " +
@@ -1427,7 +1363,6 @@ function updateOnlineStatus(profile){
               time;
 }
 
-
 /* =========================================================
    FIND CONVERSATION
 ========================================================= */
@@ -1438,7 +1373,6 @@ async function findConversation(){
 
         return null;
     }
-
 
     const {
         data:myMembers,
@@ -1451,7 +1385,6 @@ async function findConversation(){
             currentUser.id
         );
 
-
     if(myError){
 
         console.error(myError);
@@ -1459,18 +1392,15 @@ async function findConversation(){
         return null;
     }
 
-
     if(!myMembers?.length){
 
         return null;
     }
 
-
     const ids =
         myMembers.map(
             x=>x.conversation_id
         );
-
 
     const {
         data:otherMembers,
@@ -1487,7 +1417,6 @@ async function findConversation(){
             ids
         );
 
-
     if(otherError){
 
         console.error(otherError);
@@ -1495,18 +1424,15 @@ async function findConversation(){
         return null;
     }
 
-
     if(!otherMembers?.length){
 
         return null;
     }
 
-
     const commonIds =
         otherMembers.map(
             x=>x.conversation_id
         );
-
 
     const {
         data:conversations,
@@ -1526,7 +1452,6 @@ async function findConversation(){
         )
         .limit(1);
 
-
     if(conversationError){
 
         console.error(
@@ -1536,10 +1461,8 @@ async function findConversation(){
         return null;
     }
 
-
     return conversations?.[0]?.id || null;
 }
-
 
 /* =========================================================
    CREATE CONVERSATION
@@ -1559,7 +1482,6 @@ async function createConversation(){
         .select("id")
         .single();
 
-
     if(error){
 
         console.error(error);
@@ -1567,10 +1489,8 @@ async function createConversation(){
         throw error;
     }
 
-
     const newConversationId =
         data.id;
-
 
     const {
         error:memberError
@@ -1593,7 +1513,6 @@ async function createConversation(){
             }
         ]);
 
-
     if(memberError){
 
         console.error(memberError);
@@ -1601,10 +1520,8 @@ async function createConversation(){
         throw memberError;
     }
 
-
     return newConversationId;
 }
-
 
 /* =========================================================
    MESSAGE DATE
@@ -1617,16 +1534,13 @@ function getMessageDateKey(value){
         return "";
     }
 
-
     const date =
         new Date(value);
-
 
     if(isNaN(date.getTime())){
 
         return "";
     }
-
 
     return (
         date.getFullYear() +
@@ -1641,7 +1555,6 @@ function getMessageDateKey(value){
     );
 }
 
-
 function formatMessageDate(value){
 
     if(!value){
@@ -1649,20 +1562,16 @@ function formatMessageDate(value){
         return "";
     }
 
-
     const date =
         new Date(value);
-
 
     if(isNaN(date.getTime())){
 
         return "";
     }
 
-
     const now =
         new Date();
-
 
     const yesterday =
         new Date();
@@ -1670,7 +1579,6 @@ function formatMessageDate(value){
     yesterday.setDate(
         yesterday.getDate() - 1
     );
-
 
     if(
         date.toDateString() ===
@@ -1682,7 +1590,6 @@ function formatMessageDate(value){
             : "Today";
     }
 
-
     if(
         date.toDateString() ===
         yesterday.toDateString()
@@ -1692,7 +1599,6 @@ function formatMessageDate(value){
             ? "গতকাল"
             : "Yesterday";
     }
-
 
     return date.toLocaleDateString(
         currentLanguage === "bn"
@@ -1706,7 +1612,6 @@ function formatMessageDate(value){
     );
 }
 
-
 /* =========================================================
    LOAD MESSAGES
 ========================================================= */
@@ -1718,17 +1623,14 @@ async function loadMessages(){
             "messages"
         );
 
-
     lastRenderedMessageDate =
         null;
-
 
     container.innerHTML = `
         <div class="loading">
             ${t("loading")}
         </div>
     `;
-
 
     if(!conversationId){
 
@@ -1740,7 +1642,6 @@ async function loadMessages(){
 
         return;
     }
-
 
     const {
         data,
@@ -1768,7 +1669,6 @@ async function loadMessages(){
             }
         );
 
-
     if(error){
 
         console.error(error);
@@ -1782,9 +1682,7 @@ async function loadMessages(){
         return;
     }
 
-
     container.innerHTML = "";
-
 
     if(!data?.length){
 
@@ -1797,7 +1695,6 @@ async function loadMessages(){
         return;
     }
 
-
     data.forEach(
         message=>{
             appendMessage(
@@ -1807,10 +1704,8 @@ async function loadMessages(){
         }
     );
 
-
     scrollToBottom();
 }
-
 
 /* =========================================================
    APPEND MESSAGE
@@ -1830,12 +1725,10 @@ function appendMessage(
         return;
     }
 
-
     const container =
         document.getElementById(
             "messages"
         );
-
 
     /* DATE DIVIDER */
 
@@ -1843,7 +1736,6 @@ function appendMessage(
         getMessageDateKey(
             message.created_at
         );
-
 
     if(
         messageDateKey &&
@@ -1856,43 +1748,35 @@ function appendMessage(
                 "div"
             );
 
-
         divider.className =
             "date-divider";
-
 
         const dateSpan =
             document.createElement(
                 "span"
             );
 
-
         dateSpan.textContent =
             formatMessageDate(
                 message.created_at
             );
 
-
         divider.appendChild(
             dateSpan
         );
-
 
         container.appendChild(
             divider
         );
 
-
         lastRenderedMessageDate =
             messageDateKey;
     }
-
 
     const row =
         document.createElement(
             "div"
         );
-
 
     row.className =
         "message-row " +
@@ -1903,20 +1787,16 @@ function appendMessage(
                 : "other"
         );
 
-
     row.dataset.messageId =
         message.id;
-
 
     const box =
         document.createElement(
             "div"
         );
 
-
     box.className =
         "message";
-
 
     if(message.deleted_for_everyone){
 
@@ -1928,7 +1808,6 @@ function appendMessage(
         const type =
             message.message_type ||
             "text";
-
 
         if(type === "text"){
 
@@ -1947,7 +1826,6 @@ function appendMessage(
 
             img.alt = "Image";
 
-
             getMediaUrl(
                 message.file_url
             )
@@ -1958,7 +1836,6 @@ function appendMessage(
                     img.src = url;
                 }
             });
-
 
             box.appendChild(img);
 
@@ -1972,7 +1849,6 @@ function appendMessage(
             video.controls = true;
             video.playsInline = true;
 
-
             getMediaUrl(
                 message.file_url
             )
@@ -1983,7 +1859,6 @@ function appendMessage(
                     video.src = url;
                 }
             });
-
 
             box.appendChild(video);
 
@@ -1996,7 +1871,6 @@ function appendMessage(
 
             audio.controls = true;
 
-
             getMediaUrl(
                 message.file_url
             )
@@ -2007,7 +1881,6 @@ function appendMessage(
                     audio.src = url;
                 }
             });
-
 
             box.appendChild(audio);
 
@@ -2020,7 +1893,6 @@ function appendMessage(
 
             fileBox.className =
                 "file-box";
-
 
             fileBox.innerHTML = `
                 <span class="file-icon">
@@ -2035,7 +1907,6 @@ function appendMessage(
                 </span>
             `;
 
-
             fileBox.onclick =
                 async()=>{
 
@@ -2043,7 +1914,6 @@ function appendMessage(
                         await getMediaUrl(
                             message.file_url
                         );
-
 
                     if(url){
 
@@ -2053,7 +1923,6 @@ function appendMessage(
                         );
                     }
                 };
-
 
             box.appendChild(
                 fileBox
@@ -2069,44 +1938,36 @@ function appendMessage(
         }
     }
 
-
     const time =
         document.createElement(
             "span"
         );
 
-
     time.className =
         "message-time";
-
 
     time.textContent =
         formatTime(
             message.created_at
         );
 
-
     box.appendChild(
         time
     );
-
 
     row.appendChild(
         box
     );
 
-
     container.appendChild(
         row
     );
-
 
     if(scroll){
 
         scrollToBottom();
     }
 }
-
 
 /* =========================================================
    MEDIA URL
@@ -2119,7 +1980,6 @@ async function getMediaUrl(path){
         return null;
     }
 
-
     if(
         path.startsWith("http://") ||
         path.startsWith("https://")
@@ -2127,7 +1987,6 @@ async function getMediaUrl(path){
 
         return path;
     }
-
 
     const {
         data,
@@ -2140,7 +1999,6 @@ async function getMediaUrl(path){
             60*60*24*7
         );
 
-
     if(error){
 
         console.error(error);
@@ -2148,11 +2006,9 @@ async function getMediaUrl(path){
         return null;
     }
 
-
     return data?.signedUrl ||
         null;
 }
-
 
 /* =========================================================
    SEND TEXT
@@ -2166,7 +2022,6 @@ async function sendText(){
         return;
     }
 
-
     if(blocked){
 
         showToast(
@@ -2176,31 +2031,25 @@ async function sendText(){
         return;
     }
 
-
     const input =
         document.getElementById(
             "messageInput"
         );
 
-
     const content =
         input.value.trim();
-
 
     if(!content){
 
         return;
     }
 
-
     const sendBtn =
         document.getElementById(
             "sendBtn"
         );
 
-
     sendBtn.disabled = true;
-
 
     const {
         data,
@@ -2226,9 +2075,7 @@ async function sendText(){
         .select()
         .single();
 
-
     sendBtn.disabled = false;
-
 
     if(error){
 
@@ -2241,9 +2088,7 @@ async function sendText(){
         return;
     }
 
-
     input.value = "";
-
 
     if(data){
 
@@ -2253,7 +2098,6 @@ async function sendText(){
         );
     }
 }
-
 
 /* =========================================================
    FILE HANDLER
@@ -2269,12 +2113,10 @@ async function handleFile(
         return;
     }
 
-
     if(!conversationId){
 
         return;
     }
-
 
     if(blocked){
 
@@ -2285,7 +2127,6 @@ async function handleFile(
         return;
     }
 
-
     try{
 
         const path =
@@ -2293,12 +2134,10 @@ async function handleFile(
                 file
             );
 
-
         if(!path){
 
             return;
         }
-
 
         const {
             data,
@@ -2326,7 +2165,6 @@ async function handleFile(
             .select()
             .single();
 
-
         if(error){
 
             console.error(error);
@@ -2337,7 +2175,6 @@ async function handleFile(
 
             return;
         }
-
 
         if(data){
 
@@ -2358,7 +2195,6 @@ async function handleFile(
     }
 }
 
-
 /* =========================================================
    UPLOAD
 ========================================================= */
@@ -2371,10 +2207,8 @@ async function uploadChatFile(file){
         return null;
     }
 
-
     const maxSize =
         6 * 1024 * 1024;
-
 
     if(file.size > maxSize){
 
@@ -2383,14 +2217,12 @@ async function uploadChatFile(file){
         );
     }
 
-
     const safeName =
         file.name
             .replace(
                 /[^a-zA-Z0-9._-]/g,
                 "_"
             );
-
 
     const uniqueName =
         Date.now() +
@@ -2401,14 +2233,12 @@ async function uploadChatFile(file){
         "_" +
         safeName;
 
-
     const path =
         currentUser.id +
         "/" +
         conversationId +
         "/" +
         uniqueName;
-
 
     const {
         error
@@ -2424,16 +2254,13 @@ async function uploadChatFile(file){
             }
         );
 
-
     if(error){
 
         throw error;
     }
 
-
     return path;
 }
-
 
 /* =========================================================
    VOICE RECORDING
@@ -2448,7 +2275,6 @@ async function toggleRecording(){
         return;
     }
 
-
     if(blocked){
 
         showToast(
@@ -2457,7 +2283,6 @@ async function toggleRecording(){
 
         return;
     }
-
 
     if(
         !navigator.mediaDevices ||
@@ -2471,7 +2296,6 @@ async function toggleRecording(){
         return;
     }
 
-
     try{
 
         recordingStream =
@@ -2480,15 +2304,12 @@ async function toggleRecording(){
                     audio:true
                 });
 
-
         audioChunks = [];
-
 
         mediaRecorder =
             new MediaRecorder(
                 recordingStream
             );
-
 
         mediaRecorder.ondataavailable =
             event=>{
@@ -2503,7 +2324,6 @@ async function toggleRecording(){
                 }
             };
 
-
         mediaRecorder.onstop =
             async()=>{
 
@@ -2517,11 +2337,9 @@ async function toggleRecording(){
                         }
                     );
 
-
                 await sendVoiceBlob(
                     blob
                 );
-
 
                 if(recordingStream){
 
@@ -2537,14 +2355,11 @@ async function toggleRecording(){
                         null;
                 }
 
-
                 mediaRecorder =
                     null;
             };
 
-
         mediaRecorder.start();
-
 
         document
             .getElementById(
@@ -2554,14 +2369,12 @@ async function toggleRecording(){
                 "show"
             );
 
-
         document
             .getElementById(
                 "recordingText"
             )
             .textContent =
                 t("recording");
-
 
         document
             .getElementById(
@@ -2581,7 +2394,6 @@ async function toggleRecording(){
     }
 }
 
-
 function stopRecording(){
 
     if(
@@ -2593,7 +2405,6 @@ function stopRecording(){
         mediaRecorder.stop();
     }
 
-
     document
         .getElementById(
             "recordingBox"
@@ -2602,7 +2413,6 @@ function stopRecording(){
             "show"
         );
 
-
     document
         .getElementById(
             "voiceBtn"
@@ -2610,7 +2420,6 @@ function stopRecording(){
         .textContent =
             "🎙️";
 }
-
 
 async function sendVoiceBlob(
     blob
@@ -2624,14 +2433,12 @@ async function sendVoiceBlob(
         return;
     }
 
-
     try{
 
         const extension =
             blob.type.includes("mp4")
                 ? "m4a"
                 : "webm";
-
 
         const file =
             new File(
@@ -2645,18 +2452,15 @@ async function sendVoiceBlob(
                 }
             );
 
-
         const path =
             await uploadChatFile(
                 file
             );
 
-
         if(!path){
 
             return;
         }
-
 
         const {
             data,
@@ -2682,7 +2486,6 @@ async function sendVoiceBlob(
             .select()
             .single();
 
-
         if(error){
 
             console.error(error);
@@ -2693,7 +2496,6 @@ async function sendVoiceBlob(
 
             return;
         }
-
 
         if(data){
 
@@ -2714,7 +2516,6 @@ async function sendVoiceBlob(
     }
 }
 
-
 /* =========================================================
    REALTIME
 ========================================================= */
@@ -2726,7 +2527,6 @@ function subscribeRealtime(){
         return;
     }
 
-
     if(realtimeChannel){
 
         supabaseClient
@@ -2734,7 +2534,6 @@ function subscribeRealtime(){
                 realtimeChannel
             );
     }
-
 
     realtimeChannel =
         supabaseClient
@@ -2761,7 +2560,6 @@ function subscribeRealtime(){
                         return;
                     }
 
-
                     appendMessage(
                         payload.new,
                         true
@@ -2770,7 +2568,6 @@ function subscribeRealtime(){
             )
             .subscribe();
 }
-
 
 /* =========================================================
    CALL
@@ -2786,7 +2583,6 @@ async function startCall(type){
         return;
     }
 
-
     if(blocked){
 
         showToast(
@@ -2795,7 +2591,6 @@ async function startCall(type){
 
         return;
     }
-
 
     try{
 
@@ -2823,7 +2618,6 @@ async function startCall(type){
             .select("id")
             .single();
 
-
         if(error){
 
             console.error(error);
@@ -2834,7 +2628,6 @@ async function startCall(type){
 
             return;
         }
-
 
         if(data?.id){
 
@@ -2855,7 +2648,6 @@ async function startCall(type){
     }
 }
 
-
 /* =========================================================
    PROFILE
 ========================================================= */
@@ -2864,15 +2656,12 @@ async function openProfile(){
 
     closeMenu();
 
-
     if(blocked){
 
         return;
     }
 
-
     await applyProfilePrivacy();
-
 
     document
         .getElementById(
@@ -2882,7 +2671,6 @@ async function openProfile(){
             "show"
         );
 }
-
 
 function closeProfile(event){
 
@@ -2897,7 +2685,6 @@ function closeProfile(event){
         return;
     }
 
-
     document
         .getElementById(
             "profileOverlay"
@@ -2906,7 +2693,6 @@ function closeProfile(event){
             "show"
         );
 }
-
 
 function goUserProfile(){
 
@@ -2918,14 +2704,12 @@ function goUserProfile(){
         return;
     }
 
-
     window.location.href =
         "user-profile.html?user=" +
         encodeURIComponent(
             otherUserId
         );
 }
-
 
 /* =========================================================
    GALLERY
@@ -2941,7 +2725,6 @@ function openGallery(){
         return;
     }
 
-
     window.location.href =
         "gallery.html?user=" +
         encodeURIComponent(
@@ -2949,6 +2732,26 @@ function openGallery(){
         );
 }
 
+/* =========================================================
+   TIPPING
+========================================================= */
+
+function openTipping(){
+
+    if(
+        !otherUserId ||
+        blocked
+    ){
+
+        return;
+    }
+
+    window.location.href =
+        "tipping.html?user=" +
+        encodeURIComponent(
+            otherUserId
+        );
+}
 
 /* =========================================================
    MENU
@@ -2965,7 +2768,6 @@ function toggleMenu(){
         );
 }
 
-
 function closeMenu(){
 
     document
@@ -2976,7 +2778,6 @@ function closeMenu(){
             "show"
         );
 }
-
 
 /* =========================================================
    FOCUS
@@ -2989,14 +2790,12 @@ function focusMessage(){
         return;
     }
 
-
     document
         .getElementById(
             "messageInput"
         )
         .focus();
 }
-
 
 /* =========================================================
    BACK
@@ -3017,7 +2816,6 @@ function goBack(){
     }
 }
 
-
 /* =========================================================
    SCROLL
 ========================================================= */
@@ -3029,7 +2827,6 @@ function scrollToBottom(){
             "chatBoard"
         );
 
-
     setTimeout(()=>{
 
         board.scrollTop =
@@ -3037,7 +2834,6 @@ function scrollToBottom(){
 
     },50);
 }
-
 
 /* =========================================================
    TIME
@@ -3050,10 +2846,8 @@ function formatTime(value){
         return "";
     }
 
-
     const date =
         new Date(value);
-
 
     return date.toLocaleTimeString(
         currentLanguage === "bn"
@@ -3065,7 +2859,6 @@ function formatTime(value){
         }
     );
 }
-
 
 /* =========================================================
    ESCAPE
@@ -3096,7 +2889,6 @@ function escapeHtml(value){
         );
 }
 
-
 /* =========================================================
    TOAST
 ========================================================= */
@@ -3110,20 +2902,16 @@ function showToast(message){
             "toast"
         );
 
-
     toast.textContent =
         message;
-
 
     toast.classList.add(
         "show"
     );
 
-
     clearTimeout(
         toastTimer
     );
-
 
     toastTimer =
         setTimeout(()=>{
@@ -3134,7 +2922,6 @@ function showToast(message){
 
         },2500);
 }
-
 
 /* =========================================================
    LANGUAGE
@@ -3147,19 +2934,16 @@ function applyLanguage(){
             "messageInput"
         );
 
-
     if(input){
 
         input.placeholder =
             t("message");
     }
 
-
     const loading =
         document.getElementById(
             "loading"
         );
-
 
     if(loading){
 
@@ -3167,12 +2951,10 @@ function applyLanguage(){
             t("loading");
     }
 
-
     const recordingText =
         document.getElementById(
             "recordingText"
         );
-
 
     if(recordingText){
 
@@ -3180,15 +2962,24 @@ function applyLanguage(){
             t("recording");
     }
 
-
     document
         .getElementById(
             "blockMenuText"
         )
         .textContent =
         t("block");
-}
 
+    const tippingMenuText =
+        document.getElementById(
+            "tippingMenuText"
+        );
+
+    if(tippingMenuText){
+
+        tippingMenuText.textContent =
+            t("tipping");
+    }
+}
 
 /* =========================================================
    OUTSIDE MENU
@@ -3203,12 +2994,10 @@ document.addEventListener(
                 "menu"
             );
 
-
         const button =
             event.target.closest(
                 ".header-action"
             );
-
 
         if(
             !menu.contains(
@@ -3221,7 +3010,6 @@ document.addEventListener(
         }
     }
 );
-
 
 /* =========================================================
    ENTER SEND
@@ -3247,7 +3035,6 @@ document
         }
     );
 
-
 /* =========================================================
    INITIALIZE
 ========================================================= */
@@ -3256,20 +3043,16 @@ async function init(){
 
     applyLanguage();
 
-
     currentUser =
         await getCurrentUser();
-
 
     if(!currentUser){
 
         return;
     }
 
-
     otherUserId =
         getOtherUserId();
-
 
     if(!otherUserId){
 
@@ -3280,10 +3063,8 @@ async function init(){
         return;
     }
 
-
     const isBlocked =
         await checkBlockStatus();
-
 
     if(isBlocked){
 
@@ -3294,16 +3075,12 @@ async function init(){
         return;
     }
 
-
     await loadOtherProfile();
-
 
     await applyProfilePrivacy();
 
-
     conversationId =
         await findConversation();
-
 
     if(!conversationId){
 
@@ -3327,16 +3104,12 @@ async function init(){
         }
     }
 
-
     await loadMessages();
-
 
     subscribeRealtime();
 
-
     applyLanguage();
 }
-
 
 /* =========================================================
    START
