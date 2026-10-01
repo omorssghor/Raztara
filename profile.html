@@ -35,10 +35,6 @@ body{
     overflow:hidden;
 }
 
-/* =========================
-   TOP BAR
-========================= */
-
 .topbar{
     position:fixed;
     top:0;
@@ -68,10 +64,6 @@ body{
     font-weight:700;
 }
 
-/* =========================
-   MAIN
-========================= */
-
 .main{
     position:fixed;
     top:62px;
@@ -82,10 +74,6 @@ body{
     padding:18px 14px 30px;
     -webkit-overflow-scrolling:touch;
 }
-
-/* =========================
-   PROFILE HEADER
-========================= */
 
 .profile-card{
     background:white;
@@ -153,10 +141,6 @@ body{
     font-weight:600;
 }
 
-/* =========================
-   DETAILS
-========================= */
-
 .details-card{
     margin-top:14px;
     background:white;
@@ -206,10 +190,6 @@ body{
     word-break:break-word;
 }
 
-/* =========================
-   BOTTOM NAV
-========================= */
-
 .bottom-nav{
     position:fixed;
     left:0;
@@ -249,10 +229,6 @@ body{
 .logout-btn{
     color:#d93636;
 }
-
-/* =========================
-   MODAL
-========================= */
 
 .modal{
     position:fixed;
@@ -308,10 +284,6 @@ body{
     cursor:pointer;
 }
 
-/* =========================
-   EDIT PHOTO
-========================= */
-
 .edit-avatar-area{
     text-align:center;
     margin-bottom:20px;
@@ -339,10 +311,6 @@ body{
     display:none;
 }
 
-/* =========================
-   FORM
-========================= */
-
 .field{
     margin-bottom:15px;
 }
@@ -356,8 +324,7 @@ body{
 }
 
 .field input,
-.field textarea,
-.field select{
+.field textarea{
     width:100%;
     border:1px solid #d8dddf;
     border-radius:12px;
@@ -369,8 +336,7 @@ body{
 }
 
 .field input:focus,
-.field textarea:focus,
-.field select:focus{
+.field textarea:focus{
     border-color:#087f5b;
     box-shadow:0 0 0 3px rgba(8,127,91,.10);
 }
@@ -384,10 +350,6 @@ body{
     background:#f1f3f4 !important;
     color:#6b7479 !important;
 }
-
-/* =========================
-   SAVE
-========================= */
 
 .save-btn{
     width:100%;
@@ -406,10 +368,6 @@ body{
     opacity:.65;
     cursor:not-allowed;
 }
-
-/* =========================
-   LOADING
-========================= */
 
 .loading{
     padding:50px 20px;
@@ -433,10 +391,6 @@ body{
         transform:rotate(360deg);
     }
 }
-
-/* =========================
-   TOAST
-========================= */
 
 .toast{
     position:fixed;
@@ -469,10 +423,6 @@ body{
     background:#c62828;
 }
 
-/* =========================
-   HIDDEN
-========================= */
-
 .hidden{
     display:none !important;
 }
@@ -481,8 +431,8 @@ body{
 
 <body>
 
-<!-- TOP BAR -->
 <header class="topbar">
+
     <button
         id="backBtn"
         class="back-btn"
@@ -494,20 +444,20 @@ body{
     <div class="top-title" id="topTitle">
         Profile
     </div>
+
 </header>
 
 
-<!-- MAIN -->
 <main class="main">
 
     <div id="loadingBox" class="loading">
         <div class="spinner"></div>
-        Profile লোড হচ্ছে...
+        <span id="loadingText">Profile লোড হচ্ছে...</span>
     </div>
+
 
     <div id="profileContent" class="hidden">
 
-        <!-- PROFILE CARD -->
         <section class="profile-card">
 
             <div class="avatar-wrap">
@@ -525,11 +475,13 @@ body{
 
             </div>
 
+
             <div
                 id="profileName"
                 class="profile-name">
                 —
             </div>
+
 
             <div
                 id="profileUsername"
@@ -537,10 +489,12 @@ body{
                 —
             </div>
 
+
             <div
                 id="profileBio"
                 class="bio">
             </div>
+
 
             <div
                 id="profileStatus"
@@ -550,7 +504,6 @@ body{
         </section>
 
 
-        <!-- DETAILS -->
         <section class="details-card">
 
             <div class="detail-row">
@@ -560,7 +513,10 @@ body{
                 </div>
 
                 <div class="detail-info">
-                    <div class="detail-label">
+
+                    <div
+                        class="detail-label"
+                        id="usernameLabel">
                         Username
                     </div>
 
@@ -569,6 +525,7 @@ body{
                         class="detail-value">
                         —
                     </div>
+
                 </div>
 
             </div>
@@ -581,7 +538,10 @@ body{
                 </div>
 
                 <div class="detail-info">
-                    <div class="detail-label">
+
+                    <div
+                        class="detail-label"
+                        id="phoneLabel">
                         Phone
                     </div>
 
@@ -590,6 +550,7 @@ body{
                         class="detail-value">
                         Private
                     </div>
+
                 </div>
 
             </div>
@@ -602,7 +563,10 @@ body{
                 </div>
 
                 <div class="detail-info">
-                    <div class="detail-label">
+
+                    <div
+                        class="detail-label"
+                        id="emailLabel">
                         Email
                     </div>
 
@@ -611,6 +575,7 @@ body{
                         class="detail-value">
                         Private
                     </div>
+
                 </div>
 
             </div>
@@ -623,7 +588,10 @@ body{
                 </div>
 
                 <div class="detail-info">
-                    <div class="detail-label">
+
+                    <div
+                        class="detail-label"
+                        id="addressLabel">
                         Address
                     </div>
 
@@ -632,6 +600,7 @@ body{
                         class="detail-value">
                         Private
                     </div>
+
                 </div>
 
             </div>
@@ -644,7 +613,10 @@ body{
                 </div>
 
                 <div class="detail-info">
-                    <div class="detail-label">
+
+                    <div
+                        class="detail-label"
+                        id="lastSeenLabel">
                         Last seen
                     </div>
 
@@ -653,6 +625,7 @@ body{
                         class="detail-value">
                         —
                     </div>
+
                 </div>
 
             </div>
@@ -664,7 +637,6 @@ body{
 </main>
 
 
-<!-- BOTTOM NAV -->
 <nav
     id="bottomNav"
     class="bottom-nav hidden">
@@ -675,7 +647,7 @@ body{
         type="button">
 
         <span class="icon">⌂</span>
-        Home
+        <span id="homeText">Home</span>
 
     </button>
 
@@ -686,7 +658,7 @@ body{
         type="button">
 
         <span class="icon">✏️</span>
-        Edit Profile
+        <span id="editText">Edit Profile</span>
 
     </button>
 
@@ -697,14 +669,13 @@ body{
         type="button">
 
         <span class="icon">↪</span>
-        Logout
+        <span id="logoutText">Logout</span>
 
     </button>
 
 </nav>
 
 
-<!-- EDIT MODAL -->
 <div
     id="editModal"
     class="modal">
@@ -713,7 +684,9 @@ body{
 
         <div class="modal-header">
 
-            <div class="modal-title">
+            <div
+                class="modal-title"
+                id="editModalTitle">
                 Edit Profile
             </div>
 
@@ -727,7 +700,6 @@ body{
         </div>
 
 
-        <!-- PHOTO -->
         <div class="edit-avatar-area">
 
             <img
@@ -740,7 +712,8 @@ body{
 
             <label
                 class="photo-label"
-                for="photoInput">
+                for="photoInput"
+                id="photoChangeText">
                 📷 Profile Photo পরিবর্তন করুন
             </label>
 
@@ -752,10 +725,11 @@ body{
         </div>
 
 
-        <!-- FULL NAME -->
         <div class="field">
 
-            <label for="fullNameInput">
+            <label
+                for="fullNameInput"
+                id="fullNameLabel">
                 Full Name
             </label>
 
@@ -768,10 +742,11 @@ body{
         </div>
 
 
-        <!-- USERNAME -->
         <div class="field">
 
-            <label for="usernameInput">
+            <label
+                for="usernameInput"
+                id="usernameInputLabel">
                 Username
             </label>
 
@@ -784,10 +759,11 @@ body{
         </div>
 
 
-        <!-- EMAIL -->
         <div class="field">
 
-            <label for="emailInput">
+            <label
+                for="emailInput"
+                id="emailInputLabel">
                 Email
             </label>
 
@@ -800,10 +776,11 @@ body{
         </div>
 
 
-        <!-- PHONE -->
         <div class="field">
 
-            <label for="phoneInput">
+            <label
+                for="phoneInput"
+                id="phoneInputLabel">
                 Phone
             </label>
 
@@ -816,36 +793,11 @@ body{
         </div>
 
 
-        <!-- PHONE PRIVACY -->
         <div class="field">
 
-            <label for="phoneVisibilityInput">
-                Phone Privacy
-            </label>
-
-            <select id="phoneVisibilityInput">
-
-                <option value="public">
-                    Public — সবাই দেখতে পারবে
-                </option>
-
-                <option value="friend">
-                    Friends — শুধু বন্ধু
-                </option>
-
-                <option value="only_me">
-                    Only me — শুধু আমি
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <!-- ADDRESS -->
-        <div class="field">
-
-            <label for="addressInput">
+            <label
+                for="addressInput"
+                id="addressInputLabel">
                 Address
             </label>
 
@@ -857,36 +809,11 @@ body{
         </div>
 
 
-        <!-- ADDRESS PRIVACY -->
         <div class="field">
 
-            <label for="addressVisibilityInput">
-                Address Privacy
-            </label>
-
-            <select id="addressVisibilityInput">
-
-                <option value="public">
-                    Public — সবাই দেখতে পারবে
-                </option>
-
-                <option value="friend">
-                    Friends — শুধু বন্ধু
-                </option>
-
-                <option value="only_me">
-                    Only me — শুধু আমি
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <!-- BIO -->
-        <div class="field">
-
-            <label for="bioInput">
+            <label
+                for="bioInput"
+                id="bioInputLabel">
                 Bio
             </label>
 
@@ -894,32 +821,6 @@ body{
                 id="bioInput"
                 maxlength="500"
                 placeholder="নিজের সম্পর্কে কিছু লিখুন"></textarea>
-
-        </div>
-
-
-        <!-- ONLINE PRIVACY -->
-        <div class="field">
-
-            <label for="onlineVisibilityInput">
-                Online / Last Seen Privacy
-            </label>
-
-            <select id="onlineVisibilityInput">
-
-                <option value="everyone">
-                    Everyone — সবাই দেখতে পারবে
-                </option>
-
-                <option value="friends">
-                    Friends — শুধু বন্ধু
-                </option>
-
-                <option value="nobody">
-                    Nobody — কেউ দেখতে পারবে না
-                </option>
-
-            </select>
 
         </div>
 
@@ -938,7 +839,6 @@ body{
 </div>
 
 
-<!-- TOAST -->
 <div
     id="toast"
     class="toast">
@@ -965,7 +865,7 @@ const supabaseClient =
 
 
 /* =========================================================
-   GLOBAL VARIABLES
+   GLOBAL
 ========================================================= */
 
 let currentUser = null;
@@ -974,6 +874,287 @@ let currentPhone = null;
 let currentAddress = null;
 let selectedPhoto = null;
 let isOwnProfile = false;
+
+
+/* =========================================================
+   LANGUAGE
+========================================================= */
+
+let currentLanguage =
+    localStorage.getItem("raztara_language") ||
+    "bn";
+
+
+const translations = {
+
+    bn: {
+
+        pageTitle: "প্রোফাইল",
+        myProfile: "আমার প্রোফাইল",
+        loading: "প্রোফাইল লোড হচ্ছে...",
+
+        username: "ইউজারনেম",
+        phone: "ফোন",
+        email: "ইমেইল",
+        address: "ঠিকানা",
+        lastSeen: "শেষ দেখা",
+
+        private: "গোপনীয়",
+        noUsername: "ইউজারনেম নেই",
+        noEmail: "ইমেইল নেই",
+        notAvailable: "তথ্য নেই",
+
+        home: "হোম",
+        editProfile: "প্রোফাইল সম্পাদনা",
+        logout: "লগআউট",
+
+        editTitle: "প্রোফাইল সম্পাদনা",
+        changePhoto: "📷 প্রোফাইল ছবি পরিবর্তন করুন",
+
+        fullName: "পূর্ণ নাম",
+        usernameField: "ইউজারনেম",
+        emailField: "ইমেইল",
+        phoneField: "ফোন",
+        addressField: "ঠিকানা",
+        bioField: "বায়ো",
+
+        namePlaceholder: "আপনার নাম",
+        phonePlaceholder: "ফোন নম্বর",
+        addressPlaceholder: "আপনার ঠিকানা",
+        bioPlaceholder: "নিজের সম্পর্কে কিছু লিখুন",
+
+        save: "প্রোফাইল সংরক্ষণ করুন",
+        saving: "সংরক্ষণ হচ্ছে...",
+
+        onlineStatus: "● অনলাইন / শেষ দেখা",
+
+        photoOnly: "শুধু image file নির্বাচন করুন।",
+        photoSize: "ছবির size সর্বোচ্চ 6 MB হতে পারবে।",
+
+        usernameRequired: "ইউজারনেম দিন।",
+
+        usernameInvalid:
+            "ইউজারনেম ৩-৩০ অক্ষরের হতে হবে এবং শুধু English letter, number ও underscore ব্যবহার করা যাবে।",
+
+        usernameTaken:
+            "এই ইউজারনেম আগে থেকেই ব্যবহার করা হয়েছে। অন্য ইউজারনেম দিন।",
+
+        saveSuccess:
+            "প্রোফাইল সফলভাবে সংরক্ষণ হয়েছে।",
+
+        saveError:
+            "প্রোফাইল সংরক্ষণ করতে সমস্যা হয়েছে: ",
+
+        loadError:
+            "প্রোফাইল লোড করতে সমস্যা হয়েছে",
+
+        retry: "আবার চেষ্টা করুন",
+
+        logoutConfirm:
+            "আপনি কি লগআউট করতে চান?",
+
+        logoutError:
+            "লগআউট করতে সমস্যা হয়েছে: ",
+
+        onlineLastSeen:
+            "অনলাইন / শেষ দেখা"
+
+    },
+
+
+    en: {
+
+        pageTitle: "Profile",
+        myProfile: "My Profile",
+        loading: "Loading profile...",
+
+        username: "Username",
+        phone: "Phone",
+        email: "Email",
+        address: "Address",
+        lastSeen: "Last seen",
+
+        private: "Private",
+        noUsername: "No username",
+        noEmail: "No email",
+        notAvailable: "Not available",
+
+        home: "Home",
+        editProfile: "Edit Profile",
+        logout: "Logout",
+
+        editTitle: "Edit Profile",
+        changePhoto: "📷 Change Profile Photo",
+
+        fullName: "Full Name",
+        usernameField: "Username",
+        emailField: "Email",
+        phoneField: "Phone",
+        addressField: "Address",
+        bioField: "Bio",
+
+        namePlaceholder: "Your name",
+        phonePlaceholder: "Phone number",
+        addressPlaceholder: "Your address",
+        bioPlaceholder: "Write something about yourself",
+
+        save: "Save Profile",
+        saving: "Saving...",
+
+        onlineStatus: "● Online / Last seen",
+
+        photoOnly: "Please select an image file.",
+        photoSize: "Image size must be 6 MB or less.",
+
+        usernameRequired: "Please enter a username.",
+
+        usernameInvalid:
+            "Username must be 3-30 characters and may contain only English letters, numbers and underscore.",
+
+        usernameTaken:
+            "This username is already in use. Please choose another username.",
+
+        saveSuccess:
+            "Profile saved successfully.",
+
+        saveError:
+            "Failed to save profile: ",
+
+        loadError:
+            "Failed to load profile",
+
+        retry: "Try again",
+
+        logoutConfirm:
+            "Do you want to logout?",
+
+        logoutError:
+            "Logout failed: ",
+
+        onlineLastSeen:
+            "Online / Last seen"
+
+    }
+
+};
+
+
+function t(key){
+
+    return (
+        translations[currentLanguage] &&
+        translations[currentLanguage][key]
+    ) ||
+    translations.en[key] ||
+    key;
+}
+
+
+/* =========================================================
+   APPLY LANGUAGE
+========================================================= */
+
+function applyLanguage(){
+
+    document.documentElement.lang =
+        currentLanguage === "bn"
+            ? "bn"
+            : "en";
+
+
+    document.title =
+        "Profile | Raztara";
+
+
+    $("loadingText").textContent =
+        t("loading");
+
+
+    $("usernameLabel").textContent =
+        t("username");
+
+    $("phoneLabel").textContent =
+        t("phone");
+
+    $("emailLabel").textContent =
+        t("email");
+
+    $("addressLabel").textContent =
+        t("address");
+
+    $("lastSeenLabel").textContent =
+        t("lastSeen");
+
+
+    $("homeText").textContent =
+        t("home");
+
+    $("editText").textContent =
+        t("editProfile");
+
+    $("logoutText").textContent =
+        t("logout");
+
+
+    $("editModalTitle").textContent =
+        t("editTitle");
+
+    $("photoChangeText").textContent =
+        t("changePhoto");
+
+
+    $("fullNameLabel").textContent =
+        t("fullName");
+
+    $("usernameInputLabel").textContent =
+        t("usernameField");
+
+    $("emailInputLabel").textContent =
+        t("emailField");
+
+    $("phoneInputLabel").textContent =
+        t("phoneField");
+
+    $("addressInputLabel").textContent =
+        t("addressField");
+
+    $("bioInputLabel").textContent =
+        t("bioField");
+
+
+    $("fullNameInput").placeholder =
+        t("namePlaceholder");
+
+    $("phoneInput").placeholder =
+        t("phonePlaceholder");
+
+    $("addressInput").placeholder =
+        t("addressPlaceholder");
+
+    $("bioInput").placeholder =
+        t("bioPlaceholder");
+
+
+    if(
+        !$("saveProfileBtn").disabled
+    ){
+
+        $("saveProfileBtn").textContent =
+            t("save");
+    }
+
+
+    if(
+        isOwnProfile &&
+        currentProfile
+    ){
+
+        $("topTitle").textContent =
+            t("myProfile");
+
+    }
+
+}
 
 
 /* =========================================================
@@ -986,7 +1167,11 @@ function $(id){
 
 
 function escapeText(value){
-    if(value === null || value === undefined){
+
+    if(
+        value === null ||
+        value === undefined
+    ){
         return "";
     }
 
@@ -994,48 +1179,74 @@ function escapeText(value){
 }
 
 
-function showToast(message, type = ""){
-    const toast = $("toast");
+function showToast(
+    message,
+    type = ""
+){
 
-    toast.textContent = message;
+    const toast =
+        $("toast");
 
-    toast.className = "toast show " + type;
+    toast.textContent =
+        message;
 
-    clearTimeout(window.__toastTimer);
+    toast.className =
+        "toast show " + type;
 
-    window.__toastTimer = setTimeout(() => {
-        toast.className = "toast";
-    }, 3000);
+    clearTimeout(
+        window.__toastTimer
+    );
+
+    window.__toastTimer =
+        setTimeout(() => {
+
+            toast.className =
+                "toast";
+
+        }, 3000);
 }
 
 
-function defaultAvatar(name = "User"){
+function defaultAvatar(
+    name = "User"
+){
+
     const letter =
         String(name || "U")
             .trim()
             .charAt(0)
-            .toUpperCase() || "U";
+            .toUpperCase() ||
+        "U";
 
-    return "https://ui-avatars.com/api/?name=" +
+    return (
+        "https://ui-avatars.com/api/?name=" +
         encodeURIComponent(letter) +
-        "&background=087f5b&color=ffffff&size=256";
+        "&background=087f5b&color=ffffff&size=256"
+    );
 }
 
 
 function formatLastSeen(value){
 
     if(!value){
-        return "Not available";
+        return t("notAvailable");
     }
 
-    const date = new Date(value);
+    const date =
+        new Date(value);
 
-    if(Number.isNaN(date.getTime())){
-        return "Not available";
+    if(
+        Number.isNaN(
+            date.getTime()
+        )
+    ){
+        return t("notAvailable");
     }
 
     return date.toLocaleString(
-        "bn-BD",
+        currentLanguage === "bn"
+            ? "bn-BD"
+            : "en-US",
         {
             dateStyle:"medium",
             timeStyle:"short"
@@ -1048,28 +1259,43 @@ function formatLastSeen(value){
    BACK
 ========================================================= */
 
-$("backBtn").addEventListener("click", () => {
+$("backBtn").addEventListener(
+    "click",
+    () => {
 
-    if(window.history.length > 1){
-        window.history.back();
-    }else{
-        window.location.href = "index.html";
+        if(
+            window.history.length > 1
+        ){
+
+            window.history.back();
+
+        }else{
+
+            window.location.href =
+                "index.html";
+        }
+
     }
-
-});
+);
 
 
 /* =========================================================
    HOME
 ========================================================= */
 
-$("homeBtn").addEventListener("click", () => {
-    window.location.href = "index.html";
-});
+$("homeBtn").addEventListener(
+    "click",
+    () => {
+
+        window.location.href =
+            "index.html";
+
+    }
+);
 
 
 /* =========================================================
-   LOAD CURRENT USER
+   CURRENT USER
 ========================================================= */
 
 async function loadCurrentUser(){
@@ -1077,18 +1303,28 @@ async function loadCurrentUser(){
     const {
         data,
         error
-    } = await supabaseClient.auth.getUser();
+    } =
+    await supabaseClient
+        .auth
+        .getUser();
 
     if(error){
         throw error;
     }
 
-    if(!data || !data.user){
-        window.location.href = "login.html";
+    if(
+        !data ||
+        !data.user
+    ){
+
+        window.location.href =
+            "login.html";
+
         return null;
     }
 
-    currentUser = data.user;
+    currentUser =
+        data.user;
 
     return currentUser;
 }
@@ -1098,23 +1334,36 @@ async function loadCurrentUser(){
    FRIEND CHECK
 ========================================================= */
 
-async function areUsersFriends(userA, userB){
+async function areUsersFriends(
+    userA,
+    userB
+){
 
-    if(!userA || !userB){
+    if(
+        !userA ||
+        !userB
+    ){
         return false;
     }
 
-    if(userA === userB){
+    if(
+        userA === userB
+    ){
         return true;
     }
+
 
     const {
         data,
         error
-    } = await supabaseClient
+    } =
+    await supabaseClient
         .from("friendships")
         .select("id")
-        .eq("status", "accepted")
+        .eq(
+            "status",
+            "accepted"
+        )
         .or(
             "and(requester_id.eq." +
             userA +
@@ -1128,7 +1377,9 @@ async function areUsersFriends(userA, userB){
         )
         .limit(1);
 
+
     if(error){
+
         console.warn(
             "Friend check error:",
             error
@@ -1137,77 +1388,100 @@ async function areUsersFriends(userA, userB){
         return false;
     }
 
-    return Array.isArray(data) &&
-           data.length > 0;
+
+    return (
+        Array.isArray(data) &&
+        data.length > 0
+    );
 }
 
 
 /* =========================================================
-   LOAD PHONE PRIVACY
+   LOAD PHONE
 ========================================================= */
 
-async function loadPhone(targetUserId){
+async function loadPhone(
+    targetUserId
+){
 
     const {
         data,
         error
-    } = await supabaseClient
+    } =
+    await supabaseClient
         .from("profile_phone")
         .select(
             "user_id, phone, visibility"
         )
-        .eq("user_id", targetUserId)
+        .eq(
+            "user_id",
+            targetUserId
+        )
         .maybeSingle();
+
 
     if(error){
         throw error;
     }
 
+
     if(!data){
+
         return {
             phone:null,
             visibility:"only_me"
         };
     }
 
+
     return data;
 }
 
 
 /* =========================================================
-   LOAD ADDRESS PRIVACY
+   LOAD ADDRESS
 ========================================================= */
 
-async function loadAddress(targetUserId){
+async function loadAddress(
+    targetUserId
+){
 
     const {
         data,
         error
-    } = await supabaseClient
+    } =
+    await supabaseClient
         .from("profile_address")
         .select(
             "user_id, address, visibility"
         )
-        .eq("user_id", targetUserId)
+        .eq(
+            "user_id",
+            targetUserId
+        )
         .maybeSingle();
+
 
     if(error){
         throw error;
     }
 
+
     if(!data){
+
         return {
             address:null,
             visibility:"only_me"
         };
     }
 
+
     return data;
 }
 
 
 /* =========================================================
-   CHECK FIELD VISIBILITY
+   FIELD VISIBILITY
 ========================================================= */
 
 async function canViewPrivateField(
@@ -1215,20 +1489,30 @@ async function canViewPrivateField(
     visibility
 ){
 
-    if(ownerId === currentUser.id){
+    if(
+        ownerId === currentUser.id
+    ){
         return true;
     }
 
-    if(visibility === "public"){
+
+    if(
+        visibility === "public"
+    ){
         return true;
     }
 
-    if(visibility === "friend"){
+
+    if(
+        visibility === "friend"
+    ){
+
         return await areUsersFriends(
             currentUser.id,
             ownerId
         );
     }
+
 
     return false;
 }
@@ -1242,30 +1526,38 @@ async function loadProfile(){
 
     try{
 
-        $("loadingBox").classList.remove("hidden");
-        $("profileContent").classList.add("hidden");
+        $("loadingBox")
+            .classList
+            .remove("hidden");
+
+        $("profileContent")
+            .classList
+            .add("hidden");
+
 
         const params =
             new URLSearchParams(
                 window.location.search
             );
 
+
         const targetUserId =
             params.get("user") ||
             currentUser.id;
 
+
         isOwnProfile =
-            targetUserId === currentUser.id;
+            targetUserId ===
+            currentUser.id;
 
 
-        /* -----------------------------------------
-           PROFILE TABLE
-        ----------------------------------------- */
+        /* PROFILE */
 
         const {
             data: profile,
             error: profileError
-        } = await supabaseClient
+        } =
+        await supabaseClient
             .from("profiles")
             .select(`
                 id,
@@ -1276,7 +1568,10 @@ async function loadProfile(){
                 online_visibility,
                 last_seen_at
             `)
-            .eq("id", targetUserId)
+            .eq(
+                "id",
+                targetUserId
+            )
             .maybeSingle();
 
 
@@ -1288,37 +1583,39 @@ async function loadProfile(){
         if(!profile){
 
             throw new Error(
-                "এই user-এর profile পাওয়া যায়নি।"
+                currentLanguage === "bn"
+                    ? "এই user-এর profile পাওয়া যায়নি।"
+                    : "This user's profile was not found."
             );
         }
 
 
-        currentProfile = profile;
+        currentProfile =
+            profile;
 
 
-        /* -----------------------------------------
-           PHONE
-        ----------------------------------------- */
+        /* PHONE */
 
         currentPhone =
-            await loadPhone(targetUserId);
+            await loadPhone(
+                targetUserId
+            );
 
 
-        /* -----------------------------------------
-           ADDRESS
-        ----------------------------------------- */
+        /* ADDRESS */
 
         currentAddress =
-            await loadAddress(targetUserId);
+            await loadAddress(
+                targetUserId
+            );
 
 
-        /* -----------------------------------------
-           FRIEND STATUS
-        ----------------------------------------- */
+        /* FRIEND */
 
         let isFriend = false;
 
         if(!isOwnProfile){
+
             isFriend =
                 await areUsersFriends(
                     currentUser.id,
@@ -1327,74 +1624,80 @@ async function loadProfile(){
         }
 
 
-        /* -----------------------------------------
-           BASIC PROFILE
-        ----------------------------------------- */
+        /* BASIC */
 
         const name =
             profile.full_name ||
             profile.username ||
             "User";
 
-        $("profileName").textContent =
+
+        $("profileName")
+            .textContent =
             name;
 
-        $("profileUsername").textContent =
+
+        $("profileUsername")
+            .textContent =
             profile.username
-                ? "@" + profile.username
-                : "Username নেই";
+                ? "@" +
+                  profile.username
+                : t("noUsername");
 
-        $("detailUsername").textContent =
+
+        $("detailUsername")
+            .textContent =
             profile.username
-                ? "@" + profile.username
-                : "Username নেই";
+                ? "@" +
+                  profile.username
+                : t("noUsername");
 
 
-        $("profileBio").textContent =
+        $("profileBio")
+            .textContent =
             profile.bio || "";
 
 
-        /* -----------------------------------------
-           AVATAR
-        ----------------------------------------- */
+        /* AVATAR */
 
         const avatar =
             profile.avatar_url ||
             defaultAvatar(name);
 
-        $("profileAvatar").src = avatar;
 
-        $("profileAvatar").onerror = () => {
-            $("profileAvatar").src =
-                defaultAvatar(name);
-        };
+        $("profileAvatar")
+            .src =
+            avatar;
 
 
-        /* -----------------------------------------
-           EMAIL
-        ----------------------------------------- */
+        $("profileAvatar")
+            .onerror =
+            () => {
+
+                $("profileAvatar")
+                    .src =
+                    defaultAvatar(name);
+            };
+
+
+        /* EMAIL */
 
         if(isOwnProfile){
 
-            $("detailEmail").textContent =
+            $("detailEmail")
+                .textContent =
                 currentUser.email ||
-                "Email নেই";
+                t("noEmail");
 
         }else{
 
-            /*
-             * profiles.email ব্যবহার করা হয়নি।
-             * অন্য user-এর email দেখানো হবে না।
-             */
-
-            $("detailEmail").textContent =
-                "Private";
+            $("detailEmail")
+                .textContent =
+                t("private");
         }
 
 
-        /* -----------------------------------------
-           PHONE
-        ----------------------------------------- */
+        /* PHONE */
 
         const phoneVisible =
             await canViewPrivateField(
@@ -1402,21 +1705,25 @@ async function loadProfile(){
                 currentPhone.visibility
             );
 
-        if(phoneVisible && currentPhone.phone){
 
-            $("detailPhone").textContent =
+        if(
+            phoneVisible &&
+            currentPhone.phone
+        ){
+
+            $("detailPhone")
+                .textContent =
                 currentPhone.phone;
 
         }else{
 
-            $("detailPhone").textContent =
-                "Private";
+            $("detailPhone")
+                .textContent =
+                t("private");
         }
 
 
-        /* -----------------------------------------
-           ADDRESS
-        ----------------------------------------- */
+        /* ADDRESS */
 
         const addressVisible =
             await canViewPrivateField(
@@ -1424,34 +1731,42 @@ async function loadProfile(){
                 currentAddress.visibility
             );
 
-        if(addressVisible && currentAddress.address){
 
-            $("detailAddress").textContent =
+        if(
+            addressVisible &&
+            currentAddress.address
+        ){
+
+            $("detailAddress")
+                .textContent =
                 currentAddress.address;
 
         }else{
 
-            $("detailAddress").textContent =
-                "Private";
+            $("detailAddress")
+                .textContent =
+                t("private");
         }
 
 
-        /* -----------------------------------------
-           ONLINE / LAST SEEN
-        ----------------------------------------- */
+        /* ONLINE */
 
-        let statusAllowed = false;
+        let statusAllowed =
+            false;
+
 
         if(isOwnProfile){
 
-            statusAllowed = true;
+            statusAllowed =
+                true;
 
         }else if(
             profile.online_visibility ===
             "everyone"
         ){
 
-            statusAllowed = true;
+            statusAllowed =
+                true;
 
         }else if(
             profile.online_visibility ===
@@ -1459,74 +1774,87 @@ async function loadProfile(){
             isFriend
         ){
 
-            statusAllowed = true;
-
+            statusAllowed =
+                true;
         }
 
 
         if(statusAllowed){
 
-            $("detailLastSeen").textContent =
+            $("detailLastSeen")
+                .textContent =
                 formatLastSeen(
                     profile.last_seen_at
                 );
+
 
             if(
                 profile.online_visibility !==
                 "nobody"
             ){
 
-                $("profileStatus").textContent =
-                    "● Online / Last seen";
+                $("profileStatus")
+                    .textContent =
+                    t("onlineStatus");
 
-                $("onlineDot").style.display =
+                $("onlineDot")
+                    .style
+                    .display =
                     "block";
+
             }
 
         }else{
 
-            $("detailLastSeen").textContent =
-                "Private";
+            $("detailLastSeen")
+                .textContent =
+                t("private");
 
-            $("profileStatus").textContent =
+            $("profileStatus")
+                .textContent =
                 "";
 
-            $("onlineDot").style.display =
+            $("onlineDot")
+                .style
+                .display =
                 "none";
         }
 
 
-        /* -----------------------------------------
-           OWN PROFILE
-        ----------------------------------------- */
+        /* OWN PROFILE */
 
         if(isOwnProfile){
 
-            $("topTitle").textContent =
-                "My Profile";
+            $("topTitle")
+                .textContent =
+                t("myProfile");
 
-            $("bottomNav").classList.remove(
-                "hidden"
-            );
+            $("bottomNav")
+                .classList
+                .remove("hidden");
 
         }else{
 
-            $("topTitle").textContent =
+            $("topTitle")
+                .textContent =
                 name;
 
-            $("bottomNav").classList.add(
-                "hidden"
-            );
+            $("bottomNav")
+                .classList
+                .add("hidden");
         }
 
 
-        $("loadingBox").classList.add(
-            "hidden"
-        );
+        applyLanguage();
 
-        $("profileContent").classList.remove(
-            "hidden"
-        );
+
+        $("loadingBox")
+            .classList
+            .add("hidden");
+
+        $("profileContent")
+            .classList
+            .remove("hidden");
 
 
     }catch(error){
@@ -1536,126 +1864,141 @@ async function loadProfile(){
             error
         );
 
-        $("loadingBox").innerHTML = `
-            <div style="
-                color:#c62828;
-                font-weight:700;
-                margin-bottom:10px;
-            ">
-                Profile লোড করতে সমস্যা হয়েছে
-            </div>
 
-            <div style="
-                color:#666;
-                font-size:14px;
-                line-height:1.5;
-            ">
-                ${escapeText(error.message)}
-            </div>
+        $("loadingBox")
+            .innerHTML = `
 
-            <button
-                type="button"
-                onclick="location.reload()"
-                style="
-                    margin-top:16px;
-                    border:0;
-                    background:#087f5b;
-                    color:white;
-                    padding:10px 18px;
-                    border-radius:10px;
+                <div style="
+                    color:#c62828;
                     font-weight:700;
+                    margin-bottom:10px;
                 ">
-                আবার চেষ্টা করুন
-            </button>
-        `;
+                    ${t("loadError")}
+                </div>
 
+                <div style="
+                    color:#666;
+                    font-size:14px;
+                    line-height:1.5;
+                ">
+                    ${escapeText(error.message)}
+                </div>
+
+                <button
+                    type="button"
+                    onclick="location.reload()"
+                    style="
+                        margin-top:16px;
+                        border:0;
+                        background:#087f5b;
+                        color:white;
+                        padding:10px 18px;
+                        border-radius:10px;
+                        font-weight:700;
+                    ">
+                    ${t("retry")}
+                </button>
+            `;
     }
 }
 
 
 /* =========================================================
-   OPEN EDIT MODAL
+   OPEN EDIT
 ========================================================= */
 
 function openEditModal(){
 
-    if(!isOwnProfile || !currentProfile){
+    if(
+        !isOwnProfile ||
+        !currentProfile
+    ){
         return;
     }
 
 
-    /* -----------------------------------------
-       BASIC DATA
-    ----------------------------------------- */
-
-    $("fullNameInput").value =
-        currentProfile.full_name || "";
-
-    $("usernameInput").value =
-        currentProfile.username || "";
-
-    $("emailInput").value =
-        currentUser.email || "";
-
-    $("phoneInput").value =
-        currentPhone.phone || "";
-
-    $("phoneVisibilityInput").value =
-        currentPhone.visibility ||
-        "public";
-
-    $("addressInput").value =
-        currentAddress.address || "";
-
-    $("addressVisibilityInput").value =
-        currentAddress.visibility ||
-        "public";
-
-    $("bioInput").value =
-        currentProfile.bio || "";
-
-    $("onlineVisibilityInput").value =
-        currentProfile.online_visibility ||
-        "everyone";
+    $("fullNameInput")
+        .value =
+        currentProfile.full_name ||
+        "";
 
 
-    /* -----------------------------------------
-       PHOTO
-    ----------------------------------------- */
+    $("usernameInput")
+        .value =
+        currentProfile.username ||
+        "";
+
+
+    $("emailInput")
+        .value =
+        currentUser.email ||
+        "";
+
+
+    $("phoneInput")
+        .value =
+        currentPhone.phone ||
+        "";
+
+
+    $("addressInput")
+        .value =
+        currentAddress.address ||
+        "";
+
+
+    $("bioInput")
+        .value =
+        currentProfile.bio ||
+        "";
+
 
     const name =
         currentProfile.full_name ||
         currentProfile.username ||
         "User";
 
-    $("editAvatar").src =
+
+    $("editAvatar")
+        .src =
         currentProfile.avatar_url ||
         defaultAvatar(name);
 
-    selectedPhoto = null;
 
-    $("photoInput").value = "";
+    selectedPhoto =
+        null;
 
 
-    $("editModal").classList.add(
-        "show"
-    );
+    $("photoInput")
+        .value =
+        "";
+
+
+    $("editModal")
+        .classList
+        .add("show");
+
+
+    applyLanguage();
 }
 
 
 /* =========================================================
-   CLOSE EDIT MODAL
+   CLOSE EDIT
 ========================================================= */
 
 function closeEditModal(){
 
-    $("editModal").classList.remove(
-        "show"
-    );
+    $("editModal")
+        .classList
+        .remove("show");
 
-    selectedPhoto = null;
+    selectedPhoto =
+        null;
 
-    $("photoInput").value = "";
+    $("photoInput")
+        .value =
+        "";
 }
 
 
@@ -1663,115 +2006,135 @@ function closeEditModal(){
    EDIT BUTTON
 ========================================================= */
 
-$("editBtn").addEventListener(
-    "click",
-    openEditModal
-);
+$("editBtn")
+    .addEventListener(
+        "click",
+        openEditModal
+    );
 
 
 /* =========================================================
    CLOSE BUTTON
 ========================================================= */
 
-$("closeEditBtn").addEventListener(
-    "click",
-    closeEditModal
-);
+$("closeEditBtn")
+    .addEventListener(
+        "click",
+        closeEditModal
+    );
 
 
 /* =========================================================
-   CLICK OUTSIDE MODAL
+   OUTSIDE MODAL
 ========================================================= */
 
-$("editModal").addEventListener(
-    "click",
-    event => {
+$("editModal")
+    .addEventListener(
+        "click",
+        event => {
 
-        if(event.target === $("editModal")){
-            closeEditModal();
+            if(
+                event.target ===
+                $("editModal")
+            ){
+
+                closeEditModal();
+            }
+
         }
-
-    }
-);
+    );
 
 
 /* =========================================================
-   PHOTO SELECT
+   PHOTO
 ========================================================= */
 
-$("photoInput").addEventListener(
-    "change",
-    event => {
+$("photoInput")
+    .addEventListener(
+        "change",
+        event => {
 
-        const file =
-            event.target.files &&
-            event.target.files[0];
-
-        if(!file){
-            return;
-        }
+            const file =
+                event.target.files &&
+                event.target.files[0];
 
 
-        if(!file.type.startsWith("image/")){
+            if(!file){
+                return;
+            }
 
-            showToast(
-                "শুধু image file নির্বাচন করুন।",
-                "error"
+
+            if(
+                !file.type.startsWith(
+                    "image/"
+                )
+            ){
+
+                showToast(
+                    t("photoOnly"),
+                    "error"
+                );
+
+                event.target.value =
+                    "";
+
+                return;
+            }
+
+
+            if(
+                file.size >
+                6 * 1024 * 1024
+            ){
+
+                showToast(
+                    t("photoSize"),
+                    "error"
+                );
+
+                event.target.value =
+                    "";
+
+                return;
+            }
+
+
+            selectedPhoto =
+                file;
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                e => {
+
+                    $("editAvatar")
+                        .src =
+                        e.target.result;
+                };
+
+
+            reader.readAsDataURL(
+                file
             );
-
-            event.target.value = "";
-
-            return;
         }
-
-
-        if(file.size > 6 * 1024 * 1024){
-
-            showToast(
-                "ছবির size সর্বোচ্চ 6 MB হতে পারবে।",
-                "error"
-            );
-
-            event.target.value = "";
-
-            return;
-        }
-
-
-        selectedPhoto = file;
-
-
-        const reader =
-            new FileReader();
-
-        reader.onload = e => {
-
-            $("editAvatar").src =
-                e.target.result;
-
-        };
-
-        reader.readAsDataURL(file);
-    }
-);
+    );
 
 
 /* =========================================================
-   USERNAME VALIDATION
+   USERNAME
 ========================================================= */
 
-function validateUsername(username){
+function validateUsername(
+    username
+){
 
     if(!username){
         return false;
     }
 
-    /*
-     * English letters,
-     * numbers,
-     * underscore,
-     * 3-30 characters
-     */
 
     return /^[a-zA-Z0-9_]{3,30}$/
         .test(username);
@@ -1779,21 +2142,28 @@ function validateUsername(username){
 
 
 /* =========================================================
-   UPLOAD PROFILE PHOTO
+   UPLOAD PHOTO
 ========================================================= */
 
 async function uploadProfilePhoto(){
 
     if(!selectedPhoto){
-        return currentProfile.avatar_url || null;
+
+        return (
+            currentProfile.avatar_url ||
+            null
+        );
     }
 
 
     const originalName =
-        selectedPhoto.name || "";
+        selectedPhoto.name ||
+        "";
+
 
     const parts =
         originalName.split(".");
+
 
     let extension =
         parts.length > 1
@@ -1825,7 +2195,8 @@ async function uploadProfilePhoto(){
 
     const {
         error: uploadError
-    } = await supabaseClient
+    } =
+    await supabaseClient
         .storage
         .from("avatars")
         .upload(
@@ -1848,7 +2219,8 @@ async function uploadProfilePhoto(){
 
     const {
         data
-    } = supabaseClient
+    } =
+    supabaseClient
         .storage
         .from("avatars")
         .getPublicUrl(
@@ -1877,15 +2249,13 @@ async function saveProfile(){
 
     try{
 
-        saveButton.disabled = true;
+        saveButton.disabled =
+            true;
+
 
         saveButton.textContent =
-            "Saving...";
+            t("saving");
 
-
-        /* -----------------------------------------
-           READ INPUTS
-        ----------------------------------------- */
 
         const fullName =
             $("fullNameInput")
@@ -1918,44 +2288,29 @@ async function saveProfile(){
                 .trim();
 
 
-        const phoneVisibility =
-            $("phoneVisibilityInput")
-                .value;
-
-
-        const addressVisibility =
-            $("addressVisibilityInput")
-                .value;
-
-
-        const onlineVisibility =
-            $("onlineVisibilityInput")
-                .value;
-
-
-        /* -----------------------------------------
-           VALIDATION
-        ----------------------------------------- */
+        /* VALIDATION */
 
         if(!username){
 
             throw new Error(
-                "Username দিন।"
+                t("usernameRequired")
             );
         }
 
 
-        if(!validateUsername(username)){
+        if(
+            !validateUsername(
+                username
+            )
+        ){
 
             throw new Error(
-                "Username 3-30 অক্ষরের হতে হবে এবং শুধু English letter, number ও underscore ব্যবহার করা যাবে।"
+                t("usernameInvalid")
             );
         }
 
 
-        /* -----------------------------------------
-           PHOTO
-        ----------------------------------------- */
+        /* PHOTO */
 
         let avatarUrl =
             currentProfile.avatar_url ||
@@ -1969,14 +2324,13 @@ async function saveProfile(){
         }
 
 
-        /* -----------------------------------------
-           UPDATE PROFILE
-           এখানে email নেই।
-        ----------------------------------------- */
+        /* PROFILE */
 
         const {
-            error: profileUpdateError
-        } = await supabaseClient
+            error:
+                profileUpdateError
+        } =
+        await supabaseClient
             .from("profiles")
             .update({
 
@@ -1992,11 +2346,9 @@ async function saveProfile(){
                 avatar_url:
                     avatarUrl,
 
-                online_visibility:
-                    onlineVisibility,
-
                 updated_at:
-                    new Date().toISOString()
+                    new Date()
+                        .toISOString()
 
             })
             .eq(
@@ -2013,21 +2365,21 @@ async function saveProfile(){
             ){
 
                 throw new Error(
-                    "এই username আগে থেকেই ব্যবহার করা হয়েছে। অন্য username দিন।"
+                    t("usernameTaken")
                 );
             }
+
 
             throw profileUpdateError;
         }
 
 
-        /* -----------------------------------------
-           PHONE PRIVACY TABLE
-        ----------------------------------------- */
+        /* PHONE */
 
         const {
             error: phoneError
-        } = await supabaseClient
+        } =
+        await supabaseClient
             .from("profile_phone")
             .upsert(
                 {
@@ -2037,12 +2389,9 @@ async function saveProfile(){
                     phone:
                         phone || null,
 
-                    visibility:
-                        phoneVisibility,
-
                     updated_at:
-                        new Date().toISOString()
-
+                        new Date()
+                            .toISOString()
                 },
                 {
                     onConflict:
@@ -2056,13 +2405,12 @@ async function saveProfile(){
         }
 
 
-        /* -----------------------------------------
-           ADDRESS PRIVACY TABLE
-        ----------------------------------------- */
+        /* ADDRESS */
 
         const {
             error: addressError
-        } = await supabaseClient
+        } =
+        await supabaseClient
             .from("profile_address")
             .upsert(
                 {
@@ -2072,12 +2420,9 @@ async function saveProfile(){
                     address:
                         address || null,
 
-                    visibility:
-                        addressVisibility,
-
                     updated_at:
-                        new Date().toISOString()
-
+                        new Date()
+                            .toISOString()
                 },
                 {
                     onConflict:
@@ -2091,22 +2436,14 @@ async function saveProfile(){
         }
 
 
-        /* -----------------------------------------
-           SUCCESS
-        ----------------------------------------- */
-
         showToast(
-            "Profile সফলভাবে Save হয়েছে।",
+            t("saveSuccess"),
             "success"
         );
 
 
         closeEditModal();
 
-
-        /*
-         * নতুন data database থেকে আবার load করি।
-         */
 
         await loadProfile();
 
@@ -2120,78 +2457,89 @@ async function saveProfile(){
 
 
         showToast(
-            "Profile Save করতে সমস্যা হয়েছে: " +
-            (error.message || "Unknown error"),
+            t("saveError") +
+            (
+                error.message ||
+                "Unknown error"
+            ),
             "error"
         );
 
 
     }finally{
 
-        saveButton.disabled = false;
+        saveButton.disabled =
+            false;
 
         saveButton.textContent =
-            "Save Profile";
+            t("save");
     }
 }
 
 
 /* =========================================================
-   SAVE BUTTON
+   SAVE
 ========================================================= */
 
-$("saveProfileBtn").addEventListener(
-    "click",
-    saveProfile
-);
+$("saveProfileBtn")
+    .addEventListener(
+        "click",
+        saveProfile
+    );
 
 
 /* =========================================================
    LOGOUT
 ========================================================= */
 
-$("logoutBtn").addEventListener(
-    "click",
-    async () => {
+$("logoutBtn")
+    .addEventListener(
+        "click",
+        async () => {
 
-        const confirmed =
-            window.confirm(
-                "আপনি কি Logout করতে চান?"
-            );
+            const confirmed =
+                window.confirm(
+                    t("logoutConfirm")
+                );
 
-        if(!confirmed){
-            return;
+
+            if(!confirmed){
+                return;
+            }
+
+
+            const {
+                error
+            } =
+            await supabaseClient
+                .auth
+                .signOut();
+
+
+            if(error){
+
+                showToast(
+                    t("logoutError") +
+                    error.message,
+                    "error"
+                );
+
+                return;
+            }
+
+
+            window.location.href =
+                "login.html";
         }
-
-
-        const {
-            error
-        } = await supabaseClient
-            .auth
-            .signOut();
-
-
-        if(error){
-
-            showToast(
-                "Logout করতে সমস্যা হয়েছে: " +
-                error.message,
-                "error"
-            );
-
-            return;
-        }
-
-
-        window.location.href =
-            "login.html";
-    }
-);
+    );
 
 
 /* =========================================================
-   INITIAL LOAD
+   INITIAL
 ========================================================= */
+
+applyLanguage();
+
 
 (async function(){
 
@@ -2200,11 +2548,14 @@ $("logoutBtn").addEventListener(
         const user =
             await loadCurrentUser();
 
+
         if(!user){
             return;
         }
 
+
         await loadProfile();
+
 
     }catch(error){
 
@@ -2213,21 +2564,26 @@ $("logoutBtn").addEventListener(
             error
         );
 
-        $("loadingBox").innerHTML = `
-            <div style="
-                color:#c62828;
-                font-weight:700;
-            ">
-                Profile লোড করতে সমস্যা হয়েছে:
-            </div>
 
-            <div style="
-                margin-top:8px;
-                color:#666;
-            ">
-                ${escapeText(error.message)}
-            </div>
-        `;
+        $("loadingBox")
+            .innerHTML = `
+
+                <div style="
+                    color:#c62828;
+                    font-weight:700;
+                ">
+                    ${t("loadError")}
+                </div>
+
+                <div style="
+                    margin-top:8px;
+                    color:#666;
+                ">
+                    ${escapeText(
+                        error.message
+                    )}
+                </div>
+            `;
     }
 
 })();
