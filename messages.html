@@ -2,13 +2,17 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
-<title>Messages | RAZTARA</title>
+<meta name="theme-color" content="#075e54">
+
+<title>RAZTARA — Messages</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+
 *{
     box-sizing:border-box;
     margin:0;
@@ -16,17 +20,16 @@
     -webkit-tap-highlight-color:transparent;
 }
 
-html,body{
+html,
+body{
     width:100%;
     height:100%;
     overflow:hidden;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-    background:#f4f7f9;
-    color:#17212b;
+    font-family:Arial,"Noto Sans Bengali",sans-serif;
+    background:#efeae2;
 }
 
 button,
-textarea,
 input{
     font:inherit;
 }
@@ -36,6 +39,10 @@ button{
     cursor:pointer;
 }
 
+/* =========================
+   APP
+========================= */
+
 #app{
     width:100%;
     height:100%;
@@ -43,18 +50,20 @@ button{
     flex-direction:column;
 }
 
-/* ================= HEADER ================= */
+/* =========================
+   HEADER
+========================= */
 
-.topbar{
-    height:64px;
-    flex-shrink:0;
-    background:#087f5b;
+.header{
+    height:62px;
+    min-height:62px;
+    background:#075e54;
     color:#fff;
     display:flex;
     align-items:center;
-    padding:8px 10px;
+    padding:0 10px;
     gap:10px;
-    box-shadow:0 2px 8px rgba(0,0,0,.15);
+    box-shadow:0 1px 5px rgba(0,0,0,.25);
     z-index:20;
 }
 
@@ -64,38 +73,31 @@ button{
     border-radius:50%;
     background:transparent;
     color:#fff;
-    font-size:28px;
+    font-size:27px;
     display:flex;
     align-items:center;
     justify-content:center;
 }
 
 .back-btn:active{
-    background:rgba(255,255,255,.15);
+    background:rgba(255,255,255,.12);
 }
 
-.user-head{
-    min-width:0;
-    flex:1;
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.header-avatar{
+.target-avatar{
     width:43px;
     height:43px;
     border-radius:50%;
     object-fit:cover;
-    background:#dfe7e4;
-    border:2px solid rgba(255,255,255,.8);
+    background:#d9eeee;
+    flex-shrink:0;
 }
 
-.header-info{
+.target-info{
     min-width:0;
+    flex:1;
 }
 
-.header-name{
+.target-name{
     font-size:16px;
     font-weight:700;
     white-space:nowrap;
@@ -103,134 +105,108 @@ button{
     text-overflow:ellipsis;
 }
 
-.header-status{
+.target-status{
     font-size:12px;
-    opacity:.9;
-    margin-top:2px;
+    opacity:.85;
+    margin-top:3px;
 }
 
-/* ================= ERROR / STATUS ================= */
-
-.status-box{
-    display:none;
-    flex-shrink:0;
-    padding:9px 12px;
-    font-size:13px;
-    line-height:1.4;
-    background:#fff3cd;
-    color:#664d03;
-    border-bottom:1px solid #ffe69c;
-    z-index:19;
-}
-
-.status-box.show{
-    display:block;
-}
-
-.status-box.error{
-    background:#f8d7da;
-    color:#842029;
-    border-color:#f1aeb5;
-}
-
-.status-box.success{
-    background:#d1e7dd;
-    color:#0f5132;
-    border-color:#a3cfbb;
-}
-
-/* ================= MESSAGE AREA ================= */
+/* =========================
+   MESSAGE AREA
+========================= */
 
 .messages-area{
     flex:1;
-    min-height:0;
     overflow-y:auto;
     overflow-x:hidden;
-    padding:12px 10px 10px;
-    background:
-        radial-gradient(circle at 20% 20%,rgba(8,127,91,.035),transparent 25%),
-        radial-gradient(circle at 80% 70%,rgba(8,127,91,.035),transparent 25%),
-        #f4f7f9;
+    padding:12px 8px 10px;
     scroll-behavior:smooth;
+
+    background-color:#efeae2;
+
+    background-image:
+        radial-gradient(
+            rgba(255,255,255,.25) 1px,
+            transparent 1px
+        );
+
+    background-size:18px 18px;
 }
 
-.messages-inner{
-    min-height:100%;
-    display:flex;
-    flex-direction:column;
-    justify-content:flex-end;
+.messages-area::-webkit-scrollbar{
+    width:4px;
 }
 
-.loading{
-    text-align:center;
-    color:#6c757d;
-    padding:25px 10px;
-    font-size:14px;
+.messages-area::-webkit-scrollbar-thumb{
+    background:rgba(0,0,0,.18);
+    border-radius:10px;
 }
 
-.empty{
-    text-align:center;
-    color:#7b8790;
-    padding:30px 15px;
-    font-size:14px;
-}
+/* =========================
+   DATE
+========================= */
 
 .date-separator{
-    align-self:center;
-    margin:10px 0 12px;
-    padding:5px 11px;
-    border-radius:14px;
-    background:#dfe7e4;
-    color:#52616b;
-    font-size:11px;
-    box-shadow:0 1px 2px rgba(0,0,0,.05);
+    text-align:center;
+    margin:9px 0;
 }
 
-/* ================= MESSAGE ROW ================= */
+.date-separator span{
+    display:inline-block;
+    padding:6px 12px;
+    background:#d9e8df;
+    color:#46504b;
+    border-radius:9px;
+    font-size:11px;
+}
+
+/* =========================
+   MESSAGE ROW
+========================= */
 
 .message-row{
-    width:100%;
     display:flex;
-    margin:3px 0;
-    position:relative;
+    width:100%;
+    margin:2px 0;
 }
 
 .message-row.mine{
     justify-content:flex-end;
 }
 
-.message-row.other{
+.message-row.theirs{
     justify-content:flex-start;
 }
 
-.bubble{
+.message-bubble{
     position:relative;
-    max-width:min(78%,420px);
-    padding:8px 10px 5px;
-    border-radius:16px;
+    max-width:min(82%,430px);
+    padding:8px 9px 5px;
+    border-radius:9px;
+    box-shadow:0 1px 1px rgba(0,0,0,.10);
     word-wrap:break-word;
     overflow-wrap:anywhere;
-    box-shadow:0 1px 2px rgba(0,0,0,.08);
-    user-select:none;
-    -webkit-user-select:none;
 }
 
-.mine .bubble{
-    background:#087f5b;
-    color:#fff;
-    border-bottom-right-radius:5px;
+.mine .message-bubble{
+    background:#d9fdd3;
+    border-top-right-radius:3px;
 }
 
-.other .bubble{
+.theirs .message-bubble{
     background:#fff;
-    color:#17212b;
-    border-bottom-left-radius:5px;
+    border-top-left-radius:3px;
 }
 
 .message-content{
     font-size:15px;
     line-height:1.42;
     white-space:pre-wrap;
+}
+
+.deleted-message{
+    color:#777;
+    font-style:italic;
 }
 
 .message-meta{
@@ -244,463 +220,441 @@ button{
 
 .message-time{
     font-size:10px;
-    opacity:.72;
-    white-space:nowrap;
+    color:#68716d;
 }
 
 .read-status{
-    font-size:11px;
+    font-size:13px;
     line-height:1;
 }
 
-.media-message{
+.read-status.read{
+    color:#1685d7;
+}
+
+.read-status.unread{
+    color:#68716d;
+}
+
+/* =========================
+   MEDIA
+========================= */
+
+.message-image{
     display:block;
-    max-width:100%;
-    width:auto;
-    max-height:320px;
-    border-radius:11px;
+    width:100%;
+    max-width:300px;
+    max-height:330px;
     object-fit:cover;
+    border-radius:7px;
     cursor:pointer;
 }
 
-.video-message{
+.message-video{
     display:block;
-    max-width:100%;
-    width:min(320px,100%);
-    max-height:320px;
-    border-radius:11px;
+    width:100%;
+    max-width:320px;
+    max-height:350px;
+    border-radius:7px;
     background:#000;
 }
 
-.file-message{
+.message-audio{
+    width:min(290px,100%);
+    display:block;
+}
+
+.file-link{
     display:flex;
     align-items:center;
     gap:10px;
-    min-width:180px;
-    padding:7px 4px;
-    color:inherit;
     text-decoration:none;
+    color:#075e54;
+    padding:5px 2px;
+    font-weight:600;
 }
 
 .file-icon{
-    width:38px;
-    height:38px;
-    border-radius:10px;
-    background:rgba(255,255,255,.15);
+    width:40px;
+    height:40px;
+    border-radius:9px;
+    background:#e3f0ed;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:21px;
+    font-size:22px;
     flex-shrink:0;
-}
-
-.other .file-icon{
-    background:#edf3f1;
 }
 
 .file-name{
     min-width:0;
-    flex:1;
-    font-size:13px;
     overflow:hidden;
     text-overflow:ellipsis;
     white-space:nowrap;
 }
 
-.audio-message{
-    width:min(260px,100%);
-    height:42px;
-}
-
-.deleted-message{
-    font-style:italic;
-    opacity:.75;
-    font-size:13px;
-}
-
-/* ================= COMPOSER ================= */
-
-.composer-wrap{
-    flex-shrink:0;
-    background:#fff;
-    border-top:1px solid #dde5e2;
-    padding:7px 8px calc(7px + env(safe-area-inset-bottom));
-    z-index:15;
-}
+/* =========================
+   COMPOSER
+========================= */
 
 .composer{
+    min-height:61px;
+    padding:7px;
+    background:#f0f2f5;
     display:flex;
     align-items:flex-end;
     gap:6px;
+    border-top:1px solid #d6d6d6;
+    z-index:15;
 }
 
 .tool-btn{
-    width:40px;
-    height:40px;
+    width:42px;
+    height:42px;
+    flex:0 0 42px;
     border-radius:50%;
-    background:#edf3f1;
-    color:#087f5b;
+    background:transparent;
+    color:#54656f;
+    font-size:21px;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:20px;
-    flex-shrink:0;
 }
 
 .tool-btn:active{
-    transform:scale(.94);
+    background:#ddd;
 }
 
-.text-box{
+.text-wrap{
     flex:1;
     min-width:0;
-    max-height:110px;
-    min-height:40px;
-    resize:none;
-    border:1px solid #d7e0dd;
-    border-radius:20px;
-    padding:9px 14px;
-    outline:none;
-    background:#f7f9f8;
-    color:#17212b;
-    line-height:20px;
+    background:#fff;
+    border-radius:22px;
+    display:flex;
+    align-items:center;
+    padding:0 5px 0 13px;
+    min-height:43px;
 }
 
-.text-box:focus{
-    border-color:#087f5b;
-    background:#fff;
+#messageInput{
+    width:100%;
+    border:0;
+    outline:none;
+    resize:none;
+    background:transparent;
+    font-size:15px;
+    line-height:20px;
+    max-height:100px;
+    padding:10px 0;
 }
 
 .send-btn{
-    width:42px;
-    height:42px;
+    width:45px;
+    height:45px;
+    flex:0 0 45px;
     border-radius:50%;
-    background:#087f5b;
+    background:#075e54;
     color:#fff;
+    font-size:20px;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:20px;
-    flex-shrink:0;
 }
 
-.send-btn:disabled,
-.tool-btn:disabled{
-    opacity:.45;
-    cursor:not-allowed;
+.send-btn:active{
+    transform:scale(.95);
 }
 
-/* ================= VOICE BAR ================= */
-
-.voice-bar{
-    display:none;
-    align-items:center;
-    gap:8px;
-    padding:7px 2px 4px;
+.recording{
+    background:#c62828 !important;
 }
 
-.voice-bar.show{
-    display:flex;
-}
-
-.voice-time{
-    flex:1;
-    color:#087f5b;
-    font-weight:700;
-    font-size:14px;
-}
-
-.voice-cancel{
-    width:38px;
-    height:38px;
-    border-radius:50%;
-    background:#f8d7da;
-    color:#842029;
-}
-
-.voice-stop{
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    background:#087f5b;
-    color:#fff;
-}
-
-/* ================= FILE INPUT ================= */
+/* =========================
+   INPUT
+========================= */
 
 #fileInput{
     display:none;
 }
 
-/* ================= MESSAGE MENU ================= */
+/* =========================
+   MENU
+========================= */
 
 .message-menu{
     position:fixed;
     display:none;
-    width:190px;
-    background:#fff;
-    border-radius:14px;
-    overflow:hidden;
-    box-shadow:0 8px 30px rgba(0,0,0,.22);
-    border:1px solid #e2e8e5;
     z-index:1000;
-}
-
-.message-menu.show{
-    display:block;
-}
-
-.menu-title{
-    padding:10px 13px;
-    font-size:12px;
-    color:#7a858d;
-    background:#f7f9f8;
-}
-
-.menu-item{
-    width:100%;
-    min-height:45px;
-    padding:10px 13px;
+    min-width:190px;
     background:#fff;
-    display:flex;
-    align-items:center;
-    gap:10px;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 8px 35px rgba(0,0,0,.28);
+}
+
+.message-menu button{
+    width:100%;
+    min-height:46px;
+    padding:10px 15px;
+    background:#fff;
+    color:#222;
     text-align:left;
-    color:#17212b;
     font-size:14px;
 }
 
-.menu-item:active{
-    background:#eef5f2;
+.message-menu button:active{
+    background:#f0f0f0;
 }
 
-.menu-item.danger{
-    color:#c0392b;
+.menu-danger{
+    color:#c62828 !important;
 }
 
-/* ================= PREVIEW ================= */
+/* =========================
+   OVERLAY
+========================= */
 
-.preview{
+.overlay{
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,.88);
+    z-index:2000;
     display:none;
     align-items:center;
     justify-content:center;
-    z-index:2000;
-    padding:15px;
+    background:rgba(0,0,0,.92);
 }
 
-.preview.show{
-    display:flex;
+.overlay img{
+    max-width:96%;
+    max-height:92%;
+    object-fit:contain;
 }
 
-.preview img,
-.preview video{
-    max-width:100%;
-    max-height:90vh;
-    border-radius:10px;
-}
-
-.preview-close{
+.overlay-close{
     position:absolute;
-    top:18px;
-    right:18px;
-    width:42px;
-    height:42px;
+    top:15px;
+    right:15px;
+    width:43px;
+    height:43px;
     border-radius:50%;
-    background:rgba(255,255,255,.18);
+    background:rgba(255,255,255,.15);
     color:#fff;
     font-size:25px;
 }
 
-/* ================= MOBILE ================= */
+/* =========================
+   TOAST
+========================= */
 
-@media(max-width:600px){
-    .bubble{
-        max-width:82%;
-    }
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:78px;
+    transform:translateX(-50%);
+    max-width:90%;
+    padding:10px 15px;
+    border-radius:10px;
+    background:#222;
+    color:#fff;
+    font-size:13px;
+    z-index:3000;
+    display:none;
+    text-align:center;
+}
 
-    .media-message{
-        max-height:280px;
-    }
+.toast.error{
+    background:#c62828;
+}
 
-    .video-message{
-        max-height:280px;
+.toast.success{
+    background:#075e54;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.loading{
+    position:fixed;
+    inset:0;
+    z-index:5000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:12px;
+    background:#efeae2;
+    color:#075e54;
+}
+
+.loader{
+    width:40px;
+    height:40px;
+    border:4px solid #cce2df;
+    border-top-color:#075e54;
+    border-radius:50%;
+    animation:spin .8s linear infinite;
+}
+
+@keyframes spin{
+    to{
+        transform:rotate(360deg);
     }
 }
+
+@media(max-width:500px){
+
+    .message-bubble{
+        max-width:86%;
+    }
+
+    .message-image{
+        max-width:250px;
+    }
+}
+
 </style>
 </head>
 
 <body>
 
+<div id="loadingScreen" class="loading">
+    <div class="loader"></div>
+    <div>Chat লোড হচ্ছে...</div>
+</div>
+
 <div id="app">
 
-    <div class="topbar">
+    <header class="header">
 
-        <button class="back-btn" id="backBtn" type="button" aria-label="Back">
+        <button
+            id="backBtn"
+            class="back-btn"
+            type="button"
+            aria-label="Back">
             ‹
         </button>
 
-        <div class="user-head">
+        <img
+            id="targetAvatar"
+            class="target-avatar"
+            src=""
+            alt="">
 
-            <img
-                id="headerAvatar"
-                class="header-avatar"
-                src=""
-                alt=""
-            >
-
-            <div class="header-info">
-                <div id="headerName" class="header-name">লোড হচ্ছে...</div>
-                <div id="headerStatus" class="header-status">Connecting...</div>
+        <div class="target-info">
+            <div
+                id="targetName"
+                class="target-name">
+                Chat
             </div>
 
+            <div
+                id="targetStatus"
+                class="target-status">
+                অনলাইন
+            </div>
         </div>
 
-    </div>
+    </header>
 
-    <div id="statusBox" class="status-box"></div>
-
-    <main id="messagesArea" class="messages-area">
-        <div id="messagesInner" class="messages-inner">
-            <div class="loading">মেসেজ লোড হচ্ছে...</div>
-        </div>
+    <main
+        id="messagesArea"
+        class="messages-area">
     </main>
 
-    <div class="composer-wrap">
+    <div class="composer">
 
-        <div id="voiceBar" class="voice-bar">
+        <button
+            id="emojiBtn"
+            class="tool-btn"
+            type="button"
+            title="Emoji">
+            😊
+        </button>
 
-            <div id="voiceTime" class="voice-time">
-                🎙️ 00:00
-            </div>
+        <button
+            id="fileBtn"
+            class="tool-btn"
+            type="button"
+            title="Photo / File">
+            📎
+        </button>
 
-            <button
-                id="voiceCancel"
-                class="voice-cancel"
-                type="button"
-                title="Cancel"
-            >
-                ✕
-            </button>
+        <input
+            id="fileInput"
+            type="file"
+            accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar">
 
-            <button
-                id="voiceStop"
-                class="voice-stop"
-                type="button"
-                title="Stop"
-            >
-                ■
-            </button>
+        <div class="text-wrap">
 
-        </div>
-
-        <div class="composer">
-
-            <button
-                id="emojiBtn"
-                class="tool-btn"
-                type="button"
-                title="Emoji"
-            >
-                😊
-            </button>
-
-            <button
-                id="fileBtn"
-                class="tool-btn"
-                type="button"
-                title="Photo / Video / File"
-            >
-                📎
-            </button>
-
-            <button
-                id="voiceBtn"
-                class="tool-btn"
-                type="button"
-                title="Voice"
-            >
-                🎤
-            </button>
-
-            <textarea
+            <input
                 id="messageInput"
-                class="text-box"
-                rows="1"
-                placeholder="মেসেজ লিখুন..."
+                type="text"
                 autocomplete="off"
-                autocorrect="on"
-                spellcheck="true"
-            ></textarea>
-
-            <button
-                id="sendBtn"
-                class="send-btn"
-                type="button"
-                title="Send"
-            >
-                ➤
-            </button>
+                placeholder="মেসেজ লিখুন...">
 
         </div>
+
+        <button
+            id="voiceBtn"
+            class="tool-btn"
+            type="button"
+            title="Voice">
+            🎙️
+        </button>
+
+        <button
+            id="sendBtn"
+            class="send-btn"
+            type="button"
+            title="Send">
+            ➤
+        </button>
 
     </div>
 
 </div>
-
-<input
-    id="fileInput"
-    type="file"
-    accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar"
->
 
 <div id="messageMenu" class="message-menu">
 
-    <div class="menu-title">
-        মেসেজ অপশন
-    </div>
-
     <button
-        id="shareBtn"
-        class="menu-item"
-        type="button"
-    >
-        🔗 <span>Share</span>
+        id="menuShare"
+        type="button">
+        ↗️ Share
     </button>
 
     <button
-        id="deleteMeBtn"
-        class="menu-item"
-        type="button"
-    >
-        🗑️ <span>Only me</span>
+        id="menuDeleteMe"
+        type="button">
+        🗑️ Delete for me
     </button>
 
     <button
-        id="deleteAllBtn"
-        class="menu-item danger"
-        type="button"
-    >
-        🗑️ <span>Delete for everyone</span>
+        id="menuDeleteEveryone"
+        class="menu-danger"
+        type="button">
+        🗑️ Delete for everyone
     </button>
 
 </div>
 
-<div id="preview" class="preview">
+<div id="imageOverlay" class="overlay">
 
     <button
-        id="previewClose"
-        class="preview-close"
-        type="button"
-    >
+        id="closeOverlay"
+        class="overlay-close"
+        type="button">
         ×
     </button>
 
-    <div id="previewContent"></div>
+    <img
+        id="overlayImage"
+        src=""
+        alt="">
 
 </div>
+
+<div id="toast" class="toast"></div>
 
 <script>
 "use strict";
@@ -723,52 +677,33 @@ const supabaseClient =
         SUPABASE_KEY
     );
 
-
-/* =========================================================
-   STATE
-========================================================= */
-
-let currentUser = null;
-let currentUserId = "";
-
-let otherUserId = "";
-let conversationId = "";
-
-let otherProfile = null;
-
-let realtimeChannel = null;
-
-let selectedMessage = null;
-
-let messageCache = new Map();
-let hiddenMessageIds = new Set();
-
-let isPageReady = false;
-let isSending = false;
-
-let mediaRecorder = null;
-let voiceStream = null;
-let voiceChunks = [];
-let voiceMimeType = "";
-let recordingTimer = null;
-let recordingSeconds = 0;
-
-
 /* =========================================================
    ELEMENTS
 ========================================================= */
 
+const loadingScreen =
+    document.getElementById("loadingScreen");
+
 const messagesArea =
     document.getElementById("messagesArea");
 
-const messagesInner =
-    document.getElementById("messagesInner");
+const targetAvatar =
+    document.getElementById("targetAvatar");
+
+const targetName =
+    document.getElementById("targetName");
+
+const targetStatus =
+    document.getElementById("targetStatus");
 
 const messageInput =
     document.getElementById("messageInput");
 
 const sendBtn =
     document.getElementById("sendBtn");
+
+const emojiBtn =
+    document.getElementById("emojiBtn");
 
 const fileBtn =
     document.getElementById("fileBtn");
@@ -779,60 +714,48 @@ const fileInput =
 const voiceBtn =
     document.getElementById("voiceBtn");
 
-const emojiBtn =
-    document.getElementById("emojiBtn");
-
-const voiceBar =
-    document.getElementById("voiceBar");
-
-const voiceTime =
-    document.getElementById("voiceTime");
-
-const voiceCancel =
-    document.getElementById("voiceCancel");
-
-const voiceStop =
-    document.getElementById("voiceStop");
-
-const statusBox =
-    document.getElementById("statusBox");
+const backBtn =
+    document.getElementById("backBtn");
 
 const messageMenu =
     document.getElementById("messageMenu");
 
-const shareBtn =
-    document.getElementById("shareBtn");
+const imageOverlay =
+    document.getElementById("imageOverlay");
 
-const deleteMeBtn =
-    document.getElementById("deleteMeBtn");
+const overlayImage =
+    document.getElementById("overlayImage");
 
-const deleteAllBtn =
-    document.getElementById("deleteAllBtn");
+const closeOverlay =
+    document.getElementById("closeOverlay");
 
-const preview =
-    document.getElementById("preview");
-
-const previewContent =
-    document.getElementById("previewContent");
-
-const previewClose =
-    document.getElementById("previewClose");
-
-const headerAvatar =
-    document.getElementById("headerAvatar");
-
-const headerName =
-    document.getElementById("headerName");
-
-const headerStatus =
-    document.getElementById("headerStatus");
-
-const backBtn =
-    document.getElementById("backBtn");
-
+const toast =
+    document.getElementById("toast");
 
 /* =========================================================
-   URL PARAMETER
+   STATE
+========================================================= */
+
+let currentUser = null;
+let targetUserId = null;
+let targetProfile = null;
+
+let conversationId = null;
+
+let selectedMessage = null;
+
+let messageCache = [];
+
+let realtimeChannel = null;
+
+let mediaRecorder = null;
+let recordedChunks = [];
+let isRecording = false;
+
+let longPressTimer = null;
+
+/* =========================================================
+   URL USER
 ========================================================= */
 
 function getTargetUserId(){
@@ -842,100 +765,95 @@ function getTargetUserId(){
             window.location.search
         );
 
-    return (
+    return String(
         params.get("user") ||
         params.get("id") ||
         ""
     ).trim();
 }
 
-
 /* =========================================================
-   STATUS
+   TOAST
 ========================================================= */
 
-let statusTimer = null;
+let toastTimer = null;
 
-function showStatus(message,type=""){
+function showToast(
+    message,
+    type = "success"
+){
 
-    clearTimeout(statusTimer);
+    clearTimeout(toastTimer);
 
-    statusBox.textContent = message;
+    toast.textContent = message;
 
-    statusBox.className =
-        "status-box show " + type;
+    toast.className =
+        "toast " + type;
 
-    statusTimer =
-        setTimeout(()=>{
-            statusBox.className =
-                "status-box";
-        },6000);
+    toast.style.display = "block";
+
+    toastTimer = setTimeout(()=>{
+        toast.style.display = "none";
+    },2600);
 }
 
 function showError(message){
-
-    console.error(message);
-
-    showStatus(
-        "সমস্যা: " + message,
-        "error"
-    );
+    showToast(message,"error");
 }
 
 function showSuccess(message){
-
-    showStatus(
-        message,
-        "success"
-    );
+    showToast(message,"success");
 }
 
-
 /* =========================================================
-   HTML ESCAPE
+   ESCAPE
 ========================================================= */
 
 function escapeHtml(value){
 
-    return String(value ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-}
+    const div =
+        document.createElement("div");
 
+    div.textContent =
+        String(value ?? "");
+
+    return div.innerHTML;
+}
 
 /* =========================================================
    DATE / TIME
 ========================================================= */
 
-function getLocalDateKey(dateValue){
+function formatTime(dateString){
 
-    const d =
-        new Date(dateValue);
+    const date =
+        new Date(dateString);
 
-    const y =
-        d.getFullYear();
-
-    const m =
-        String(
-            d.getMonth()+1
-        ).padStart(2,"0");
-
-    const day =
-        String(
-            d.getDate()
-        ).padStart(2,"0");
-
-    return `${y}-${m}-${day}`;
+    return date.toLocaleTimeString(
+        "bn-BD",
+        {
+            hour:"numeric",
+            minute:"2-digit"
+        }
+    );
 }
 
+function dateKey(dateString){
 
-function formatDateSeparator(dateValue){
+    const date =
+        new Date(dateString);
 
-    const d =
-        new Date(dateValue);
+    return [
+        date.getFullYear(),
+        String(date.getMonth()+1).padStart(2,"0"),
+        String(date.getDate()).padStart(2,"0")
+    ].join("-");
+}
+
+function formatDateLabel(dateString){
+
+    const date =
+        new Date(dateString);
 
     const today =
         new Date();
@@ -948,20 +866,20 @@ function formatDateSeparator(dateValue){
     );
 
     if(
-        getLocalDateKey(d) ===
-        getLocalDateKey(today)
+        date.toDateString() ===
+        today.toDateString()
     ){
         return "আজ";
     }
 
     if(
-        getLocalDateKey(d) ===
-        getLocalDateKey(yesterday)
+        date.toDateString() ===
+        yesterday.toDateString()
     ){
         return "গতকাল";
     }
 
-    return d.toLocaleDateString(
+    return date.toLocaleDateString(
         "bn-BD",
         {
             day:"numeric",
@@ -971,106 +889,27 @@ function formatDateSeparator(dateValue){
     );
 }
 
-
-function formatTime(dateValue){
-
-    const d =
-        new Date(dateValue);
-
-    return d.toLocaleTimeString(
-        "bn-BD",
-        {
-            hour:"numeric",
-            minute:"2-digit",
-            hour12:true
-        }
-    );
-}
-
-
 /* =========================================================
-   AVATAR
+   PROFILE
 ========================================================= */
 
-function getAvatarUrl(profile){
-
-    if(
-        profile &&
-        profile.avatar_url
-    ){
-
-        if(
-            profile.avatar_url.startsWith("http")
-        ){
-            return profile.avatar_url;
-        }
-
-        const {
-            data
-        } =
-        supabaseClient
-            .storage
-            .from("avatars")
-            .getPublicUrl(
-                profile.avatar_url
-            );
-
-        return data.publicUrl;
-    }
-
-    return "";
-}
-
-
-function setAvatarImage(img,url,name){
-
-    img.onerror = function(){
-
-        img.onerror = null;
-
-        img.src =
-            "data:image/svg+xml;charset=UTF-8," +
-            encodeURIComponent(
-                `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
-                    <rect width="100" height="100" fill="#dfe7e4"/>
-                    <text x="50" y="58" text-anchor="middle"
-                    font-size="42" fill="#087f5b">${escapeHtml(
-                        (name || "U").charAt(0).toUpperCase()
-                    )}</text>
-                </svg>`
-            );
-    };
-
-    if(url){
-        img.src = url;
-    }else{
-        img.onerror();
-    }
-}
-
-
-/* =========================================================
-   LOAD OTHER PROFILE
-========================================================= */
-
-async function loadOtherProfile(){
+async function loadTargetProfile(){
 
     const {
         data,
         error
     } =
-    await supabaseClient
+        await supabaseClient
         .from("profiles")
         .select(`
             id,
             username,
             full_name,
             avatar_url,
-            bio,
             online_visibility,
             last_seen_at
         `)
-        .eq("id",otherUserId)
+        .eq("id",targetUserId)
         .maybeSingle();
 
     if(error){
@@ -1078,202 +917,171 @@ async function loadOtherProfile(){
     }
 
     if(!data){
-
         throw new Error(
             "এই user-এর profile পাওয়া যায়নি।"
         );
     }
 
-    otherProfile = data;
+    targetProfile = data;
 
-    const name =
+    targetName.textContent =
         data.full_name ||
         data.username ||
         "RAZTARA User";
 
-    headerName.textContent =
-        name;
+    targetAvatar.src =
+        data.avatar_url ||
+        createAvatar(
+            data.full_name ||
+            data.username ||
+            "R"
+        );
 
-    setAvatarImage(
-        headerAvatar,
-        getAvatarUrl(data),
-        name
-    );
-
-    updateHeaderStatus(data);
+    updateTargetStatus();
 }
 
+function createAvatar(name){
 
-function updateHeaderStatus(profile){
+    const letter =
+        String(name || "R")
+        .trim()
+        .charAt(0)
+        .toUpperCase();
 
-    if(
-        profile.online_visibility ===
-        "nobody"
-    ){
+    const svg =
+        `
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="120"
+             height="120">
+            <rect width="120"
+                  height="120"
+                  rx="60"
+                  fill="#075e54"/>
+            <text x="60"
+                  y="72"
+                  text-anchor="middle"
+                  font-size="52"
+                  fill="white"
+                  font-family="Arial">
+                ${letter}
+            </text>
+        </svg>
+        `;
 
-        headerStatus.textContent =
-            "RAZTARA";
+    return "data:image/svg+xml;charset=UTF-8," +
+        encodeURIComponent(svg);
+}
+
+function updateTargetStatus(){
+
+    if(!targetProfile){
+        targetStatus.textContent = "";
         return;
     }
 
-    if(profile.last_seen_at){
+    if(
+        targetProfile.online_visibility ===
+        "nobody"
+    ){
+        targetStatus.textContent =
+            "শেষ দেখা লুকানো";
+        return;
+    }
+
+    if(targetProfile.last_seen_at){
 
         const last =
             new Date(
-                profile.last_seen_at
+                targetProfile.last_seen_at
             );
 
         const diff =
-            Date.now() -
-            last.getTime();
+            Date.now() - last.getTime();
 
-        if(diff < 120000){
+        if(diff < 2 * 60 * 1000){
 
-            headerStatus.textContent =
-                "অনলাইনে";
+            targetStatus.textContent =
+                "অনলাইন";
+
             return;
         }
 
-        headerStatus.textContent =
+        targetStatus.textContent =
             "শেষ দেখা " +
             formatTime(
-                profile.last_seen_at
+                targetProfile.last_seen_at
             );
 
         return;
     }
 
-    headerStatus.textContent =
-        "RAZTARA";
+    targetStatus.textContent =
+        "অনলাইন";
 }
 
-
 /* =========================================================
-   FIND / CREATE CONVERSATION
+   CONVERSATION
 ========================================================= */
 
 async function getExistingConversation(){
 
     const {
-        data:myRows,
-        error:myError
-    } =
-    await supabaseClient
-        .from("conversation_members")
-        .select("conversation_id")
-        .eq("user_id",currentUserId);
-
-    if(myError){
-        throw myError;
-    }
-
-    const myConversationIds =
-        (myRows || [])
-            .map(
-                row =>
-                    row.conversation_id
-            );
-
-    if(!myConversationIds.length){
-        return null;
-    }
-
-    const {
-        data:otherRows,
-        error:otherError
-    } =
-    await supabaseClient
-        .from("conversation_members")
-        .select("conversation_id")
-        .eq("user_id",otherUserId)
-        .in(
-            "conversation_id",
-            myConversationIds
-        );
-
-    if(otherError){
-        throw otherError;
-    }
-
-    if(!otherRows || !otherRows.length){
-        return null;
-    }
-
-    const ids =
-        otherRows.map(
-            row =>
-                row.conversation_id
-        );
-
-    const {
-        data:conversations,
+        data: memberships,
         error
     } =
-    await supabaseClient
-        .from("conversations")
-        .select(`
-            id,
-            is_group,
-            name,
-            created_by,
-            created_at
-        `)
-        .in("id",ids)
-        .eq("is_group",false);
+        await supabaseClient
+        .from("conversation_members")
+        .select("conversation_id,user_id")
+        .in(
+            "user_id",
+            [
+                currentUser.id,
+                targetUserId
+            ]
+        );
 
     if(error){
         throw error;
     }
 
-    if(!conversations || !conversations.length){
+    if(!memberships ||
+       memberships.length === 0){
+
         return null;
     }
 
-    /*
-      Prefer a conversation where there are
-      exactly these two users.
-    */
+    const grouped = new Map();
 
-    for(
-        const conversation
-        of conversations
-    ){
+    for(const row of memberships){
 
-        const {
-            data:members,
-            error:membersError
-        } =
-        await supabaseClient
-            .from("conversation_members")
-            .select("user_id")
-            .eq(
-                "conversation_id",
-                conversation.id
+        if(!grouped.has(row.conversation_id)){
+            grouped.set(
+                row.conversation_id,
+                new Set()
             );
-
-        if(membersError){
-            continue;
         }
 
-        const memberIds =
-            (members || [])
-                .map(
-                    m =>
-                        m.user_id
-                );
+        grouped
+        .get(row.conversation_id)
+        .add(row.user_id);
+    }
+
+    for(
+        const [id,members]
+        of grouped.entries()
+    ){
 
         if(
-            memberIds.length === 2 &&
-            memberIds.includes(currentUserId) &&
-            memberIds.includes(otherUserId)
+            members.has(currentUser.id) &&
+            members.has(targetUserId) &&
+            members.size === 2
         ){
-            return conversation.id;
+            return id;
         }
     }
 
     return null;
 }
-
 
 async function createConversation(){
 
@@ -1281,11 +1089,11 @@ async function createConversation(){
         data:conversation,
         error
     } =
-    await supabaseClient
+        await supabaseClient
         .from("conversations")
         .insert({
             is_group:false,
-            created_by:currentUserId
+            created_by:currentUser.id
         })
         .select("id")
         .single();
@@ -1294,45 +1102,28 @@ async function createConversation(){
         throw error;
     }
 
-    if(!conversation?.id){
-
-        throw new Error(
-            "Conversation তৈরি করা যায়নি।"
-        );
-    }
-
     const {
         error:memberError
     } =
-    await supabaseClient
+        await supabaseClient
         .from("conversation_members")
         .insert([
             {
-                conversation_id:
-                    conversation.id,
-                user_id:
-                    currentUserId
+                conversation_id:conversation.id,
+                user_id:currentUser.id
             },
             {
-                conversation_id:
-                    conversation.id,
-                user_id:
-                    otherUserId
+                conversation_id:conversation.id,
+                user_id:targetUserId
             }
         ]);
 
     if(memberError){
 
-        /*
-          Cleanup conversation if member insert fails.
-        */
         await supabaseClient
-            .from("conversations")
-            .delete()
-            .eq(
-                "id",
-                conversation.id
-            );
+        .from("conversations")
+        .delete()
+        .eq("id",conversation.id);
 
         throw memberError;
     }
@@ -1340,10 +1131,9 @@ async function createConversation(){
     return conversation.id;
 }
 
-
 async function getOrCreateConversation(){
 
-    let existing =
+    const existing =
         await getExistingConversation();
 
     if(existing){
@@ -1353,49 +1143,30 @@ async function getOrCreateConversation(){
     return await createConversation();
 }
 
-
 /* =========================================================
-   HIDDEN MESSAGES
+   HIDDEN MESSAGE IDS
 ========================================================= */
 
-async function loadHiddenMessageIds(){
-
-    hiddenMessageIds =
-        new Set();
+async function getHiddenMessageIds(){
 
     const {
         data,
         error
     } =
-    await supabaseClient
+        await supabaseClient
         .from("message_hidden")
         .select("message_id")
-        .eq(
-            "user_id",
-            currentUserId
-        );
+        .eq("user_id",currentUser.id);
 
     if(error){
-
-        /*
-          If the table is temporarily unavailable,
-          do not block normal messaging.
-        */
-        console.warn(
-            "Hidden message load:",
-            error
-        );
-
-        return;
+        throw error;
     }
 
-    (data || []).forEach(row=>{
-        hiddenMessageIds.add(
-            row.message_id
-        );
-    });
+    return new Set(
+        (data || [])
+        .map(row=>row.message_id)
+    );
 }
-
 
 /* =========================================================
    LOAD MESSAGES
@@ -1403,16 +1174,14 @@ async function loadHiddenMessageIds(){
 
 async function loadMessages(){
 
-    messagesInner.innerHTML =
-        `<div class="loading">
-            মেসেজ লোড হচ্ছে...
-        </div>`;
+    const hiddenIds =
+        await getHiddenMessageIds();
 
     const {
         data,
         error
     } =
-    await supabaseClient
+        await supabaseClient
         .from("messages")
         .select(`
             id,
@@ -1442,139 +1211,85 @@ async function loadMessages(){
     }
 
     messageCache =
-        new Map();
-
-    const visibleMessages =
-        [];
-
-    (data || []).forEach(message=>{
-
-        messageCache.set(
-            message.id,
-            message
+        (data || [])
+        .filter(
+            message =>
+                !hiddenIds.has(message.id)
         );
 
-        if(
-            !hiddenMessageIds.has(
-                message.id
-            )
-        ){
-            visibleMessages.push(
-                message
-            );
-        }
-    });
-
-    renderMessages(
-        visibleMessages,
-        true
-    );
+    renderMessages();
 }
-
 
 /* =========================================================
    RENDER ALL
 ========================================================= */
 
-function renderMessages(
-    messages,
-    scrollBottom=false
-){
+function renderMessages(){
 
-    messagesInner.innerHTML = "";
+    messagesArea.innerHTML = "";
 
-    if(!messages.length){
+    let lastDate = "";
 
-        const empty =
-            document.createElement("div");
+    for(const message of messageCache){
 
-        empty.className =
-            "empty";
+        const currentDate =
+            dateKey(message.created_at);
 
-        empty.textContent =
-            "এখনও কোনো মেসেজ নেই।";
+        if(currentDate !== lastDate){
 
-        messagesInner.appendChild(
-            empty
-        );
-
-    }else{
-
-        let lastDateKey = "";
-
-        messages.forEach(message=>{
-
-            const dateKey =
-                getLocalDateKey(
-                    message.created_at
-                );
-
-            if(
-                dateKey !==
-                lastDateKey
-            ){
-
-                const separator =
-                    document.createElement(
-                        "div"
-                    );
-
-                separator.className =
-                    "date-separator";
-
-                separator.textContent =
-                    formatDateSeparator(
-                        message.created_at
-                    );
-
-                messagesInner.appendChild(
-                    separator
-                );
-
-                lastDateKey =
-                    dateKey;
-            }
-
-            const row =
-                createMessageElement(
-                    message
-                );
-
-            messagesInner.appendChild(
-                row
+            addDateSeparator(
+                message.created_at
             );
-        });
-    }
 
-    if(scrollBottom){
-        requestAnimationFrame(
-            scrollToBottom
+            lastDate = currentDate;
+        }
+
+        appendMessageElement(
+            message
         );
     }
+
+    scrollToBottom(false);
 }
 
+function addDateSeparator(dateString){
+
+    const div =
+        document.createElement("div");
+
+    div.className =
+        "date-separator";
+
+    const span =
+        document.createElement("span");
+
+    span.textContent =
+        formatDateLabel(dateString);
+
+    div.appendChild(span);
+
+    messagesArea.appendChild(div);
+}
 
 /* =========================================================
-   CREATE MESSAGE ELEMENT
+   MESSAGE ELEMENT
 ========================================================= */
 
-function createMessageElement(message){
+function appendMessageElement(
+    message,
+    scroll = false
+){
 
-    messageCache.set(
-        message.id,
-        message
-    );
+    const mine =
+        message.sender_id ===
+        currentUser.id;
 
     const row =
         document.createElement("div");
 
     row.className =
         "message-row " +
-        (
-            message.sender_id === currentUserId
-                ? "mine"
-                : "other"
-        );
+        (mine ? "mine" : "theirs");
 
     row.dataset.messageId =
         message.id;
@@ -1583,43 +1298,12 @@ function createMessageElement(message){
         document.createElement("div");
 
     bubble.className =
-        "bubble";
+        "message-bubble";
 
-    /*
-      Long press
-    */
-
-    setupLongPress(
+    renderMessageContent(
         bubble,
-        message.id
+        message
     );
-
-    /*
-      Deleted for everyone
-    */
-
-    if(message.deleted_for_everyone){
-
-        const deleted =
-            document.createElement("div");
-
-        deleted.className =
-            "deleted-message";
-
-        deleted.textContent =
-            "এই মেসেজটি মুছে দেওয়া হয়েছে";
-
-        bubble.appendChild(
-            deleted
-        );
-
-    }else{
-
-        appendMessageContent(
-            bubble,
-            message
-        );
-    }
 
     const meta =
         document.createElement("div");
@@ -1634,92 +1318,91 @@ function createMessageElement(message){
         "message-time";
 
     time.textContent =
-        formatTime(
-            message.created_at
-        );
+        formatTime(message.created_at);
 
-    meta.appendChild(
-        time
-    );
+    meta.appendChild(time);
 
-    if(
-        message.sender_id ===
-        currentUserId
-    ){
+    if(mine){
 
-        const read =
+        const status =
             document.createElement("span");
 
-        read.className =
-            "read-status";
+        status.className =
+            "read-status " +
+            (
+                message.is_read
+                ? "read"
+                : "unread"
+            );
 
-        read.textContent =
+        status.textContent =
             message.is_read
-                ? "✓✓"
-                : "✓";
+            ? "✓✓"
+            : "✓";
 
-        meta.appendChild(
-            read
-        );
+        meta.appendChild(status);
     }
 
-    bubble.appendChild(
-        meta
+    bubble.appendChild(meta);
+
+    row.appendChild(bubble);
+
+    attachMessageActions(
+        row,
+        message
     );
 
-    row.appendChild(
-        bubble
-    );
+    messagesArea.appendChild(row);
 
-    return row;
+    if(scroll){
+        scrollToBottom(true);
+    }
 }
-
 
 /* =========================================================
    MESSAGE CONTENT
 ========================================================= */
 
-function appendMessageContent(
+function renderMessageContent(
     bubble,
     message
 ){
 
-    const type =
-        message.message_type ||
-        "text";
+    if(message.deleted_for_everyone){
 
-    if(type === "text"){
+        const div =
+            document.createElement("div");
 
-        const content =
-            document.createElement(
-                "div"
-            );
+        div.className =
+            "message-content deleted-message";
 
-        content.className =
-            "message-content";
+        div.textContent =
+            "এই মেসেজটি মুছে ফেলা হয়েছে";
 
-        content.textContent =
-            message.content || "";
-
-        bubble.appendChild(
-            content
-        );
+        bubble.appendChild(div);
 
         return;
     }
 
-    if(type === "image"){
+    const type =
+        String(
+            message.message_type ||
+            "text"
+        );
+
+    if(
+        type === "image" &&
+        message.file_url
+    ){
 
         const img =
-            document.createElement(
-                "img"
-            );
+            document.createElement("img");
 
         img.className =
-            "media-message";
+            "message-image";
 
         img.src =
-            message.file_url || "";
+            message.file_url;
 
         img.alt =
             "Image";
@@ -1730,80 +1413,91 @@ function appendMessageContent(
         img.addEventListener(
             "click",
             ()=>{
-                openImagePreview(
+                openImage(
                     message.file_url
                 );
             }
         );
 
-        bubble.appendChild(
-            img
-        );
+        bubble.appendChild(img);
+
+        if(message.content){
+
+            const text =
+                document.createElement("div");
+
+            text.className =
+                "message-content";
+
+            text.style.marginTop =
+                "5px";
+
+            text.textContent =
+                message.content;
+
+            bubble.appendChild(text);
+        }
 
         return;
     }
 
-    if(type === "video"){
+    if(
+        type === "video" &&
+        message.file_url
+    ){
 
         const video =
-            document.createElement(
-                "video"
-            );
+            document.createElement("video");
 
         video.className =
-            "video-message";
+            "message-video";
 
         video.src =
-            message.file_url || "";
+            message.file_url;
 
-        video.controls =
-            true;
+        video.controls = true;
+        video.playsInline = true;
 
-        video.playsInline =
-            true;
-
-        bubble.appendChild(
-            video
-        );
+        bubble.appendChild(video);
 
         return;
     }
 
-    if(type === "audio"){
+    if(
+        type === "audio" &&
+        message.file_url
+    ){
 
         const audio =
-            document.createElement(
-                "audio"
-            );
+            document.createElement("audio");
 
         audio.className =
-            "audio-message";
+            "message-audio";
 
         audio.src =
-            message.file_url || "";
+            message.file_url;
 
-        audio.controls =
-            true;
+        audio.controls = true;
+        audio.preload = "metadata";
 
-        bubble.appendChild(
-            audio
-        );
+        bubble.appendChild(audio);
 
         return;
     }
 
-    if(type === "file"){
+    if(
+        type === "file" &&
+        message.file_url
+    ){
 
         const link =
-            document.createElement(
-                "a"
-            );
+            document.createElement("a");
 
         link.className =
-            "file-message";
+            "file-link";
 
         link.href =
-            message.file_url || "#";
+            message.file_url;
 
         link.target =
             "_blank";
@@ -1812,9 +1506,7 @@ function appendMessageContent(
             "noopener noreferrer";
 
         const icon =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         icon.className =
             "file-icon";
@@ -1823,1161 +1515,79 @@ function appendMessageContent(
             "📄";
 
         const name =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         name.className =
             "file-name";
 
         name.textContent =
             message.content ||
-            "File";
+            "ফাইল খুলুন";
 
-        link.appendChild(
-            icon
-        );
+        link.appendChild(icon);
+        link.appendChild(name);
 
-        link.appendChild(
-            name
-        );
+        bubble.appendChild(link);
 
-        bubble.appendChild(
-            link
-        );
-
-        return;
-    }
-
-    /*
-      Fallback
-    */
-
-    const fallback =
-        document.createElement(
-            "div"
-        );
-
-    fallback.className =
-        "message-content";
-
-    fallback.textContent =
-        message.content || "";
-
-    bubble.appendChild(
-        fallback
-    );
-}
-
-
-/* =========================================================
-   APPEND SINGLE MESSAGE
-========================================================= */
-
-function appendSingleMessage(
-    message,
-    scroll=true
-){
-
-    if(!message){
-        return;
-    }
-
-    messageCache.set(
-        message.id,
-        message
-    );
-
-    if(
-        hiddenMessageIds.has(
-            message.id
-        )
-    ){
-        return;
-    }
-
-    const old =
-        document.querySelector(
-            `[data-message-id="${CSS.escape(message.id)}"]`
-        );
-
-    if(old){
-        old.replaceWith(
-            createMessageElement(message)
-        );
-
-        if(scroll){
-            scrollToBottom();
-        }
-
-        return;
-    }
-
-    /*
-      Remove empty state.
-    */
-
-    const empty =
-        messagesInner.querySelector(
-            ".empty"
-        );
-
-    if(empty){
-        empty.remove();
-    }
-
-    /*
-      Date separator.
-    */
-
-    const lastMessage =
-        [...messagesInner.querySelectorAll(
-            ".message-row"
-        )].pop();
-
-    let needDate =
-        true;
-
-    if(lastMessage){
-
-        const lastId =
-            lastMessage.dataset.messageId;
-
-        const last =
-            messageCache.get(
-                lastId
-            );
-
-        if(last){
-
-            needDate =
-                getLocalDateKey(
-                    last.created_at
-                ) !==
-                getLocalDateKey(
-                    message.created_at
-                );
-        }
-    }
-
-    if(needDate){
-
-        const separator =
-            document.createElement(
-                "div"
-            );
-
-        separator.className =
-            "date-separator";
-
-        separator.dataset.dateFor =
-            getLocalDateKey(
-                message.created_at
-            );
-
-        separator.textContent =
-            formatDateSeparator(
-                message.created_at
-            );
-
-        messagesInner.appendChild(
-            separator
-        );
-    }
-
-    messagesInner.appendChild(
-        createMessageElement(
-            message
-        )
-    );
-
-    if(scroll){
-        scrollToBottom();
-    }
-}
-
-
-/* =========================================================
-   REPLACE / UPDATE MESSAGE
-========================================================= */
-
-function updateMessageInPlace(
-    message
-){
-
-    if(!message){
-        return;
-    }
-
-    messageCache.set(
-        message.id,
-        message
-    );
-
-    const row =
-        document.querySelector(
-            `[data-message-id="${CSS.escape(message.id)}"]`
-        );
-
-    /*
-      Only-me deleted
-    */
-
-    if(
-        hiddenMessageIds.has(
-            message.id
-        )
-    ){
-
-        if(row){
-            row.remove();
-        }
-
-        return;
-    }
-
-    if(row){
-
-        row.replaceWith(
-            createMessageElement(
-                message
-            )
-        );
-
-        return;
-    }
-
-    appendSingleMessage(
-        message,
-        false
-    );
-}
-
-
-/* =========================================================
-   SCROLL
-========================================================= */
-
-function scrollToBottom(){
-
-    messagesArea.scrollTop =
-        messagesArea.scrollHeight;
-}
-
-
-/* =========================================================
-   SEND TEXT
-========================================================= */
-
-async function sendText(){
-
-    if(!isPageReady){
-        showError(
-            "মেসেজ সিস্টেম এখনও প্রস্তুত হয়নি।"
-        );
-        return;
-    }
-
-    if(isSending){
         return;
     }
 
     const text =
-        messageInput.value.trim();
+        document.createElement("div");
 
-    if(!text){
-        return;
-    }
+    text.className =
+        "message-content";
 
-    if(!conversationId){
-        showError(
-            "Conversation পাওয়া যায়নি।"
-        );
-        return;
-    }
+    text.textContent =
+        message.content ||
+        "";
 
-    isSending = true;
-
-    sendBtn.disabled =
-        true;
-
-    try{
-
-        const {
-            data,
-            error
-        } =
-        await supabaseClient
-            .from("messages")
-            .insert({
-                conversation_id:
-                    conversationId,
-                sender_id:
-                    currentUserId,
-                content:
-                    text,
-                message_type:
-                    "text",
-                is_read:
-                    false
-            })
-            .select(`
-                id,
-                conversation_id,
-                sender_id,
-                content,
-                message_type,
-                file_url,
-                created_at,
-                is_read,
-                deleted_for_everyone,
-                deleted_at
-            `)
-            .single();
-
-        if(error){
-            throw error;
-        }
-
-        messageInput.value =
-            "";
-
-        autoResizeTextarea();
-
-        appendSingleMessage(
-            data,
-            true
-        );
-
-    }catch(error){
-
-        showError(
-            error.message ||
-            "মেসেজ পাঠানো যায়নি।"
-        );
-
-    }finally{
-
-        isSending =
-            false;
-
-        sendBtn.disabled =
-            false;
-
-        messageInput.focus();
-    }
+    bubble.appendChild(text);
 }
-
 
 /* =========================================================
-   FILE UPLOAD
+   MESSAGE ACTIONS
 ========================================================= */
 
-async function uploadFile(file){
-
-    if(!file){
-        return;
-    }
-
-    if(!isPageReady){
-        showError(
-            "মেসেজ সিস্টেম এখনও প্রস্তুত হয়নি।"
-        );
-        return;
-    }
-
-    if(!conversationId){
-        showError(
-            "Conversation পাওয়া যায়নি।"
-        );
-        return;
-    }
-
-    const maxSize =
-        50 * 1024 * 1024;
-
-    if(file.size > maxSize){
-
-        showError(
-            "File সর্বোচ্চ 50 MB হতে পারবে।"
-        );
-
-        return;
-    }
-
-    showStatus(
-        "File upload হচ্ছে..."
-    );
-
-    try{
-
-        const extension =
-            (
-                file.name.split(".").pop() ||
-                "file"
-            )
-            .toLowerCase()
-            .replace(/[^a-z0-9]/g,"");
-
-        const safeName =
-            (
-                file.name
-                    .replace(/\s+/g,"_")
-                    .replace(/[^a-zA-Z0-9._-]/g,"")
-            ) ||
-            `file.${extension}`;
-
-        const path =
-            `${currentUserId}/${Date.now()}_${crypto.randomUUID()}_${safeName}`;
-
-        const {
-            error:uploadError
-        } =
-        await supabaseClient
-            .storage
-            .from(STORAGE_BUCKET)
-            .upload(
-                path,
-                file,
-                {
-                    cacheControl:"3600",
-                    upsert:false,
-                    contentType:
-                        file.type ||
-                        "application/octet-stream"
-                }
-            );
-
-        if(uploadError){
-            throw uploadError;
-        }
-
-        const {
-            data:urlData
-        } =
-        supabaseClient
-            .storage
-            .from(STORAGE_BUCKET)
-            .getPublicUrl(path);
-
-        const fileUrl =
-            urlData?.publicUrl;
-
-        if(!fileUrl){
-
-            throw new Error(
-                "Uploaded file-এর URL পাওয়া যায়নি।"
-            );
-        }
-
-        let messageType =
-            "file";
-
-        if(
-            file.type &&
-            file.type.startsWith("image/")
-        ){
-            messageType =
-                "image";
-        }else if(
-            file.type &&
-            file.type.startsWith("video/")
-        ){
-            messageType =
-                "video";
-        }
-
-        const {
-            data,
-            error
-        } =
-        await supabaseClient
-            .from("messages")
-            .insert({
-                conversation_id:
-                    conversationId,
-                sender_id:
-                    currentUserId,
-                content:
-                    file.name,
-                message_type:
-                    messageType,
-                file_url:
-                    fileUrl,
-                is_read:
-                    false
-            })
-            .select(`
-                id,
-                conversation_id,
-                sender_id,
-                content,
-                message_type,
-                file_url,
-                created_at,
-                is_read,
-                deleted_for_everyone,
-                deleted_at
-            `)
-            .single();
-
-        if(error){
-            throw error;
-        }
-
-        appendSingleMessage(
-            data,
-            true
-        );
-
-        showSuccess(
-            "File পাঠানো হয়েছে।"
-        );
-
-    }catch(error){
-
-        showError(
-            error.message ||
-            "File পাঠানো যায়নি।"
-        );
-    }
-}
-
-
-/* =========================================================
-   VOICE MIME
-========================================================= */
-
-function getVoiceMimeType(){
-
-    const types = [
-        "audio/mp4",
-        "audio/webm;codecs=opus",
-        "audio/webm",
-        "audio/ogg;codecs=opus"
-    ];
-
-    for(
-        const type
-        of types
-    ){
-
-        try{
-
-            if(
-                MediaRecorder.isTypeSupported &&
-                MediaRecorder.isTypeSupported(type)
-            ){
-                return type;
-            }
-
-        }catch(error){
-            console.warn(error);
-        }
-    }
-
-    return "";
-}
-
-
-/* =========================================================
-   START VOICE
-========================================================= */
-
-async function startVoiceRecording(){
-
-    if(!isPageReady){
-        showError(
-            "মেসেজ সিস্টেম প্রস্তুত হয়নি।"
-        );
-        return;
-    }
-
-    if(
-        !navigator.mediaDevices ||
-        !navigator.mediaDevices.getUserMedia
-    ){
-
-        showError(
-            "এই browser-এ voice recording support নেই।"
-        );
-
-        return;
-    }
-
-    if(mediaRecorder){
-
-        showError(
-            "Voice recording ইতিমধ্যে চলছে।"
-        );
-
-        return;
-    }
-
-    try{
-
-        voiceStream =
-            await navigator.mediaDevices
-                .getUserMedia({
-                    audio:true
-                });
-
-        voiceMimeType =
-            getVoiceMimeType();
-
-        const options =
-            voiceMimeType
-                ? {mimeType:voiceMimeType}
-                : {};
-
-        mediaRecorder =
-            new MediaRecorder(
-                voiceStream,
-                options
-            );
-
-        voiceChunks =
-            [];
-
-        mediaRecorder.ondataavailable =
-            event => {
-
-                if(
-                    event.data &&
-                    event.data.size > 0
-                ){
-
-                    voiceChunks.push(
-                        event.data
-                    );
-                }
-            };
-
-        mediaRecorder.onstop =
-            async () => {
-
-                const chunks =
-                    voiceChunks;
-
-                const mime =
-                    voiceMimeType ||
-                    mediaRecorder?.mimeType ||
-                    "audio/webm";
-
-                cleanupVoiceUI();
-
-                if(!chunks.length){
-                    mediaRecorder = null;
-                    return;
-                }
-
-                const blob =
-                    new Blob(
-                        chunks,
-                        {
-                            type:mime
-                        }
-                    );
-
-                mediaRecorder =
-                    null;
-
-                await uploadVoiceBlob(
-                    blob,
-                    mime
-                );
-            };
-
-        mediaRecorder.onerror =
-            event => {
-
-                console.error(
-                    "MediaRecorder error:",
-                    event
-                );
-
-                showError(
-                    "Voice recording-এ সমস্যা হয়েছে।"
-                );
-
-                cleanupVoiceUI();
-
-                mediaRecorder =
-                    null;
-            };
-
-        mediaRecorder.start(
-            250
-        );
-
-        recordingSeconds =
-            0;
-
-        updateVoiceTime();
-
-        recordingTimer =
-            setInterval(
-                ()=>{
-                    recordingSeconds++;
-                    updateVoiceTime();
-                },
-                1000
-            );
-
-        voiceBar.classList.add(
-            "show"
-        );
-
-        voiceBtn.disabled =
-            true;
-
-        showStatus(
-            "Voice recording চলছে..."
-        );
-
-    }catch(error){
-
-        console.error(error);
-
-        cleanupVoiceUI();
-
-        showError(
-            error.message ||
-            "Microphone permission পাওয়া যায়নি।"
-        );
-    }
-}
-
-
-/* =========================================================
-   VOICE TIME
-========================================================= */
-
-function updateVoiceTime(){
-
-    const minutes =
-        Math.floor(
-            recordingSeconds / 60
-        )
-        .toString()
-        .padStart(2,"0");
-
-    const seconds =
-        (
-            recordingSeconds % 60
-        )
-        .toString()
-        .padStart(2,"0");
-
-    voiceTime.textContent =
-        `🎙️ ${minutes}:${seconds}`;
-}
-
-
-/* =========================================================
-   STOP VOICE
-========================================================= */
-
-function stopVoiceRecording(){
-
-    if(!mediaRecorder){
-        return;
-    }
-
-    try{
-
-        mediaRecorder.stop();
-
-    }catch(error){
-
-        console.error(error);
-    }
-}
-
-
-/* =========================================================
-   CANCEL VOICE
-========================================================= */
-
-function cancelVoiceRecording(){
-
-    if(mediaRecorder){
-
-        mediaRecorder.onstop =
-            null;
-
-        try{
-            mediaRecorder.stop();
-        }catch(error){
-            console.warn(error);
-        }
-
-        mediaRecorder =
-            null;
-    }
-
-    voiceChunks =
-        [];
-
-    cleanupVoiceUI();
-}
-
-
-function cleanupVoiceUI(){
-
-    if(recordingTimer){
-
-        clearInterval(
-            recordingTimer
-        );
-
-        recordingTimer =
-            null;
-    }
-
-    if(voiceStream){
-
-        voiceStream
-            .getTracks()
-            .forEach(
-                track =>
-                    track.stop()
-            );
-
-        voiceStream =
-            null;
-    }
-
-    voiceBar.classList.remove(
-        "show"
-    );
-
-    voiceBtn.disabled =
-        false;
-
-    recordingSeconds =
-        0;
-
-    updateVoiceTime();
-}
-
-
-/* =========================================================
-   UPLOAD VOICE
-========================================================= */
-
-async function uploadVoiceBlob(
-    blob,
-    mimeType
-){
-
-    if(!blob || !blob.size){
-        return;
-    }
-
-    showStatus(
-        "Voice পাঠানো হচ্ছে..."
-    );
-
-    try{
-
-        let extension =
-            "webm";
-
-        if(
-            mimeType.includes("mp4")
-        ){
-            extension =
-                "m4a";
-        }else if(
-            mimeType.includes("ogg")
-        ){
-            extension =
-                "ogg";
-        }
-
-        const path =
-            `${currentUserId}/voice_${Date.now()}_${crypto.randomUUID()}.${extension}`;
-
-        const {
-            error:uploadError
-        } =
-        await supabaseClient
-            .storage
-            .from(STORAGE_BUCKET)
-            .upload(
-                path,
-                blob,
-                {
-                    cacheControl:"3600",
-                    upsert:false,
-                    contentType:
-                        mimeType
-                }
-            );
-
-        if(uploadError){
-            throw uploadError;
-        }
-
-        const {
-            data:urlData
-        } =
-        supabaseClient
-            .storage
-            .from(STORAGE_BUCKET)
-            .getPublicUrl(path);
-
-        const fileUrl =
-            urlData?.publicUrl;
-
-        if(!fileUrl){
-
-            throw new Error(
-                "Voice URL পাওয়া যায়নি।"
-            );
-        }
-
-        const {
-            data,
-            error
-        } =
-        await supabaseClient
-            .from("messages")
-            .insert({
-                conversation_id:
-                    conversationId,
-                sender_id:
-                    currentUserId,
-                content:
-                    "Voice message",
-                message_type:
-                    "audio",
-                file_url:
-                    fileUrl,
-                is_read:
-                    false
-            })
-            .select(`
-                id,
-                conversation_id,
-                sender_id,
-                content,
-                message_type,
-                file_url,
-                created_at,
-                is_read,
-                deleted_for_everyone,
-                deleted_at
-            `)
-            .single();
-
-        if(error){
-            throw error;
-        }
-
-        appendSingleMessage(
-            data,
-            true
-        );
-
-        showSuccess(
-            "Voice পাঠানো হয়েছে।"
-        );
-
-    }catch(error){
-
-        showError(
-            error.message ||
-            "Voice পাঠানো যায়নি।"
-        );
-    }
-}
-
-
-/* =========================================================
-   MESSAGE MENU
-========================================================= */
-
-function openMessageMenu(
-    messageId,
-    x,
-    y
-){
-
-    selectedMessage =
-        messageCache.get(
-            messageId
-        );
-
-    if(!selectedMessage){
-        return;
-    }
-
-    const isMine =
-        selectedMessage.sender_id ===
-        currentUserId;
-
-    deleteAllBtn.style.display =
-        isMine &&
-        !selectedMessage.deleted_for_everyone
-            ? "flex"
-            : "none";
-
-    /*
-      Share is available for all.
-    */
-
-    shareBtn.style.display =
-        "flex";
-
-    deleteMeBtn.style.display =
-        "flex";
-
-    messageMenu.classList.add(
-        "show"
-    );
-
-    const width =
-        190;
-
-    const height =
-        145;
-
-    let left =
-        Math.min(
-            x,
-            window.innerWidth - width - 8
-        );
-
-    let top =
-        Math.min(
-            y,
-            window.innerHeight - height - 8
-        );
-
-    left =
-        Math.max(
-            8,
-            left
-        );
-
-    top =
-        Math.max(
-            8,
-            top
-        );
-
-    messageMenu.style.left =
-        `${left}px`;
-
-    messageMenu.style.top =
-        `${top}px`;
-}
-
-
-function closeMessageMenu(){
-
-    messageMenu.classList.remove(
-        "show"
-    );
-
-    selectedMessage =
-        null;
-}
-
-
-/* =========================================================
-   LONG PRESS
-========================================================= */
-
-function setupLongPress(
+function attachMessageActions(
     element,
-    messageId
+    message
 ){
 
-    let timer = null;
-    let startX = 0;
-    let startY = 0;
+    element.addEventListener(
+        "contextmenu",
+        event=>{
+            event.preventDefault();
 
-    const cancel = ()=>{
-        if(timer){
-            clearTimeout(timer);
-            timer = null;
+            openMessageMenu(
+                message,
+                event.clientX,
+                event.clientY
+            );
         }
-    };
+    );
 
     element.addEventListener(
         "touchstart",
         event=>{
 
-            if(
-                !event.touches ||
-                !event.touches[0]
-            ){
+            if(event.touches.length !== 1){
                 return;
             }
 
             const touch =
                 event.touches[0];
 
-            startX =
-                touch.clientX;
+            longPressTimer =
+                setTimeout(()=>{
 
-            startY =
-                touch.clientY;
+                    openMessageMenu(
+                        message,
+                        touch.clientX,
+                        touch.clientY
+                    );
 
-            timer =
-                setTimeout(
-                    ()=>{
-                        timer = null;
-
-                        openMessageMenu(
-                            messageId,
-                            startX,
-                            startY
-                        );
-                    },
-                    550
-                );
-        },
-        {
-            passive:true
-        }
-    );
-
-    element.addEventListener(
-        "touchmove",
-        event=>{
-
-            if(
-                !event.touches ||
-                !event.touches[0]
-            ){
-                return;
-            }
-
-            const touch =
-                event.touches[0];
-
-            const dx =
-                Math.abs(
-                    touch.clientX -
-                    startX
-                );
-
-            const dy =
-                Math.abs(
-                    touch.clientY -
-                    startY
-                );
-
-            if(
-                dx > 10 ||
-                dy > 10
-            ){
-                cancel();
-            }
+                },600);
         },
         {
             passive:true
@@ -2986,202 +1596,99 @@ function setupLongPress(
 
     element.addEventListener(
         "touchend",
-        cancel,
-        {
-            passive:true
+        ()=>{
+            clearTimeout(
+                longPressTimer
+            );
         }
     );
 
     element.addEventListener(
-        "touchcancel",
-        cancel,
-        {
-            passive:true
-        }
-    );
-
-    /*
-      Desktop right click
-    */
-
-    element.addEventListener(
-        "contextmenu",
-        event=>{
-
-            event.preventDefault();
-
-            openMessageMenu(
-                messageId,
-                event.clientX,
-                event.clientY
+        "touchmove",
+        ()=>{
+            clearTimeout(
+                longPressTimer
             );
         }
     );
 }
 
-
 /* =========================================================
-   DELETE ONLY ME
+   MESSAGE MENU
 ========================================================= */
 
-async function deleteOnlyMe(){
+function openMessageMenu(
+    message,
+    x,
+    y
+){
 
-    if(!selectedMessage){
-        return;
-    }
+    selectedMessage =
+        message;
 
-    const message =
-        selectedMessage;
+    messageMenu.style.display =
+        "block";
 
-    closeMessageMenu();
+    const rect =
+        messageMenu.getBoundingClientRect();
 
-    try{
-
-        const {
-            error
-        } =
-        await supabaseClient
-            .from("message_hidden")
-            .upsert(
-                {
-                    message_id:
-                        message.id,
-                    user_id:
-                        currentUserId
-                },
-                {
-                    onConflict:
-                        "message_id,user_id"
-                }
-            );
-
-        if(error){
-            throw error;
-        }
-
-        hiddenMessageIds.add(
-            message.id
-        );
-
-        const row =
-            document.querySelector(
-                `[data-message-id="${CSS.escape(message.id)}"]`
-            );
-
-        if(row){
-            row.remove();
-        }
-
-        showSuccess(
-            "মেসেজটি শুধু আপনার কাছ থেকে মুছে দেওয়া হয়েছে।"
-        );
-
-    }catch(error){
-
-        showError(
-            error.message ||
-            "মেসেজ মুছতে সমস্যা হয়েছে।"
-        );
-    }
-}
-
-
-/* =========================================================
-   DELETE FOR EVERYONE
-========================================================= */
-
-async function deleteForEveryone(){
-
-    if(!selectedMessage){
-        return;
-    }
-
-    const message =
-        selectedMessage;
+    let left = x;
+    let top = y;
 
     if(
-        message.sender_id !==
-        currentUserId
+        left + rect.width >
+        window.innerWidth - 8
     ){
-
-        closeMessageMenu();
-
-        showError(
-            "শুধু নিজের পাঠানো মেসেজ সবার কাছ থেকে মুছতে পারবেন।"
-        );
-
-        return;
+        left =
+            window.innerWidth -
+            rect.width -
+            8;
     }
 
-    closeMessageMenu();
-
-    const confirmed =
-        window.confirm(
-            "এই মেসেজটি কি সবার কাছ থেকে মুছে দিতে চান?"
-        );
-
-    if(!confirmed){
-        return;
+    if(
+        top + rect.height >
+        window.innerHeight - 8
+    ){
+        top =
+            window.innerHeight -
+            rect.height -
+            8;
     }
 
-    try{
+    messageMenu.style.left =
+        Math.max(8,left) + "px";
 
-        const {
-            data,
-            error
-        } =
-        await supabaseClient
-            .from("messages")
-            .update({
-                content:null,
-                file_url:null,
-                deleted_for_everyone:true,
-                deleted_at:
-                    new Date().toISOString()
-            })
-            .eq(
-                "id",
-                message.id
-            )
-            .eq(
-                "sender_id",
-                currentUserId
-            )
-            .select(`
-                id,
-                conversation_id,
-                sender_id,
-                content,
-                message_type,
-                file_url,
-                created_at,
-                is_read,
-                deleted_for_everyone,
-                deleted_at
-            `)
-            .single();
+    messageMenu.style.top =
+        Math.max(8,top) + "px";
 
-        if(error){
-            throw error;
+    document.body.addEventListener(
+        "click",
+        closeMenuOnOutside,
+        {
+            once:true
         }
+    );
+}
 
-        updateMessageInPlace(
-            data
-        );
+function closeMenuOnOutside(event){
 
-        showSuccess(
-            "মেসেজটি সবার কাছ থেকে মুছে দেওয়া হয়েছে।"
-        );
-
-    }catch(error){
-
-        showError(
-            error.message ||
-            "মেসেজ মুছতে সমস্যা হয়েছে।"
-        );
+    if(
+        !messageMenu.contains(
+            event.target
+        )
+    ){
+        closeMessageMenu();
     }
 }
 
+function closeMessageMenu(){
+
+    messageMenu.style.display =
+        "none";
+
+    selectedMessage =
+        null;
+}
 
 /* =========================================================
    SHARE
@@ -3198,30 +1705,86 @@ async function shareMessage(){
 
     closeMessageMenu();
 
-    let shareText =
-        message.content ||
-        "RAZTARA message";
+    const fileUrl =
+        String(
+            message.file_url ||
+            ""
+        ).trim();
 
-    if(message.file_url){
-
-        shareText +=
-            "\n" +
-            message.file_url;
-    }
-
-    const shareData = {
-        title:
-            "RAZTARA",
-        text:
-            shareText
-    };
+    const messageText =
+        String(
+            message.content ||
+            ""
+        ).trim();
 
     /*
-      Native phone share menu.
-      From there user can choose WhatsApp,
-      Messenger, Facebook, Telegram, SMS,
-      Email etc. depending on installed apps.
+      গুরুত্বপূর্ণ:
+      File/image share করার সময় URL-টি
+      সরাসরি url হিসেবে পাঠানো হচ্ছে।
+      তাই recipient সরাসরি public chat-files
+      URL পাবে।
     */
+
+    if(fileUrl){
+
+        const shareData = {
+            title:
+                messageText ||
+                "RAZTARA",
+            text:
+                messageText ||
+                "RAZTARA file",
+            url:
+                fileUrl
+        };
+
+        try{
+
+            if(
+                navigator.share
+            ){
+
+                await navigator.share(
+                    shareData
+                );
+
+                return;
+            }
+
+        }catch(error){
+
+            if(
+                error &&
+                error.name ===
+                "AbortError"
+            ){
+                return;
+            }
+        }
+
+        try{
+
+            await navigator.clipboard.writeText(
+                fileUrl
+            );
+
+            showSuccess(
+                "ফাইলের সরাসরি link copy হয়েছে।"
+            );
+
+        }catch(error){
+
+            showError(
+                "File share করা যায়নি।"
+            );
+        }
+
+        return;
+    }
+
+    const shareText =
+        messageText ||
+        "RAZTARA message";
 
     try{
 
@@ -3229,9 +1792,10 @@ async function shareMessage(){
             navigator.share
         ){
 
-            await navigator.share(
-                shareData
-            );
+            await navigator.share({
+                title:"RAZTARA",
+                text:shareText
+            });
 
             return;
         }
@@ -3247,10 +1811,6 @@ async function shareMessage(){
         }
     }
 
-    /*
-      Fallback
-    */
-
     try{
 
         await navigator.clipboard.writeText(
@@ -3258,7 +1818,7 @@ async function shareMessage(){
         );
 
         showSuccess(
-            "Share text/link copy হয়েছে।"
+            "Message copy হয়েছে।"
         );
 
     }catch(error){
@@ -3269,74 +1829,972 @@ async function shareMessage(){
     }
 }
 
-
 /* =========================================================
-   IMAGE PREVIEW
+   DELETE ONLY ME
 ========================================================= */
 
-function openImagePreview(url){
+async function deleteOnlyMe(){
 
-    if(!url){
+    if(!selectedMessage){
         return;
     }
 
-    previewContent.innerHTML =
-        "";
+    const message =
+        selectedMessage;
 
-    const img =
-        document.createElement(
-            "img"
+    closeMessageMenu();
+
+    const {
+        error
+    } =
+        await supabaseClient
+        .from("message_hidden")
+        .upsert(
+            {
+                message_id:
+                    message.id,
+                user_id:
+                    currentUser.id
+            },
+            {
+                onConflict:
+                    "message_id,user_id"
+            }
         );
 
-    img.src =
+    if(error){
+
+        showError(
+            "Message delete করা যায়নি: " +
+            error.message
+        );
+
+        return;
+    }
+
+    messageCache =
+        messageCache.filter(
+            item =>
+                item.id !== message.id
+        );
+
+    renderMessages();
+}
+
+/* =========================================================
+   DELETE EVERYONE
+========================================================= */
+
+async function deleteForEveryone(){
+
+    if(!selectedMessage){
+        return;
+    }
+
+    const message =
+        selectedMessage;
+
+    closeMessageMenu();
+
+    if(
+        message.sender_id !==
+        currentUser.id
+    ){
+
+        showError(
+            "শুধু নিজের পাঠানো message-এর জন্য এই option ব্যবহার করা যাবে।"
+        );
+
+        return;
+    }
+
+    const {
+        error
+    } =
+        await supabaseClient
+        .from("messages")
+        .update({
+            content:null,
+            file_url:null,
+            deleted_for_everyone:true,
+            deleted_at:
+                new Date().toISOString()
+        })
+        .eq(
+            "id",
+            message.id
+        )
+        .eq(
+            "sender_id",
+            currentUser.id
+        );
+
+    if(error){
+
+        showError(
+            "Message delete করা যায়নি: " +
+            error.message
+        );
+
+        return;
+    }
+
+    const local =
+        messageCache.find(
+            item =>
+                item.id === message.id
+        );
+
+    if(local){
+
+        local.content = null;
+        local.file_url = null;
+        local.deleted_for_everyone =
+            true;
+        local.deleted_at =
+            new Date().toISOString();
+    }
+
+    renderMessages();
+}
+
+/* =========================================================
+   SEND TEXT
+========================================================= */
+
+async function sendText(){
+
+    const content =
+        String(
+            messageInput.value ||
+            ""
+        ).trim();
+
+    if(!content){
+        return;
+    }
+
+    if(!conversationId){
+        showError(
+            "Chat এখনো প্রস্তুত হয়নি।"
+        );
+        return;
+    }
+
+    messageInput.value = "";
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+        .from("messages")
+        .insert({
+            conversation_id:
+                conversationId,
+            sender_id:
+                currentUser.id,
+            content:
+                content,
+            message_type:
+                "text",
+            is_read:
+                false
+        })
+        .select(`
+            id,
+            conversation_id,
+            sender_id,
+            content,
+            message_type,
+            file_url,
+            created_at,
+            is_read,
+            deleted_for_everyone,
+            deleted_at
+        `)
+        .single();
+
+    if(error){
+
+        messageInput.value =
+            content;
+
+        showError(
+            "Message পাঠানো যায়নি: " +
+            error.message
+        );
+
+        return;
+    }
+
+    addLocalMessage(data);
+
+    messageInput.focus();
+}
+
+/* =========================================================
+   ADD LOCAL MESSAGE
+========================================================= */
+
+function addLocalMessage(message){
+
+    const exists =
+        messageCache.some(
+            item =>
+                item.id === message.id
+        );
+
+    if(exists){
+        return;
+    }
+
+    const oldLast =
+        messageCache[
+            messageCache.length - 1
+        ];
+
+    const needsDate =
+        !oldLast ||
+        dateKey(oldLast.created_at) !==
+        dateKey(message.created_at);
+
+    messageCache.push(message);
+
+    if(needsDate){
+
+        addDateSeparator(
+            message.created_at
+        );
+    }
+
+    appendMessageElement(
+        message,
+        true
+    );
+}
+
+/* =========================================================
+   UPLOAD FILE
+========================================================= */
+
+async function uploadFile(file){
+
+    if(!file){
+        return;
+    }
+
+    if(
+        file.size >
+        50 * 1024 * 1024
+    ){
+
+        showError(
+            "৫০ MB-এর বেশি file পাঠানো যাবে না।"
+        );
+
+        return;
+    }
+
+    showSuccess(
+        "File upload হচ্ছে..."
+    );
+
+    const safeName =
+        String(file.name)
+        .replace(
+            /[^a-zA-Z0-9._-]/g,
+            "_"
+        );
+
+    const path =
+        currentUser.id +
+        "/" +
+        Date.now() +
+        "_" +
+        safeName;
+
+    const {
+        error:uploadError
+    } =
+        await supabaseClient
+        .storage
+        .from(STORAGE_BUCKET)
+        .upload(
+            path,
+            file,
+            {
+                cacheControl:"3600",
+                upsert:false
+            }
+        );
+
+    if(uploadError){
+
+        showError(
+            "File upload করা যায়নি: " +
+            uploadError.message
+        );
+
+        return;
+    }
+
+    const {
+        data:urlData
+    } =
+        supabaseClient
+        .storage
+        .from(STORAGE_BUCKET)
+        .getPublicUrl(path);
+
+    const fileUrl =
+        urlData.publicUrl;
+
+    let messageType =
+        "file";
+
+    if(
+        file.type.startsWith("image/")
+    ){
+        messageType = "image";
+    }
+    else if(
+        file.type.startsWith("video/")
+    ){
+        messageType = "video";
+    }
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+        .from("messages")
+        .insert({
+            conversation_id:
+                conversationId,
+            sender_id:
+                currentUser.id,
+            content:
+                file.name,
+            message_type:
+                messageType,
+            file_url:
+                fileUrl,
+            is_read:false
+        })
+        .select(`
+            id,
+            conversation_id,
+            sender_id,
+            content,
+            message_type,
+            file_url,
+            created_at,
+            is_read,
+            deleted_for_everyone,
+            deleted_at
+        `)
+        .single();
+
+    if(error){
+
+        showError(
+            "File message তৈরি করা যায়নি: " +
+            error.message
+        );
+
+        return;
+    }
+
+    addLocalMessage(data);
+
+    showSuccess(
+        "File পাঠানো হয়েছে।"
+    );
+}
+
+/* =========================================================
+   VOICE RECORDING
+========================================================= */
+
+function getSupportedAudioMime(){
+
+    const types = [
+        "audio/mp4",
+        "audio/webm;codecs=opus",
+        "audio/webm",
+        "audio/ogg;codecs=opus",
+        "audio/ogg"
+    ];
+
+    for(
+        const type of types
+    ){
+
+        if(
+            window.MediaRecorder &&
+            MediaRecorder.isTypeSupported(
+                type
+            )
+        ){
+            return type;
+        }
+    }
+
+    return "";
+}
+
+async function toggleRecording(){
+
+    if(isRecording){
+
+        stopRecording();
+
+        return;
+    }
+
+    if(
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+    ){
+
+        showError(
+            "এই device/browser voice recording support করে না।"
+        );
+
+        return;
+    }
+
+    try{
+
+        const stream =
+            await navigator
+            .mediaDevices
+            .getUserMedia({
+                audio:true
+            });
+
+        const mimeType =
+            getSupportedAudioMime();
+
+        const options =
+            mimeType
+            ? {mimeType}
+            : {};
+
+        mediaRecorder =
+            new MediaRecorder(
+                stream,
+                options
+            );
+
+        recordedChunks = [];
+
+        mediaRecorder.ondataavailable =
+            event=>{
+
+                if(
+                    event.data &&
+                    event.data.size > 0
+                ){
+                    recordedChunks.push(
+                        event.data
+                    );
+                }
+            };
+
+        mediaRecorder.onstop =
+            async ()=>{
+
+                stream
+                .getTracks()
+                .forEach(
+                    track =>
+                        track.stop()
+                );
+
+                const finalType =
+                    mediaRecorder.mimeType ||
+                    mimeType ||
+                    "audio/webm";
+
+                const blob =
+                    new Blob(
+                        recordedChunks,
+                        {
+                            type:
+                                finalType
+                        }
+                    );
+
+                recordedChunks = [];
+
+                await uploadVoiceBlob(
+                    blob,
+                    finalType
+                );
+            };
+
+        mediaRecorder.start();
+
+        isRecording = true;
+
+        voiceBtn.classList.add(
+            "recording"
+        );
+
+        voiceBtn.textContent =
+            "⏹️";
+
+        showSuccess(
+            "Voice recording চলছে..."
+        );
+
+    }catch(error){
+
+        showError(
+            "Microphone permission পাওয়া যায়নি।"
+        );
+    }
+}
+
+function stopRecording(){
+
+    if(
+        mediaRecorder &&
+        mediaRecorder.state !==
+        "inactive"
+    ){
+
+        mediaRecorder.stop();
+    }
+
+    isRecording = false;
+
+    voiceBtn.classList.remove(
+        "recording"
+    );
+
+    voiceBtn.textContent =
+        "🎙️";
+}
+
+async function uploadVoiceBlob(
+    blob,
+    mimeType
+){
+
+    if(!blob || !blob.size){
+        return;
+    }
+
+    showSuccess(
+        "Voice upload হচ্ছে..."
+    );
+
+    let extension =
+        "webm";
+
+    if(
+        mimeType.includes("mp4")
+    ){
+        extension = "m4a";
+    }
+    else if(
+        mimeType.includes("ogg")
+    ){
+        extension = "ogg";
+    }
+
+    const path =
+        currentUser.id +
+        "/voice_" +
+        Date.now() +
+        "." +
+        extension;
+
+    const {
+        error:uploadError
+    } =
+        await supabaseClient
+        .storage
+        .from(STORAGE_BUCKET)
+        .upload(
+            path,
+            blob,
+            {
+                contentType:
+                    mimeType ||
+                    "audio/webm",
+                cacheControl:"3600",
+                upsert:false
+            }
+        );
+
+    if(uploadError){
+
+        showError(
+            "Voice upload করা যায়নি: " +
+            uploadError.message
+        );
+
+        return;
+    }
+
+    const {
+        data:urlData
+    } =
+        supabaseClient
+        .storage
+        .from(STORAGE_BUCKET)
+        .getPublicUrl(path);
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+        .from("messages")
+        .insert({
+            conversation_id:
+                conversationId,
+            sender_id:
+                currentUser.id,
+            content:
+                "Voice message",
+            message_type:
+                "audio",
+            file_url:
+                urlData.publicUrl,
+            is_read:false
+        })
+        .select(`
+            id,
+            conversation_id,
+            sender_id,
+            content,
+            message_type,
+            file_url,
+            created_at,
+            is_read,
+            deleted_for_everyone,
+            deleted_at
+        `)
+        .single();
+
+    if(error){
+
+        showError(
+            "Voice message পাঠানো যায়নি: " +
+            error.message
+        );
+
+        return;
+    }
+
+    addLocalMessage(data);
+
+    showSuccess(
+        "Voice পাঠানো হয়েছে।"
+    );
+}
+
+/* =========================================================
+   READ RECEIPT
+========================================================= */
+
+async function markReceivedMessagesRead(){
+
+    if(!conversationId){
+        return;
+    }
+
+    /*
+      RLS-এর কারণে অন্য user-এর message সরাসরি
+      arbitrary update করার বদলে database policy +
+      trigger দিয়ে নিরাপদভাবে is_read update করা হয়েছে।
+    */
+
+    const {
+        data:unreadMessages
+    } =
+        await supabaseClient
+        .from("messages")
+        .select("id")
+        .eq(
+            "conversation_id",
+            conversationId
+        )
+        .neq(
+            "sender_id",
+            currentUser.id
+        )
+        .eq(
+            "is_read",
+            false
+        );
+
+    if(
+        !unreadMessages ||
+        unreadMessages.length === 0
+    ){
+        return;
+    }
+
+    const {
+        error
+    } =
+        await supabaseClient
+        .from("messages")
+        .update({
+            is_read:true
+        })
+        .eq(
+            "conversation_id",
+            conversationId
+        )
+        .neq(
+            "sender_id",
+            currentUser.id
+        )
+        .eq(
+            "is_read",
+            false
+        );
+
+    if(error){
+        console.warn(
+            "Read receipt:",
+            error.message
+        );
+    }
+
+    for(
+        const message
+        of messageCache
+    ){
+
+        if(
+            message.sender_id !==
+            currentUser.id
+        ){
+            message.is_read = true;
+        }
+    }
+
+    updateAllMessageStatus();
+}
+
+function updateAllMessageStatus(){
+
+    document
+    .querySelectorAll(
+        ".message-row"
+    )
+    .forEach(row=>{
+
+        const id =
+            row.dataset.messageId;
+
+        const message =
+            messageCache.find(
+                item =>
+                    item.id === id
+            );
+
+        if(!message){
+            return;
+        }
+
+        if(
+            message.sender_id !==
+            currentUser.id
+        ){
+            return;
+        }
+
+        const status =
+            row.querySelector(
+                ".read-status"
+            );
+
+        if(!status){
+            return;
+        }
+
+        status.textContent =
+            message.is_read
+            ? "✓✓"
+            : "✓";
+
+        status.classList.toggle(
+            "read",
+            Boolean(message.is_read)
+        );
+
+        status.classList.toggle(
+            "unread",
+            !message.is_read
+        );
+    });
+}
+
+/* =========================================================
+   REALTIME
+========================================================= */
+
+function subscribeRealtime(){
+
+    if(realtimeChannel){
+        supabaseClient
+        .removeChannel(
+            realtimeChannel
+        );
+    }
+
+    realtimeChannel =
+        supabaseClient
+        .channel(
+            "messages-" +
+            conversationId
+        )
+        .on(
+            "postgres_changes",
+            {
+                event:"INSERT",
+                schema:"public",
+                table:"messages",
+                filter:
+                    "conversation_id=eq." +
+                    conversationId
+            },
+            payload=>{
+
+                const message =
+                    payload.new;
+
+                if(
+                    message.sender_id ===
+                    currentUser.id
+                ){
+                    return;
+                }
+
+                const already =
+                    messageCache.some(
+                        item =>
+                            item.id ===
+                            message.id
+                    );
+
+                if(!already){
+
+                    messageCache.push(
+                        message
+                    );
+
+                    renderMessages();
+
+                    markReceivedMessagesRead();
+                }
+            }
+        )
+        .on(
+            "postgres_changes",
+            {
+                event:"UPDATE",
+                schema:"public",
+                table:"messages",
+                filter:
+                    "conversation_id=eq." +
+                    conversationId
+            },
+            payload=>{
+
+                const updated =
+                    payload.new;
+
+                const index =
+                    messageCache.findIndex(
+                        item =>
+                            item.id ===
+                            updated.id
+                    );
+
+                if(index === -1){
+                    return;
+                }
+
+                messageCache[index] =
+                    updated;
+
+                renderMessages();
+            }
+        )
+        .subscribe();
+}
+
+/* =========================================================
+   IMAGE
+========================================================= */
+
+function openImage(url){
+
+    overlayImage.src =
         url;
 
-    img.alt =
-        "Preview";
-
-    previewContent.appendChild(
-        img
-    );
-
-    preview.classList.add(
-        "show"
-    );
+    imageOverlay.style.display =
+        "flex";
 }
 
+function closeImage(){
 
-function closePreview(){
+    imageOverlay.style.display =
+        "none";
 
-    preview.classList.remove(
-        "show"
-    );
-
-    previewContent.innerHTML =
-        "";
+    overlayImage.src = "";
 }
 
+/* =========================================================
+   SCROLL
+========================================================= */
+
+function scrollToBottom(
+    smooth = true
+){
+
+    messagesArea.scrollTo({
+        top:
+            messagesArea.scrollHeight,
+        behavior:
+            smooth
+            ? "smooth"
+            : "auto"
+    });
+}
 
 /* =========================================================
    EMOJI
 ========================================================= */
 
-function addEmoji(){
+function insertEmoji(){
 
     const emojis = [
-        "😀",
+        "😊",
         "😂",
+        "❤️",
+        "👍",
         "😍",
         "🥰",
         "😎",
-        "👍",
-        "❤️",
         "🔥",
-        "😊",
         "🙏",
         "😢",
         "😮",
-        "🎉",
         "👏",
-        "💚"
+        "💯",
+        "🤝"
     ];
 
     const emoji =
@@ -3347,414 +2805,50 @@ function addEmoji(){
             )
         ];
 
-    insertTextAtCursor(
-        emoji
-    );
-}
-
-
-function insertTextAtCursor(text){
-
-    const start =
-        messageInput.selectionStart;
-
-    const end =
-        messageInput.selectionEnd;
-
-    const value =
-        messageInput.value;
-
-    messageInput.value =
-        value.substring(
-            0,
-            start
-        ) +
-        text +
-        value.substring(
-            end
-        );
+    messageInput.value += emoji;
 
     messageInput.focus();
-
-    const cursor =
-        start +
-        text.length;
-
-    messageInput.selectionStart =
-        cursor;
-
-    messageInput.selectionEnd =
-        cursor;
-
-    autoResizeTextarea();
 }
 
-
 /* =========================================================
-   TEXTAREA
+   BACK
 ========================================================= */
 
-function autoResizeTextarea(){
+function goBack(){
 
-    messageInput.style.height =
-        "auto";
+    if(
+        document.referrer &&
+        document.referrer.includes(
+            "chat.html"
+        )
+    ){
 
-    messageInput.style.height =
-        Math.min(
-            messageInput.scrollHeight,
-            110
-        ) +
-        "px";
-}
+        window.history.back();
 
-
-/* =========================================================
-   REALTIME
-========================================================= */
-
-function subscribeRealtime(){
-
-    if(realtimeChannel){
-
-        supabaseClient
-            .removeChannel(
-                realtimeChannel
-            );
-
-        realtimeChannel =
-            null;
+        return;
     }
 
-    realtimeChannel =
-        supabaseClient
-            .channel(
-                "messages-" +
-                conversationId +
-                "-" +
-                crypto.randomUUID()
-            )
-            .on(
-                "postgres_changes",
-                {
-                    event:"INSERT",
-                    schema:"public",
-                    table:"messages",
-                    filter:
-                        `conversation_id=eq.${conversationId}`
-                },
-                payload=>{
+    if(
+        window.history.length > 1
+    ){
 
-                    const message =
-                        payload.new;
+        window.history.back();
 
-                    if(
-                        message.sender_id ===
-                        currentUserId
-                    ){
-                        /*
-                          Already appended locally.
-                        */
-
-                        messageCache.set(
-                            message.id,
-                            message
-                        );
-
-                        return;
-                    }
-
-                    appendSingleMessage(
-                        message,
-                        true
-                    );
-                }
-            )
-            .on(
-                "postgres_changes",
-                {
-                    event:"UPDATE",
-                    schema:"public",
-                    table:"messages",
-                    filter:
-                        `conversation_id=eq.${conversationId}`
-                },
-                payload=>{
-
-                    updateMessageInPlace(
-                        payload.new
-                    );
-                }
-            )
-            .subscribe(
-                status=>{
-
-                    console.log(
-                        "Realtime:",
-                        status
-                    );
-                }
-            );
-}
-
-
-/* =========================================================
-   MARK RECEIVED MESSAGES READ
-========================================================= */
-
-async function markReceivedMessagesRead(){
-
-    try{
-
-        const {
-            data,
-            error
-        } =
-        await supabaseClient
-            .from("messages")
-            .select("id")
-            .eq(
-                "conversation_id",
-                conversationId
-            )
-            .eq(
-                "sender_id",
-                otherUserId
-            )
-            .eq(
-                "is_read",
-                false
-            );
-
-        if(error){
-            console.warn(error);
-            return;
-        }
-
-        const ids =
-            (data || [])
-                .map(
-                    row =>
-                        row.id
-                );
-
-        if(!ids.length){
-            return;
-        }
-
-        await supabaseClient
-            .from("messages")
-            .update({
-                is_read:true
-            })
-            .in(
-                "id",
-                ids
-            );
-
-    }catch(error){
-
-        console.warn(
-            "Mark read:",
-            error
-        );
+        return;
     }
+
+    window.location.href =
+        "index.html";
 }
-
-
-/* =========================================================
-   INITIALIZE
-========================================================= */
-
-async function startMessagePage(){
-
-    try{
-
-        disableComposer();
-
-        otherUserId =
-            getTargetUserId();
-
-        if(!otherUserId){
-
-            messagesInner.innerHTML =
-                `<div class="empty">
-                    User ID পাওয়া যায়নি।<br><br>
-                    chat.html থেকে user parameter দিয়ে
-                    messages.html খুলতে হবে।
-                </div>`;
-
-            showError(
-                "URL-এ user ID নেই।"
-            );
-
-            return;
-        }
-
-        const {
-            data:userData,
-            error:userError
-        } =
-        await supabaseClient
-            .auth
-            .getUser();
-
-        if(userError){
-            throw userError;
-        }
-
-        if(!userData?.user){
-
-            messagesInner.innerHTML =
-                `<div class="empty">
-                    আগে RAZTARA-তে Login করুন।
-                </div>`;
-
-            showError(
-                "আপনি Login করা নেই।"
-            );
-
-            return;
-        }
-
-        currentUser =
-            userData.user;
-
-        currentUserId =
-            currentUser.id;
-
-        if(
-            currentUserId ===
-            otherUserId
-        ){
-
-            throw new Error(
-                "নিজের সাথে conversation করা যাবে না।"
-            );
-        }
-
-        await loadOtherProfile();
-
-        await loadHiddenMessageIds();
-
-        conversationId =
-            await getOrCreateConversation();
-
-        if(!conversationId){
-
-            throw new Error(
-                "Conversation তৈরি/খুঁজে পাওয়া যায়নি।"
-            );
-        }
-
-        await loadMessages();
-
-        subscribeRealtime();
-
-        await markReceivedMessagesRead();
-
-        isPageReady =
-            true;
-
-        enableComposer();
-
-        headerStatus.textContent =
-            "অনলাইন";
-
-    }catch(error){
-
-        console.error(
-            "Message page error:",
-            error
-        );
-
-        isPageReady =
-            false;
-
-        disableComposer();
-
-        messagesInner.innerHTML =
-            `<div class="empty">
-                মেসেজ পেজ চালু করা যায়নি।<br><br>
-                ${escapeHtml(
-                    error.message ||
-                    "Unknown error"
-                )}
-            </div>`;
-
-        showError(
-            error.message ||
-            "Message page চালু করা যায়নি।"
-        );
-    }
-}
-
-
-/* =========================================================
-   COMPOSER ENABLE / DISABLE
-========================================================= */
-
-function disableComposer(){
-
-    sendBtn.disabled =
-        true;
-
-    fileBtn.disabled =
-        true;
-
-    voiceBtn.disabled =
-        true;
-
-    emojiBtn.disabled =
-        true;
-
-    messageInput.disabled =
-        true;
-}
-
-
-function enableComposer(){
-
-    sendBtn.disabled =
-        false;
-
-    fileBtn.disabled =
-        false;
-
-    voiceBtn.disabled =
-        false;
-
-    emojiBtn.disabled =
-        false;
-
-    messageInput.disabled =
-        false;
-}
-
 
 /* =========================================================
    EVENTS
 ========================================================= */
 
-backBtn.addEventListener(
-    "click",
-    ()=>{
-        if(
-            window.history.length > 1
-        ){
-            window.history.back();
-        }else{
-            window.location.href =
-                "chat.html";
-        }
-    }
-);
-
-
 sendBtn.addEventListener(
     "click",
     sendText
 );
-
 
 messageInput.addEventListener(
     "keydown",
@@ -3772,174 +2866,217 @@ messageInput.addEventListener(
     }
 );
 
-
-messageInput.addEventListener(
-    "input",
-    autoResizeTextarea
-);
-
-
 emojiBtn.addEventListener(
     "click",
-    addEmoji
+    insertEmoji
 );
-
 
 fileBtn.addEventListener(
     "click",
     ()=>{
-        fileInput.value =
-            "";
         fileInput.click();
     }
 );
 
-
 fileInput.addEventListener(
     "change",
     async ()=>{
+        
         const file =
-            fileInput.files?.[0];
+            fileInput.files &&
+            fileInput.files[0];
 
         if(file){
             await uploadFile(file);
         }
 
-        fileInput.value =
-            "";
+        fileInput.value = "";
     }
 );
 
-
 voiceBtn.addEventListener(
     "click",
-    startVoiceRecording
+    toggleRecording
 );
 
-
-voiceStop.addEventListener(
+backBtn.addEventListener(
     "click",
-    stopVoiceRecording
+    goBack
 );
 
-
-voiceCancel.addEventListener(
+closeOverlay.addEventListener(
     "click",
-    cancelVoiceRecording
+    closeImage
 );
 
-
-shareBtn.addEventListener(
-    "click",
-    shareMessage
-);
-
-
-deleteMeBtn.addEventListener(
-    "click",
-    deleteOnlyMe
-);
-
-
-deleteAllBtn.addEventListener(
-    "click",
-    deleteForEveryone
-);
-
-
-previewClose.addEventListener(
-    "click",
-    closePreview
-);
-
-
-preview.addEventListener(
+imageOverlay.addEventListener(
     "click",
     event=>{
 
         if(
             event.target ===
-            preview
+            imageOverlay
         ){
-            closePreview();
+            closeImage();
         }
     }
 );
-
-
-/*
-  Menu itself must not close
-  when clicking inside it.
-*/
-
-messageMenu.addEventListener(
-    "click",
-    event=>{
-        event.stopPropagation();
-    }
-);
-
-
-/*
-  Outside click closes menu.
-*/
-
-document.addEventListener(
-    "click",
-    event=>{
-
-        if(
-            !messageMenu.contains(
-                event.target
-            )
-        ){
-            closeMessageMenu();
-        }
-    }
-);
-
-
-/*
-  Escape closes preview/menu.
-*/
 
 document.addEventListener(
     "keydown",
     event=>{
 
         if(
-            event.key ===
-            "Escape"
+            event.key === "Escape"
         ){
 
             closeMessageMenu();
-            closePreview();
+            closeImage();
         }
     }
 );
 
-
-/*
-  When page becomes visible,
-  update read status.
-*/
-
-document.addEventListener(
-    "visibilitychange",
-    ()=>{
-        if(
-            !document.hidden &&
-            isPageReady
-        ){
-            markReceivedMessagesRead();
-        }
-    }
+document
+.getElementById("menuShare")
+.addEventListener(
+    "click",
+    shareMessage
 );
 
+document
+.getElementById("menuDeleteMe")
+.addEventListener(
+    "click",
+    deleteOnlyMe
+);
+
+document
+.getElementById("menuDeleteEveryone")
+.addEventListener(
+    "click",
+    deleteForEveryone
+);
 
 /* =========================================================
    START
 ========================================================= */
+
+async function startMessagePage(){
+
+    try{
+
+        targetUserId =
+            getTargetUserId();
+
+        if(!targetUserId){
+
+            throw new Error(
+                "User ID পাওয়া যায়নি। Profile থেকে আবার Chat খুলুন।"
+            );
+        }
+
+        const {
+            data:authData,
+            error:authError
+        } =
+            await supabaseClient
+            .auth
+            .getUser();
+
+        if(authError){
+            throw authError;
+        }
+
+        currentUser =
+            authData.user;
+
+        if(!currentUser){
+
+            throw new Error(
+                "আপনাকে আগে Login করতে হবে।"
+            );
+        }
+
+        if(
+            currentUser.id ===
+            targetUserId
+        ){
+
+            throw new Error(
+                "নিজের সাথে Chat করা যাবে না।"
+            );
+        }
+
+        await loadTargetProfile();
+
+        conversationId =
+            await getOrCreateConversation();
+
+        await loadMessages();
+
+        subscribeRealtime();
+
+        await markReceivedMessagesRead();
+
+        loadingScreen.style.display =
+            "none";
+
+        messageInput.focus();
+
+        setTimeout(
+            ()=>{
+                scrollToBottom(false);
+            },
+            100
+        );
+
+    }catch(error){
+
+        console.error(
+            "RAZTARA chat error:",
+            error
+        );
+
+        loadingScreen.innerHTML =
+            `
+            <div style="
+                text-align:center;
+                padding:25px;
+                max-width:420px;
+            ">
+                <div style="
+                    font-size:42px;
+                    margin-bottom:12px;
+                ">⚠️</div>
+
+                <div style="
+                    font-size:16px;
+                    color:#b00020;
+                    line-height:1.5;
+                ">
+                    ${escapeHtml(
+                        error.message ||
+                        "Chat চালু করা যায়নি।"
+                    )}
+                </div>
+
+                <button
+                    onclick="goBack()"
+                    style="
+                        margin-top:18px;
+                        padding:11px 20px;
+                        border:0;
+                        border-radius:9px;
+                        background:#075e54;
+                        color:#fff;
+                    "
+                >
+                    ফিরে যান
+                </button>
+            </div>
+            `;
+    }
+}
 
 startMessagePage();
 
