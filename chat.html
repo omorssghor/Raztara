@@ -435,6 +435,104 @@ input[type=file]{
     font-size:13px;
     margin-top:3px;
 }
+
+/* =========================================================
+   MESSAGE OPTIONS POPUP
+========================================================= */
+
+.message-options-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    z-index:1500;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+}
+
+.message-options-overlay.show{
+    display:flex;
+}
+
+.message-options-box{
+    width:100%;
+    max-width:360px;
+    background:#fff;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 10px 35px rgba(0,0,0,.3);
+}
+
+.message-options-preview{
+    max-height:42vh;
+    background:#111;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+}
+
+.message-options-preview img,
+.message-options-preview video{
+    max-width:100%;
+    max-height:42vh;
+    object-fit:contain;
+}
+
+.message-options-preview audio{
+    width:90%;
+    max-width:300px;
+}
+
+.message-options-title{
+    padding:14px 16px 8px;
+    font-size:16px;
+    font-weight:700;
+}
+
+.message-options-buttons{
+    padding:5px 10px 10px;
+}
+
+.message-options-buttons button{
+    width:100%;
+    border:0;
+    background:#fff;
+    padding:14px 8px;
+    text-align:left;
+    font-size:15px;
+    border-bottom:1px solid #eee;
+    cursor:pointer;
+}
+
+.message-options-buttons button:last-child{
+    border-bottom:0;
+}
+
+.message-options-buttons button:hover{
+    background:#f2f5f4;
+}
+
+.message-options-cancel{
+    color:#d00000 !important;
+}
+
+.message-options-text{
+    color:#fff;
+    padding:28px 20px;
+    text-align:center;
+    width:100%;
+    word-break:break-word;
+}
+
+.message-options-file{
+    color:#fff;
+    padding:30px 20px;
+    text-align:center;
+    width:100%;
+    font-size:16px;
+}
 </style>
 </head>
 
@@ -658,6 +756,51 @@ input[type=file]{
     </div>
 </div>
 
+<!-- =========================================================
+     MESSAGE OPTIONS
+========================================================= -->
+
+<div id="messageOptionsOverlay"
+     class="message-options-overlay"
+     onclick="closeMessageOptions(event)">
+
+    <div class="message-options-box"
+         onclick="event.stopPropagation()">
+
+        <div id="messageOptionsPreview"
+             class="message-options-preview">
+        </div>
+
+        <div id="messageOptionsTitle"
+             class="message-options-title">
+            Message Options
+        </div>
+
+        <div class="message-options-buttons">
+
+            <button onclick="shareSelectedMessage()">
+                📤 Share
+            </button>
+
+            <button onclick="deleteSelectedMessage()">
+                🗑️ Delete
+            </button>
+
+            <button id="saveGalleryButton"
+                    onclick="saveSelectedMedia()">
+                💾 Save to Gallery
+            </button>
+
+            <button class="message-options-cancel"
+                    onclick="closeMessageOptions()">
+                ❌ Cancel
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <script>
@@ -700,6 +843,10 @@ let recordingStream = null;
 let currentLanguage =
     localStorage.getItem("raztara_language") || "bn";
 
+/* MESSAGE OPTIONS */
+
+let selectedMessage = null;
+
 /* =========================================================
    LANGUAGE
 ========================================================= */
@@ -724,7 +871,15 @@ const translations = {
         blockSuccess:"ব্যক্তিকে Block করা হয়েছে",
         loginRequired:"লগইন করুন",
         callFailed:"কল শুরু করা যায়নি",
-        noProfile:"প্রোফাইল পাওয়া যায়নি"
+        noProfile:"প্রোফাইল পাওয়া যায়নি",
+        messageOptions:"মেসেজের অপশন",
+        share:"Share",
+        delete:"Delete",
+        saveGallery:"Gallery-তে Save করুন",
+        cancel:"Cancel",
+        fileNotFound:"ফাইল পাওয়া যায়নি",
+        saveStarted:"Save করার চেষ্টা করা হয়েছে",
+        saveFailed:"Save করা যায়নি"
     },
 
     en:{
@@ -745,7 +900,15 @@ const translations = {
         blockSuccess:"User blocked",
         loginRequired:"Please login",
         callFailed:"Could not start call",
-        noProfile:"Profile not found"
+        noProfile:"Profile not found",
+        messageOptions:"Message Options",
+        share:"Share",
+        delete:"Delete",
+        saveGallery:"Save to Gallery",
+        cancel:"Cancel",
+        fileNotFound:"File not found",
+        saveStarted:"Save requested",
+        saveFailed:"Could not save"
     }
 
 };
@@ -803,8 +966,6 @@ function getOtherUserId(){
 
 /* =========================================================
    BLOCK CHECK
-   IMPORTANT:
-   BLOCKED USER CHAT WILL NOT OPEN
 ========================================================= */
 
 async function checkBlockStatus(){
@@ -813,8 +974,6 @@ async function checkBlockStatus(){
 
         return false;
     }
-
-    /* I BLOCKED THIS USER */
 
     const {
         data:myBlock,
@@ -840,8 +999,6 @@ async function checkBlockStatus(){
 
         return true;
     }
-
-    /* THIS USER BLOCKED ME */
 
     const {
         data:theirBlock,
@@ -875,7 +1032,6 @@ async function checkBlockStatus(){
 
 /* =========================================================
    BLOCK USER
-   UNBLOCK IS ONLY FROM SETTINGS
 ========================================================= */
 
 async function blockUser(){
@@ -1731,8 +1887,6 @@ function appendMessage(
             "messages"
         );
 
-    /* DATE DIVIDER */
-
     const messageDateKey =
         getMessageDateKey(
             message.created_at
@@ -1911,9 +2065,6 @@ function appendMessage(
             fileBox.onclick =
                 async(event)=>{
 
-                    /* Keep file opening separate
-                       from message options */
-
                     event.stopPropagation();
 
                     const url =
@@ -1946,16 +2097,44 @@ function appendMessage(
 
     /* =====================================================
        MESSAGE OPTIONS
-       Tap message / image / video / audio
-       ===================================================== */
+       TAP MESSAGE / IMAGE / VIDEO / AUDIO
+    ===================================================== */
 
     box.onclick = function(event){
+
+        /*
+         * File-এর ওপর চাপলে আগের মতো
+         * file open হবে।
+         */
 
         if(
             event.target.closest(
                 ".file-box"
             )
         ){
+
+            return;
+        }
+
+        /*
+         * Video/audio-এর control চাপলে
+         * Options খুলবে না।
+         */
+
+        if(
+            event.target.closest(
+                "video"
+            ) ||
+            event.target.closest(
+                "audio"
+            )
+        ){
+
+            /*
+             * যদি সরাসরি media element-এ
+             * চাপ দেওয়া হয়, তাহলে options
+             * না খুলে media control কাজ করবে।
+             */
 
             return;
         }
@@ -2782,9 +2961,10 @@ function openTipping(){
 
 /* =========================================================
    MESSAGE OPTIONS
+   NOW OPENS INSIDE CHAT
 ========================================================= */
 
-function openMessageOptions(message){
+async function openMessageOptions(message){
 
     if(
         !message ||
@@ -2794,8 +2974,204 @@ function openMessageOptions(message){
         return;
     }
 
+    selectedMessage =
+        message;
+
+    const overlay =
+        document.getElementById(
+            "messageOptionsOverlay"
+        );
+
+    const preview =
+        document.getElementById(
+            "messageOptionsPreview"
+        );
+
+    const title =
+        document.getElementById(
+            "messageOptionsTitle"
+        );
+
+    const saveButton =
+        document.getElementById(
+            "saveGalleryButton"
+        );
+
+    preview.innerHTML = "";
+
+    title.textContent =
+        t("messageOptions");
+
+    saveButton.style.display =
+        "none";
+
+    const type =
+        message.message_type ||
+        "text";
+
+    if(type === "image"){
+
+        const img =
+            document.createElement(
+                "img"
+            );
+
+        img.alt =
+            "Image";
+
+        const url =
+            await getMediaUrl(
+                message.file_url
+            );
+
+        if(url){
+
+            img.src =
+                url;
+
+            preview.appendChild(
+                img
+            );
+
+            saveButton.style.display =
+                "block";
+        }
+
+    }else if(type === "video"){
+
+        const video =
+            document.createElement(
+                "video"
+            );
+
+        video.controls =
+            true;
+
+        video.playsInline =
+            true;
+
+        const url =
+            await getMediaUrl(
+                message.file_url
+            );
+
+        if(url){
+
+            video.src =
+                url;
+
+            preview.appendChild(
+                video
+            );
+
+            saveButton.style.display =
+                "block";
+        }
+
+    }else if(type === "audio"){
+
+        const audio =
+            document.createElement(
+                "audio"
+            );
+
+        audio.controls =
+            true;
+
+        const url =
+            await getMediaUrl(
+                message.file_url
+            );
+
+        if(url){
+
+            audio.src =
+                url;
+
+            preview.appendChild(
+                audio
+            );
+        }
+
+    }else if(type === "file"){
+
+        preview.innerHTML = `
+            <div class="message-options-file">
+                📎<br><br>
+                ${escapeHtml(
+                    message.content ||
+                    "File"
+                )}
+            </div>
+        `;
+
+    }else if(type === "text"){
+
+        preview.innerHTML = `
+            <div class="message-options-text">
+                ${escapeHtml(
+                    message.content ||
+                    ""
+                )}
+            </div>
+        `;
+
+    }else{
+
+        preview.innerHTML = `
+            <div class="message-options-text">
+                ${escapeHtml(
+                    message.content ||
+                    ""
+                )}
+            </div>
+        `;
+    }
+
+    overlay.classList.add(
+        "show"
+    );
+}
+
+function closeMessageOptions(event){
+
+    if(
+        event &&
+        event.target !==
+        document.getElementById(
+            "messageOptionsOverlay"
+        )
+    ){
+
+        return;
+    }
+
+    document
+        .getElementById(
+            "messageOptionsOverlay"
+        )
+        .classList.remove(
+            "show"
+        );
+
+    selectedMessage =
+        null;
+}
+
+function shareSelectedMessage(){
+
+    if(!selectedMessage){
+
+        return;
+    }
+
+    const message =
+        selectedMessage;
+
+    closeMessageOptions();
+
     window.location.href =
-        "message-options.html?conversation_id=" +
+        "share.html?conversation_id=" +
         encodeURIComponent(
             message.conversation_id
         ) +
@@ -2803,6 +3179,139 @@ function openMessageOptions(message){
         encodeURIComponent(
             message.id
         );
+}
+
+function deleteSelectedMessage(){
+
+    if(!selectedMessage){
+
+        return;
+    }
+
+    const message =
+        selectedMessage;
+
+    closeMessageOptions();
+
+    window.location.href =
+        "delete.html?conversation_id=" +
+        encodeURIComponent(
+            message.conversation_id
+        ) +
+        "&message_id=" +
+        encodeURIComponent(
+            message.id
+        );
+}
+
+async function saveSelectedMedia(){
+
+    if(!selectedMessage){
+
+        return;
+    }
+
+    const message =
+        selectedMessage;
+
+    if(
+        message.message_type !== "image" &&
+        message.message_type !== "video"
+    ){
+
+        return;
+    }
+
+    const url =
+        await getMediaUrl(
+            message.file_url
+        );
+
+    if(!url){
+
+        showToast(
+            t("fileNotFound")
+        );
+
+        return;
+    }
+
+    try{
+
+        const response =
+            await fetch(url);
+
+        if(!response.ok){
+
+            throw new Error(
+                "Download failed"
+            );
+        }
+
+        const blob =
+            await response.blob();
+
+        const objectUrl =
+            URL.createObjectURL(
+                blob
+            );
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+        link.href =
+            objectUrl;
+
+        link.download =
+            message.message_type === "image"
+                ? "RAZTARA_Image"
+                : "RAZTARA_Video";
+
+        document.body.appendChild(
+            link
+        );
+
+        link.click();
+
+        link.remove();
+
+        setTimeout(()=>{
+
+            URL.revokeObjectURL(
+                objectUrl
+            );
+
+        },1500);
+
+        showToast(
+            t("saveStarted")
+        );
+
+    }catch(error){
+
+        console.error(
+            "Save error:",
+            error
+        );
+
+        /*
+         * iPhone/Safari-তে সরাসরি
+         * Gallery save সবসময় browser
+         * থেকে সম্ভব হয় না।
+         * তাই media নতুন tab-এ খোলা হবে।
+         */
+
+        window.open(
+            url,
+            "_blank"
+        );
+
+        showToast(
+            t("saveStarted")
+        );
+    }
 }
 
 /* =========================================================
