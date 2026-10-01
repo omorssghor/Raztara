@@ -229,6 +229,45 @@ body{
     max-width:220px;
 }
 
+/* =========================================================
+   MEDIA MESSAGE THREE DOT
+========================================================= */
+
+.media-options-btn{
+    position:absolute;
+    top:5px;
+    right:5px;
+    width:30px;
+    height:30px;
+    border:0;
+    border-radius:50%;
+    background:rgba(0,0,0,.58);
+    color:#fff;
+    font-size:20px;
+    line-height:27px;
+    text-align:center;
+    padding:0;
+    cursor:pointer;
+    z-index:20;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    -webkit-tap-highlight-color:transparent;
+}
+
+.message-row.me .media-options-btn{
+    background:rgba(0,0,0,.48);
+}
+
+.media-options-btn:hover{
+    background:rgba(0,0,0,.75);
+}
+
+.media-message{
+    padding-top:8px;
+}
+
+/* FILE */
 .file-box{
     display:flex;
     align-items:center;
@@ -842,8 +881,6 @@ let recordingStream = null;
 
 let currentLanguage =
     localStorage.getItem("raztara_language") || "bn";
-
-/* MESSAGE OPTIONS */
 
 let selectedMessage = null;
 
@@ -1865,6 +1902,64 @@ async function loadMessages(){
 }
 
 /* =========================================================
+   ADD MEDIA THREE DOT
+========================================================= */
+
+function addMediaOptionsButton(
+    box,
+    message
+){
+
+    const button =
+        document.createElement(
+            "button"
+        );
+
+    button.type =
+        "button";
+
+    button.className =
+        "media-options-btn";
+
+    button.innerHTML =
+        "⋮";
+
+    button.setAttribute(
+        "aria-label",
+        "Message options"
+    );
+
+    button.title =
+        "Message options";
+
+    button.addEventListener(
+        "click",
+        function(event){
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            openMessageOptions(
+                message
+            );
+        }
+    );
+
+    button.addEventListener(
+        "pointerdown",
+        function(event){
+
+            event.stopPropagation();
+        }
+    );
+
+    box.appendChild(
+        button
+    );
+}
+
+/* =========================================================
    APPEND MESSAGE
 ========================================================= */
 
@@ -1953,16 +2048,16 @@ function appendMessage(
     box.className =
         "message";
 
+    const type =
+        message.message_type ||
+        "text";
+
     if(message.deleted_for_everyone){
 
         box.innerHTML =
             `<i>This message was deleted</i>`;
 
     }else{
-
-        const type =
-            message.message_type ||
-            "text";
 
         if(type === "text"){
 
@@ -1973,6 +2068,10 @@ function appendMessage(
                 );
 
         }else if(type === "image"){
+
+            box.classList.add(
+                "media-message"
+            );
 
             const img =
                 document.createElement(
@@ -1992,9 +2091,24 @@ function appendMessage(
                 }
             });
 
-            box.appendChild(img);
+            box.appendChild(
+                img
+            );
+
+            /*
+             * প্রতিটি Photo message-এ
+             * আলাদা 3-dot
+             */
+            addMediaOptionsButton(
+                box,
+                message
+            );
 
         }else if(type === "video"){
+
+            box.classList.add(
+                "media-message"
+            );
 
             const video =
                 document.createElement(
@@ -2003,6 +2117,7 @@ function appendMessage(
 
             video.controls = true;
             video.playsInline = true;
+            video.preload = "metadata";
 
             getMediaUrl(
                 message.file_url
@@ -2015,9 +2130,26 @@ function appendMessage(
                 }
             });
 
-            box.appendChild(video);
+            box.appendChild(
+                video
+            );
+
+            /*
+             * প্রতিটি Video message-এ
+             * আলাদা 3-dot
+             *
+             * কোনো long press নেই।
+             */
+            addMediaOptionsButton(
+                box,
+                message
+            );
 
         }else if(type === "audio"){
+
+            box.classList.add(
+                "media-message"
+            );
 
             const audio =
                 document.createElement(
@@ -2037,7 +2169,18 @@ function appendMessage(
                 }
             });
 
-            box.appendChild(audio);
+            box.appendChild(
+                audio
+            );
+
+            /*
+             * প্রতিটি Voice Recording message-এ
+             * আলাদা 3-dot
+             */
+            addMediaOptionsButton(
+                box,
+                message
+            );
 
         }else if(type === "file"){
 
@@ -2096,210 +2239,49 @@ function appendMessage(
     }
 
     /* =====================================================
-       MESSAGE OPTIONS
-       TEXT / IMAGE / AUDIO = NORMAL TAP
-       VIDEO = 3 SECOND LONG PRESS
+       MESSAGE CLICK
     ===================================================== */
 
-    box.onclick = function(event){
-
-        /*
-         * File-এর ওপর চাপলে আগের মতো
-         * file open হবে।
-         */
-
-        if(
-            event.target.closest(
-                ".file-box"
-            )
-        ){
-
-            return;
-        }
-
-        /*
-         * Video-এর normal tap/click-এ
-         * Message Options খুলবে না।
-         *
-         * Native video controls স্বাভাবিকভাবে
-         * কাজ করবে।
-         */
-
-        if(
-            event.target.closest(
-                "video"
-            )
-        ){
-
-            return;
-        }
-
-        /*
-         * Audio-এর native controls আগের মতো থাকবে।
-         */
-
-        if(
-            event.target.closest(
-                "audio"
-            )
-        ){
-
-            return;
-        }
-
-        /*
-         * Text / Image / অন্যান্য message
-         * আগের মতো tap করলে Options খুলবে।
-         */
-
-        openMessageOptions(
-            message
-        );
-    };
-
-
-    /* =====================================================
-       VIDEO — 3 SECOND LONG PRESS
-    ===================================================== */
-
-    if(
-        message.message_type === "video"
-    ){
-
-        const video =
-            box.querySelector(
-                "video"
-            );
-
-        if(video){
-
-            let videoLongPressTimer =
-                null;
-
-            let videoLongPressTriggered =
-                false;
-
+    box.onclick =
+        function(event){
 
             /*
-             * Video-তে press শুরু হলে
-             * 3 second timer শুরু হবে।
+             * File আগের মতো open হবে।
              */
+            if(
+                event.target.closest(
+                    ".file-box"
+                )
+            ){
 
-            video.addEventListener(
-                "pointerdown",
-                function(){
-
-                    clearTimeout(
-                        videoLongPressTimer
-                    );
-
-                    videoLongPressTriggered =
-                        false;
-
-                    videoLongPressTimer =
-                        setTimeout(
-                            async function(){
-
-                                videoLongPressTriggered =
-                                    true;
-
-                                /*
-                                 * ঠিক 3 second পরে
-                                 * Message Options খুলবে।
-                                 */
-
-                                await openMessageOptions(
-                                    message
-                                );
-
-                            },
-                            3000
-                        );
-                }
-            );
-
+                return;
+            }
 
             /*
-             * 3 second-এর আগে release করলে
-             * Options আসবে না।
+             * Photo / Video / Voice
+             * সরাসরি tap করলে Options খুলবে না।
+             *
+             * শুধু 3-dot চাপলে Options খুলবে।
              */
 
-            video.addEventListener(
-                "pointerup",
-                function(){
+            if(
+                type === "image" ||
+                type === "video" ||
+                type === "audio"
+            ){
 
-                    if(
-                        !videoLongPressTriggered
-                    ){
-
-                        clearTimeout(
-                            videoLongPressTimer
-                        );
-                    }
-                }
-            );
-
+                return;
+            }
 
             /*
-             * Pointer cancel হলে
-             * timer বন্ধ হবে।
+             * Text message আগের মতো
+             * tap করলে Options খুলবে।
              */
 
-            video.addEventListener(
-                "pointercancel",
-                function(){
-
-                    clearTimeout(
-                        videoLongPressTimer
-                    );
-
-                    videoLongPressTriggered =
-                        false;
-                }
+            openMessageOptions(
+                message
             );
-
-
-            /*
-             * Video থেকে pointer বাইরে গেলে
-             * 3 second পূর্ণ না হলে timer বন্ধ হবে।
-             */
-
-            video.addEventListener(
-                "pointerleave",
-                function(){
-
-                    if(
-                        !videoLongPressTriggered
-                    ){
-
-                        clearTimeout(
-                            videoLongPressTimer
-                        );
-                    }
-                }
-            );
-
-
-            /*
-             * Long press হওয়ার পরে browser-এর
-             * context menu যেন Options-এর সঙ্গে
-             * conflict না করে।
-             */
-
-            video.addEventListener(
-                "contextmenu",
-                function(event){
-
-                    if(
-                        videoLongPressTriggered
-                    ){
-
-                        event.preventDefault();
-                    }
-                }
-            );
-        }
-    }
+        };
 
     const time =
         document.createElement(
@@ -3118,7 +3100,6 @@ function openTipping(){
 
 /* =========================================================
    MESSAGE OPTIONS
-   NOW OPENS INSIDE CHAT
 ========================================================= */
 
 async function openMessageOptions(message){
@@ -3452,13 +3433,6 @@ async function saveSelectedMedia(){
             "Save error:",
             error
         );
-
-        /*
-         * iPhone/Safari-তে সরাসরি
-         * Gallery save সবসময় browser
-         * থেকে সম্ভব হয় না।
-         * তাই media নতুন tab-এ খোলা হবে।
-         */
 
         window.open(
             url,
