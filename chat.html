@@ -168,6 +168,21 @@ body{
     padding:35px 15px;
 }
 
+.date-divider{
+    width:100%;
+    text-align:center;
+    margin:10px 0 5px;
+}
+
+.date-divider span{
+    display:inline-block;
+    background:#e2e8e6;
+    color:#555;
+    padding:5px 12px;
+    border-radius:15px;
+    font-size:11px;
+}
+
 .message-row{
     width:100%;
     display:flex;
@@ -298,7 +313,6 @@ body{
     opacity:.5;
 }
 
-/* HIDDEN INPUT */
 input[type=file]{
     display:none;
 }
@@ -340,7 +354,6 @@ input[type=file]{
     font-size:15px;
 }
 
-/* RECORDING */
 .recording{
     position:fixed;
     left:10px;
@@ -368,14 +381,12 @@ input[type=file]{
     padding:7px 18px;
 }
 
-/* LOADING */
 .loading{
     text-align:center;
     padding:30px;
     color:#777;
 }
 
-/* TOAST */
 .toast{
     position:fixed;
     left:50%;
@@ -399,7 +410,6 @@ input[type=file]{
     transform:translateX(-50%) translateY(0);
 }
 
-/* PROFILE SHEET */
 .profile-head{
     display:flex;
     align-items:center;
@@ -429,66 +439,78 @@ input[type=file]{
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
 
     <button class="back-btn" onclick="goBack()">‹</button>
 
     <div class="user-area" onclick="openProfile()">
-        <img id="userAvatar" class="avatar"
+
+        <img id="userAvatar"
+             class="avatar"
              src="https://i.pravatar.cc/150?img=12">
 
         <div class="user-info">
-            <div id="userName" class="user-name">RAZTARA User</div>
-            <div id="userStatus" class="user-status">...</div>
+
+            <div id="userName"
+                 class="user-name">
+                RAZTARA User
+            </div>
+
+            <div id="userStatus"
+                 class="user-status">
+                ...
+            </div>
+
         </div>
     </div>
 
     <div class="header-actions">
 
-        <!-- MESSAGE -->
         <button class="header-action"
                 onclick="focusMessage()"
-                title="Message">💬</button>
+                title="Message">
+            💬
+        </button>
 
-        <!-- AUDIO -->
         <button class="header-action"
                 onclick="startCall('audio')"
-                title="Audio Call">📞</button>
+                title="Audio Call">
+            📞
+        </button>
 
-        <!-- VIDEO -->
         <button class="header-action"
                 onclick="startCall('video')"
-                title="Video Call">📹</button>
+                title="Video Call">
+            📹
+        </button>
 
-        <!-- MENU -->
         <button class="header-action"
                 onclick="toggleMenu()"
-                title="More">⋮</button>
+                title="More">
+            ⋮
+        </button>
 
     </div>
 </div>
 
 
-<!-- THREE DOT MENU -->
 <div id="menu" class="menu">
 
     <button onclick="openProfile();closeMenu()">
-        👤 <span data-bn="Profile" data-en="Profile">Profile</span>
+        👤 Profile
     </button>
 
     <button onclick="openGallery();closeMenu()">
-        🖼️ <span data-bn="Gallery" data-en="Gallery">Gallery</span>
+        🖼️ Gallery
     </button>
 
-    <button onclick="toggleBlock();closeMenu()">
+    <button onclick="blockUser();closeMenu()">
         🚫 <span id="blockMenuText">Block</span>
     </button>
 
 </div>
 
 
-<!-- CHAT BOARD -->
 <div id="chatBoard" class="chat-board">
 
     <div id="messages" class="messages">
@@ -502,46 +524,48 @@ input[type=file]{
 </div>
 
 
-<!-- COMPOSER -->
 <div class="composer">
 
-    <!-- PHOTO -->
     <button class="media-btn"
-            onclick="document.getElementById('photoInput').click()"
-            title="Photo">🖼️</button>
+            onclick="document.getElementById('photoInput').click()">
+        🖼️
+    </button>
 
-    <!-- VIDEO -->
     <button class="media-btn"
-            onclick="document.getElementById('videoInput').click()"
-            title="Video">🎥</button>
+            onclick="document.getElementById('videoInput').click()">
+        🎥
+    </button>
 
-    <!-- FILE -->
     <button class="media-btn"
-            onclick="document.getElementById('fileInput').click()"
-            title="File">📎</button>
+            onclick="document.getElementById('fileInput').click()">
+        📎
+    </button>
 
-    <!-- VOICE -->
     <button id="voiceBtn"
             class="media-btn"
-            onclick="toggleRecording()"
-            title="Voice">🎙️</button>
+            onclick="toggleRecording()">
+        🎙️
+    </button>
 
     <div class="input-wrap">
+
         <input id="messageInput"
                class="message-input"
                type="text"
                autocomplete="off"
                placeholder="Message...">
+
     </div>
 
     <button id="sendBtn"
             class="send-btn"
-            onclick="sendText()">➤</button>
+            onclick="sendText()">
+        ➤
+    </button>
 
 </div>
 
 
-<!-- FILE INPUTS -->
 <input id="photoInput"
        type="file"
        accept="image/*"
@@ -557,14 +581,22 @@ input[type=file]{
        onchange="handleFile(this.files[0],'file')">
 
 
-<!-- RECORDING -->
 <div id="recordingBox" class="recording">
-    <div>🎙️ <span id="recordingText">Recording...</span></div>
-    <button onclick="stopRecording()">Send Voice</button>
+
+    <div>
+        🎙️
+        <span id="recordingText">
+            Recording...
+        </span>
+    </div>
+
+    <button onclick="stopRecording()">
+        Send Voice
+    </button>
+
 </div>
 
 
-<!-- PROFILE OVERLAY -->
 <div id="profileOverlay"
      class="overlay"
      onclick="closeProfile(event)">
@@ -572,7 +604,9 @@ input[type=file]{
     <div class="sheet"
          onclick="event.stopPropagation()">
 
-        <div class="sheet-title">Profile</div>
+        <div class="sheet-title">
+            Profile
+        </div>
 
         <div class="profile-head">
 
@@ -580,7 +614,9 @@ input[type=file]{
                  src="https://i.pravatar.cc/150?img=12">
 
             <div>
-                <div id="sheetName" class="profile-name">
+
+                <div id="sheetName"
+                     class="profile-name">
                     RAZTARA User
                 </div>
 
@@ -588,6 +624,7 @@ input[type=file]{
                      class="profile-username">
                     @user
                 </div>
+
             </div>
 
         </div>
@@ -623,7 +660,6 @@ input[type=file]{
 </div>
 
 
-<!-- TOAST -->
 <div id="toast" class="toast"></div>
 
 
@@ -654,7 +690,9 @@ let currentUser = null;
 let otherUserId = null;
 let otherProfile = null;
 let conversationId = null;
+
 let realtimeChannel = null;
+
 let blocked = false;
 
 let mediaRecorder = null;
@@ -674,23 +712,18 @@ const translations = {
     bn:{
         message:"মেসেজ...",
         online:"অনলাইন",
-        offline:"অফলাইন",
         profile:"প্রোফাইল",
         gallery:"গ্যালারি",
         block:"ব্লক",
-        unblock:"আনব্লক",
         loading:"লোড হচ্ছে...",
         noMessages:"এখনও কোনো মেসেজ নেই",
         recording:"রেকর্ড হচ্ছে...",
         sendVoice:"ভয়েস পাঠান",
         viewProfile:"প্রোফাইল দেখুন",
         close:"বন্ধ করুন",
-        blockedCannotSend:"এই ব্যক্তিকে ব্লক করা হয়েছে। মেসেজ পাঠানো যাবে না।",
-        blockedByUser:"আপনাকে এই ব্যক্তি ব্লক করেছেন।",
+        blockedCannotSend:"এই ব্যক্তিকে ব্লক করা হয়েছে।",
         blockConfirm:"আপনি কি এই ব্যক্তিকে Block করতে চান?",
-        unblockConfirm:"আপনি কি এই ব্যক্তিকে Unblock করতে চান?",
         blockSuccess:"ব্যক্তিকে Block করা হয়েছে",
-        unblockSuccess:"ব্যক্তিকে Unblock করা হয়েছে",
         loginRequired:"লগইন করুন",
         callFailed:"কল শুরু করা যায়নি",
         noProfile:"প্রোফাইল পাওয়া যায়নি"
@@ -699,23 +732,18 @@ const translations = {
     en:{
         message:"Message...",
         online:"Online",
-        offline:"Offline",
         profile:"Profile",
         gallery:"Gallery",
         block:"Block",
-        unblock:"Unblock",
         loading:"Loading...",
         noMessages:"No messages yet",
         recording:"Recording...",
         sendVoice:"Send Voice",
         viewProfile:"View Profile",
         close:"Close",
-        blockedCannotSend:"This person is blocked. You cannot send messages.",
-        blockedByUser:"You are blocked by this person.",
+        blockedCannotSend:"This person is blocked.",
         blockConfirm:"Do you want to block this person?",
-        unblockConfirm:"Do you want to unblock this person?",
         blockSuccess:"User blocked",
-        unblockSuccess:"User unblocked",
         loginRequired:"Please login",
         callFailed:"Could not start call",
         noProfile:"Profile not found"
@@ -725,6 +753,7 @@ const translations = {
 
 
 function t(key){
+
     return translations[currentLanguage]?.[key]
         || translations.bn[key]
         || key;
@@ -747,7 +776,8 @@ async function getCurrentUser(){
         showToast(t("loginRequired"));
 
         setTimeout(()=>{
-            window.location.href = "index.html";
+            window.location.href =
+                "index.html";
         },1000);
 
         return null;
@@ -763,9 +793,10 @@ async function getCurrentUser(){
 
 function getOtherUserId(){
 
-    const params = new URLSearchParams(
-        window.location.search
-    );
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
 
     return (
         params.get("user") ||
@@ -776,12 +807,166 @@ function getOtherUserId(){
 
 
 /* =========================================================
+   BLOCK CHECK
+   IMPORTANT:
+   BLOCKED USER CHAT WILL NOT OPEN
+========================================================= */
+
+async function checkBlockStatus(){
+
+    if(!currentUser || !otherUserId){
+
+        return false;
+    }
+
+
+    /* I BLOCKED THIS USER */
+
+    const {
+        data:myBlock,
+        error:myBlockError
+    } = await supabaseClient
+        .from("blocked_users")
+        .select("id")
+        .eq("blocker_id",currentUser.id)
+        .eq("blocked_id",otherUserId)
+        .maybeSingle();
+
+    if(myBlockError){
+
+        console.error(
+            "My block check:",
+            myBlockError
+        );
+    }
+
+    if(myBlock){
+
+        blocked = true;
+
+        return true;
+    }
+
+
+    /* THIS USER BLOCKED ME */
+
+    const {
+        data:theirBlock,
+        error:theirBlockError
+    } = await supabaseClient
+        .from("blocked_users")
+        .select("id")
+        .eq("blocker_id",otherUserId)
+        .eq("blocked_id",currentUser.id)
+        .maybeSingle();
+
+    if(theirBlockError){
+
+        console.error(
+            "Their block check:",
+            theirBlockError
+        );
+    }
+
+    if(theirBlock){
+
+        blocked = true;
+
+        return true;
+    }
+
+
+    blocked = false;
+
+    return false;
+}
+
+
+/* =========================================================
+   BLOCK USER
+   UNBLOCK IS ONLY FROM SETTINGS
+========================================================= */
+
+async function blockUser(){
+
+    if(!currentUser || !otherUserId){
+
+        return;
+    }
+
+
+    const alreadyBlocked =
+        await checkBlockStatus();
+
+    if(alreadyBlocked){
+
+        return;
+    }
+
+
+    const ok =
+        confirm(
+            t("blockConfirm")
+        );
+
+    if(!ok){
+
+        return;
+    }
+
+
+    const {
+        error
+    } = await supabaseClient
+        .from("blocked_users")
+        .insert({
+            blocker_id:currentUser.id,
+            blocked_id:otherUserId
+        });
+
+
+    if(error){
+
+        console.error(error);
+
+        showToast(error.message);
+
+        return;
+    }
+
+
+    blocked = true;
+
+    showToast(
+        t("blockSuccess")
+    );
+
+
+    /*
+       BLOCK করার পর Chat আর থাকবে না।
+       Settings → Blocked Users থেকে Unblock করতে হবে।
+    */
+
+    setTimeout(()=>{
+
+        window.location.href =
+            "messages.html";
+
+    },500);
+}
+
+
+/* =========================================================
    LOAD PROFILE
 ========================================================= */
 
 async function loadOtherProfile(){
 
-    if(!otherUserId) return;
+    if(!otherUserId){
+
+        return;
+    }
+
 
     const {
         data,
@@ -802,6 +987,7 @@ async function loadOtherProfile(){
         .eq("id",otherUserId)
         .maybeSingle();
 
+
     if(error){
 
         console.error(error);
@@ -811,32 +997,45 @@ async function loadOtherProfile(){
         return;
     }
 
+
     otherProfile = data;
+
 
     const name =
         data?.full_name ||
         data?.username ||
         "RAZTARA User";
 
-    document.getElementById("userName").textContent =
-        name;
 
-    document.getElementById("sheetName").textContent =
-        name;
+    document.getElementById(
+        "userName"
+    ).textContent = name;
 
-    document.getElementById("sheetUsername").textContent =
+
+    document.getElementById(
+        "sheetName"
+    ).textContent = name;
+
+
+    document.getElementById(
+        "sheetUsername"
+    ).textContent =
         data?.username
             ? "@" + data.username
             : "";
 
+
     if(data?.avatar_url){
 
-        document.getElementById("userAvatar").src =
-            data.avatar_url;
+        document.getElementById(
+            "userAvatar"
+        ).src = data.avatar_url;
 
-        document.getElementById("sheetAvatar").src =
-            data.avatar_url;
+        document.getElementById(
+            "sheetAvatar"
+        ).src = data.avatar_url;
     }
+
 
     updateOnlineStatus(data);
 }
@@ -860,6 +1059,7 @@ async function getPrivacy(){
         };
     }
 
+
     const {
         data,
         error
@@ -876,9 +1076,13 @@ async function getPrivacy(){
         .eq("user_id",otherUserId)
         .maybeSingle();
 
+
     if(error){
 
-        console.error("Privacy error:",error);
+        console.error(
+            "Privacy error:",
+            error
+        );
 
         return {
             profile_photo:"public",
@@ -889,6 +1093,7 @@ async function getPrivacy(){
             bio:"public"
         };
     }
+
 
     return data || {
         profile_photo:"public",
@@ -908,8 +1113,10 @@ async function getPrivacy(){
 async function areFriends(){
 
     if(!currentUser || !otherUserId){
+
         return false;
     }
+
 
     const {
         data,
@@ -923,12 +1130,17 @@ async function areFriends(){
         )
         .limit(1);
 
+
     if(error){
 
         return false;
     }
 
-    return !!(data && data.length);
+
+    return !!(
+        data &&
+        data.length
+    );
 }
 
 
@@ -939,66 +1151,81 @@ async function areFriends(){
 async function canSeePrivacyValue(value){
 
     if(value === "public"){
+
         return true;
     }
 
+
     if(value === "only_me"){
+
         return false;
     }
 
+
     if(value === "friend"){
+
         return await areFriends();
     }
+
 
     return false;
 }
 
 
 /* =========================================================
-   UPDATE PROFILE PRIVACY DISPLAY
+   APPLY PROFILE PRIVACY
 ========================================================= */
 
 async function applyProfilePrivacy(){
 
     if(!otherProfile){
+
         return;
     }
 
-    const privacy = await getPrivacy();
 
-    /* PROFILE PHOTO */
+    const privacy =
+        await getPrivacy();
+
 
     const canSeePhoto =
         await canSeePrivacyValue(
             privacy.profile_photo
         );
 
+
     if(!canSeePhoto){
 
-        document.getElementById("userAvatar").src =
+        document.getElementById(
+            "userAvatar"
+        ).src =
             "https://i.pravatar.cc/150?img=12";
 
-        document.getElementById("sheetAvatar").src =
+        document.getElementById(
+            "sheetAvatar"
+        ).src =
             "https://i.pravatar.cc/150?img=12";
     }
 
-
-    /* PROFILE INFORMATION */
 
     const canSeeInfo =
         await canSeePrivacyValue(
             privacy.profile_info
         );
 
+
     const rows =
-        document.getElementById("profileInfoRows");
+        document.getElementById(
+            "profileInfoRows"
+        );
+
 
     rows.innerHTML = "";
 
+
     if(canSeeInfo){
 
-        if(otherProfile.bio &&
-           privacy.bio !== "only_me"){
+        if(otherProfile.bio){
 
             const canSeeBio =
                 await canSeePrivacyValue(
@@ -1010,11 +1237,14 @@ async function applyProfilePrivacy(){
                 rows.innerHTML += `
                     <div class="sheet-row">
                         <b>Bio</b><br>
-                        ${escapeHtml(otherProfile.bio)}
+                        ${escapeHtml(
+                            otherProfile.bio
+                        )}
                     </div>
                 `;
             }
         }
+
 
         if(otherProfile.phone){
 
@@ -1027,11 +1257,14 @@ async function applyProfilePrivacy(){
 
                 rows.innerHTML += `
                     <div class="sheet-row">
-                        📞 ${escapeHtml(otherProfile.phone)}
+                        📞 ${escapeHtml(
+                            otherProfile.phone
+                        )}
                     </div>
                 `;
             }
         }
+
 
         if(otherProfile.address){
 
@@ -1044,7 +1277,9 @@ async function applyProfilePrivacy(){
 
                 rows.innerHTML += `
                     <div class="sheet-row">
-                        📍 ${escapeHtml(otherProfile.address)}
+                        📍 ${escapeHtml(
+                            otherProfile.address
+                        )}
                     </div>
                 `;
             }
@@ -1054,9 +1289,12 @@ async function applyProfilePrivacy(){
 
         rows.innerHTML = `
             <div class="sheet-row">
-                🔒 ${currentLanguage === "bn"
+                🔒
+                ${
+                    currentLanguage === "bn"
                     ? "এই প্রোফাইলের তথ্য ব্যক্তিগত"
-                    : "This profile information is private"}
+                    : "This profile information is private"
+                }
             </div>
         `;
     }
@@ -1070,31 +1308,43 @@ async function applyProfilePrivacy(){
 function updateOnlineStatus(profile){
 
     const status =
-        document.getElementById("userStatus");
+        document.getElementById(
+            "userStatus"
+        );
+
+
+    /*
+       এখনো Offline পরিবর্তনের কাজ করা হয়নি।
+       এই ধাপে শুধু Block system পরিবর্তন করা হয়েছে।
+    */
 
     if(!profile){
 
-        status.textContent =
-            t("offline");
+        status.textContent = "";
 
         return;
     }
+
 
     if(profile.online_visibility === false){
 
-        status.textContent =
-            "";
+        status.textContent = "";
 
         return;
     }
+
 
     if(profile.last_seen_at){
 
         const last =
-            new Date(profile.last_seen_at);
+            new Date(
+                profile.last_seen_at
+            );
 
         const diff =
-            Date.now() - last.getTime();
+            Date.now() -
+            last.getTime();
+
 
         if(diff < 120000){
 
@@ -1105,8 +1355,8 @@ function updateOnlineStatus(profile){
         }
     }
 
-    status.textContent =
-        t("offline");
+
+    status.textContent = "";
 }
 
 
@@ -1117,8 +1367,10 @@ function updateOnlineStatus(profile){
 async function findConversation(){
 
     if(!currentUser || !otherUserId){
+
         return null;
     }
+
 
     const {
         data:myMembers,
@@ -1126,7 +1378,11 @@ async function findConversation(){
     } = await supabaseClient
         .from("conversation_members")
         .select("conversation_id")
-        .eq("user_id",currentUser.id);
+        .eq(
+            "user_id",
+            currentUser.id
+        );
+
 
     if(myError){
 
@@ -1135,12 +1391,18 @@ async function findConversation(){
         return null;
     }
 
+
     if(!myMembers?.length){
+
         return null;
     }
 
+
     const ids =
-        myMembers.map(x=>x.conversation_id);
+        myMembers.map(
+            x=>x.conversation_id
+        );
+
 
     const {
         data:otherMembers,
@@ -1148,8 +1410,15 @@ async function findConversation(){
     } = await supabaseClient
         .from("conversation_members")
         .select("conversation_id")
-        .eq("user_id",otherUserId)
-        .in("conversation_id",ids);
+        .eq(
+            "user_id",
+            otherUserId
+        )
+        .in(
+            "conversation_id",
+            ids
+        );
+
 
     if(otherError){
 
@@ -1158,29 +1427,47 @@ async function findConversation(){
         return null;
     }
 
+
     if(!otherMembers?.length){
+
         return null;
     }
 
+
     const commonIds =
-        otherMembers.map(x=>x.conversation_id);
+        otherMembers.map(
+            x=>x.conversation_id
+        );
+
 
     const {
         data:conversations,
         error:conversationError
     } = await supabaseClient
         .from("conversations")
-        .select("id,is_group")
-        .in("id",commonIds)
-        .eq("is_group",false)
+        .select(
+            "id,is_group"
+        )
+        .in(
+            "id",
+            commonIds
+        )
+        .eq(
+            "is_group",
+            false
+        )
         .limit(1);
+
 
     if(conversationError){
 
-        console.error(conversationError);
+        console.error(
+            conversationError
+        );
 
         return null;
     }
+
 
     return conversations?.[0]?.id || null;
 }
@@ -1204,6 +1491,7 @@ async function createConversation(){
         .select("id")
         .single();
 
+
     if(error){
 
         console.error(error);
@@ -1211,8 +1499,10 @@ async function createConversation(){
         throw error;
     }
 
+
     const newConversationId =
         data.id;
+
 
     const {
         error:memberError
@@ -1220,14 +1510,21 @@ async function createConversation(){
         .from("conversation_members")
         .insert([
             {
-                conversation_id:newConversationId,
-                user_id:currentUser.id
+                conversation_id:
+                    newConversationId,
+
+                user_id:
+                    currentUser.id
             },
             {
-                conversation_id:newConversationId,
-                user_id:otherUserId
+                conversation_id:
+                    newConversationId,
+
+                user_id:
+                    otherUserId
             }
         ]);
+
 
     if(memberError){
 
@@ -1236,147 +1533,8 @@ async function createConversation(){
         throw memberError;
     }
 
+
     return newConversationId;
-}
-
-
-/* =========================================================
-   BLOCK STATUS
-========================================================= */
-
-async function checkBlockStatus(){
-
-    if(!currentUser || !otherUserId){
-        return;
-    }
-
-    const {
-        data:myBlock
-    } = await supabaseClient
-        .from("blocked_users")
-        .select("id")
-        .eq("blocker_id",currentUser.id)
-        .eq("blocked_id",otherUserId)
-        .maybeSingle();
-
-    if(myBlock){
-
-        blocked = true;
-
-        document.getElementById("blockMenuText")
-            .textContent = t("unblock");
-
-        return;
-    }
-
-    const {
-        data:theirBlock
-    } = await supabaseClient
-        .from("blocked_users")
-        .select("id")
-        .eq("blocker_id",otherUserId)
-        .eq("blocked_id",currentUser.id)
-        .maybeSingle();
-
-    if(theirBlock){
-
-        blocked = true;
-
-        document.getElementById("blockMenuText")
-            .textContent = t("block");
-
-        return;
-    }
-
-    blocked = false;
-
-    document.getElementById("blockMenuText")
-        .textContent = t("block");
-}
-
-
-/* =========================================================
-   BLOCK / UNBLOCK
-========================================================= */
-
-async function toggleBlock(){
-
-    if(!currentUser || !otherUserId){
-        return;
-    }
-
-    const {
-        data:myBlock
-    } = await supabaseClient
-        .from("blocked_users")
-        .select("id")
-        .eq("blocker_id",currentUser.id)
-        .eq("blocked_id",otherUserId)
-        .maybeSingle();
-
-    if(myBlock){
-
-        const ok =
-            confirm(t("unblockConfirm"));
-
-        if(!ok) return;
-
-        const {
-            error
-        } = await supabaseClient
-            .from("blocked_users")
-            .delete()
-            .eq("id",myBlock.id);
-
-        if(error){
-
-            console.error(error);
-
-            showToast(error.message);
-
-            return;
-        }
-
-        blocked = false;
-
-        document.getElementById("blockMenuText")
-            .textContent = t("block");
-
-        showToast(t("unblockSuccess"));
-
-        return;
-    }
-
-
-    const ok =
-        confirm(t("blockConfirm"));
-
-    if(!ok) return;
-
-    const {
-        error
-    } = await supabaseClient
-        .from("blocked_users")
-        .insert({
-            blocker_id:currentUser.id,
-            blocked_id:otherUserId
-        });
-
-    if(error){
-
-        console.error(error);
-
-        showToast(error.message);
-
-        return;
-    }
-
-    blocked = true;
-
-    document.getElementById("blockMenuText")
-        .textContent = t("unblock");
-
-    showToast(t("blockSuccess"));
 }
 
 
@@ -1387,13 +1545,17 @@ async function toggleBlock(){
 async function loadMessages(){
 
     const container =
-        document.getElementById("messages");
+        document.getElementById(
+            "messages"
+        );
+
 
     container.innerHTML = `
         <div class="loading">
             ${t("loading")}
         </div>
     `;
+
 
     if(!conversationId){
 
@@ -1405,6 +1567,7 @@ async function loadMessages(){
 
         return;
     }
+
 
     const {
         data,
@@ -1421,8 +1584,17 @@ async function loadMessages(){
             created_at,
             deleted_for_everyone
         `)
-        .eq("conversation_id",conversationId)
-        .order("created_at",{ascending:true});
+        .eq(
+            "conversation_id",
+            conversationId
+        )
+        .order(
+            "created_at",
+            {
+                ascending:true
+            }
+        );
+
 
     if(error){
 
@@ -1437,7 +1609,9 @@ async function loadMessages(){
         return;
     }
 
+
     container.innerHTML = "";
+
 
     if(!data?.length){
 
@@ -1450,9 +1624,16 @@ async function loadMessages(){
         return;
     }
 
-    data.forEach(message=>{
-        appendMessage(message,false);
-    });
+
+    data.forEach(
+        message=>{
+            appendMessage(
+                message,
+                false
+            );
+        }
+    );
+
 
     scrollToBottom();
 }
@@ -1462,35 +1643,52 @@ async function loadMessages(){
    APPEND MESSAGE
 ========================================================= */
 
-function appendMessage(message,scroll=true){
+function appendMessage(
+    message,
+    scroll=true
+){
 
     if(
         document.querySelector(
             `[data-message-id="${message.id}"]`
         )
     ){
+
         return;
     }
 
+
     const container =
-        document.getElementById("messages");
+        document.getElementById(
+            "messages"
+        );
+
 
     const row =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     row.className =
         "message-row " +
         (
-            message.sender_id === currentUser.id
+            message.sender_id ===
+            currentUser.id
                 ? "me"
                 : "other"
         );
 
+
     row.dataset.messageId =
         message.id;
 
+
     const box =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     box.className =
         "message";
@@ -1504,74 +1702,107 @@ function appendMessage(message,scroll=true){
     }else{
 
         const type =
-            message.message_type || "text";
+            message.message_type ||
+            "text";
+
 
         if(type === "text"){
 
             box.innerHTML =
                 escapeHtml(
-                    message.content || ""
+                    message.content ||
+                    ""
                 );
 
         }else if(type === "image"){
 
             const img =
-                document.createElement("img");
+                document.createElement(
+                    "img"
+                );
 
             img.alt = "Image";
 
-            getMediaUrl(message.file_url)
-                .then(url=>{
-                    if(url){
-                        img.src = url;
-                    }
-                });
+
+            getMediaUrl(
+                message.file_url
+            )
+            .then(url=>{
+
+                if(url){
+
+                    img.src = url;
+                }
+            });
+
 
             box.appendChild(img);
 
         }else if(type === "video"){
 
             const video =
-                document.createElement("video");
+                document.createElement(
+                    "video"
+                );
 
             video.controls = true;
             video.playsInline = true;
 
-            getMediaUrl(message.file_url)
-                .then(url=>{
-                    if(url){
-                        video.src = url;
-                    }
-                });
+
+            getMediaUrl(
+                message.file_url
+            )
+            .then(url=>{
+
+                if(url){
+
+                    video.src = url;
+                }
+            });
+
 
             box.appendChild(video);
 
         }else if(type === "audio"){
 
             const audio =
-                document.createElement("audio");
+                document.createElement(
+                    "audio"
+                );
 
             audio.controls = true;
 
-            getMediaUrl(message.file_url)
-                .then(url=>{
-                    if(url){
-                        audio.src = url;
-                    }
-                });
+
+            getMediaUrl(
+                message.file_url
+            )
+            .then(url=>{
+
+                if(url){
+
+                    audio.src = url;
+                }
+            });
+
 
             box.appendChild(audio);
 
         }else if(type === "file"){
 
             const fileBox =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             fileBox.className =
                 "file-box";
 
+
             fileBox.innerHTML = `
-                <span class="file-icon">📎</span>
+                <span class="file-icon">
+                    📎
+                </span>
+
                 <span class="file-name">
                     ${escapeHtml(
                         message.content ||
@@ -1580,46 +1811,74 @@ function appendMessage(message,scroll=true){
                 </span>
             `;
 
-            fileBox.onclick = async()=>{
 
-                const url =
-                    await getMediaUrl(
-                        message.file_url
-                    );
+            fileBox.onclick =
+                async()=>{
 
-                if(url){
-                    window.open(url,"_blank");
-                }
-            };
+                    const url =
+                        await getMediaUrl(
+                            message.file_url
+                        );
 
-            box.appendChild(fileBox);
+
+                    if(url){
+
+                        window.open(
+                            url,
+                            "_blank"
+                        );
+                    }
+                };
+
+
+            box.appendChild(
+                fileBox
+            );
 
         }else{
 
             box.innerHTML =
                 escapeHtml(
-                    message.content || ""
+                    message.content ||
+                    ""
                 );
         }
     }
 
 
     const time =
-        document.createElement("span");
+        document.createElement(
+            "span"
+        );
+
 
     time.className =
         "message-time";
 
+
     time.textContent =
-        formatTime(message.created_at);
+        formatTime(
+            message.created_at
+        );
 
-    box.appendChild(time);
 
-    row.appendChild(box);
+    box.appendChild(
+        time
+    );
 
-    container.appendChild(row);
+
+    row.appendChild(
+        box
+    );
+
+
+    container.appendChild(
+        row
+    );
+
 
     if(scroll){
+
         scrollToBottom();
     }
 }
@@ -1632,13 +1891,10 @@ function appendMessage(message,scroll=true){
 async function getMediaUrl(path){
 
     if(!path){
+
         return null;
     }
 
-    /*
-      If an old/public URL is already stored,
-      use it directly.
-    */
 
     if(
         path.startsWith("http://") ||
@@ -1648,13 +1904,18 @@ async function getMediaUrl(path){
         return path;
     }
 
+
     const {
         data,
         error
     } = await supabaseClient
         .storage
         .from("raztara-media")
-        .createSignedUrl(path,60*60*24*7);
+        .createSignedUrl(
+            path,
+            60*60*24*7
+        );
+
 
     if(error){
 
@@ -1663,7 +1924,9 @@ async function getMediaUrl(path){
         return null;
     }
 
-    return data?.signedUrl || null;
+
+    return data?.signedUrl ||
+        null;
 }
 
 
@@ -1673,9 +1936,12 @@ async function getMediaUrl(path){
 
 async function sendText(){
 
-    if(!currentUser || !conversationId){
+    if(!currentUser ||
+       !conversationId){
+
         return;
     }
+
 
     if(blocked){
 
@@ -1686,20 +1952,31 @@ async function sendText(){
         return;
     }
 
+
     const input =
-        document.getElementById("messageInput");
+        document.getElementById(
+            "messageInput"
+        );
+
 
     const content =
         input.value.trim();
 
+
     if(!content){
+
         return;
     }
 
+
     const sendBtn =
-        document.getElementById("sendBtn");
+        document.getElementById(
+            "sendBtn"
+        );
+
 
     sendBtn.disabled = true;
+
 
     const {
         data,
@@ -1707,31 +1984,49 @@ async function sendText(){
     } = await supabaseClient
         .from("messages")
         .insert({
-            conversation_id:conversationId,
-            sender_id:currentUser.id,
-            content:content,
-            message_type:"text",
-            file_url:null
+            conversation_id:
+                conversationId,
+
+            sender_id:
+                currentUser.id,
+
+            content:
+                content,
+
+            message_type:
+                "text",
+
+            file_url:
+                null
         })
         .select()
         .single();
 
+
     sendBtn.disabled = false;
+
 
     if(error){
 
         console.error(error);
 
-        showToast(error.message);
+        showToast(
+            error.message
+        );
 
         return;
     }
 
+
     input.value = "";
+
 
     if(data){
 
-        appendMessage(data,true);
+        appendMessage(
+            data,
+            true
+        );
     }
 }
 
@@ -1740,18 +2035,22 @@ async function sendText(){
    FILE HANDLER
 ========================================================= */
 
-async function handleFile(file,type){
+async function handleFile(
+    file,
+    type
+){
 
     if(!file){
+
         return;
     }
+
 
     if(!conversationId){
 
-        showToast(t("noMessages"));
-
         return;
     }
+
 
     if(blocked){
 
@@ -1762,14 +2061,20 @@ async function handleFile(file,type){
         return;
     }
 
+
     try{
 
         const path =
-            await uploadChatFile(file);
+            await uploadChatFile(
+                file
+            );
+
 
         if(!path){
+
             return;
         }
+
 
         const {
             data,
@@ -1777,30 +2082,45 @@ async function handleFile(file,type){
         } = await supabaseClient
             .from("messages")
             .insert({
-                conversation_id:conversationId,
-                sender_id:currentUser.id,
+                conversation_id:
+                    conversationId,
+
+                sender_id:
+                    currentUser.id,
+
                 content:
                     type === "file"
                         ? file.name
                         : null,
-                message_type:type,
-                file_url:path
+
+                message_type:
+                    type,
+
+                file_url:
+                    path
             })
             .select()
             .single();
+
 
         if(error){
 
             console.error(error);
 
-            showToast(error.message);
+            showToast(
+                error.message
+            );
 
             return;
         }
 
+
         if(data){
 
-            appendMessage(data,true);
+            appendMessage(
+                data,
+                true
+            );
         }
 
     }catch(error){
@@ -1812,22 +2132,25 @@ async function handleFile(file,type){
             "Upload failed"
         );
     }
-
 }
 
 
 /* =========================================================
-   UPLOAD CHAT FILE
+   UPLOAD
 ========================================================= */
 
 async function uploadChatFile(file){
 
-    if(!currentUser || !conversationId){
+    if(!currentUser ||
+       !conversationId){
+
         return null;
     }
 
+
     const maxSize =
         6 * 1024 * 1024;
+
 
     if(file.size > maxSize){
 
@@ -1836,9 +2159,14 @@ async function uploadChatFile(file){
         );
     }
 
+
     const safeName =
         file.name
-            .replace(/[^a-zA-Z0-9._-]/g,"_");
+            .replace(
+                /[^a-zA-Z0-9._-]/g,
+                "_"
+            );
+
 
     const uniqueName =
         Date.now() +
@@ -1849,12 +2177,14 @@ async function uploadChatFile(file){
         "_" +
         safeName;
 
+
     const path =
         currentUser.id +
         "/" +
         conversationId +
         "/" +
         uniqueName;
+
 
     const {
         error
@@ -1870,10 +2200,12 @@ async function uploadChatFile(file){
             }
         );
 
+
     if(error){
 
         throw error;
     }
+
 
     return path;
 }
@@ -1892,6 +2224,7 @@ async function toggleRecording(){
         return;
     }
 
+
     if(blocked){
 
         showToast(
@@ -1901,8 +2234,11 @@ async function toggleRecording(){
         return;
     }
 
-    if(!navigator.mediaDevices ||
-       !navigator.mediaDevices.getUserMedia){
+
+    if(
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+    ){
 
         showToast(
             "Voice recording is not supported"
@@ -1910,6 +2246,7 @@ async function toggleRecording(){
 
         return;
     }
+
 
     try{
 
@@ -1919,20 +2256,29 @@ async function toggleRecording(){
                     audio:true
                 });
 
+
         audioChunks = [];
+
 
         mediaRecorder =
             new MediaRecorder(
                 recordingStream
             );
 
+
         mediaRecorder.ondataavailable =
             event=>{
 
-                if(event.data.size > 0){
-                    audioChunks.push(event.data);
+                if(
+                    event.data.size > 0
+                ){
+
+                    audioChunks.push(
+                        event.data
+                    );
                 }
             };
+
 
         mediaRecorder.onstop =
             async()=>{
@@ -1947,36 +2293,58 @@ async function toggleRecording(){
                         }
                     );
 
-                await sendVoiceBlob(blob);
+
+                await sendVoiceBlob(
+                    blob
+                );
+
 
                 if(recordingStream){
 
                     recordingStream
                         .getTracks()
-                        .forEach(track=>{
-                            track.stop();
-                        });
+                        .forEach(
+                            track=>{
+                                track.stop();
+                            }
+                        );
 
-                    recordingStream = null;
+                    recordingStream =
+                        null;
                 }
 
-                mediaRecorder = null;
+
+                mediaRecorder =
+                    null;
             };
+
 
         mediaRecorder.start();
 
-        document
-            .getElementById("recordingBox")
-            .classList.add("show");
 
         document
-            .getElementById("recordingText")
+            .getElementById(
+                "recordingBox"
+            )
+            .classList.add(
+                "show"
+            );
+
+
+        document
+            .getElementById(
+                "recordingText"
+            )
             .textContent =
                 t("recording");
 
+
         document
-            .getElementById("voiceBtn")
-            .textContent = "⏹️";
+            .getElementById(
+                "voiceBtn"
+            )
+            .textContent =
+                "⏹️";
 
     }catch(error){
 
@@ -1992,27 +2360,46 @@ async function toggleRecording(){
 
 function stopRecording(){
 
-    if(mediaRecorder &&
-       mediaRecorder.state !== "inactive"){
+    if(
+        mediaRecorder &&
+        mediaRecorder.state !==
+        "inactive"
+    ){
 
         mediaRecorder.stop();
     }
 
-    document
-        .getElementById("recordingBox")
-        .classList.remove("show");
 
     document
-        .getElementById("voiceBtn")
-        .textContent = "🎙️";
+        .getElementById(
+            "recordingBox"
+        )
+        .classList.remove(
+            "show"
+        );
+
+
+    document
+        .getElementById(
+            "voiceBtn"
+        )
+        .textContent =
+            "🎙️";
 }
 
 
-async function sendVoiceBlob(blob){
+async function sendVoiceBlob(
+    blob
+){
 
-    if(!blob || !conversationId){
+    if(
+        !blob ||
+        !conversationId
+    ){
+
         return;
     }
+
 
     try{
 
@@ -2020,6 +2407,7 @@ async function sendVoiceBlob(blob){
             blob.type.includes("mp4")
                 ? "m4a"
                 : "webm";
+
 
         const file =
             new File(
@@ -2033,12 +2421,18 @@ async function sendVoiceBlob(blob){
                 }
             );
 
+
         const path =
-            await uploadChatFile(file);
+            await uploadChatFile(
+                file
+            );
+
 
         if(!path){
+
             return;
         }
+
 
         const {
             data,
@@ -2046,27 +2440,43 @@ async function sendVoiceBlob(blob){
         } = await supabaseClient
             .from("messages")
             .insert({
-                conversation_id:conversationId,
-                sender_id:currentUser.id,
-                content:null,
-                message_type:"audio",
-                file_url:path
+                conversation_id:
+                    conversationId,
+
+                sender_id:
+                    currentUser.id,
+
+                content:
+                    null,
+
+                message_type:
+                    "audio",
+
+                file_url:
+                    path
             })
             .select()
             .single();
+
 
         if(error){
 
             console.error(error);
 
-            showToast(error.message);
+            showToast(
+                error.message
+            );
 
             return;
         }
 
+
         if(data){
 
-            appendMessage(data,true);
+            appendMessage(
+                data,
+                true
+            );
         }
 
     }catch(error){
@@ -2088,8 +2498,10 @@ async function sendVoiceBlob(blob){
 function subscribeRealtime(){
 
     if(!conversationId){
+
         return;
     }
+
 
     if(realtimeChannel){
 
@@ -2098,6 +2510,7 @@ function subscribeRealtime(){
                 realtimeChannel
             );
     }
+
 
     realtimeChannel =
         supabaseClient
@@ -2119,6 +2532,17 @@ function subscribeRealtime(){
                 },
                 payload=>{
 
+                    /*
+                       Block হওয়ার পরে realtime message
+                       এলে আর দেখানো হবে না।
+                    */
+
+                    if(blocked){
+
+                        return;
+                    }
+
+
                     appendMessage(
                         payload.new,
                         true
@@ -2135,9 +2559,14 @@ function subscribeRealtime(){
 
 async function startCall(type){
 
-    if(!currentUser || !otherUserId){
+    if(
+        !currentUser ||
+        !otherUserId
+    ){
+
         return;
     }
+
 
     if(blocked){
 
@@ -2148,6 +2577,7 @@ async function startCall(type){
         return;
     }
 
+
     try{
 
         const {
@@ -2156,14 +2586,24 @@ async function startCall(type){
         } = await supabaseClient
             .from("calls")
             .insert({
-                conversation_id:conversationId,
-                caller_id:currentUser.id,
-                receiver_id:otherUserId,
-                call_type:type,
-                status:"ringing"
+                conversation_id:
+                    conversationId,
+
+                caller_id:
+                    currentUser.id,
+
+                receiver_id:
+                    otherUserId,
+
+                call_type:
+                    type,
+
+                status:
+                    "ringing"
             })
             .select("id")
             .single();
+
 
         if(error){
 
@@ -2176,11 +2616,14 @@ async function startCall(type){
             return;
         }
 
+
         if(data?.id){
 
             window.location.href =
                 "call.html?call=" +
-                encodeURIComponent(data.id);
+                encodeURIComponent(
+                    data.id
+                );
         }
 
     }catch(error){
@@ -2202,38 +2645,66 @@ async function openProfile(){
 
     closeMenu();
 
+
+    if(blocked){
+
+        return;
+    }
+
+
     await applyProfilePrivacy();
 
+
     document
-        .getElementById("profileOverlay")
-        .classList.add("show");
+        .getElementById(
+            "profileOverlay"
+        )
+        .classList.add(
+            "show"
+        );
 }
 
 
 function closeProfile(event){
 
-    if(event &&
-       event.target !==
-       document.getElementById("profileOverlay")){
+    if(
+        event &&
+        event.target !==
+        document.getElementById(
+            "profileOverlay"
+        )
+    ){
 
         return;
     }
 
+
     document
-        .getElementById("profileOverlay")
-        .classList.remove("show");
+        .getElementById(
+            "profileOverlay"
+        )
+        .classList.remove(
+            "show"
+        );
 }
 
 
 function goUserProfile(){
 
-    if(!otherUserId){
+    if(
+        !otherUserId ||
+        blocked
+    ){
+
         return;
     }
 
+
     window.location.href =
         "user-profile.html?user=" +
-        encodeURIComponent(otherUserId);
+        encodeURIComponent(
+            otherUserId
+        );
 }
 
 
@@ -2243,13 +2714,20 @@ function goUserProfile(){
 
 function openGallery(){
 
-    if(!otherUserId){
+    if(
+        !otherUserId ||
+        blocked
+    ){
+
         return;
     }
 
+
     window.location.href =
         "gallery.html?user=" +
-        encodeURIComponent(otherUserId);
+        encodeURIComponent(
+            otherUserId
+        );
 }
 
 
@@ -2260,27 +2738,43 @@ function openGallery(){
 function toggleMenu(){
 
     document
-        .getElementById("menu")
-        .classList.toggle("show");
+        .getElementById(
+            "menu"
+        )
+        .classList.toggle(
+            "show"
+        );
 }
 
 
 function closeMenu(){
 
     document
-        .getElementById("menu")
-        .classList.remove("show");
+        .getElementById(
+            "menu"
+        )
+        .classList.remove(
+            "show"
+        );
 }
 
 
 /* =========================================================
-   FOCUS MESSAGE
+   FOCUS
 ========================================================= */
 
 function focusMessage(){
 
+    if(blocked){
+
+        return;
+    }
+
+
     document
-        .getElementById("messageInput")
+        .getElementById(
+            "messageInput"
+        )
         .focus();
 }
 
@@ -2312,11 +2806,16 @@ function goBack(){
 function scrollToBottom(){
 
     const board =
-        document.getElementById("chatBoard");
+        document.getElementById(
+            "chatBoard"
+        );
+
 
     setTimeout(()=>{
+
         board.scrollTop =
             board.scrollHeight;
+
     },50);
 }
 
@@ -2328,11 +2827,14 @@ function scrollToBottom(){
 function formatTime(value){
 
     if(!value){
+
         return "";
     }
 
+
     const date =
         new Date(value);
+
 
     return date.toLocaleTimeString(
         currentLanguage === "bn"
@@ -2347,17 +2849,32 @@ function formatTime(value){
 
 
 /* =========================================================
-   ESCAPE HTML
+   ESCAPE
 ========================================================= */
 
 function escapeHtml(value){
 
     return String(value ?? "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
 
@@ -2370,18 +2887,32 @@ let toastTimer = null;
 function showToast(message){
 
     const toast =
-        document.getElementById("toast");
+        document.getElementById(
+            "toast"
+        );
+
 
     toast.textContent =
         message;
 
-    toast.classList.add("show");
 
-    clearTimeout(toastTimer);
+    toast.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        toastTimer
+    );
+
 
     toastTimer =
         setTimeout(()=>{
-            toast.classList.remove("show");
+
+            toast.classList.remove(
+                "show"
+            );
+
         },2500);
 }
 
@@ -2393,7 +2924,10 @@ function showToast(message){
 function applyLanguage(){
 
     const input =
-        document.getElementById("messageInput");
+        document.getElementById(
+            "messageInput"
+        );
+
 
     if(input){
 
@@ -2401,8 +2935,12 @@ function applyLanguage(){
             t("message");
     }
 
+
     const loading =
-        document.getElementById("loading");
+        document.getElementById(
+            "loading"
+        );
+
 
     if(loading){
 
@@ -2410,8 +2948,12 @@ function applyLanguage(){
             t("loading");
     }
 
+
     const recordingText =
-        document.getElementById("recordingText");
+        document.getElementById(
+            "recordingText"
+        );
+
 
     if(recordingText){
 
@@ -2419,17 +2961,18 @@ function applyLanguage(){
             t("recording");
     }
 
+
     document
-        .getElementById("blockMenuText")
+        .getElementById(
+            "blockMenuText"
+        )
         .textContent =
-            blocked
-                ? t("unblock")
-                : t("block");
+            t("block");
 }
 
 
 /* =========================================================
-   CLOSE MENU ON OUTSIDE CLICK
+   OUTSIDE MENU
 ========================================================= */
 
 document.addEventListener(
@@ -2437,15 +2980,21 @@ document.addEventListener(
     function(event){
 
         const menu =
-            document.getElementById("menu");
+            document.getElementById(
+                "menu"
+            );
+
 
         const button =
             event.target.closest(
                 ".header-action"
             );
 
+
         if(
-            !menu.contains(event.target) &&
+            !menu.contains(
+                event.target
+            ) &&
             !button
         ){
 
@@ -2456,11 +3005,13 @@ document.addEventListener(
 
 
 /* =========================================================
-   ENTER TO SEND
+   ENTER SEND
 ========================================================= */
 
 document
-    .getElementById("messageInput")
+    .getElementById(
+        "messageInput"
+    )
     .addEventListener(
         "keydown",
         function(event){
@@ -2486,15 +3037,20 @@ async function init(){
 
     applyLanguage();
 
+
     currentUser =
         await getCurrentUser();
 
+
     if(!currentUser){
+
         return;
     }
 
+
     otherUserId =
         getOtherUserId();
+
 
     if(!otherUserId){
 
@@ -2505,14 +3061,39 @@ async function init(){
         return;
     }
 
+
+    /*
+       IMPORTANT:
+       Profile বা Conversation load করার আগেই
+       Block check হচ্ছে।
+       
+       তাই blocked ID-এর profile/chat
+       আর খুলবে না।
+    */
+
+    const isBlocked =
+        await checkBlockStatus();
+
+
+    if(isBlocked){
+
+        window.location.replace(
+            "messages.html"
+        );
+
+        return;
+    }
+
+
     await loadOtherProfile();
+
 
     await applyProfilePrivacy();
 
-    await checkBlockStatus();
 
     conversationId =
         await findConversation();
+
 
     if(!conversationId){
 
@@ -2536,9 +3117,12 @@ async function init(){
         }
     }
 
+
     await loadMessages();
 
+
     subscribeRealtime();
+
 
     applyLanguage();
 }
