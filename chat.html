@@ -2,4663 +2,5521 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+>
 
 <meta name="theme-color" content="#087f5b">
+
 <title>RAZTARA Chat</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-:root{
-  --green:#087f5b;
-  --green2:#0b9b70;
-  --light:#f2f5f5;
-  --white:#fff;
-  --text:#172126;
-  --muted:#748087;
-  --line:#e2e8e8;
-  --danger:#d83f3f;
-  --blue:#2878d4;
-  --keyboard-offset:0px;
-}
+
+/* =========================
+   RESET
+========================= */
 
 *{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
 }
 
 html,
 body{
-  width:100%;
-  height:100%;
-  margin:0;
-  padding:0;
-  overflow:hidden;
-  background:var(--light);
-  color:var(--text);
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Noto Sans Bengali",
-    Arial,
-    sans-serif;
+    width:100%;
+    height:100%;
+    overflow:hidden;
 }
 
-button,
-input,
-textarea{
-  font:inherit;
+body{
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+    background:#f5f7f8;
+    color:#17201c;
 }
+
+
+/* =========================
+   APP
+========================= */
+
+.chatApp{
+    width:100%;
+    height:100dvh;
+    position:relative;
+    overflow:hidden;
+    background:#f5f7f8;
+}
+
+
+/* =========================
+   COMMON BUTTON
+========================= */
 
 button{
-  border:0;
-  cursor:pointer;
+    font-family:inherit;
+    border:0;
+    outline:none;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
 }
 
-.hidden{
-  display:none!important;
+.iconButton{
+    width:42px;
+    height:42px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+    background:transparent;
+
+    font-size:22px;
+    color:#087f5b;
+
+    flex-shrink:0;
 }
 
-/* ================= HEADER ================= */
+.iconButton:active{
+    background:rgba(8,127,91,.10);
+    transform:scale(.96);
+}
+
+
+/* =========================
+   CHAT HEADER
+========================= */
 
 .chatHeader{
-  position:fixed;
-  z-index:100;
-  top:0;
-  left:0;
-  right:0;
+    position:fixed;
 
-  height:calc(62px + env(safe-area-inset-top));
+    top:0;
+    left:0;
+    right:0;
 
-  padding:
-    env(safe-area-inset-top)
-    10px
-    0
-    10px;
+    height:68px;
 
-  display:flex;
-  align-items:center;
-  gap:9px;
+    padding-top:env(safe-area-inset-top);
 
-  background:var(--green);
-  color:#fff;
+    box-sizing:content-box;
 
-  box-shadow:0 2px 12px #0002;
+    display:flex;
+    align-items:center;
+
+    background:#ffffff;
+
+    border-bottom:1px solid #e5e9e7;
+
+    z-index:1000;
+
+    box-shadow:
+        0 1px 4px rgba(0,0,0,.05);
 }
 
-.backBtn{
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  background:#ffffff18;
-  color:#fff;
-  font-size:31px;
-  line-height:1;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+.headerInner{
+    width:100%;
+    height:68px;
+
+    display:flex;
+    align-items:center;
+
+    padding:0 10px;
+}
+
+
+/* =========================
+   BACK BUTTON
+========================= */
+
+.backButton{
+    width:42px;
+    height:42px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:transparent;
+
+    color:#087f5b;
+
+    border-radius:50%;
+
+    font-size:29px;
+    line-height:1;
+
+    flex-shrink:0;
+}
+
+.backButton:active{
+    background:rgba(8,127,91,.10);
+}
+
+
+/* =========================
+   USER AREA
+========================= */
+
+.chatUserArea{
+    min-width:0;
+    flex:1;
+
+    display:flex;
+    align-items:center;
+
+    gap:10px;
+
+    padding:0 8px;
 }
 
 .chatAvatar{
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  object-fit:cover;
-  background:#ddd;
-  border:2px solid #ffffff55;
+    width:43px;
+    height:43px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    background:#e7efeb;
+
+    flex-shrink:0;
+
+    border:1px solid #dce6e1;
 }
 
 .chatUserInfo{
-  min-width:0;
-  flex:1;
+    min-width:0;
+    flex:1;
 }
 
 .chatUserName{
-  font-size:15px;
-  font-weight:900;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+    font-size:16px;
+    font-weight:700;
+
+    color:#17201c;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
 }
 
 .chatUserStatus{
-  font-size:11px;
-  opacity:.9;
-  margin-top:2px;
-  white-space:nowrap;
+    margin-top:2px;
+
+    font-size:12px;
+
+    color:#718078;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
 }
 
-.headerBtn{
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  background:#ffffff18;
-  color:#fff;
-  font-size:19px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+
+/* =========================
+   HEADER ACTIONS
+========================= */
+
+.headerActions{
+    display:flex;
+    align-items:center;
+    gap:2px;
+
+    flex-shrink:0;
 }
 
-/* ================= MENU ================= */
+.callButton{
+    width:42px;
+    height:42px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+
+    background:transparent;
+
+    color:#087f5b;
+
+    font-size:21px;
+}
+
+.callButton:active{
+    background:rgba(8,127,91,.10);
+}
+
+
+/* =========================
+   MENU
+========================= */
+
+.menuOverlay{
+    position:fixed;
+
+    inset:0;
+
+    background:transparent;
+
+    display:none;
+
+    z-index:1100;
+}
+
+.menuOverlay.show{
+    display:block;
+}
 
 .chatMenu{
-  position:fixed;
-  z-index:300;
-  top:calc(58px + env(safe-area-inset-top));
-  right:9px;
+    position:absolute;
 
-  width:190px;
+    top:calc(
+        68px +
+        env(safe-area-inset-top)
+    );
 
-  background:#fff;
-  border-radius:15px;
-  box-shadow:0 12px 35px #0003;
-  padding:7px;
+    right:10px;
 
-  display:none;
-}
+    width:220px;
 
-.chatMenu.show{
-  display:block;
+    background:#ffffff;
+
+    border-radius:14px;
+
+    border:1px solid #e5e9e7;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.16);
+
+    overflow:hidden;
+
+    z-index:1200;
 }
 
 .menuItem{
-  width:100%;
-  text-align:left;
-  padding:12px;
-  border-radius:10px;
-  background:#fff;
-  color:#172126;
-  font-weight:700;
+    width:100%;
+
+    min-height:50px;
+
+    padding:12px 15px;
+
+    display:flex;
+    align-items:center;
+
+    gap:11px;
+
+    background:#ffffff;
+
+    color:#17201c;
+
+    text-align:left;
+
+    font-size:15px;
+
+    border-bottom:1px solid #edf0ef;
+}
+
+.menuItem:last-child{
+    border-bottom:0;
 }
 
 .menuItem:active{
-  background:#eef3f3;
+    background:#f1f7f4;
 }
 
-.menuDanger{
-  color:var(--danger);
+.menuItem.danger{
+    color:#d93025;
 }
 
-/* ================= MESSAGES ================= */
 
-.messages{
-  position:fixed;
-  z-index:1;
+/* =========================
+   MESSAGE AREA
+========================= */
 
-  top:calc(62px + env(safe-area-inset-top));
-  bottom:calc(
-    72px +
-    env(safe-area-inset-bottom) +
-    var(--keyboard-offset)
-  );
+.messagesArea{
+    position:absolute;
 
-  left:0;
-  right:0;
+    top:calc(
+        68px +
+        env(safe-area-inset-top)
+    );
 
-  overflow-y:auto;
-  overflow-x:hidden;
+    left:0;
+    right:0;
 
-  padding:12px 10px 18px;
+    bottom:calc(
+        70px +
+        env(safe-area-inset-bottom)
+    );
 
-  -webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;
+    overflow-y:auto;
+
+    overflow-x:hidden;
+
+    padding:12px 10px 18px;
+
+    -webkit-overflow-scrolling:touch;
+
+    scroll-behavior:smooth;
 }
 
-.messagesInner{
-  max-width:850px;
-  margin:0 auto;
-  min-height:100%;
+.messagesArea::-webkit-scrollbar{
+    width:4px;
 }
+
+.messagesArea::-webkit-scrollbar-thumb{
+    background:#cdd8d3;
+    border-radius:10px;
+}
+
+
+/* =========================
+   DATE SEPARATOR
+========================= */
+
+.dateSeparator{
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    margin:12px 0 14px;
+}
+
+.dateSeparator span{
+    display:inline-flex;
+
+    align-items:center;
+    justify-content:center;
+
+    min-height:28px;
+
+    padding:5px 12px;
+
+    border-radius:14px;
+
+    background:#e7efeb;
+
+    color:#607069;
+
+    font-size:11px;
+
+    font-weight:600;
+
+    box-shadow:
+        0 1px 2px rgba(0,0,0,.04);
+}
+
+
+/* =========================
+   MESSAGE ROW
+========================= */
 
 .messageRow{
-  position:relative;
+    width:100%;
 
-  display:flex;
-  width:100%;
+    display:flex;
 
-  margin:5px 0;
-
-  touch-action:pan-y;
+    margin-bottom:7px;
 }
 
-.messageRow.me{
-  justify-content:flex-end;
+.messageRow.mine{
+    justify-content:flex-end;
 }
 
-.messageRow.other{
-  justify-content:flex-start;
+.messageRow.theirs{
+    justify-content:flex-start;
 }
 
 .messageBubble{
-  position:relative;
+    max-width:min(78%, 420px);
 
-  max-width:min(78%,520px);
+    padding:9px 11px 7px;
 
-  padding:8px 9px 5px;
+    border-radius:17px;
 
-  border-radius:17px;
+    word-break:break-word;
 
-  background:#fff;
+    overflow-wrap:anywhere;
 
-  box-shadow:0 1px 3px #0000000d;
-
-  user-select:none;
-  -webkit-user-select:none;
-
-  transition:
-    transform .16s ease,
-    opacity .16s ease;
+    box-shadow:
+        0 1px 2px rgba(0,0,0,.05);
 }
 
-.messageRow.me .messageBubble{
-  background:#d8f8ea;
-  border-bottom-right-radius:5px;
+.messageRow.mine .messageBubble{
+    background:#087f5b;
+    color:#ffffff;
+
+    border-bottom-right-radius:5px;
 }
 
-.messageRow.other .messageBubble{
-  border-bottom-left-radius:5px;
-}
+.messageRow.theirs .messageBubble{
+    background:#ffffff;
+    color:#17201c;
 
-.messageBubble.swiping{
-  transition:none;
+    border:1px solid #e8ecea;
+
+    border-bottom-left-radius:5px;
 }
 
 .messageText{
-  white-space:pre-wrap;
-  word-break:break-word;
-  font-size:15px;
-  line-height:1.48;
+    white-space:pre-wrap;
+
+    font-size:15px;
+
+    line-height:1.45;
 }
 
-.messageImage,
-.messageVideo{
-  display:block;
-  max-width:100%;
-  max-height:330px;
-  border-radius:12px;
-  object-fit:contain;
-  background:#000;
+.messageTime{
+    margin-top:4px;
+
+    font-size:10px;
+
+    opacity:.72;
+
+    text-align:right;
 }
 
-.messageAudio{
-  width:230px;
-  max-width:100%;
-}
 
-.fileBox{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  padding:10px;
-  background:#ffffffaa;
-  border-radius:12px;
-}
+/* =========================
+   EMPTY / LOADING
+========================= */
 
-.fileIcon{
-  font-size:28px;
-}
-
-.fileInfo{
-  min-width:0;
-}
-
-.fileName{
-  font-weight:800;
-  font-size:13px;
-  word-break:break-word;
-}
-
-.fileOpen{
-  color:var(--blue);
-  font-size:12px;
-  font-weight:700;
-  text-decoration:none;
-}
-
-.locationBox{
-  display:flex;
-  align-items:center;
-  gap:9px;
-
-  padding:11px;
-
-  background:#fff;
-  border-radius:12px;
-
-  color:var(--blue);
-  text-decoration:none;
-  font-weight:800;
-}
-
-.messageCaption{
-  margin-top:6px;
-  white-space:pre-wrap;
-  word-break:break-word;
-  font-size:14px;
-}
-
-.messageMeta{
-  display:flex;
-  align-items:center;
-  justify-content:flex-end;
-  gap:5px;
-
-  margin-top:3px;
-
-  color:#6e797d;
-  font-size:10px;
-}
-
-.messageRow.me .messageMeta{
-  color:#51836f;
-}
-
-.readTick{
-  font-size:12px;
-  letter-spacing:-4px;
-  padding-right:3px;
-}
-
-.shareBtn{
-  width:25px;
-  height:25px;
-
-  border-radius:50%;
-
-  background:#00000008;
-  color:#5e6b70;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  font-size:12px;
-}
-
-.shareBtn:active{
-  background:#00000015;
-}
-
-.swipeHint{
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-
-  opacity:0;
-  pointer-events:none;
-
-  font-size:20px;
-}
-
-.messageRow.other .swipeHint{
-  right:-35px;
-}
-
-.messageRow.me .swipeHint{
-  left:-35px;
-}
-
+.chatLoading,
 .emptyChat{
-  min-height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#899397;
-  text-align:center;
-  font-size:13px;
+    width:100%;
+
+    min-height:180px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+
+    color:#748078;
+
+    font-size:14px;
+
+    padding:30px 20px;
 }
 
-.loading{
-  text-align:center;
-  padding:25px;
-  color:#7b878b;
+
+/* =========================
+   BOTTOM COMPOSER
+========================= */
+
+.messageComposer{
+    position:fixed;
+
+    left:0;
+    right:0;
+    bottom:0;
+
+    min-height:70px;
+
+    padding:
+        8px 10px
+        calc(8px + env(safe-area-inset-bottom))
+        10px;
+
+    background:#ffffff;
+
+    border-top:1px solid #e5e9e7;
+
+    z-index:1000;
 }
 
-/* ================= INPUT ================= */
+.composerInner{
+    width:100%;
 
-.chatInputArea{
-  position:fixed;
-  z-index:100;
+    display:flex;
+    align-items:flex-end;
 
-  left:0;
-  right:0;
-
-  bottom:var(--keyboard-offset);
-
-  min-height:72px;
-
-  padding:
-    7px
-    8px
-    calc(7px + env(safe-area-inset-bottom))
-    8px;
-
-  background:#fff;
-
-  display:flex;
-  align-items:flex-end;
-  gap:7px;
-
-  border-top:1px solid var(--line);
-
-  box-shadow:0 -2px 12px #00000008;
+    gap:7px;
 }
 
-.attachBtn,
-.voiceBtn,
-.sendBtn{
-  flex:0 0 42px;
+.attachButton,
+.voiceButton,
+.sendButton{
+    width:43px;
+    height:43px;
 
-  width:42px;
-  height:42px;
+    border-radius:50%;
 
-  border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-  display:flex;
-  align-items:center;
-  justify-content:center;
+    flex-shrink:0;
 
-  font-size:20px;
+    font-size:20px;
 }
 
-.attachBtn{
-  background:#edf3f2;
-  color:#445;
+.attachButton,
+.voiceButton{
+    background:#eef4f1;
+
+    color:#087f5b;
 }
 
-.voiceBtn{
-  background:#edf3f2;
+.sendButton{
+    background:#087f5b;
+
+    color:#ffffff;
 }
 
-.voiceBtn.recording{
-  background:#ffe1e1;
-  color:#d00;
-  animation:pulse 1s infinite;
+.attachButton:active,
+.voiceButton:active,
+.sendButton:active{
+    transform:scale(.95);
 }
 
-.sendBtn{
-  background:var(--green);
-  color:#fff;
-}
 
-@keyframes pulse{
-  50%{
-    transform:scale(1.08);
-  }
-}
-
-.inputBox{
-  flex:1;
-  min-width:0;
-}
+/* =========================
+   MESSAGE INPUT
+========================= */
 
 .messageInput{
-  width:100%;
+    flex:1;
 
-  min-height:42px;
-  max-height:120px;
+    min-width:0;
 
-  border:1px solid var(--line);
-  border-radius:22px;
+    min-height:43px;
+    max-height:120px;
 
-  outline:none;
+    resize:none;
 
-  padding:10px 14px;
+    border:1px solid #dfe7e3;
 
-  background:#f6f8f8;
+    border-radius:22px;
 
-  font-size:15px;
+    background:#f7f9f8;
+
+    padding:
+        11px 14px;
+
+    font-family:inherit;
+
+    font-size:15px;
+
+    line-height:20px;
+
+    color:#17201c;
+
+    outline:none;
+
+    overflow-y:auto;
 }
 
 .messageInput:focus{
-  border-color:#9fcdbd;
-  background:#fff;
+    border-color:#087f5b;
+
+    background:#ffffff;
 }
 
-/* ================= ATTACH MENU ================= */
+.messageInput::placeholder{
+    color:#8b9691;
+}
 
-.attachMenu{
-  position:fixed;
-  z-index:250;
 
-  left:8px;
-  bottom:
-    calc(
-      76px +
-      env(safe-area-inset-bottom) +
-      var(--keyboard-offset)
+/* =========================
+   RECORDING
+========================= */
+
+.recordingBar{
+    position:absolute;
+
+    left:10px;
+    right:10px;
+
+    bottom:calc(
+        70px +
+        env(safe-area-inset-bottom) +
+        8px
     );
 
-  width:220px;
+    min-height:48px;
 
-  background:#fff;
+    display:none;
 
-  border-radius:17px;
+    align-items:center;
 
-  padding:8px;
+    justify-content:space-between;
 
-  box-shadow:0 12px 35px #0003;
+    gap:10px;
 
-  display:none;
+    padding:8px 12px;
+
+    border-radius:15px;
+
+    background:#ffffff;
+
+    border:1px solid #e1e8e4;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,.10);
+
+    z-index:1001;
 }
 
-.attachMenu.show{
-  display:block;
+.recordingBar.show{
+    display:flex;
 }
 
-.attachItem{
-  width:100%;
+.recordingText{
+    flex:1;
 
-  display:flex;
-  align-items:center;
-  gap:10px;
+    color:#d93025;
 
-  padding:12px;
+    font-size:13px;
 
-  border-radius:11px;
-
-  background:#fff;
-
-  text-align:left;
-
-  font-weight:700;
+    font-weight:600;
 }
 
-.attachItem:active{
-  background:#eef3f3;
+.cancelRecording{
+    padding:8px 12px;
+
+    border-radius:10px;
+
+    background:#fcebea;
+
+    color:#d93025;
+
+    font-size:13px;
 }
 
-/* ================= MODAL ================= */
 
-.modalBackdrop{
-  position:fixed;
-  z-index:500;
-
-  inset:0;
-
-  background:#0006;
-
-  display:none;
-
-  align-items:flex-end;
-  justify-content:center;
-}
-
-.modalBackdrop.show{
-  display:flex;
-}
-
-.modal{
-  width:100%;
-  max-width:620px;
-
-  max-height:88vh;
-
-  background:#fff;
-
-  border-radius:22px 22px 0 0;
-
-  padding:
-    14px
-    14px
-    calc(14px + env(safe-area-inset-bottom));
-
-  overflow-y:auto;
-}
-
-.modalHandle{
-  width:45px;
-  height:5px;
-  border-radius:20px;
-  background:#d5dada;
-  margin:0 auto 13px;
-}
-
-.modalTitle{
-  font-size:18px;
-  font-weight:900;
-  margin-bottom:12px;
-}
-
-.modalBtn{
-  width:100%;
-
-  padding:13px;
-
-  margin-top:7px;
-
-  border-radius:12px;
-
-  background:#f1f4f4;
-
-  text-align:left;
-
-  font-weight:800;
-}
-
-.modalBtn.green{
-  background:#dff7ed;
-  color:#087f5b;
-}
-
-.modalBtn.danger{
-  background:#ffe4e4;
-  color:#c93131;
-}
-
-.modalBtn.cancel{
-  background:#172126;
-  color:#fff;
-  text-align:center;
-}
-
-/* ================= SHARE MODAL ================= */
-
-.shareActions{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:8px;
-}
-
-.shareAction{
-  padding:13px 8px;
-
-  border-radius:13px;
-
-  background:#f0f4f4;
-
-  font-weight:800;
-
-  text-align:center;
-}
-
-.shareAction.green{
-  background:#dff7ed;
-  color:#087f5b;
-}
-
-.shareAction.blue{
-  background:#e4efff;
-  color:#236bb7;
-}
-
-.shareUsersSearch{
-  width:100%;
-
-  border:1px solid var(--line);
-  border-radius:12px;
-
-  padding:11px;
-
-  outline:none;
-
-  margin-bottom:9px;
-}
-
-.shareUserList{
-  max-height:48vh;
-  overflow-y:auto;
-}
-
-.shareUser{
-  width:100%;
-
-  display:flex;
-  align-items:center;
-
-  gap:10px;
-
-  padding:10px;
-
-  background:#fff;
-
-  border-radius:12px;
-
-  text-align:left;
-}
-
-.shareUser:active{
-  background:#eef3f3;
-}
-
-.shareUserAvatar{
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  object-fit:cover;
-  background:#ddd;
-}
-
-.shareUserInfo{
-  min-width:0;
-  flex:1;
-}
-
-.shareUserName{
-  font-weight:900;
-}
-
-.shareUserUsername{
-  font-size:11px;
-  color:var(--muted);
-}
-
-/* ================= TOAST ================= */
+/* =========================
+   TOAST
+========================= */
 
 .toast{
-  position:fixed;
+    position:fixed;
 
-  z-index:1000;
+    left:50%;
 
-  left:50%;
-  bottom:
-    calc(
-      88px +
-      env(safe-area-inset-bottom) +
-      var(--keyboard-offset)
+    bottom:calc(
+        82px +
+        env(safe-area-inset-bottom)
     );
 
-  transform:translateX(-50%) translateY(10px);
+    transform:
+        translateX(-50%)
+        translateY(15px);
 
-  max-width:90%;
+    max-width:calc(100% - 40px);
 
-  padding:11px 15px;
+    padding:10px 15px;
 
-  border-radius:13px;
+    border-radius:12px;
 
-  background:#172126;
-  color:#fff;
+    background:#17201c;
 
-  font-size:13px;
-  font-weight:700;
+    color:#ffffff;
 
-  opacity:0;
+    font-size:13px;
 
-  pointer-events:none;
+    text-align:center;
 
-  transition:.2s;
+    opacity:0;
+
+    pointer-events:none;
+
+    transition:
+        opacity .2s ease,
+        transform .2s ease;
+
+    z-index:2000;
 }
 
 .toast.show{
-  opacity:1;
-  transform:translateX(-50%) translateY(0);
+    opacity:1;
+
+    transform:
+        translateX(-50%)
+        translateY(0);
 }
 
-/* ================= PROFILE PHOTO ================= */
 
-.photoModal{
-  align-items:center;
+/* =========================
+   FILE INPUT
+========================= */
+
+.hiddenFileInput{
+    display:none;
 }
 
-.photoModal .modal{
-  background:transparent;
-  box-shadow:none;
-  max-width:100%;
-  padding:20px;
-  overflow:visible;
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:420px){
+
+    .chatHeader{
+        height:64px;
+    }
+
+    .headerInner{
+        height:64px;
+    }
+
+    .messagesArea{
+        top:calc(
+            64px +
+            env(safe-area-inset-top)
+        );
+    }
+
+    .chatMenu{
+        top:calc(
+            64px +
+            env(safe-area-inset-top)
+        );
+    }
+
+    .messageBubble{
+        max-width:82%;
+    }
+
 }
 
-.bigPhoto{
-  width:100%;
-  max-height:75vh;
-  object-fit:contain;
-  border-radius:15px;
+
+/* =========================
+   ACCESSIBILITY
+========================= */
+
+button:disabled{
+    opacity:.55;
+    cursor:not-allowed;
 }
 
-.closePhoto{
-  display:block;
-  margin:12px auto 0;
-
-  width:42px;
-  height:42px;
-
-  border-radius:50%;
-
-  background:#fff;
-  color:#111;
-
-  font-size:20px;
-}
-
-/* ================= RESPONSIVE ================= */
-
-@media(max-width:520px){
-  .messageBubble{
-    max-width:84%;
-  }
-
-  .shareActions{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-@media(min-width:700px){
-  .chatInputArea{
-    padding-left:max(8px,calc((100vw - 850px)/2));
-    padding-right:max(8px,calc((100vw - 850px)/2));
-  }
-
-  .messages{
-    padding-left:20px;
-    padding-right:20px;
-  }
-}
 </style>
 </head>
 
+
 <body>
 
-<!-- ================= HEADER ================= -->
-
-<header class="chatHeader">
-
-  <button class="backBtn" onclick="goBack()">‹</button>
-
-  <img
-    id="chatAvatar"
-    class="chatAvatar"
-    src="https://i.pravatar.cc/100?img=1"
-    onclick="openUserProfilePhoto()"
-    alt="Profile"
-  >
-
-  <div class="chatUserInfo">
-    <div id="chatUserName" class="chatUserName">Chat</div>
-    <div id="chatUserStatus" class="chatUserStatus">Offline</div>
-  </div>
-
-  <button
-    class="headerBtn"
-    onclick="startCall()"
-    title="Call"
-  >📞</button>
-
-  <button
-    class="headerBtn"
-    onclick="toggleChatMenu(event)"
-  >⋮</button>
-
-</header>
-
-<!-- ================= CHAT MENU ================= -->
-
-<div id="chatMenu" class="chatMenu">
-
-  <button class="menuItem" onclick="viewProfile()">
-    👤 Profile
-  </button>
-
-  <button
-    id="blockMenuItem"
-    class="menuItem"
-    onclick="toggleBlock()"
-  >
-    🚫 Block
-  </button>
-
-  <button
-    id="unblockMenuItem"
-    class="menuItem"
-    onclick="toggleBlock()"
-    style="display:none"
-  >
-    ✅ Unblock
-  </button>
-
-  <button
-    class="menuItem menuDanger"
-    onclick="deleteChatDialog()"
-  >
-    🗑️ Delete Chat
-  </button>
-
-</div>
-
-<!-- ================= MESSAGES ================= -->
-
-<main id="messages" class="messages">
-
-  <div id="messagesInner" class="messagesInner">
-
-    <div class="loading">
-      Loading...
-    </div>
-
-  </div>
-
-</main>
-
-<!-- ================= ATTACH MENU ================= -->
-
-<div id="attachMenu" class="attachMenu">
-
-  <button class="attachItem" onclick="pickImage()">
-    🖼️ Photo
-  </button>
-
-  <button class="attachItem" onclick="pickVideo()">
-    🎬 Video
-  </button>
-
-  <button class="attachItem" onclick="pickFile()">
-    📄 File
-  </button>
-
-  <button class="attachItem" onclick="sendLocation()">
-    📍 Location
-  </button>
-
-</div>
-
-<input
-  id="imageInput"
-  type="file"
-  accept="image/*"
-  hidden
-  onchange="handleFileSelect(this,'image')"
->
-
-<input
-  id="videoInput"
-  type="file"
-  accept="video/*"
-  hidden
-  onchange="handleFileSelect(this,'video')"
->
-
-<input
-  id="fileInput"
-  type="file"
-  hidden
-  onchange="handleFileSelect(this,'file')"
->
-
-<!-- ================= BOTTOM ================= -->
-
-<div class="chatInputArea">
-
-  <button
-    class="attachBtn"
-    onclick="toggleAttachMenu()"
-  >📎</button>
-
-  <div class="inputBox">
-    <input
-      id="messageInput"
-      class="messageInput"
-      type="text"
-      placeholder="Message"
-      autocomplete="off"
-      enterkeyhint="send"
-    >
-  </div>
-
-  <button
-    id="voiceBtn"
-    class="voiceBtn"
-    onclick="toggleVoiceRecording()"
-  >🎤</button>
-
-  <button
-    class="sendBtn"
-    onclick="sendMessage()"
-  >➤</button>
-
-</div>
-
-<!-- ================= MESSAGE OPTIONS ================= -->
-
-<div id="messageOptionsModal" class="modalBackdrop">
-
-  <div class="modal">
-
-    <div class="modalHandle"></div>
-
-    <div class="modalTitle">
-      Message options
-    </div>
-
-    <button
-      class="modalBtn green"
-      onclick="shareSelectedMessage()"
-    >
-      📤 Share / Forward
-    </button>
-
-    <button
-      class="modalBtn"
-      onclick="deleteSelectedMessageOnlyMe()"
-    >
-      🗑️ Delete for me
-    </button>
-
-    <button
-      id="deleteSelectedAllBtn"
-      class="modalBtn danger"
-      onclick="deleteSelectedMessageForEveryone()"
-    >
-      🗑️ Delete for everyone
-    </button>
-
-    <button
-      class="modalBtn cancel"
-      onclick="closeModal('messageOptionsModal')"
-    >
-      Cancel
-    </button>
-
-  </div>
-
-</div>
-
-<!-- ================= SHARE OPTIONS ================= -->
-
-<div id="shareModal" class="modalBackdrop">
-
-  <div class="modal">
-
-    <div class="modalHandle"></div>
-
-    <div class="modalTitle">
-      📤 Share
-    </div>
-
-    <div class="shareActions">
-
-      <button
-        class="shareAction green"
-        onclick="openForwardUsers()"
-      >
-        💬 RAZTARA
-      </button>
-
-      <button
-        class="shareAction"
-        onclick="shareNative()"
-      >
-        📱 Other Apps
-      </button>
-
-      <button
-        class="shareAction"
-        onclick="shareWhatsApp()"
-      >
-        🟢 WhatsApp
-      </button>
-
-      <button
-        class="shareAction"
-        onclick="shareTelegram()"
-      >
-        🔵 Telegram
-      </button>
-
-      <button
-        class="shareAction"
-        onclick="shareSMS()"
-      >
-        💬 SMS
-      </button>
-
-      <button
-        class="shareAction"
-        onclick="shareEmail()"
-      >
-        ✉️ Email
-      </button>
-
-      <button
-        class="shareAction"
-        onclick="shareFacebook()"
-      >
-        🔵 Facebook
-      </button>
-
-      <button
-        class="shareAction"
-        onclick="shareNative()"
-      >
-        👥 Messenger / IMO
-      </button>
-
-    </div>
-
-    <button
-      class="modalBtn cancel"
-      onclick="closeModal('shareModal')"
-    >
-      Cancel
-    </button>
-
-  </div>
-
-</div>
-
-<!-- ================= FORWARD USERS ================= -->
-
-<div id="forwardModal" class="modalBackdrop">
-
-  <div class="modal">
-
-    <div class="modalHandle"></div>
-
-    <div class="modalTitle">
-      💬 RAZTARA user-কে Forward
-    </div>
-
-    <input
-      id="shareUserSearch"
-      class="shareUsersSearch"
-      placeholder="নাম বা username খুঁজুন..."
-      oninput="filterShareUsers()"
-    >
-
-    <div
-      id="shareUserList"
-      class="shareUserList"
-    ></div>
-
-    <button
-      class="modalBtn cancel"
-      onclick="closeModal('forwardModal')"
-    >
-      Cancel
-    </button>
-
-  </div>
-
-</div>
-
-<!-- ================= DELETE CHAT ================= -->
-
-<div id="deleteChatModal" class="modalBackdrop">
-
-  <div class="modal">
-
-    <div class="modalHandle"></div>
-
-    <div class="modalTitle">
-      🗑️ Delete Chat
-    </div>
-
-    <button
-      class="modalBtn"
-      onclick="deleteChatOnlyMe()"
-    >
-      🗑️ Delete for me
-    </button>
-
-    <button
-      class="modalBtn danger"
-      onclick="deleteChatForEveryone()"
-    >
-      🗑️ Delete for everyone
-    </button>
-
-    <button
-      class="modalBtn cancel"
-      onclick="closeModal('deleteChatModal')"
-    >
-      Cancel
-    </button>
-
-  </div>
-
-</div>
-
-<!-- ================= PHOTO ================= -->
-
-<div id="photoModal" class="modalBackdrop photoModal">
-
-  <div class="modal">
-
-    <img
-      id="bigPhoto"
-      class="bigPhoto"
-      src=""
-      alt="Profile"
-    >
-
-    <button
-      class="closePhoto"
-      onclick="closeModal('photoModal')"
-    >
-      ✕
-    </button>
-
-  </div>
-
-</div>
-
-<!-- ================= TOAST ================= -->
-
-<div id="toast" class="toast"></div>
-
-<script>
-/* =========================================================
-   SUPABASE
-========================================================= */
-
-const SUPABASE_URL =
-  "https://pqyicaqpmojijjskpzcp.supabase.co";
-
-const SUPABASE_KEY =
-  "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
-
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
-const STORAGE_BUCKET = "chat-files";
-
-console.log("STORAGE_BUCKET =", STORAGE_BUCKET);
-
-/* =========================================================
-   STATE
-========================================================= */
-
-const params = new URLSearchParams(location.search);
-
-let conversationId =
-  params.get("conversation") ||
-  params.get("conversation_id") ||
-  "";
-
-let otherUserId =
-  params.get("user") ||
-  params.get("user_id") ||
-  "";
-
-let currentUser = null;
-let otherUser = null;
-
-let messagesCache = new Map();
-
-let selectedMessage = null;
-
-let shareTargetMessage = null;
-
-let shareUsers = [];
-
-let presenceChannel = null;
-let typingChannel = null;
-let messagesChannel = null;
-
-let isBlocked = false;
-
-let mediaRecorder = null;
-let mediaStream = null;
-let recordedChunks = [];
-let recordingMime = "";
-
-let typingTimer = null;
-let typingSent = false;
-
-let longPressTimer = null;
-
-let isLoadingMessages = false;
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function $(id){
-  return document.getElementById(id);
-}
-
-function esc(value){
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-}
-
-function safeUrl(url){
-  try{
-    const u = new URL(url);
-
-    if(
-      u.protocol === "https:" ||
-      u.protocol === "http:"
-    ){
-      return u.href;
-    }
-
-    return "#";
-  }catch{
-    return "#";
-  }
-}
-
-function toast(message){
-  const el = $("toast");
-
-  el.textContent = message;
-
-  el.classList.add("show");
-
-  clearTimeout(el._timer);
-
-  el._timer =
-    setTimeout(() => {
-      el.classList.remove("show");
-    },2300);
-}
-
-function closeModal(id){
-  $(id)?.classList.remove("show");
-}
-
-function openModal(id){
-  $(id)?.classList.add("show");
-}
-
-function closeMenus(){
-  $("chatMenu")?.classList.remove("show");
-  $("attachMenu")?.classList.remove("show");
-}
-
-/* =========================================================
-   INIT
-========================================================= */
-
-async function init(){
-
-  try{
-
-    const {
-      data:{
-        user
-      },
-      error
-    } =
-      await supabaseClient.auth.getUser();
-
-    if(error){
-      throw error;
-    }
-
-    if(!user){
-
-      location.href = "index.html";
-
-      return;
-    }
-
-    currentUser = user;
-
-    if(!otherUserId){
-
-      toast("User পাওয়া যায়নি");
-
-      return;
-    }
-
-    setupOutsideClick();
-
-    setupKeyboardHandling();
-
-    setupInput();
-
-    await ensureConversation();
-
-    await loadOtherUser();
-
-    await loadBlockedState();
-
-    await loadMessages();
-
-    subscribeMessages();
-
-    setupPresence();
-
-    setupTyping();
-
-    updateBlockButtons();
-
-    await updateMyLastSeen();
-
-    setInterval(
-      updateMyLastSeen,
-      30000
-    );
-
-  }catch(error){
-
-    console.error(error);
-
-    toast(
-      error?.message ||
-      "Chat load করতে সমস্যা হয়েছে"
-    );
-  }
-}
-
-/* =========================================================
-   CONVERSATION
-========================================================= */
-
-async function ensureConversation(){
-
-  if(conversationId){
-    return;
-  }
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient.rpc(
-      "get_or_create_direct_conversation",
-      {
-        other_user_id:otherUserId
-      }
-    );
-
-  if(error){
-    throw error;
-  }
-
-  conversationId = data;
-}
-
-/* =========================================================
-   OTHER USER
-========================================================= */
-async function loadOtherUser(){
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("profiles")
-      .select(`
-        id,
-        username,
-        full_name,
-        avatar_url,
-        bio,
-        last_seen_at,
-        online_visibility
-      `)
-      .eq("id",otherUserId)
-      .single();
-
-  if(error){
-    throw error;
-  }
-
-  otherUser = data;
-
-  $("chatUserName").textContent =
-    data.full_name ||
-    data.username ||
-    "User";
-
-  $("chatAvatar").src =
-    data.avatar_url ||
-    "https://i.pravatar.cc/100?img=1";
-
-  updateStatusFromPresence();
-}
-
-
-function updateStatusFromPresence(){
-
-  if(!otherUser){
-    return;
-  }
-
-  if(
-    $("chatUserStatus").textContent ===
-    "Typing..."
-  ){
-    return;
-  }
-
-  let online = false;
-
-  try{
-
-    if(presenceChannel){
-
-      const state =
-        presenceChannel.presenceState();
-
-      online =
-        !!state[otherUserId];
-    }
-
-  }catch{}
-
-  if(online){
-
-    $("chatUserStatus").textContent =
-      "Online";
-
-    return;
-  }
-
-  const lastSeen =
-    otherUser.last_seen_at;
-
-  if(lastSeen){
-
-    $("chatUserStatus").textContent =
-      "Last seen " +
-      formatLastSeen(lastSeen);
-
-  }else{
-
-    $("chatUserStatus").textContent =
-      "Offline";
-  }
-}
-
-
-function formatLastSeen(date){
-
-  const d =
-    new Date(date);
-
-  return d.toLocaleString(
-    "bn-BD",
-    {
-      day:"numeric",
-      month:"short",
-      hour:"numeric",
-      minute:"2-digit"
-    }
-  );
-}
-/* =========================================================
-   BLOCK
-========================================================= */
-
-async function loadBlockedState(){
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("blocked_users")
-      .select("id,blocker_id,blocked_id")
-      .eq("blocker_id",currentUser.id)
-      .eq("blocked_id",otherUserId)
-      .maybeSingle();
-
-  if(error){
-    console.error(error);
-  }
-
-  isBlocked = !!data;
-
-  /*
-    Opposite-side block is enforced by DB.
-    If message/call fails with blocked error,
-    frontend also handles it.
-  */
-
-  updateBlockButtons();
-}
-
-function updateBlockButtons(){
-
-  const blockBtn =
-    $("blockMenuItem");
-
-  const unblockBtn =
-    $("unblockMenuItem");
-
-  if(!blockBtn || !unblockBtn){
-    return;
-  }
-
-  if(isBlocked){
-
-    blockBtn.style.display = "none";
-    unblockBtn.style.display = "block";
-
-  }else{
-
-    blockBtn.style.display = "block";
-    unblockBtn.style.display = "none";
-  }
-}
-
-async function toggleBlock(){
-
-  closeMenus();
-
-  try{
-
-    if(isBlocked){
-
-      const {
-        error
-      } =
-        await supabaseClient
-          .from("blocked_users")
-          .delete()
-          .eq("blocker_id",currentUser.id)
-          .eq("blocked_id",otherUserId);
-
-      if(error){
-        throw error;
-      }
-
-      isBlocked = false;
-
-      toast("Unblocked");
-
-    }else{
-
-      const {
-        error
-      } =
-        await supabaseClient
-          .from("blocked_users")
-          .insert({
-            blocker_id:currentUser.id,
-            blocked_id:otherUserId
-          });
-
-      if(error){
-        throw error;
-      }
-
-      isBlocked = true;
-
-      toast("User blocked");
-    }
-
-    updateBlockButtons();
-
-  }catch(error){
-
-    console.error(error);
-
-    toast(
-      error?.message ||
-      "Block পরিবর্তন করা যায়নি"
-    );
-  }
-}
-
-/* =========================================================
-   LOAD MESSAGES
-========================================================= */
-
-async function loadMessages(){
-
-  if(isLoadingMessages){
-    return;
-  }
-
-  isLoadingMessages = true;
-
-  const inner = $("messagesInner");
-
-  inner.innerHTML =
-    `<div class="loading">Loading...</div>`;
-
-  try{
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("messages")
-        .select("*")
-        .eq("conversation_id",conversationId)
-        .order("created_at",{ascending:true});
-
-    if(error){
-      throw error;
-    }
-
-    messagesCache.clear();
-
-    const ids =
-      (data || []).map(m => m.id);
-
-    let hiddenIds = new Set();
-
-    if(ids.length){
-
-      const {
-        data:hidden
-      } =
-        await supabaseClient
-          .from("message_user_deletions")
-          .select("message_id")
-          .eq("user_id",currentUser.id)
-          .in("message_id",ids);
-
-      hiddenIds =
-        new Set(
-          (hidden || [])
-            .map(x => x.message_id)
-        );
-    }
-
-    inner.innerHTML = "";
-
-    let count = 0;
-
-    for(const message of (data || [])){
-
-      if(hiddenIds.has(message.id)){
-        continue;
-      }
-
-      messagesCache.set(
-        message.id,
-        message
-      );
-
-      renderMessage(message);
-
-      count++;
-    }
-
-    if(!count){
-
-      inner.innerHTML =
-        `<div class="emptyChat">
-          এখনো কোনো message নেই।
-        </div>`;
-    }
-
-    scrollToBottom();
-
-    await markMessagesRead();
-
-  }catch(error){
-
-    console.error(error);
-
-    inner.innerHTML =
-      `<div class="emptyChat">
-        Message load করতে সমস্যা হয়েছে।
-      </div>`;
-
-  }finally{
-
-    isLoadingMessages = false;
-  }
-}
-
-/* =========================================================
-   REALTIME
-========================================================= */
-
-function subscribeMessages(){
-
-  if(messagesChannel){
-    supabaseClient.removeChannel(
-      messagesChannel
-    );
-  }
-
-  messagesChannel =
-    supabaseClient
-      .channel(
-        "messages-" +
-        conversationId +
-        "-" +
-        currentUser.id
-      )
-      .on(
-        "postgres_changes",
-        {
-          event:"INSERT",
-          schema:"public",
-          table:"messages",
-          filter:
-            "conversation_id=eq." +
-            conversationId
-        },
-        payload => {
-
-          const message =
-            payload.new;
-
-          if(
-            messagesCache.has(message.id)
-          ){
-            return;
-          }
-
-          messagesCache.set(
-            message.id,
-            message
-          );
-
-          const empty =
-            $("messagesInner")
-              .querySelector(".emptyChat");
-
-          if(empty){
-            empty.remove();
-          }
-
-          renderMessage(message);
-
-          if(
-            message.sender_id !==
-            currentUser.id
-          ){
-            markMessagesRead();
-          }
-
-          scrollToBottom();
-        }
-      )
-      .on(
-        "postgres_changes",
-        {
-          event:"UPDATE",
-          schema:"public",
-          table:"messages",
-          filter:
-            "conversation_id=eq." +
-            conversationId
-        },
-        payload => {
-
-          const message =
-            payload.new;
-
-          messagesCache.set(
-            message.id,
-            message
-          );
-
-          const old =
-            document.querySelector(
-              `[data-message-id="${message.id}"]`
-            );
-
-          if(old){
-            old.remove();
-          }
-
-          renderMessage(message);
-        }
-      )
-      .on(
-        "postgres_changes",
-        {
-          event:"DELETE",
-          schema:"public",
-          table:"messages",
-          filter:
-            "conversation_id=eq." +
-            conversationId
-        },
-        payload => {
-
-          const id =
-            payload.old?.id;
-
-          if(!id){
-            return;
-          }
-
-          messagesCache.delete(id);
-
-          const row =
-            document.querySelector(
-              `[data-message-id="${id}"]`
-            );
-
-          if(row){
-            row.remove();
-          }
-
-          if(
-            !$("messagesInner")
-              .querySelector(".messageRow")
-          ){
-
-            $("messagesInner").innerHTML =
-              `<div class="emptyChat">
-                এখন কোনো message নেই।
-              </div>`;
-          }
-        }
-      )
-      .subscribe();
-}
-
-/* =========================================================
-   RENDER MESSAGE
-========================================================= */
-
-function renderMessage(message){
-
-  if(
-    document.querySelector(
-      `[data-message-id="${message.id}"]`
-    )
-  ){
-    return;
-  }
-
-  const row =
-    document.createElement("div");
-
-  row.className =
-    "messageRow " +
-    (
-      message.sender_id === currentUser.id
-      ? "me"
-      : "other"
-    );
-
-  row.dataset.messageId =
-    message.id;
-
-  const bubble =
-    document.createElement("div");
-
-  bubble.className =
-    "messageBubble";
-
-  bubble.innerHTML =
-    buildMessageContent(message);
-
-  row.appendChild(bubble);
-
-  setupSwipe(row,message);
-
-  setupLongPress(
-    row,
-    message
-  );
-
-  $("messagesInner")
-    .appendChild(row);
-
-  return row;
-}
-
-/* =========================================================
-   MESSAGE CONTENT
-========================================================= */
-
-function buildMessageContent(message){
-
-  const type =
-    message.message_type || "text";
-
-  const content =
-    message.content || "";
-
-  const url =
-    message.file_url || "";
-
-  let html = "";
-
-  if(type === "text"){
-
-    html +=
-      `<div class="messageText">
-        ${esc(content)}
-      </div>`;
-
-  }else if(type === "image"){
-
-    if(url){
-
-      html +=
-        `<img
-          class="messageImage"
-          src="${safeUrl(url)}"
-          alt="image"
-          loading="lazy"
-          onclick="openMedia('${esc(url)}')"
-        >`;
-    }
-
-    if(content){
-
-      html +=
-        `<div class="messageCaption">
-          ${esc(content)}
-        </div>`;
-    }
-
-  }else if(type === "video"){
-
-    if(url){
-
-      html +=
-        `<video
-          class="messageVideo"
-          controls
-          playsinline
-          preload="metadata"
-          src="${safeUrl(url)}"
-        ></video>`;
-    }
-
-    if(content){
-
-      html +=
-        `<div class="messageCaption">
-          ${esc(content)}
-        </div>`;
-    }
-
-  }else if(type === "audio"){
-
-    if(url){
-
-      html +=
-        `<audio
-          class="messageAudio"
-          controls
-          preload="metadata"
-          src="${safeUrl(url)}"
-        ></audio>`;
-    }
-
-    if(content){
-
-      html +=
-        `<div class="messageCaption">
-          ${esc(content)}
-        </div>`;
-    }
-
-  }else if(type === "file"){
-
-    const name =
-      content ||
-      "File";
-
-    html +=
-      `<div class="fileBox">
-
-        <div class="fileIcon">📄</div>
-
-        <div class="fileInfo">
-
-          <div class="fileName">
-            ${esc(name)}
-          </div>
-
-          <a
-            class="fileOpen"
-            href="${safeUrl(url)}"
-            target="_blank"
-            rel="noopener"
-          >
-            Open file
-          </a>
+<div class="chatApp">
+
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <header class="chatHeader">
+
+        <div class="headerInner">
+
+            <button
+                class="backButton"
+                type="button"
+                aria-label="Back"
+                onclick="goBack()"
+            >
+                ‹
+            </button>
+
+
+            <div
+                class="chatUserArea"
+                onclick="viewProfile()"
+            >
+
+                <img
+                    id="otherUserAvatar"
+                    class="chatAvatar"
+                    src=""
+                    alt="Profile"
+                >
+
+                <div class="chatUserInfo">
+
+                    <div
+                        id="otherUserName"
+                        class="chatUserName"
+                    >
+                        Chat
+                    </div>
+
+                    <div
+                        id="otherUserStatus"
+                        class="chatUserStatus"
+                    >
+                        ...
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="headerActions">
+
+                <button
+                    id="callButton"
+                    class="callButton"
+                    type="button"
+                    aria-label="Call"
+                    onclick="startCall()"
+                >
+                    📞
+                </button>
+
+                <button
+                    class="iconButton"
+                    type="button"
+                    aria-label="Menu"
+                    onclick="toggleMenu()"
+                >
+                    ⋮
+                </button>
+
+            </div>
 
         </div>
 
-      </div>`;
+    </header>
 
-  }else if(type === "location"){
 
-    let lat = "";
-    let lng = "";
+    <!-- =========================
+         MENU
+    ========================== -->
 
-    try{
+    <div
+        id="menuOverlay"
+        class="menuOverlay"
+        onclick="closeMenus(event)"
+    >
 
-      const obj =
-        JSON.parse(content);
+        <div
+            id="chatMenu"
+            class="chatMenu"
+            onclick="event.stopPropagation()"
+        >
 
-      lat = obj.lat;
-      lng = obj.lng;
+            <button
+                class="menuItem"
+                type="button"
+                onclick="viewProfile()"
+            >
+                👤
+                <span data-i18n="profile">
+                    Profile
+                </span>
+            </button>
 
-    }catch{
 
-      const parts =
-        content.split(",");
+            <button
+                class="menuItem"
+                type="button"
+                onclick="startCall()"
+            >
+                📞
+                <span data-i18n="call">
+                    Call
+                </span>
+            </button>
 
-      lat = parts[0];
-      lng = parts[1];
+
+            <button
+                class="menuItem"
+                type="button"
+                onclick="startVideoCall()"
+            >
+                🎥
+                <span data-i18n="videoCall">
+                    Video Call
+                </span>
+            </button>
+
+
+            <button
+                id="blockButton"
+                class="menuItem danger"
+                type="button"
+                onclick="toggleBlockUser()"
+            >
+                🚫
+                <span id="blockButtonText">
+                    Block
+                </span>
+            </button>
+
+
+            <button
+                class="menuItem danger"
+                type="button"
+                onclick="deleteChat()"
+            >
+                🗑️
+                <span data-i18n="deleteChat">
+                    Delete Chat
+                </span>
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         MESSAGES
+    ========================== -->
+
+    <main
+        id="messagesArea"
+        class="messagesArea"
+    >
+
+        <div
+            id="chatLoading"
+            class="chatLoading"
+            data-i18n="loading"
+        >
+            Loading...
+        </div>
+
+    </main>
+
+
+    <!-- =========================
+         RECORDING BAR
+    ========================== -->
+
+    <div
+        id="recordingBar"
+        class="recordingBar"
+    >
+
+        <div
+            id="recordingText"
+            class="recordingText"
+        >
+            🔴 Recording...
+        </div>
+
+        <button
+            class="cancelRecording"
+            type="button"
+            onclick="cancelRecording()"
+            data-i18n="cancel"
+        >
+            Cancel
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         MESSAGE COMPOSER
+    ========================== -->
+
+    <div class="messageComposer">
+
+        <div class="composerInner">
+
+            <button
+                class="attachButton"
+                type="button"
+                onclick="openFilePicker()"
+                aria-label="Attach"
+            >
+                📎
+            </button>
+
+
+            <textarea
+                id="messageInput"
+                class="messageInput"
+                rows="1"
+                maxlength="5000"
+                placeholder="Write a message..."
+                data-i18n-placeholder="messagePlaceholder"
+            ></textarea>
+
+
+            <button
+                id="voiceButton"
+                class="voiceButton"
+                type="button"
+                onclick="toggleVoiceRecording()"
+                aria-label="Voice"
+            >
+                🎙️
+            </button>
+
+
+            <button
+                id="sendButton"
+                class="sendButton"
+                type="button"
+                onclick="sendMessage()"
+                aria-label="Send"
+            >
+                ➤
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         FILE INPUT
+    ========================== -->
+
+    <input
+        id="fileInput"
+        class="hiddenFileInput"
+        type="file"
+        accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
+        onchange="handleFileSelected(event)"
+    >
+
+
+    <!-- =========================
+         TOAST
+    ========================== -->
+
+    <div
+        id="toast"
+        class="toast"
+    ></div>
+
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   RAZTARA CHAT
+   PART 1
+===================================================== */
+
+
+/* =========================
+   SUPABASE CONFIG
+========================= */
+
+const SUPABASE_URL =
+    "https://pqyicaqpmojijjskpzcp.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+
+const STORAGE_BUCKET =
+    "chat-files";
+
+
+/* =========================
+   LANGUAGE
+========================= */
+
+function getLanguage(){
+
+    return (
+        localStorage.getItem("raztara_language")
+        || "bn"
+    );
+
+}
+
+
+const translations = {
+
+    bn:{
+
+        profile:"প্রোফাইল",
+
+        call:"কল",
+
+        videoCall:"ভিডিও কল",
+
+        block:"ব্লক",
+
+        unblock:"আনব্লক",
+
+        deleteChat:"চ্যাট মুছুন",
+
+        loading:"লোড হচ্ছে...",
+
+        cancel:"বাতিল",
+
+        recording:"রেকর্ড হচ্ছে...",
+
+        messagePlaceholder:
+            "মেসেজ লিখুন...",
+
+        today:"আজ",
+
+        yesterday:"গতকাল",
+
+        online:"অনলাইন",
+
+        offline:"অফলাইন",
+
+        noMessages:
+            "এখনও কোনো মেসেজ নেই।",
+
+        messageSent:
+            "মেসেজ পাঠানো হয়েছে।",
+
+        blocked:
+            "এই ব্যবহারকারীকে ব্লক করা হয়েছে।",
+
+        unblocked:
+            "ব্লক তুলে দেওয়া হয়েছে।"
+
+    },
+
+    en:{
+
+        profile:"Profile",
+
+        call:"Call",
+
+        videoCall:"Video Call",
+
+        block:"Block",
+
+        unblock:"Unblock",
+
+        deleteChat:"Delete Chat",
+
+        loading:"Loading...",
+
+        cancel:"Cancel",
+
+        recording:"Recording...",
+
+        messagePlaceholder:
+            "Write a message...",
+
+        today:"Today",
+
+        yesterday:"Yesterday",
+
+        online:"Online",
+
+        offline:"Offline",
+
+        noMessages:
+            "No messages yet.",
+
+        messageSent:
+            "Message sent.",
+
+        blocked:
+            "This user has been blocked.",
+
+        unblocked:
+            "Block removed."
+
     }
 
-    const mapUrl =
-      `https://www.google.com/maps?q=${encodeURIComponent(lat + "," + lng)}`;
+};
 
-    html +=
-      `<a
-        class="locationBox"
-        href="${safeUrl(mapUrl)}"
-        target="_blank"
-        rel="noopener"
-      >
-        📍 View location
-      </a>`;
-  }
 
-  const time =
-    formatTime(message.created_at);
+function t(key){
 
-  const read =
-    message.sender_id === currentUser.id
-      ? (
-          message.is_read
-          ? `<span class="readTick">✓✓</span>`
-          : `<span class="readTick">✓</span>`
-        )
-      : "";
+    const lang = getLanguage();
 
-  html +=
-    `<div class="messageMeta">
+    return (
+        translations[lang] &&
+        translations[lang][key]
+    )
+    ||
+    translations.en[key]
+    ||
+    key;
 
-      <span>${esc(time)}</span>
-
-      ${read}
-
-      <button
-        class="shareBtn"
-        onclick="event.stopPropagation();shareMessageById('${message.id}')"
-        title="Share"
-      >
-        ↗
-      </button>
-
-    </div>`;
-
-  return html;
 }
+
+
+/* =========================
+   APPLY LANGUAGE
+========================= */
+
+function applyLanguage(){
+
+    document.documentElement.lang =
+        getLanguage() === "bn"
+        ? "bn"
+        : "en";
+
+
+    document
+        .querySelectorAll("[data-i18n]")
+        .forEach(element => {
+
+            const key =
+                element.getAttribute(
+                    "data-i18n"
+                );
+
+            element.textContent =
+                t(key);
+
+        });
+
+
+    document
+        .querySelectorAll(
+            "[data-i18n-placeholder]"
+        )
+        .forEach(element => {
+
+            const key =
+                element.getAttribute(
+                    "data-i18n-placeholder"
+                );
+
+            element.placeholder =
+                t(key);
+
+        });
+
+
+    updateBlockButtonText();
+
+}
+
+
+/* =========================
+   URL / USER
+========================= */
+
+const urlParams =
+    new URLSearchParams(
+        window.location.search
+    );
+
+const otherUserId =
+    urlParams.get("user");
+
+
+/* =========================
+   STATE
+========================= */
+
+let currentUser = null;
+
+let otherUser = null;
+
+let messages = [];
+
+let realtimeChannel = null;
+
+let mediaRecorder = null;
+
+let recordedChunks = [];
+
+let isRecording = false;
+
+let isBlocked = false;
+
+let lastRenderedDateKey = null;
+
+
+/* =========================
+   DOM
+========================= */
+
+const messagesArea =
+    document.getElementById(
+        "messagesArea"
+    );
+
+const messageInput =
+    document.getElementById(
+        "messageInput"
+    );
+
+const fileInput =
+    document.getElementById(
+        "fileInput"
+    );
+
+const menuOverlay =
+    document.getElementById(
+        "menuOverlay"
+    );
+
+const toastElement =
+    document.getElementById(
+        "toast"
+    );
+
+
+/* =========================
+   DATE / TIME
+   BANGLADESH TIMEZONE
+========================= */
+
+function getDhakaParts(date){
+
+    const parts =
+        new Intl.DateTimeFormat(
+            "en-US",
+            {
+                timeZone:"Asia/Dhaka",
+
+                year:"numeric",
+                month:"2-digit",
+                day:"2-digit",
+
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit",
+
+                hour12:false
+            }
+        )
+        .formatToParts(
+            new Date(date)
+        );
+
+
+    const result = {};
+
+    parts.forEach(part => {
+
+        if(
+            part.type !== "literal"
+        ){
+
+            result[part.type] =
+                part.value;
+
+        }
+
+    });
+
+    return result;
+
+}
+
+
+function getDateKey(date){
+
+    const parts =
+        getDhakaParts(date);
+
+    return (
+        parts.year +
+        "-" +
+        parts.month +
+        "-" +
+        parts.day
+    );
+
+}
+
+
+function getDhakaDateKeyFromNow(
+    offsetDays = 0
+){
+
+    const nowParts =
+        getDhakaParts(
+            new Date()
+        );
+
+
+    const utcDate =
+        new Date(
+            Date.UTC(
+                Number(nowParts.year),
+                Number(nowParts.month) - 1,
+                Number(nowParts.day) + offsetDays
+            )
+        );
+
+
+    return (
+        utcDate
+            .getUTCFullYear()
+            .toString()
+            .padStart(4,"0")
+        +
+        "-"
+        +
+        String(
+            utcDate.getUTCMonth() + 1
+        ).padStart(2,"0")
+        +
+        "-"
+        +
+        String(
+            utcDate.getUTCDate()
+        ).padStart(2,"0")
+    );
+
+}
+
 
 function formatTime(date){
 
-  if(!date){
-    return "";
-  }
+    return new Intl.DateTimeFormat(
 
-  return new Date(date)
-    .toLocaleTimeString(
-      "bn-BD",
-      {
-        hour:"numeric",
-        minute:"2-digit"
-      }
+        getLanguage() === "bn"
+        ? "bn-BD"
+        : "en-US",
+
+        {
+            timeZone:"Asia/Dhaka",
+
+            hour:"numeric",
+            minute:"2-digit",
+
+            hour12:true
+        }
+
+    ).format(
+        new Date(date)
     );
+
 }
 
-/* =========================================================
-   READ
-========================================================= */
 
-async function markMessagesRead(){
+function formatDateSeparator(date){
 
-  try{
+    const dateKey =
+        getDateKey(date);
 
-    await supabaseClient
-      .from("messages")
-      .update({
-        is_read:true
-      })
-      .eq("conversation_id",conversationId)
-      .neq("sender_id",currentUser.id)
-      .eq("is_read",false);
+    const todayKey =
+        getDhakaDateKeyFromNow(0);
 
-  }catch(error){
+    const yesterdayKey =
+        getDhakaDateKeyFromNow(-1);
 
-    console.error(
-      "Read update:",
-      error
+
+    if(dateKey === todayKey){
+
+        return t("today");
+
+    }
+
+
+    if(
+        dateKey === yesterdayKey
+    ){
+
+        return t("yesterday");
+
+    }
+
+
+    const locale =
+        getLanguage() === "bn"
+        ? "bn-BD"
+        : "en-US";
+
+
+    return new Intl.DateTimeFormat(
+        locale,
+        {
+            timeZone:"Asia/Dhaka",
+
+            day:"numeric",
+            month:"long",
+            year:"numeric"
+        }
+    ).format(
+        new Date(date)
     );
-  }
+
 }
 
-/* =========================================================
-   SWIPE
-========================================================= */
 
-function setupSwipe(row,message){
+/* =========================
+   DATE SEPARATOR
+========================= */
 
-  const bubble =
-    row.querySelector(".messageBubble");
+function addDateSeparator(
+    date,
+    force = false
+){
 
-  let startX = 0;
-  let startY = 0;
-  let moved = false;
+    const dateKey =
+        getDateKey(date);
 
-  row.addEventListener(
-    "touchstart",
-    event => {
 
-      if(
-        event.touches.length !== 1
-      ){
+    if(
+        !force &&
+        lastRenderedDateKey === dateKey
+    ){
+
         return;
-      }
 
-      startX =
-        event.touches[0].clientX;
-
-      startY =
-        event.touches[0].clientY;
-
-      moved = false;
-    },
-    {
-      passive:true
     }
-  );
 
-  row.addEventListener(
-    "touchmove",
-    event => {
 
-      if(
-        event.touches.length !== 1
-      ){
+    lastRenderedDateKey =
+        dateKey;
+
+
+    const separator =
+        document.createElement(
+            "div"
+        );
+
+    separator.className =
+        "dateSeparator";
+
+
+    const span =
+        document.createElement(
+            "span"
+        );
+
+    span.textContent =
+        formatDateSeparator(
+            date
+        );
+
+
+    separator.appendChild(span);
+
+    messagesArea.appendChild(
+        separator
+    );
+
+}
+
+
+/* =========================
+   TOAST
+========================= */
+
+let toastTimer = null;
+
+
+function showToast(message){
+
+    if(!toastElement){
+
         return;
-      }
 
-      const dx =
-        event.touches[0].clientX -
-        startX;
-
-      const dy =
-        event.touches[0].clientY -
-        startY;
-
-      if(
-        Math.abs(dy) >
-        Math.abs(dx)
-      ){
-        return;
-      }
-
-      if(
-        Math.abs(dx) < 10
-      ){
-        return;
-      }
-
-      moved = true;
-
-      const limited =
-        Math.max(
-          -85,
-          Math.min(85,dx)
-        );
-
-      bubble.style.transform =
-        `translateX(${limited}px)`;
-    },
-    {
-      passive:true
-    }
-  );
-
-  row.addEventListener(
-    "touchend",
-    event => {
-
-      bubble.style.transform = "";
-
-      if(!moved){
-        return;
-      }
-
-      const endX =
-        event.changedTouches[0].clientX;
-
-      const dx =
-        endX - startX;
-
-      if(dx > 65){
-
-        shareMessage(message);
-
-      }else if(dx < -65){
-
-        openMessageOptions(message);
-      }
-    },
-    {
-      passive:true
-    }
-  );
-}
-
-/* =========================================================
-   LONG PRESS
-========================================================= */
-
-function setupLongPress(row,message){
-
-  const start = () => {
-
-    clearTimeout(longPressTimer);
-
-    longPressTimer =
-      setTimeout(() => {
-
-        if(navigator.vibrate){
-          navigator.vibrate(25);
-        }
-
-        openMessageOptions(message);
-
-      },550);
-  };
-
-  const cancel = () => {
-    clearTimeout(longPressTimer);
-  };
-
-  row.addEventListener(
-    "touchstart",
-    start,
-    {passive:true}
-  );
-
-  row.addEventListener(
-    "touchend",
-    cancel,
-    {passive:true}
-  );
-
-  row.addEventListener(
-    "touchmove",
-    cancel,
-    {passive:true}
-  );
-
-  row.addEventListener(
-    "touchcancel",
-    cancel,
-    {passive:true}
-  );
-}
-
-/* =========================================================
-   MESSAGE OPTIONS
-========================================================= */
-
-function openMessageOptions(message){
-
-  selectedMessage = message;
-
-  const allBtn =
-    $("deleteSelectedAllBtn");
-
-  if(
-    message.sender_id ===
-    currentUser.id
-  ){
-
-    allBtn.style.display =
-      "block";
-
-  }else{
-
-    allBtn.style.display =
-      "none";
-  }
-
-  openModal(
-    "messageOptionsModal"
-  );
-}
-
-function shareMessageById(id){
-
-  const message =
-    messagesCache.get(id);
-
-  if(message){
-    shareMessage(message);
-  }
-}
-
-function shareSelectedMessage(){
-
-  if(!selectedMessage){
-    return;
-  }
-
-  shareMessage(
-    selectedMessage
-  );
-}
-
-function shareMessage(message){
-
-  shareTargetMessage =
-    message;
-
-  closeModal(
-    "messageOptionsModal"
-  );
-
-  openModal(
-    "shareModal"
-  );
-}
-
-/* =========================================================
-   SHARE TEXT
-========================================================= */
-
-function getShareData(message){
-
-  if(!message){
-
-    return {
-      text:"RAZTARA",
-      url:""
-    };
-  }
-
-  const type =
-    message.message_type || "text";
-
-  let text = "";
-  let url =
-    message.file_url || "";
-
-  if(type === "text"){
-
-    text =
-      message.content || "";
-
-  }else if(type === "location"){
-
-    try{
-
-      const obj =
-        JSON.parse(
-          message.content || "{}"
-        );
-
-      const mapUrl =
-        `https://www.google.com/maps?q=${encodeURIComponent(
-          obj.lat + "," + obj.lng
-        )}`;
-
-      text =
-        "📍 RAZTARA location";
-
-      url =
-        mapUrl;
-
-    }catch{
-
-      text =
-        "📍 RAZTARA location";
     }
 
-  }else{
 
-    text =
-      message.content ||
-      "RAZTARA shared content";
-  }
+    toastElement.textContent =
+        message;
 
-  return {
-    text,
-    url
-  };
-}
 
-/* =========================================================
-   NATIVE SHARE
-========================================================= */
-
-async function shareNative(){
-
-  const {
-    text,
-    url
-  } =
-    getShareData(
-      shareTargetMessage
+    toastElement.classList.add(
+        "show"
     );
 
-  closeModal("shareModal");
 
-  try{
-
-    if(navigator.share){
-
-      const data = {
-        title:"RAZTARA",
-        text:text || "RAZTARA"
-      };
-
-      if(url){
-        data.url = url;
-      }
-
-      await navigator.share(data);
-
-      return;
-    }
-
-    await navigator.clipboard.writeText(
-      [text,url]
-        .filter(Boolean)
-        .join("\n")
+    clearTimeout(
+        toastTimer
     );
 
-    toast(
-      "Share link/text copied"
-    );
 
-  }catch(error){
+    toastTimer =
+        setTimeout(() => {
 
-    if(
-      error?.name !==
-      "AbortError"
-    ){
-
-      console.error(error);
-
-      toast(
-        "Share করা যায়নি"
-      );
-    }
-  }
-}
-
-/* =========================================================
-   WHATSAPP
-========================================================= */
-
-function shareWhatsApp(){
-
-  const {
-    text,
-    url
-  } =
-    getShareData(
-      shareTargetMessage
-    );
-
-  const finalText =
-    [text,url]
-      .filter(Boolean)
-      .join("\n");
-
-  closeModal("shareModal");
-
-  location.href =
-    "https://wa.me/?text=" +
-    encodeURIComponent(
-      finalText
-    );
-}
-
-/* =========================================================
-   TELEGRAM
-========================================================= */
-
-function shareTelegram(){
-
-  const {
-    text,
-    url
-  } =
-    getShareData(
-      shareTargetMessage
-    );
-
-  closeModal("shareModal");
-
-  location.href =
-    "https://t.me/share/url?url=" +
-    encodeURIComponent(url || location.href) +
-    "&text=" +
-    encodeURIComponent(text || "RAZTARA");
-}
-
-/* =========================================================
-   SMS
-========================================================= */
-
-function shareSMS(){
-
-  const {
-    text,
-    url
-  } =
-    getShareData(
-      shareTargetMessage
-    );
-
-  const body =
-    [text,url]
-      .filter(Boolean)
-      .join("\n");
-
-  closeModal("shareModal");
-
-  location.href =
-    "sms:&body=" +
-    encodeURIComponent(body);
-}
-
-/* =========================================================
-   EMAIL
-========================================================= */
-
-function shareEmail(){
-
-  const {
-    text,
-    url
-  } =
-    getShareData(
-      shareTargetMessage
-    );
-
-  const body =
-    [text,url]
-      .filter(Boolean)
-      .join("\n");
-
-  closeModal("shareModal");
-
-  location.href =
-    "mailto:?subject=" +
-    encodeURIComponent(
-      "RAZTARA"
-    ) +
-    "&body=" +
-    encodeURIComponent(body);
-}
-
-/* =========================================================
-   FACEBOOK
-========================================================= */
-
-function shareFacebook(){
-
-  const {
-    text,
-    url
-  } =
-    getShareData(
-      shareTargetMessage
-    );
-
-  closeModal("shareModal");
-
-  if(url){
-
-    location.href =
-      "https://www.facebook.com/sharer/sharer.php?u=" +
-      encodeURIComponent(url);
-
-    return;
-  }
-
-  /*
-    Facebook does not provide a universal
-    text-sharing URL for arbitrary text.
-    Use iPhone Share Sheet instead.
-  */
-
-  setTimeout(
-    () => shareNative(),
-    100
-  );
-}
-
-/* =========================================================
-   INTERNAL RAZTARA FORWARD
-========================================================= */
-
-async function openForwardUsers(){
-
-  closeModal("shareModal");
-
-  openModal("forwardModal");
-
-  $("shareUserList").innerHTML =
-    `<div class="loading">
-      User load হচ্ছে...
-    </div>`;
-
-  $("shareUserSearch").value = "";
-
-  try{
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("profiles")
-        .select(`
-          id,
-          username,
-          full_name,
-          avatar_url
-        `)
-        .neq("id",currentUser.id)
-        .order(
-          "full_name",
-          {
-            ascending:true,
-            nullsFirst:false
-          }
-        )
-        .limit(200);
-
-    if(error){
-      throw error;
-    }
-
-    shareUsers =
-      data || [];
-
-    renderShareUsers();
-
-  }catch(error){
-
-    console.error(error);
-
-    $("shareUserList").innerHTML =
-      `<div class="loading">
-        User list load করা যায়নি।
-      </div>`;
-  }
-}
-
-function filterShareUsers(){
-
-  renderShareUsers(
-    $("shareUserSearch").value
-  );
-}
-
-function renderShareUsers(search=""){
-
-  const list =
-    $("shareUserList");
-
-  const q =
-    String(search || "")
-      .trim()
-      .toLowerCase();
-
-  const filtered =
-    shareUsers.filter(user => {
-
-      const name =
-        (
-          user.full_name ||
-          ""
-        ).toLowerCase();
-
-      const username =
-        (
-          user.username ||
-          ""
-        ).toLowerCase();
-
-      return !q ||
-        name.includes(q) ||
-        username.includes(q);
-    });
-
-  if(!filtered.length){
-
-    list.innerHTML =
-      `<div class="loading">
-        কোনো user পাওয়া যায়নি।
-      </div>`;
-
-    return;
-  }
-
-  list.innerHTML =
-    filtered.map(user => {
-
-      const name =
-        user.full_name ||
-        user.username ||
-        "User";
-
-      const username =
-        user.username
-          ? "@" + user.username
-          : "";
-
-      const avatar =
-        user.avatar_url ||
-        "https://i.pravatar.cc/100?img=1";
-
-      return `
-        <button
-          class="shareUser"
-          onclick="forwardToUser('${user.id}')"
-        >
-
-          <img
-            class="shareUserAvatar"
-            src="${safeUrl(avatar)}"
-            alt=""
-          >
-
-          <div class="shareUserInfo">
-
-            <div class="shareUserName">
-              ${esc(name)}
-            </div>
-
-            <div class="shareUserUsername">
-              ${esc(username)}
-            </div>
-
-          </div>
-
-          <div>➤</div>
-
-        </button>
-      `;
-
-    }).join("");
-}
-
-async function forwardToUser(userId){
-
-  if(!shareTargetMessage){
-    return;
-  }
-
-  try{
-
-    const {
-      data:targetConversation,
-      error:conversationError
-    } =
-      await supabaseClient.rpc(
-        "get_or_create_direct_conversation",
-        {
-          other_user_id:userId
-        }
-      );
-
-    if(conversationError){
-      throw conversationError;
-    }
-
-    const message =
-      shareTargetMessage;
-
-    /*
-      Existing message schema ব্যবহার করছি।
-      কোনো নতুন forwarded column দরকার নেই।
-    */
-
-    let content =
-      message.content || null;
-
-    /*
-      Location JSON unchanged রাখা হচ্ছে,
-      যাতে receiver আবার map খুলতে পারে।
-    */
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("messages")
-        .insert({
-          conversation_id:
-            targetConversation,
-
-          sender_id:
-            currentUser.id,
-
-          content:content,
-
-          message_type:
-            message.message_type ||
-            "text",
-
-          file_url:
-            message.file_url ||
-            null,
-
-          is_read:false
-        });
-
-    if(error){
-      throw error;
-    }
-
-    closeModal(
-      "forwardModal"
-    );
-
-    toast(
-      "RAZTARA-তে Forward হয়েছে ✓"
-    );
-
-  }catch(error){
-
-    console.error(error);
-
-    if(
-      String(error?.message || "")
-        .toLowerCase()
-        .includes("blocked")
-    ){
-
-      toast(
-        "এই user-এর সাথে যোগাযোগ বন্ধ আছে"
-      );
-
-    }else{
-
-      toast(
-        error?.message ||
-        "Forward করা যায়নি"
-      );
-    }
-  }
-}
-
-/* =========================================================
-   DELETE MESSAGE — ONLY ME
-========================================================= */
-
-async function deleteSelectedMessageOnlyMe(){
-
-  if(!selectedMessage){
-    return;
-  }
-
-  const message =
-    selectedMessage;
-
-  selectedMessage = null;
-
-  closeModal(
-    "messageOptionsModal"
-  );
-
-  try{
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("message_user_deletions")
-        .upsert(
-          {
-            message_id:
-              message.id,
-
-            user_id:
-              currentUser.id
-          },
-          {
-            onConflict:
-              "message_id,user_id"
-          }
-        );
-
-    if(error){
-      throw error;
-    }
-
-    messagesCache.delete(
-      message.id
-    );
-
-    const row =
-      document.querySelector(
-        `[data-message-id="${message.id}"]`
-      );
-
-    if(row){
-      row.remove();
-    }
-
-    if(
-      !$("messagesInner")
-        .querySelector(".messageRow")
-    ){
-
-      $("messagesInner").innerHTML =
-        `<div class="emptyChat">
-          এখন কোনো message নেই।
-        </div>`;
-    }
-
-    toast(
-      "Message আপনার chat থেকে মুছে গেছে"
-    );
-
-  }catch(error){
-
-    console.error(error);
-
-    toast(
-      error?.message ||
-      "Message delete করা যায়নি"
-    );
-  }
-}
-
-/* =========================================================
-   DELETE MESSAGE — EVERYONE
-========================================================= */
-
-async function deleteSelectedMessageForEveryone(){
-
-  if(!selectedMessage){
-    return;
-  }
-
-  const message =
-    selectedMessage;
-
-  if(
-    message.sender_id !==
-    currentUser.id
-  ){
-
-    toast(
-      "শুধু নিজের message সবার জন্য delete করা যাবে"
-    );
-
-    return;
-  }
-
-  selectedMessage = null;
-
-  closeModal(
-    "messageOptionsModal"
-  );
-
-  try{
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.rpc(
-        "delete_message_for_everyone",
-        {
-          p_message_id:
-            message.id
-        }
-      );
-
-    if(error){
-      throw error;
-    }
-
-    if(data !== true){
-
-      throw new Error(
-        "Message delete করার অনুমতি নেই"
-      );
-    }
-
-    messagesCache.delete(
-      message.id
-    );
-
-    const row =
-      document.querySelector(
-        `[data-message-id="${message.id}"]`
-      );
-
-    if(row){
-      row.remove();
-    }
-
-    toast(
-      "Message সবার জন্য delete হয়েছে"
-    );
-
-  }catch(error){
-
-    console.error(error);
-
-    toast(
-      error?.message ||
-      "Everyone-এর জন্য delete করা যায়নি"
-    );
-  }
-}
-
-/* =========================================================
-   DELETE CHAT
-========================================================= */
-
-function deleteChatDialog(){
-
-  closeMenus();
-
-  openModal(
-    "deleteChatModal"
-  );
-}
-
-async function deleteChatOnlyMe(){
-
-  closeModal(
-    "deleteChatModal"
-  );
-
-  try{
-
-    const ids =
-      [...messagesCache.keys()];
-
-    if(ids.length){
-
-      const rows =
-        ids.map(id => ({
-          message_id:id,
-          user_id:currentUser.id
-        }));
-
-      const {
-        error
-      } =
-        await supabaseClient
-          .from("message_user_deletions")
-          .upsert(
-            rows,
-            {
-              onConflict:
-                "message_id,user_id"
-            }
-          );
-
-      if(error){
-        throw error;
-      }
-    }
-
-    const {
-      error:memberError
-    } =
-      await supabaseClient
-        .from("conversation_members")
-        .delete()
-        .eq(
-          "conversation_id",
-          conversationId
-        )
-        .eq(
-          "user_id",
-          currentUser.id
-        );
-
-    if(memberError){
-      throw memberError;
-    }
-
-    toast(
-      "Chat আপনার জন্য delete হয়েছে"
-    );
-
-    setTimeout(
-      () => goBack(),
-      500
-    );
-
-  }catch(error){
-
-    console.error(error);
-
-    toast(
-      error?.message ||
-      "Chat delete করা যায়নি"
-    );
-  }
-}
-
-async function deleteChatForEveryone(){
-
-  closeModal(
-    "deleteChatModal"
-  );
-
-  try{
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.rpc(
-        "delete_conversation_for_everyone",
-        {
-          p_conversation_id:
-            conversationId
-        }
-      );
-
-    if(error){
-      throw error;
-    }
-
-    if(data !== true){
-
-      throw new Error(
-        "Chat delete করার অনুমতি নেই"
-      );
-    }
-
-    await supabaseClient
-      .from("conversation_members")
-      .delete()
-      .eq(
-        "conversation_id",
-        conversationId
-      )
-      .eq(
-        "user_id",
-        currentUser.id
-      );
-
-    toast(
-      "Chat সবার জন্য delete হয়েছে"
-    );
-
-    setTimeout(
-      () => goBack(),
-      500
-    );
-
-  }catch(error){
-
-    console.error(error);
-
-    toast(
-      error?.message ||
-      "Chat delete করা যায়নি"
-    );
-  }
-}
-
-/* =========================================================
-   FILE / IMAGE / VIDEO
-========================================================= */
-
-function toggleAttachMenu(){
-
-  $("attachMenu")
-    .classList.toggle("show");
-}
-
-function pickImage(){
-
-  closeMenus();
-
-  $("imageInput").click();
-}
-
-function pickVideo(){
-
-  closeMenus();
-
-  $("videoInput").click();
-}
-
-function pickFile(){
-
-  closeMenus();
-
-  $("fileInput").click();
-}
-
-async function handleFileSelect(input,type){
-
-  const file =
-    input.files?.[0];
-
-  input.value = "";
-
-  if(!file){
-    return;
-  }
-
-  if(isBlocked){
-
-    toast(
-      "Blocked user-কে message পাঠানো যাবে না"
-    );
-
-    return;
-  }
-
-  /*
-    6 MB limit
-  */
-
-  if(file.size > 6 * 1024 * 1024){
-
-    toast(
-      "File সর্বোচ্চ 6 MB হতে পারবে"
-    );
-
-    return;
-  }
-
-  try{
-
-    toast("Upload হচ্ছে...");
-
-    const ext =
-      (
-        file.name.split(".").pop() ||
-        "bin"
-      ).toLowerCase();
-
-    const path =
-      `${currentUser.id}/${conversationId}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
-
-    const {
-      error:uploadError
-    } =
-      await supabaseClient
-        .storage
-        .from(STORAGE_BUCKET)
-        .upload(
-          path,
-          file,
-          {
-            cacheControl:"3600",
-            upsert:false
-          }
-        );
-
-    if(uploadError){
-      throw uploadError;
-    }
-
-    const {
-      data:publicData
-    } =
-      supabaseClient
-        .storage
-        .from(STORAGE_BUCKET)
-        .getPublicUrl(path);
-
-    const fileUrl =
-      publicData.publicUrl;
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("messages")
-        .insert({
-          conversation_id:
-            conversationId,
-
-          sender_id:
-            currentUser.id,
-
-          content:
-            type === "file"
-              ? file.name
-              : null,
-
-          message_type:
-            type,
-
-          file_url:
-            fileUrl,
-
-          is_read:false
-        });
-
-    if(error){
-      throw error;
-    }
-
-  }catch(error){
-
-    console.error(error);
-
-    if(
-      String(error?.message || "")
-        .toLowerCase()
-        .includes("blocked")
-    ){
-
-      toast(
-        "User blocked আছে"
-      );
-
-    }else{
-
-      toast(
-        error?.message ||
-        "Upload করা যায়নি"
-      );
-    }
-  }
-}
-
-/* =========================================================
-   SEND TEXT
-========================================================= */
-
-async function sendMessage(){
-
-  const input =
-    $("messageInput");
-
-  const content =
-    input.value.trim();
-
-  if(!content){
-    return;
-  }
-
-  if(isBlocked){
-
-    toast(
-      "Blocked user-কে message পাঠানো যাবে না"
-    );
-
-    return;
-  }
-
-  input.value = "";
-
-  try{
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("messages")
-        .insert({
-          conversation_id:
-            conversationId,
-
-          sender_id:
-            currentUser.id,
-
-          content:
-            content,
-
-          message_type:
-            "text",
-
-          file_url:null,
-
-          is_read:false
-        });
-
-    if(error){
-      throw error;
-    }
-
-  }catch(error){
-
-    console.error(error);
-
-    input.value =
-      content;
-
-    toast(
-      error?.message ||
-      "Message send করা যায়নি"
-    );
-  }
-}
-
-/* =========================================================
-   LOCATION
-========================================================= */
-
-function sendLocation(){
-
-  closeMenus();
-
-  if(isBlocked){
-
-    toast(
-      "Blocked user-কে location পাঠানো যাবে না"
-    );
-
-    return;
-  }
-
-  if(!navigator.geolocation){
-
-    toast(
-      "Location আপনার browser support করে না"
-    );
-
-    return;
-  }
-
-  toast(
-    "Location নেওয়া হচ্ছে..."
-  );
-
-  navigator.geolocation.getCurrentPosition(
-    async position => {
-
-      try{
-
-        const lat =
-          position.coords.latitude;
-
-        const lng =
-          position.coords.longitude;
-
-        const {
-          error
-        } =
-          await supabaseClient
-            .from("messages")
-            .insert({
-              conversation_id:
-                conversationId,
-
-              sender_id:
-                currentUser.id,
-
-              content:
-                JSON.stringify({
-                  lat,
-                  lng
-                }),
-
-              message_type:
-                "location",
-
-              file_url:null,
-
-              is_read:false
-            });
-
-        if(error){
-          throw error;
-        }
-
-      }catch(error){
-
-        console.error(error);
-
-        toast(
-          error?.message ||
-          "Location পাঠানো যায়নি"
-        );
-      }
-    },
-
-    error => {
-
-      console.error(error);
-
-      toast(
-        "Location permission দিন"
-      );
-    },
-
-    {
-      enableHighAccuracy:true,
-      timeout:10000,
-      maximumAge:0
-    }
-  );
-}
-
-/* =========================================================
-   VOICE RECORDING
-========================================================= */
-
-function getSupportedAudioMime(){
-
-  const types = [
-
-    /*
-      iPhone/Safari first
-    */
-
-    "audio/mp4",
-
-    "audio/aac",
-
-    /*
-      Other browsers
-    */
-
-    "audio/webm;codecs=opus",
-
-    "audio/webm",
-
-    "audio/ogg;codecs=opus",
-
-    "audio/ogg"
-
-  ];
-
-  if(
-    !window.MediaRecorder
-  ){
-    return "";
-  }
-
-  for(const type of types){
-
-    try{
-
-      if(
-        MediaRecorder.isTypeSupported(type)
-      ){
-        return type;
-      }
-
-    }catch{}
-  }
-
-  return "";
-}
-
-async function toggleVoiceRecording(){
-
-  if(mediaRecorder){
-
-    stopVoiceRecording();
-
-  }else{
-
-    await startVoiceRecording();
-  }
-}
-
-async function startVoiceRecording(){
-
-  if(isBlocked){
-
-    toast(
-      "Blocked user-কে voice পাঠানো যাবে না"
-    );
-
-    return;
-  }
-
-  if(
-    !navigator.mediaDevices ||
-    !navigator.mediaDevices.getUserMedia
-  ){
-
-    toast(
-      "এই browser-এ microphone support নেই"
-    );
-
-    return;
-  }
-
-  if(
-    !window.MediaRecorder
-  ){
-
-    toast(
-      "এই iPhone/browser-এ voice recording support নেই"
-    );
-
-    return;
-  }
-
-  try{
-
-    mediaStream =
-      await navigator.mediaDevices.getUserMedia({
-        audio:{
-          echoCancellation:true,
-          noiseSuppression:true,
-          autoGainControl:true
-        }
-      });
-
-    recordingMime =
-      getSupportedAudioMime();
-
-    if(!recordingMime){
-
-      mediaStream
-        .getTracks()
-        .forEach(
-          track => track.stop()
-        );
-
-      mediaStream = null;
-
-      toast(
-        "Audio format support পাওয়া যায়নি"
-      );
-
-      return;
-    }
-
-    recordedChunks = [];
-
-    const options = {
-      mimeType:
-        recordingMime
-    };
-
-    mediaRecorder =
-      new MediaRecorder(
-        mediaStream,
-        options
-      );
-
-    mediaRecorder.ondataavailable =
-      event => {
-
-        if(
-          event.data &&
-          event.data.size
-        ){
-
-          recordedChunks.push(
-            event.data
-          );
-        }
-      };
-
-    mediaRecorder.onerror =
-      event => {
-
-        console.error(
-          "Recorder error:",
-          event
-        );
-
-        toast(
-          "Voice recording error"
-        );
-      };
-
-    mediaRecorder.onstop =
-      async () => {
-
-        const chunks =
-          [...recordedChunks];
-
-        const mime =
-          recordingMime ||
-          mediaRecorder?.mimeType ||
-          "audio/mp4";
-
-        cleanupRecorder();
-
-        if(!chunks.length){
-
-          toast(
-            "কোনো voice পাওয়া যায়নি"
-          );
-
-          return;
-        }
-
-        const blob =
-          new Blob(
-            chunks,
-            {
-              type:mime
-            }
-          );
-
-        await uploadVoice(
-          blob,
-          mime
-        );
-      };
-
-    mediaRecorder.start(
-      250
-    );
-
-    $("voiceBtn")
-      .classList.add("recording");
-
-    $("voiceBtn").textContent =
-      "⏹";
-
-    toast(
-      "Recording চলছে..."
-    );
-
-  }catch(error){
-
-    console.error(error);
-
-    cleanupRecorder();
-
-    if(
-      error?.name ===
-      "NotAllowedError"
-    ){
-
-      toast(
-        "Microphone permission দিন"
-      );
-
-    }else{
-
-      toast(
-        "Voice recording শুরু করা যায়নি"
-      );
-    }
-  }
-}
-
-function stopVoiceRecording(){
-
-  if(!mediaRecorder){
-    return;
-  }
-
-  try{
-
-    if(
-      mediaRecorder.state !==
-      "inactive"
-    ){
-
-      mediaRecorder.stop();
-    }
-
-  }catch(error){
-
-    console.error(error);
-
-    cleanupRecorder();
-  }
-}
-
-function cleanupRecorder(){
-
-  $("voiceBtn")
-    .classList.remove("recording");
-
-  $("voiceBtn").textContent =
-    "🎤";
-
-  if(mediaStream){
-
-    mediaStream
-      .getTracks()
-      .forEach(
-        track => track.stop()
-      );
-  }
-
-  mediaStream = null;
-
-  mediaRecorder = null;
-}
-
-async function uploadVoice(blob,mime){
-
-  if(isBlocked){
-
-    toast(
-      "User blocked আছে"
-    );
-
-    return;
-  }
-
-  try{
-
-    toast(
-      "Voice upload হচ্ছে..."
-    );
-
-    let extension = "m4a";
-
-    if(
-      mime.includes("webm")
-    ){
-      extension = "webm";
-    }else if(
-      mime.includes("ogg")
-    ){
-      extension = "ogg";
-    }else if(
-      mime.includes("aac")
-    ){
-      extension = "aac";
-    }
-
-    const path =
-      `${currentUser.id}/${conversationId}/voice-${Date.now()}-${crypto.randomUUID()}.${extension}`;
-
-    const {
-      error:uploadError
-    } =
-      await supabaseClient
-        .storage
-        .from(STORAGE_BUCKET)
-        .upload(
-          path,
-          blob,
-          {
-            cacheControl:"3600",
-            upsert:false,
-            contentType:mime
-          }
-        );
-
-    if(uploadError){
-      throw uploadError;
-    }
-
-    const {
-      data
-    } =
-      supabaseClient
-        .storage
-        .from(STORAGE_BUCKET)
-        .getPublicUrl(path);
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("messages")
-        .insert({
-          conversation_id:
-            conversationId,
-
-          sender_id:
-            currentUser.id,
-
-          content:null,
-
-          message_type:
-            "audio",
-
-          file_url:
-            data.publicUrl,
-
-          is_read:false
-        });
-
-    if(error){
-      throw error;
-    }
-
-  }catch(error){
-
-    console.error(error);
-
-    toast(
-      error?.message ||
-      "Voice send করা যায়নি"
-    );
-  }
-}
-
-/* =========================================================
-   INPUT + ENTER
-========================================================= */
-
-function setupInput(){
-
-  const input =
-    $("messageInput");
-
-  input.addEventListener(
-    "keydown",
-    event => {
-
-      if(
-        event.key === "Enter" &&
-        !event.shiftKey
-      ){
-
-        event.preventDefault();
-
-        sendMessage();
-      }
-    }
-  );
-
-  input.addEventListener(
-    "input",
-    handleTyping
-  );
-}
-
-/* =========================================================
-   TYPING
-========================================================= */
-
-function setupTyping(){
-
-  if(typingChannel){
-    supabaseClient.removeChannel(
-      typingChannel
-    );
-  }
-
-  typingChannel =
-    supabaseClient
-      .channel(
-        "raztara-typing:" +
-        conversationId
-      )
-      .on(
-        "broadcast",
-        {
-          event:"typing"
-        },
-        payload => {
-
-          if(
-            payload?.payload?.user_id ===
-            currentUser.id
-          ){
-            return;
-          }
-
-          if(
-            payload?.payload?.typing
-          ){
-
-            showTyping();
-
-          }else{
-
-            restoreStatus();
-          }
-        }
-      )
-      .subscribe();
-}
-
-function handleTyping(){
-
-  if(!typingChannel){
-    return;
-  }
-
-  if(!typingSent){
-
-    typingSent = true;
-
-    typingChannel.send({
-      type:"broadcast",
-      event:"typing",
-      payload:{
-        user_id:
-          currentUser.id,
-
-        typing:true
-      }
-    });
-  }
-
-  clearTimeout(
-    typingTimer
-  );
-
-  typingTimer =
-    setTimeout(() => {
-
-      typingSent = false;
-
-      typingChannel.send({
-        type:"broadcast",
-        event:"typing",
-        payload:{
-          user_id:
-            currentUser.id,
-
-          typing:false
-        }
-      });
-
-    },1000);
-}
-
-function showTyping(){
-
-  $("chatUserStatus").textContent =
-    "Typing...";
-
-  clearTimeout(
-    $("chatUserStatus")._typingTimer
-  );
-
-  $("chatUserStatus")._typingTimer =
-    setTimeout(
-      restoreStatus,
-      1800
-    );
-}
-
-function restoreStatus(){
-
-  updateStatusFromPresence();
-}
-
-/* =========================================================
-   PRESENCE
-========================================================= */
-
-function setupPresence(){
-
-  if(presenceChannel){
-
-    supabaseClient.removeChannel(
-      presenceChannel
-    );
-  }
-
-  presenceChannel =
-    supabaseClient
-      .channel(
-        "raztara-online",
-        {
-          config:{
-            presence:{
-              key:
-                currentUser.id
-            }
-          }
-        }
-      )
-      .on(
-        "presence",
-        {
-          event:"sync"
-        },
-        updateStatusFromPresence
-      )
-      .on(
-        "presence",
-        {
-          event:"join"
-        },
-        updateStatusFromPresence
-      )
-      .on(
-        "presence",
-        {
-          event:"leave"
-        },
-        updateStatusFromPresence
-      )
-      .subscribe(
-        async status => {
-
-          if(
-            status === "SUBSCRIBED"
-          ){
-
-            await presenceChannel.track({
-              user_id:
-                currentUser.id,
-
-              online_at:
-                new Date().toISOString()
-            });
-
-            updateStatusFromPresence();
-          }
-        }
-      );
-}
-
-function updateStatusFromPresence(){
-
-  if(!otherUser){
-    return;
-  }
-
-  if(
-    $("chatUserStatus").textContent ===
-    "Typing..."
-  ){
-    return;
-  }
-
-  let online = false;
-
-  try{
-
-    if(presenceChannel){
-
-      const state =
-        presenceChannel
-          .presenceState();
-
-      online =
-        !!state[
-          otherUserId
-        ];
-    }
-
-  }catch{}
-
-  if(online){
-
-    $("chatUserStatus").textContent =
-      "Online";
-
-    return;
-  }
-
-  const lastSeen =
-    otherUser.last_seen_at;
-
-  if(lastSeen){
-
-    $("chatUserStatus").textContent =
-      "Last seen " +
-      formatLastSeen(lastSeen);
-
-  }else{
-
-    $("chatUserStatus").textContent =
-      "Offline";
-  }
-}
-
-function formatLastSeen(date){
-
-  const d =
-    new Date(date);
-
-  return d.toLocaleString(
-    "bn-BD",
-    {
-      day:"numeric",
-      month:"short",
-      hour:"numeric",
-      minute:"2-digit"
-    }
-  );
-}
-
-/* =========================================================
-   LAST SEEN
-========================================================= */
-
-async function updateMyLastSeen(){
-
-  if(!currentUser){
-    return;
-  }
-
-  try{
-
-    await supabaseClient
-      .from("profiles")
-      .update({
-        last_seen_at:
-          new Date().toISOString()
-      })
-      .eq(
-        "id",
-        currentUser.id
-      );
-
-  }catch(error){
-
-    console.error(
-      "last seen:",
-      error
-    );
-  }
-}
-
-/* =========================================================
-   CALL REQUEST
-========================================================= */
-
-async function startCall(){
-
-  closeMenus();
-
-  if(isBlocked){
-
-    toast(
-      "Blocked user-কে call request পাঠানো যাবে না"
-    );
-
-    return;
-  }
-
-  try{
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("calls")
-        .insert({
-          conversation_id:
-            conversationId,
-
-          caller_id:
-            currentUser.id,
-
-          receiver_id:
-            otherUserId,
-
-          call_type:
-            "audio",
-
-          status:
-            "ringing",
-
-          started_at:
-            new Date().toISOString()
-        });
-
-    if(error){
-      throw error;
-    }
-
-    toast(
-      "Call Request পাঠানো হয়েছে 📞"
-    );
-
-  }catch(error){
-
-    console.error(error);
-
-    if(
-      String(error?.message || "")
-        .toLowerCase()
-        .includes("blocked")
-    ){
-
-      toast(
-        "Blocked user-কে call request দেওয়া যাবে না"
-      );
-
-    }else{
-
-      toast(
-        error?.message ||
-        "Call Request পাঠানো যায়নি"
-      );
-    }
-  }
-}
-
-/* =========================================================
-   PROFILE
-========================================================= */
-
-function viewProfile(){
-
-  closeMenus();
-
-  location.href =
-    "user-profile.html?user=" +
-    encodeURIComponent(
-      otherUserId
-    );
-}
-
-function openUserProfilePhoto(){
-
-  if(!otherUser?.avatar_url){
-    return;
-  }
-
-  $("bigPhoto").src =
-    otherUser.avatar_url;
-
-  openModal(
-    "photoModal"
-  );
-}
-
-function openMedia(url){
-
-  if(!url){
-    return;
-  }
-
-  /*
-    Image-এর জন্য simple browser view.
-  */
-
-  window.open(
-    safeUrl(url),
-    "_blank",
-    "noopener"
-  );
-}
-
-/* =========================================================
-   CHAT MENU
-========================================================= */
-
-function toggleChatMenu(event){
-
-  event?.stopPropagation();
-
-  $("attachMenu")
-    .classList.remove("show");
-
-  $("chatMenu")
-    .classList.toggle("show");
-}
-
-function setupOutsideClick(){
-
-  document.addEventListener(
-    "click",
-    event => {
-
-      const menu =
-        $("chatMenu");
-
-      const attach =
-        $("attachMenu");
-
-      if(
-        !menu.contains(event.target) &&
-        !event.target.closest(".headerBtn")
-      ){
-
-        menu.classList.remove(
-          "show"
-        );
-      }
-
-      if(
-        !attach.contains(event.target) &&
-        !event.target.closest(".attachBtn")
-      ){
-
-        attach.classList.remove(
-          "show"
-        );
-      }
-    }
-  );
-
-  document
-    .querySelectorAll(".modalBackdrop")
-    .forEach(backdrop => {
-
-      backdrop.addEventListener(
-        "click",
-        event => {
-
-          if(
-            event.target ===
-            backdrop
-          ){
-
-            backdrop.classList.remove(
-              "show"
+            toastElement.classList.remove(
+                "show"
             );
-          }
-        }
-      );
-    });
+
+        }, 2500);
+
 }
 
-/* =========================================================
-   iPHONE KEYBOARD
-========================================================= */
 
-function setupKeyboardHandling(){
-
-  const viewport =
-    window.visualViewport;
-
-  if(!viewport){
-    return;
-  }
-
-  const update =
-    () => {
-
-      const keyboard =
-        Math.max(
-          0,
-          window.innerHeight -
-          viewport.height -
-          viewport.offsetTop
-        );
-
-      /*
-        Small values are browser UI,
-        not keyboard.
-      */
-
-      const offset =
-        keyboard > 80
-          ? keyboard
-          : 0;
-
-      document.documentElement
-        .style
-        .setProperty(
-          "--keyboard-offset",
-          offset + "px"
-        );
-
-      requestAnimationFrame(
-        () => {
-
-          const messages =
-            $("messages");
-
-          if(messages){
-
-            messages.scrollTop =
-              messages.scrollHeight;
-          }
-        }
-      );
-    };
-
-  viewport.addEventListener(
-    "resize",
-    update
-  );
-
-  viewport.addEventListener(
-    "scroll",
-    update
-  );
-
-  update();
-}
-
-/* =========================================================
-   SCROLL
-========================================================= */
-
-function scrollToBottom(){
-
-  requestAnimationFrame(() => {
-
-    const el =
-      $("messages");
-
-    if(el){
-
-      el.scrollTop =
-        el.scrollHeight;
-    }
-  });
-}
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
+/* =========================
+   BACK
+========================= */
 
 function goBack(){
 
-  if(
-    document.referrer &&
-    history.length > 1
-  ){
+    if(
+        document.referrer &&
+        history.length > 1
+    ){
 
-    history.back();
+        history.back();
 
-  }else{
+    }else{
 
-    location.href =
-      "index.html";
-  }
+        window.location.href =
+            "index.html";
+
+    }
+
 }
 
-/* =========================================================
-   CLEANUP
-========================================================= */
+
+/* =========================
+   MENU
+========================= */
+
+function toggleMenu(){
+
+    if(!menuOverlay){
+
+        return;
+
+    }
+
+
+    menuOverlay.classList.toggle(
+        "show"
+    );
+
+}
+
+
+function closeMenus(event){
+
+    if(
+        event &&
+        event.target !== menuOverlay
+    ){
+
+        return;
+
+    }
+
+
+    if(menuOverlay){
+
+        menuOverlay.classList.remove(
+            "show"
+        );
+
+    }
+
+}
+
+
+/* =========================
+   VIEW PROFILE
+========================= */
+
+function viewProfile(){
+
+    closeMenus();
+
+
+    if(!otherUserId){
+
+        showToast(
+            getLanguage() === "bn"
+            ? "ব্যবহারকারী পাওয়া যায়নি।"
+            : "User not found."
+        );
+
+        return;
+
+    }
+
+
+    window.location.href =
+        "user-profile.html?user=" +
+        encodeURIComponent(
+            otherUserId
+        );
+
+}
+
+
+/* =========================
+   FILE PICKER
+========================= */
+
+function openFilePicker(){
+
+    if(fileInput){
+
+        fileInput.click();
+
+    }
+
+}
+
+
+/* =========================
+   AUTO RESIZE INPUT
+========================= */
+
+function resizeMessageInput(){
+
+    if(!messageInput){
+
+        return;
+
+    }
+
+
+    messageInput.style.height =
+        "auto";
+
+
+    messageInput.style.height =
+        Math.min(
+            messageInput.scrollHeight,
+            120
+        ) + "px";
+
+}
+
+
+messageInput.addEventListener(
+    "input",
+    resizeMessageInput
+);
+
+
+/* =========================
+   ENTER TO SEND
+========================= */
+
+messageInput.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.key === "Enter" &&
+            !event.shiftKey
+        ){
+
+            event.preventDefault();
+
+            sendMessage();
+
+        }
+
+    }
+);
+
+
+/* =========================
+   LANGUAGE CHANGE
+========================= */
 
 window.addEventListener(
-  "pagehide",
-  async () => {
+    "storage",
+    function(event){
+
+        if(
+            event.key ===
+            "raztara_language"
+        ){
+
+            applyLanguage();
+
+            rerenderDateSeparators();
+
+        }
+
+    }
+);
+
+
+/* =========================
+   DATE SEPARATOR RERENDER
+========================= */
+
+function rerenderDateSeparators(){
+
+    document
+        .querySelectorAll(
+            ".dateSeparator"
+        )
+        .forEach(separator => {
+
+            const span =
+                separator.querySelector(
+                    "span"
+                );
+
+            if(!span){
+
+                return;
+
+            }
+
+            /*
+             * The actual date is not stored
+             * inside the separator yet.
+             * Full message rendering in Part 2
+             * will create it correctly.
+             */
+
+        });
+
+}
+
+
+/* =========================
+   CALL PLACEHOLDERS
+   FULL LOGIC IN PART 3
+========================= */
+
+function startCall(){
+
+    closeMenus();
+
+    showToast(
+        getLanguage() === "bn"
+        ? "কল সিস্টেম পরের অংশে যুক্ত হবে।"
+        : "Call system will be connected."
+    );
+
+}
+
+
+function startVideoCall(){
+
+    closeMenus();
+
+    showToast(
+        getLanguage() === "bn"
+        ? "ভিডিও কল সিস্টেম পরের অংশে যুক্ত হবে।"
+        : "Video call system will be connected."
+    );
+
+}
+
+
+/* =========================
+   FILE PLACEHOLDER
+   FULL LOGIC IN PART 2
+========================= */
+
+function handleFileSelected(event){
+
+    const file =
+        event.target.files &&
+        event.target.files[0];
+
+
+    if(!file){
+
+        return;
+
+    }
+
+
+    showToast(
+        getLanguage() === "bn"
+        ? "ফাইল প্রস্তুত হচ্ছে..."
+        : "Preparing file..."
+    );
+
+}
+
+
+/* =========================
+   VOICE PLACEHOLDER
+   FULL LOGIC IN PART 2
+========================= */
+
+function toggleVoiceRecording(){
+
+    showToast(
+        getLanguage() === "bn"
+        ? "ভয়েস রেকর্ডিং পরের অংশে সম্পূর্ণ হবে।"
+        : "Voice recording will be completed."
+    );
+
+}
+
+
+function cancelRecording(){
+
+    if(
+        mediaRecorder &&
+        mediaRecorder.state !== "inactive"
+    ){
+
+        mediaRecorder.stop();
+
+    }
+
+
+    recordedChunks = [];
+
+    isRecording = false;
+
+
+    const recordingBar =
+        document.getElementById(
+            "recordingBar"
+        );
+
+
+    if(recordingBar){
+
+        recordingBar.classList.remove(
+            "show"
+        );
+
+    }
+
+}
+
+
+/* =========================
+   SEND PLACEHOLDER
+   FULL LOGIC IN PART 2
+========================= */
+
+async function sendMessage(){
+
+    const text =
+        messageInput.value.trim();
+
+
+    if(!text){
+
+        return;
+
+    }
+
+
+    showToast(
+        getLanguage() === "bn"
+        ? "মেসেজ পাঠানোর সিস্টেম পরের অংশে যুক্ত হবে।"
+        : "Message sending will be connected."
+    );
+
+}
+
+
+/* =========================
+   BLOCK PLACEHOLDERS
+   FULL LOGIC IN PART 3
+========================= */
+
+function updateBlockButtonText(){
+
+    const element =
+        document.getElementById(
+            "blockButtonText"
+        );
+
+
+    if(!element){
+
+        return;
+
+    }
+
+
+    element.textContent =
+        isBlocked
+        ? t("unblock")
+        : t("block");
+
+}
+
+
+function toggleBlockUser(){
+
+    closeMenus();
+
+    showToast(
+        getLanguage() === "bn"
+        ? "ব্লক সিস্টেম পরের অংশে যুক্ত হবে।"
+        : "Block system will be connected."
+    );
+
+}
+
+
+/* =========================
+   DELETE PLACEHOLDER
+   FULL LOGIC IN PART 3
+========================= */
+
+function deleteChat(){
+
+    closeMenus();
+
+    showToast(
+        getLanguage() === "bn"
+        ? "চ্যাট মুছে ফেলার সিস্টেম পরের অংশে যুক্ত হবে।"
+        : "Delete chat system will be connected."
+    );
+
+}
+
+
+/* =========================
+   INITIAL LANGUAGE
+========================= */
+
+applyLanguage();
+
+/* =====================================================
+   PART 2
+   SUPABASE + CHAT DATA + MESSAGE + FILE + VOICE
+===================================================== */
+
+
+/* =========================
+   SUPABASE CLIENT
+========================= */
+
+let supabaseClient = null;
+
+
+/* =========================
+   LOAD SUPABASE LIBRARY
+========================= */
+
+function loadSupabaseLibrary(){
+
+    return new Promise((resolve,reject)=>{
+
+        if(window.supabase){
+
+            resolve();
+
+            return;
+
+        }
+
+
+        const script =
+            document.createElement("script");
+
+        script.src =
+            "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+
+        script.onload = () => {
+
+            try{
+
+                supabaseClient =
+                    window.supabase.createClient(
+                        SUPABASE_URL,
+                        SUPABASE_KEY
+                    );
+
+                resolve();
+
+            }catch(error){
+
+                reject(error);
+
+            }
+
+        };
+
+
+        script.onerror = () => {
+
+            reject(
+                new Error(
+                    "Supabase library load failed."
+                )
+            );
+
+        };
+
+
+        document.head.appendChild(
+            script
+        );
+
+    });
+
+}
+
+
+/* =========================
+   INIT SUPABASE
+========================= */
+
+async function initSupabase(){
 
     try{
 
-      if(presenceChannel){
+        await loadSupabaseLibrary();
 
-        await presenceChannel.untrack();
-      }
 
-    }catch{}
-  }
+        if(!supabaseClient){
+
+            supabaseClient =
+                window.supabase.createClient(
+                    SUPABASE_URL,
+                    SUPABASE_KEY
+                );
+
+        }
+
+
+        return true;
+
+    }catch(error){
+
+        console.error(
+            "Supabase init error:",
+            error
+        );
+
+
+        showToast(
+            getLanguage() === "bn"
+            ? "সার্ভার সংযোগ করা যায়নি।"
+            : "Server connection failed."
+        );
+
+
+        return false;
+
+    }
+
+}
+
+
+/* =========================
+   AUTH USER
+========================= */
+
+async function getCurrentUser(){
+
+    if(!supabaseClient){
+
+        return null;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .auth
+            .getUser();
+
+
+    if(error){
+
+        console.error(
+            "Auth user error:",
+            error
+        );
+
+        return null;
+
+    }
+
+
+    return data?.user || null;
+
+}
+
+
+/* =========================
+   LOAD OTHER USER PROFILE
+========================= */
+
+async function loadOtherUser(){
+
+    if(!otherUserId){
+
+        throw new Error(
+            "Chat user ID missing."
+        );
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select(
+                `
+                id,
+                username,
+                full_name,
+                avatar_url,
+                bio,
+                online_visibility,
+                last_seen_at
+                `
+            )
+            .eq(
+                "id",
+                otherUserId
+            )
+            .maybeSingle();
+
+
+    if(error){
+
+        throw error;
+
+    }
+
+
+    if(!data){
+
+        throw new Error(
+            "User profile not found."
+        );
+
+    }
+
+
+    otherUser = data;
+
+
+    renderOtherUser();
+
+
+    return data;
+
+}
+
+
+/* =========================
+   RENDER OTHER USER
+========================= */
+
+function renderOtherUser(){
+
+    if(!otherUser){
+
+        return;
+
+    }
+
+
+    const nameElement =
+        document.getElementById(
+            "otherUserName"
+        );
+
+
+    const avatarElement =
+        document.getElementById(
+            "otherUserAvatar"
+        );
+
+
+    const statusElement =
+        document.getElementById(
+            "otherUserStatus"
+        );
+
+
+    const displayName =
+        otherUser.full_name ||
+        otherUser.username ||
+        (
+            getLanguage() === "bn"
+            ? "ব্যবহারকারী"
+            : "User"
+        );
+
+
+    if(nameElement){
+
+        nameElement.textContent =
+            displayName;
+
+    }
+
+
+    if(avatarElement){
+
+        avatarElement.src =
+            otherUser.avatar_url ||
+            createAvatarPlaceholder(
+                displayName
+            );
+
+    }
+
+
+    if(statusElement){
+
+        statusElement.textContent =
+            formatLastSeen(
+                otherUser.last_seen_at
+            );
+
+    }
+
+}
+
+
+/* =========================
+   AVATAR PLACEHOLDER
+========================= */
+
+function createAvatarPlaceholder(name){
+
+    const first =
+        String(name || "U")
+            .trim()
+            .charAt(0)
+            .toUpperCase();
+
+
+    const svg = `
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="100"
+            height="100"
+            viewBox="0 0 100 100"
+        >
+            <rect
+                width="100"
+                height="100"
+                rx="50"
+                fill="#087f5b"
+            />
+
+            <text
+                x="50"
+                y="58"
+                text-anchor="middle"
+                font-size="42"
+                font-family="Arial"
+                fill="white"
+            >
+                ${escapeHtml(first)}
+            </text>
+        </svg>
+    `;
+
+
+    return (
+        "data:image/svg+xml;charset=UTF-8," +
+        encodeURIComponent(svg)
+    );
+
+}
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================
+   LAST SEEN
+========================= */
+
+function formatLastSeen(lastSeen){
+
+    if(!lastSeen){
+
+        return t("offline");
+
+    }
+
+
+    const date =
+        new Date(lastSeen);
+
+
+    if(Number.isNaN(date.getTime())){
+
+        return t("offline");
+
+    }
+
+
+    const diff =
+        Date.now() -
+        date.getTime();
+
+
+    if(diff < 2 * 60 * 1000){
+
+        return t("online");
+
+    }
+
+
+    const minutes =
+        Math.floor(
+            diff / 60000
+        );
+
+
+    if(minutes < 60){
+
+        return getLanguage() === "bn"
+
+            ? `${minutes} মিনিট আগে`
+
+            : `${minutes} min ago`;
+
+    }
+
+
+    const hours =
+        Math.floor(
+            minutes / 60
+        );
+
+
+    if(hours < 24){
+
+        return getLanguage() === "bn"
+
+            ? `${hours} ঘণ্টা আগে`
+
+            : `${hours} hr ago`;
+
+    }
+
+
+    return (
+        getLanguage() === "bn"
+        ? "অফলাইন"
+        : "Offline"
+    );
+
+}
+
+
+/* =========================
+   MESSAGE TABLE DETECTION
+========================= */
+
+const POSSIBLE_MESSAGE_TABLES = [
+
+    "messages",
+    "chat_messages"
+
+];
+
+
+let MESSAGE_TABLE = "messages";
+
+
+/* =========================
+   FIND MESSAGE TABLE
+========================= */
+
+async function findMessageTable(){
+
+    for(
+        const tableName
+        of POSSIBLE_MESSAGE_TABLES
+    ){
+
+        try{
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from(tableName)
+                    .select("*")
+                    .limit(1);
+
+
+            if(!error){
+
+                MESSAGE_TABLE =
+                    tableName;
+
+                return tableName;
+
+            }
+
+        }catch(error){
+
+            console.warn(
+                "Table check failed:",
+                tableName,
+                error
+            );
+
+        }
+
+    }
+
+
+    throw new Error(
+        "Message table not found."
+    );
+
+}
+
+
+/* =========================
+   NORMALIZE MESSAGE
+========================= */
+
+function normalizeMessage(row){
+
+    if(!row){
+
+        return null;
+
+    }
+
+
+    const senderId =
+        row.sender_id ??
+        row.from_user_id ??
+        row.user_id ??
+        row.sender;
+
+
+    const receiverId =
+        row.receiver_id ??
+        row.to_user_id ??
+        row.recipient_id ??
+        row.receiver;
+
+
+    const content =
+        row.content ??
+        row.message ??
+        row.text ??
+        "";
+
+
+    const createdAt =
+        row.created_at ??
+        row.sent_at ??
+        row.createdAt;
+
+
+    return {
+
+        ...row,
+
+        id:
+            row.id,
+
+        sender_id:
+            senderId,
+
+        receiver_id:
+            receiverId,
+
+        content:
+            content,
+
+        created_at:
+            createdAt
+
+    };
+
+}
+
+
+/* =========================
+   LOAD MESSAGES
+========================= */
+
+async function loadMessages(){
+
+    if(!currentUser){
+
+        return;
+
+    }
+
+
+    messagesArea.innerHTML = "";
+
+
+    lastRenderedDateKey =
+        null;
+
+
+    const loading =
+        document.createElement(
+            "div"
+        );
+
+    loading.className =
+        "chatLoading";
+
+    loading.textContent =
+        t("loading");
+
+    messagesArea.appendChild(
+        loading
+    );
+
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from(MESSAGE_TABLE)
+                .select("*")
+                .or(
+                    `and(sender_id.eq.${currentUser.id},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${currentUser.id})`
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending:true
+                    }
+                );
+
+
+        if(error){
+
+            throw error;
+
+        }
+
+
+        messages =
+            (data || [])
+                .map(normalizeMessage)
+                .filter(Boolean);
+
+
+        messagesArea.innerHTML = "";
+
+
+        if(!messages.length){
+
+            const empty =
+                document.createElement(
+                    "div"
+                );
+
+            empty.className =
+                "emptyChat";
+
+            empty.textContent =
+                t("noMessages");
+
+            messagesArea.appendChild(
+                empty
+            );
+
+            return;
+
+        }
+
+
+        messages.forEach(
+            message => {
+
+                renderMessage(
+                    message,
+                    false
+                );
+
+            }
+        );
+
+
+        scrollToBottom(false);
+
+
+    }catch(error){
+
+        console.error(
+            "Load messages error:",
+            error
+        );
+
+
+        messagesArea.innerHTML = "";
+
+
+        const errorBox =
+            document.createElement(
+                "div"
+            );
+
+        errorBox.className =
+            "emptyChat";
+
+        errorBox.textContent =
+            getLanguage() === "bn"
+
+            ? "মেসেজ লোড করা যায়নি।"
+
+            : "Could not load messages.";
+
+
+        messagesArea.appendChild(
+            errorBox
+        );
+
+    }
+
+}
+
+
+/* =========================
+   RENDER MESSAGE
+========================= */
+
+function renderMessage(
+    message,
+    shouldScroll = true
+){
+
+    if(!message){
+
+        return;
+
+    }
+
+
+    const createdAt =
+        message.created_at ||
+        new Date().toISOString();
+
+
+    const dateKey =
+        getDateKey(
+            createdAt
+        );
+
+
+    /*
+     * If the message is the first
+     * message of this day,
+     * create a date separator.
+     */
+
+    if(
+        lastRenderedDateKey !==
+        dateKey
+    ){
+
+        addDateSeparator(
+            createdAt
+        );
+
+    }
+
+
+    const mine =
+        String(message.sender_id) ===
+        String(currentUser.id);
+
+
+    const row =
+        document.createElement(
+            "div"
+        );
+
+    row.className =
+        "messageRow " +
+        (
+            mine
+            ? "mine"
+            : "theirs"
+        );
+
+
+    if(message.id){
+
+        row.dataset.messageId =
+            message.id;
+
+    }
+
+
+    const bubble =
+        document.createElement(
+            "div"
+        );
+
+    bubble.className =
+        "messageBubble";
+
+
+    const text =
+        document.createElement(
+            "div"
+        );
+
+    text.className =
+        "messageText";
+
+
+    text.textContent =
+        message.content || "";
+
+
+    bubble.appendChild(
+        text
+    );
+
+
+    const time =
+        document.createElement(
+            "div"
+        );
+
+    time.className =
+        "messageTime";
+
+
+    time.textContent =
+        formatTime(
+            createdAt
+        );
+
+
+    bubble.appendChild(
+        time
+    );
+
+
+    row.appendChild(
+        bubble
+    );
+
+
+    /*
+     * Remove empty placeholder
+     * when first real message arrives.
+     */
+
+    const empty =
+        messagesArea.querySelector(
+            ".emptyChat"
+        );
+
+
+    if(empty){
+
+        empty.remove();
+
+    }
+
+
+    messagesArea.appendChild(
+        row
+    );
+
+
+    if(shouldScroll){
+
+        scrollToBottom(true);
+
+    }
+
+}
+
+
+/* =========================
+   SCROLL BOTTOM
+========================= */
+
+function scrollToBottom(smooth = true){
+
+    requestAnimationFrame(() => {
+
+        messagesArea.scrollTo({
+
+            top:
+                messagesArea.scrollHeight,
+
+            behavior:
+                smooth
+                ? "smooth"
+                : "auto"
+
+        });
+
+    });
+
+}
+
+
+/* =========================
+   SEND TEXT MESSAGE
+========================= */
+
+async function sendMessage(){
+
+    if(!currentUser){
+
+        return;
+
+    }
+
+
+    if(!otherUserId){
+
+        return;
+
+    }
+
+
+    const text =
+        messageInput.value.trim();
+
+
+    if(!text){
+
+        return;
+
+    }
+
+
+    const sendButton =
+        document.getElementById(
+            "sendButton"
+        );
+
+
+    if(sendButton){
+
+        sendButton.disabled =
+            true;
+
+    }
+
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from(MESSAGE_TABLE)
+                .insert({
+
+                    sender_id:
+                        currentUser.id,
+
+                    receiver_id:
+                        otherUserId,
+
+                    content:
+                        text
+
+                })
+                .select()
+                .single();
+
+
+        if(error){
+
+            throw error;
+
+        }
+
+
+        messageInput.value = "";
+
+        resizeMessageInput();
+
+
+        /*
+         * Realtime normally renders
+         * the new message.
+         *
+         * If realtime is not ready,
+         * render it here.
+         */
+
+        if(data){
+
+            const exists =
+                messages.some(
+                    item =>
+                        String(item.id) ===
+                        String(data.id)
+                );
+
+
+            if(!exists){
+
+                const normalized =
+                    normalizeMessage(
+                        data
+                    );
+
+
+                messages.push(
+                    normalized
+                );
+
+
+                renderMessage(
+                    normalized,
+                    true
+                );
+
+            }
+
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Send message error:",
+            error
+        );
+
+
+        showToast(
+            getLanguage() === "bn"
+
+            ? "মেসেজ পাঠানো যায়নি।"
+
+            : "Message could not be sent."
+        );
+
+
+    }finally{
+
+        if(sendButton){
+
+            sendButton.disabled =
+                false;
+
+        }
+
+    }
+
+}
+
+
+/* =========================
+   FILE UPLOAD
+========================= */
+
+async function handleFileSelected(event){
+
+    const file =
+        event.target.files &&
+        event.target.files[0];
+
+
+    if(!file){
+
+        return;
+
+    }
+
+
+    if(!currentUser){
+
+        return;
+
+    }
+
+
+    /*
+     * Maximum 6 MB
+     */
+
+    const MAX_FILE_SIZE =
+        6 * 1024 * 1024;
+
+
+    if(file.size > MAX_FILE_SIZE){
+
+        showToast(
+
+            getLanguage() === "bn"
+
+            ? "ফাইল সর্বোচ্চ ৬ MB হতে পারবে।"
+
+            : "Maximum file size is 6 MB."
+
+        );
+
+
+        fileInput.value = "";
+
+        return;
+
+    }
+
+
+    try{
+
+        showToast(
+
+            getLanguage() === "bn"
+
+            ? "ফাইল আপলোড হচ্ছে..."
+
+            : "Uploading file..."
+
+        );
+
+
+        const safeName =
+            file.name
+                .replace(
+                    /[^a-zA-Z0-9._-]/g,
+                    "_"
+                );
+
+
+        const path =
+            `${currentUser.id}/${Date.now()}_${safeName}`;
+
+
+        const {
+            data:
+                uploadData,
+            error:
+                uploadError
+        } =
+            await supabaseClient
+                .storage
+                .from(STORAGE_BUCKET)
+                .upload(
+                    path,
+                    file,
+                    {
+                        upsert:false,
+
+                        contentType:
+                            file.type ||
+                            "application/octet-stream"
+                    }
+                );
+
+
+        if(uploadError){
+
+            throw uploadError;
+
+        }
+
+
+        const {
+            data:
+                publicData
+        } =
+            supabaseClient
+                .storage
+                .from(STORAGE_BUCKET)
+                .getPublicUrl(
+                    uploadData.path
+                );
+
+
+        const fileUrl =
+            publicData.publicUrl;
+
+
+        const fileMessage =
+            `[FILE] ${file.name}\n${fileUrl}`;
+
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from(MESSAGE_TABLE)
+                .insert({
+
+                    sender_id:
+                        currentUser.id,
+
+                    receiver_id:
+                        otherUserId,
+
+                    content:
+                        fileMessage
+
+                })
+                .select()
+                .single();
+
+
+        if(error){
+
+            throw error;
+
+        }
+
+
+        if(data){
+
+            const normalized =
+                normalizeMessage(
+                    data
+                );
+
+
+            const exists =
+                messages.some(
+                    item =>
+                        String(item.id) ===
+                        String(normalized.id)
+                );
+
+
+            if(!exists){
+
+                messages.push(
+                    normalized
+                );
+
+                renderMessage(
+                    normalized,
+                    true
+                );
+
+            }
+
+        }
+
+
+        showToast(
+
+            getLanguage() === "bn"
+
+            ? "ফাইল পাঠানো হয়েছে।"
+
+            : "File sent."
+
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "File upload error:",
+            error
+        );
+
+
+        showToast(
+
+            getLanguage() === "bn"
+
+            ? "ফাইল পাঠানো যায়নি।"
+
+            : "File could not be sent."
+
+        );
+
+
+    }finally{
+
+        fileInput.value = "";
+
+    }
+
+}
+
+
+/* =========================
+   VOICE RECORDING
+========================= */
+
+async function toggleVoiceRecording(){
+
+    if(isRecording){
+
+        stopVoiceRecording();
+
+        return;
+
+    }
+
+
+    await startVoiceRecording();
+
+}
+
+
+/* =========================
+   START RECORDING
+========================= */
+
+async function startVoiceRecording(){
+
+    if(!navigator.mediaDevices){
+
+        showToast(
+
+            getLanguage() === "bn"
+
+            ? "এই ডিভাইসে রেকর্ডিং চালু করা যাচ্ছে না।"
+
+            : "Recording is not available."
+
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const stream =
+            await navigator
+                .mediaDevices
+                .getUserMedia({
+                    audio:true
+                });
+
+
+        recordedChunks = [];
+
+
+        let mimeType =
+            "";
+
+
+        if(
+            MediaRecorder.isTypeSupported(
+                "audio/webm;codecs=opus"
+            )
+        ){
+
+            mimeType =
+                "audio/webm;codecs=opus";
+
+        }
+        else if(
+            MediaRecorder.isTypeSupported(
+                "audio/mp4"
+            )
+        ){
+
+            mimeType =
+                "audio/mp4";
+
+        }
+
+
+        mediaRecorder =
+            mimeType
+
+            ? new MediaRecorder(
+                stream,
+                {
+                    mimeType
+                }
+            )
+
+            : new MediaRecorder(
+                stream
+            );
+
+
+        mediaRecorder.ondataavailable =
+            event => {
+
+                if(
+                    event.data &&
+                    event.data.size > 0
+                ){
+
+                    recordedChunks.push(
+                        event.data
+                    );
+
+                }
+
+            };
+
+
+        mediaRecorder.onstop =
+            async () => {
+
+                stream
+                    .getTracks()
+                    .forEach(
+                        track =>
+                            track.stop()
+                    );
+
+
+                const blob =
+                    new Blob(
+                        recordedChunks,
+                        {
+                            type:
+                                mediaRecorder
+                                    .mimeType ||
+                                "audio/webm"
+                        }
+                    );
+
+
+                isRecording =
+                    false;
+
+
+                const recordingBar =
+                    document.getElementById(
+                        "recordingBar"
+                    );
+
+
+                if(recordingBar){
+
+                    recordingBar.classList.remove(
+                        "show"
+                    );
+
+                }
+
+
+                if(blob.size > 0){
+
+                    await uploadVoice(
+                        blob
+                    );
+
+                }
+
+            };
+
+
+        mediaRecorder.start();
+
+
+        isRecording =
+            true;
+
+
+        const recordingBar =
+            document.getElementById(
+                "recordingBar"
+            );
+
+
+        const recordingText =
+            document.getElementById(
+                "recordingText"
+            );
+
+
+        if(recordingText){
+
+            recordingText.textContent =
+                "🔴 " +
+                t("recording");
+
+        }
+
+
+        if(recordingBar){
+
+            recordingBar.classList.add(
+                "show"
+            );
+
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Voice recording error:",
+            error
+        );
+
+
+        showToast(
+
+            getLanguage() === "bn"
+
+            ? "মাইক্রোফোনের অনুমতি দিন।"
+
+            : "Please allow microphone access."
+
+        );
+
+    }
+
+}
+
+
+/* =========================
+   STOP RECORDING
+========================= */
+
+function stopVoiceRecording(){
+
+    if(
+        mediaRecorder &&
+        mediaRecorder.state !==
+        "inactive"
+    ){
+
+        mediaRecorder.stop();
+
+    }
+
+}
+
+
+/* =========================
+   CANCEL RECORDING
+========================= */
+
+function cancelRecording(){
+
+    if(
+        mediaRecorder &&
+        mediaRecorder.state !==
+        "inactive"
+    ){
+
+        mediaRecorder.ondataavailable =
+            null;
+
+        mediaRecorder.onstop =
+            null;
+
+        mediaRecorder.stop();
+
+    }
+
+
+    recordedChunks = [];
+
+    isRecording = false;
+
+
+    const recordingBar =
+        document.getElementById(
+            "recordingBar"
+        );
+
+
+    if(recordingBar){
+
+        recordingBar.classList.remove(
+            "show"
+        );
+
+    }
+
+}
+
+
+/* =========================
+   UPLOAD VOICE
+========================= */
+
+async function uploadVoice(blob){
+
+    if(!currentUser){
+
+        return;
+
+    }
+
+
+    try{
+
+        showToast(
+
+            getLanguage() === "bn"
+
+            ? "ভয়েস পাঠানো হচ্ছে..."
+
+            : "Sending voice..."
+
+        );
+
+
+        const extension =
+            blob.type.includes("mp4")
+            ? "mp4"
+            : "webm";
+
+
+        const path =
+            `${currentUser.id}/voice_${Date.now()}.${extension}`;
+
+
+        const {
+            data:
+                uploadData,
+            error:
+                uploadError
+        } =
+            await supabaseClient
+                .storage
+                .from(STORAGE_BUCKET)
+                .upload(
+                    path,
+                    blob,
+                    {
+                        upsert:false,
+
+                        contentType:
+                            blob.type ||
+                            "audio/webm"
+                    }
+                );
+
+
+        if(uploadError){
+
+            throw uploadError;
+
+        }
+
+
+        const {
+            data:
+                publicData
+        } =
+            supabaseClient
+                .storage
+                .from(STORAGE_BUCKET)
+                .getPublicUrl(
+                    uploadData.path
+                );
+
+
+        const voiceUrl =
+            publicData.publicUrl;
+
+
+        const voiceMessage =
+            `[VOICE] ${voiceUrl}`;
+
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from(MESSAGE_TABLE)
+                .insert({
+
+                    sender_id:
+                        currentUser.id,
+
+                    receiver_id:
+                        otherUserId,
+
+                    content:
+                        voiceMessage
+
+                })
+                .select()
+                .single();
+
+
+        if(error){
+
+            throw error;
+
+        }
+
+
+        if(data){
+
+            const normalized =
+                normalizeMessage(
+                    data
+                );
+
+
+            const exists =
+                messages.some(
+                    item =>
+                        String(item.id) ===
+                        String(normalized.id)
+                );
+
+
+            if(!exists){
+
+                messages.push(
+                    normalized
+                );
+
+                renderMessage(
+                    normalized,
+                    true
+                );
+
+            }
+
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Voice upload error:",
+            error
+        );
+
+
+        showToast(
+
+            getLanguage() === "bn"
+
+            ? "ভয়েস পাঠানো যায়নি।"
+
+            : "Voice could not be sent."
+
+        );
+
+    }
+
+}
+
+
+/* =========================
+   REALTIME CHAT
+========================= */
+
+function subscribeToMessages(){
+
+    if(!supabaseClient){
+
+        return;
+
+    }
+
+
+    if(realtimeChannel){
+
+        try{
+
+            supabaseClient
+                .removeChannel(
+                    realtimeChannel
+                );
+
+        }catch(error){
+
+            console.warn(
+                error
+            );
+
+        }
+
+    }
+
+
+    realtimeChannel =
+        supabaseClient
+            .channel(
+                "chat-" +
+                currentUser.id +
+                "-" +
+                otherUserId
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event:"INSERT",
+
+                    schema:"public",
+
+                    table:
+                        MESSAGE_TABLE
+
+                },
+                payload => {
+
+                    handleRealtimeMessage(
+                        payload.new
+                    );
+
+                }
+            )
+            .subscribe(
+                status => {
+
+                    console.log(
+                        "Realtime status:",
+                        status
+                    );
+
+                }
+            );
+
+}
+
+
+/* =========================
+   HANDLE REALTIME MESSAGE
+========================= */
+
+function handleRealtimeMessage(row){
+
+    if(!row){
+
+        return;
+
+    }
+
+
+    const message =
+        normalizeMessage(
+            row
+        );
+
+
+    if(!message){
+
+        return;
+
+    }
+
+
+    const sender =
+        String(
+            message.sender_id
+        );
+
+
+    const receiver =
+        String(
+            message.receiver_id
+        );
+
+
+    const me =
+        String(
+            currentUser.id
+        );
+
+
+    const other =
+        String(
+            otherUserId
+        );
+
+
+    const belongsToThisChat =
+
+        (
+            sender === me &&
+            receiver === other
+        )
+
+        ||
+
+        (
+            sender === other &&
+            receiver === me
+        );
+
+
+    if(!belongsToThisChat){
+
+        return;
+
+    }
+
+
+    const exists =
+        messages.some(
+            item =>
+                String(item.id) ===
+                String(message.id)
+        );
+
+
+    if(exists){
+
+        return;
+
+    }
+
+
+    messages.push(
+        message
+    );
+
+
+    /*
+     * Remove empty state.
+     */
+
+    const empty =
+        messagesArea.querySelector(
+            ".emptyChat"
+        );
+
+
+    if(empty){
+
+        empty.remove();
+
+    }
+
+
+    renderMessage(
+        message,
+        true
+    );
+
+}
+
+
+/* =========================
+   CLEANUP REALTIME
+========================= */
+
+window.addEventListener(
+    "beforeunload",
+    () => {
+
+        if(
+            realtimeChannel &&
+            supabaseClient
+        ){
+
+            try{
+
+                supabaseClient
+                    .removeChannel(
+                        realtimeChannel
+                    );
+
+            }catch(error){
+
+                console.warn(
+                    error
+                );
+
+            }
+
+        }
+
+    }
 );
 
-/* =========================================================
-   START
-========================================================= */
 
-init();
+/* =========================
+   START CHAT
+========================= */
+
+async function initializeChat(){
+
+    applyLanguage();
+
+
+    if(!otherUserId){
+
+        messagesArea.innerHTML = "";
+
+
+        const box =
+            document.createElement(
+                "div"
+            );
+
+        box.className =
+            "emptyChat";
+
+        box.textContent =
+            getLanguage() === "bn"
+
+            ? "চ্যাট ব্যবহারকারী পাওয়া যায়নি।"
+
+            : "Chat user not found.";
+
+
+        messagesArea.appendChild(
+            box
+        );
+
+
+        return;
+
+    }
+
+
+    const ready =
+        await initSupabase();
+
+
+    if(!ready){
+
+        return;
+
+    }
+
+
+    currentUser =
+        await getCurrentUser();
+
+
+    if(!currentUser){
+
+        window.location.href =
+            "index.html";
+
+        return;
+
+    }
+
+
+    if(
+        String(currentUser.id) ===
+        String(otherUserId)
+    ){
+
+        showToast(
+
+            getLanguage() === "bn"
+
+            ? "নিজের সাথে চ্যাট করা যাবে না।"
+
+            : "You cannot chat with yourself."
+
+        );
+
+
+        setTimeout(
+            () => {
+
+                window.location.href =
+                    "index.html";
+
+            },
+            1200
+        );
+
+
+        return;
+
+    }
+
+
+    try{
+
+        await loadOtherUser();
+
+        await findMessageTable();
+
+        await loadMessages();
+
+        subscribeToMessages();
+
+        await loadBlockState();
+
+    }catch(error){
+
+        console.error(
+            "Chat initialization error:",
+            error
+        );
+
+
+        messagesArea.innerHTML = "";
+
+
+        const box =
+            document.createElement(
+                "div"
+            );
+
+        box.className =
+            "emptyChat";
+
+        box.textContent =
+            getLanguage() === "bn"
+
+            ? "চ্যাট লোড করতে সমস্যা হয়েছে।"
+
+            : "There was a problem loading the chat.";
+
+
+        messagesArea.appendChild(
+            box
+        );
+
+    }
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+initializeChat();
+
+/* =====================================================
+   PART 3
+   BLOCK / UNBLOCK / DELETE / MEDIA / PROFILE / FINISH
+===================================================== */
+
+
+/* =========================
+   BLOCK STATE
+========================= */
+
+async function loadBlockState(){
+
+    if(!currentUser || !otherUserId){
+
+        return;
+
+    }
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("blocked_users")
+                .select("id")
+                .eq(
+                    "blocker_id",
+                    currentUser.id
+                )
+                .eq(
+                    "blocked_id",
+                    otherUserId
+                )
+                .maybeSingle();
+
+
+        if(error){
+
+            /*
+             * If the table/policy does not allow
+             * reading, don't break the chat.
+             */
+            console.warn(
+                "Block state error:",
+                error
+            );
+
+            isBlocked = false;
+
+        }else{
+
+            isBlocked =
+                !!data;
+
+        }
+
+
+        updateBlockButtonText();
+
+    }catch(error){
+
+        console.warn(
+            "Block state check failed:",
+            error
+        );
+
+        isBlocked = false;
+
+        updateBlockButtonText();
+
+    }
+
+}
+
+
+/* =========================
+   BLOCK / UNBLOCK
+========================= */
+
+async function toggleBlockUser(){
+
+    closeMenus();
+
+
+    if(!currentUser || !otherUserId){
+
+        return;
+
+    }
+
+
+    try{
+
+        if(isBlocked){
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("blocked_users")
+                    .delete()
+                    .eq(
+                        "blocker_id",
+                        currentUser.id
+                    )
+                    .eq(
+                        "blocked_id",
+                        otherUserId
+                    );
+
+
+            if(error){
+
+                throw error;
+
+            }
+
+
+            isBlocked = false;
+
+            updateBlockButtonText();
+
+
+            showToast(
+                t("unblocked")
+            );
+
+
+        }else{
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("blocked_users")
+                    .insert({
+
+                        blocker_id:
+                            currentUser.id,
+
+                        blocked_id:
+                            otherUserId
+
+                    });
+
+
+            if(error){
+
+                /*
+                 * Duplicate block can happen if
+                 * the row already exists.
+                 */
+
+                if(
+                    String(error.message || "")
+                        .toLowerCase()
+                        .includes("duplicate")
+                ){
+
+                    isBlocked = true;
+
+                    updateBlockButtonText();
+
+                    return;
+
+                }
+
+                throw error;
+
+            }
+
+
+            isBlocked = true;
+
+            updateBlockButtonText();
+
+
+            showToast(
+                t("blocked")
+            );
+
+        }
+
+    }catch(error){
+
+        console.error(
+            "Block/unblock error:",
+            error
+        );
+
+
+        showToast(
+
+            getLanguage() === "bn"
+
+            ? "ব্লক পরিবর্তন করা যায়নি।"
+
+            : "Could not change block status."
+
+        );
+
+    }
+
+}
+
+
+/* =========================
+   BLOCK BUTTON TEXT
+========================= */
+
+function updateBlockButtonText(){
+
+    const element =
+        document.getElementById(
+            "blockButtonText"
+        );
+
+
+    if(!element){
+
+        return;
+
+    }
+
+
+    element.textContent =
+        isBlocked
+        ? t("unblock")
+        : t("block");
+
+}
+
+
+/* =========================
+   DELETE CHAT
+========================= */
+
+async function deleteChat(){
+
+    closeMenus();
+
+
+    if(!currentUser || !otherUserId){
+
+        return;
+
+    }
+
+
+    const confirmed =
+        window.confirm(
+
+            getLanguage() === "bn"
+
+            ? "এই চ্যাটের সব মেসেজ মুছে ফেলতে চান?"
+
+            : "Delete all messages in this chat?"
+
+        );
+
+
+    if(!confirmed){
+
+        return;
+
+    }
+
+
+    try{
+
+        /*
+         * Delete messages sent by current user
+         * to the other user.
+         */
+
+        const {
+            error:
+                error1
+        } =
+            await supabaseClient
+                .from(MESSAGE_TABLE)
+                .delete()
+                .eq(
+                    "sender_id",
+                    currentUser.id
+                )
+                .eq(
+                    "receiver_id",
+                    otherUserId
+                );
+
+
+        if(error1){
+
+            throw error1;
+
+        }
+
+
+        /*
+         * Delete messages sent by the other
+         * user to current user.
+         */
+
+        const {
+            error:
+                error2
+        } =
+            await supabaseClient
+                .from(MESSAGE_TABLE)
+                .delete()
+                .eq(
+                    "sender_id",
+                    otherUserId
+                )
+                .eq(
+                    "receiver_id",
+                    currentUser.id
+                );
+
+
+        if(error2){
+
+            throw error2;
+
+        }
+
+
+        messages = [];
+
+        lastRenderedDateKey =
+            null;
+
+
+        messagesArea.innerHTML = "";
+
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+        empty.className =
+            "emptyChat";
+
+        empty.textContent =
+            t("noMessages");
+
+
+        messagesArea.appendChild(
+            empty
+        );
+
+
+        showToast(
+
+            getLanguage() === "bn"
+
+            ? "চ্যাট মুছে ফেলা হয়েছে।"
+
+            : "Chat deleted."
+
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Delete chat error:",
+            error
+        );
+
+
+        showToast(
+
+            getLanguage() === "bn"
+
+            ? "চ্যাট মুছে ফেলা যায়নি।"
+
+            : "Chat could not be deleted."
+
+        );
+
+    }
+
+}
+
+
+/* =========================
+   MEDIA MESSAGE PARSER
+========================= */
+
+function parseSpecialMessage(content){
+
+    const text =
+        String(content || "");
+
+
+    if(
+        text.startsWith("[VOICE] ")
+    ){
+
+        return {
+
+            type:"voice",
+
+            url:
+                text.substring(
+                    8
+                ).trim()
+
+        };
+
+    }
+
+
+    if(
+        text.startsWith("[FILE] ")
+    ){
+
+        const value =
+            text.substring(
+                7
+            );
+
+
+        const lines =
+            value.split("\n");
+
+
+        return {
+
+            type:"file",
+
+            name:
+                lines[0] ||
+                "File",
+
+            url:
+                lines[1] ||
+                ""
+
+        };
+
+    }
+
+
+    return {
+
+        type:"text",
+
+        text
+
+    };
+
+}
+
+
+/* =========================
+   FILE TYPE
+========================= */
+
+function getFileType(url){
+
+    const clean =
+        String(url || "")
+            .split("?")[0]
+            .toLowerCase();
+
+
+    if(
+        /\.(jpg|jpeg|png|gif|webp|bmp|heic)$/i
+            .test(clean)
+    ){
+
+        return "image";
+
+    }
+
+
+    if(
+        /\.(mp4|webm|mov|m4v|avi)$/i
+            .test(clean)
+    ){
+
+        return "video";
+
+    }
+
+
+    if(
+        /\.pdf$/i
+            .test(clean)
+    ){
+
+        return "pdf";
+
+    }
+
+
+    return "file";
+
+}
+
+
+/* =========================
+   SAFE URL
+========================= */
+
+function isSafeUrl(url){
+
+    try{
+
+        const parsed =
+            new URL(
+                url,
+                window.location.origin
+            );
+
+
+        return (
+            parsed.protocol === "https:" ||
+            parsed.protocol === "http:"
+        );
+
+    }catch(error){
+
+        return false;
+
+    }
+
+}
+
+
+/* =========================
+   CREATE MEDIA CONTENT
+========================= */
+
+function createMediaContent(
+    special
+){
+
+    if(!special){
+
+        return null;
+
+    }
+
+
+    /*
+     * VOICE
+     */
+
+    if(
+        special.type === "voice"
+    ){
+
+        if(
+            !isSafeUrl(
+                special.url
+            )
+        ){
+
+            return null;
+
+        }
+
+
+        const audio =
+            document.createElement(
+                "audio"
+            );
+
+
+        audio.controls = true;
+
+        audio.preload = "metadata";
+
+        audio.src =
+            special.url;
+
+
+        audio.style.width =
+            "230px";
+
+        audio.style.maxWidth =
+            "100%";
+
+
+        return audio;
+
+    }
+
+
+    /*
+     * FILE
+     */
+
+    if(
+        special.type === "file"
+    ){
+
+        if(
+            !isSafeUrl(
+                special.url
+            )
+        ){
+
+            return null;
+
+        }
+
+
+        const type =
+            getFileType(
+                special.url
+            );
+
+
+        if(type === "image"){
+
+            const image =
+                document.createElement(
+                    "img"
+                );
+
+
+            image.src =
+                special.url;
+
+            image.alt =
+                special.name ||
+                "Image";
+
+            image.loading =
+                "lazy";
+
+
+            image.style.display =
+                "block";
+
+            image.style.maxWidth =
+                "260px";
+
+            image.style.width =
+                "100%";
+
+            image.style.height =
+                "auto";
+
+            image.style.borderRadius =
+                "12px";
+
+            image.style.cursor =
+                "pointer";
+
+
+            image.onclick =
+                () => {
+
+                    window.open(
+                        special.url,
+                        "_blank",
+                        "noopener"
+                    );
+
+                };
+
+
+            return image;
+
+        }
+
+
+        if(type === "video"){
+
+            const video =
+                document.createElement(
+                    "video"
+                );
+
+
+            video.src =
+                special.url;
+
+            video.controls =
+                true;
+
+            video.preload =
+                "metadata";
+
+            video.style.display =
+                "block";
+
+            video.style.width =
+                "260px";
+
+            video.style.maxWidth =
+                "100%";
+
+            video.style.borderRadius =
+                "12px";
+
+
+            return video;
+
+        }
+
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+
+        link.href =
+            special.url;
+
+        link.target =
+            "_blank";
+
+        link.rel =
+            "noopener noreferrer";
+
+
+        link.textContent =
+            "📎 " +
+            (
+                special.name ||
+                (
+                    getLanguage() === "bn"
+                    ? "ফাইল খুলুন"
+                    : "Open file"
+                )
+            );
+
+
+        link.style.display =
+            "inline-block";
+
+        link.style.padding =
+            "9px 12px";
+
+        link.style.borderRadius =
+            "10px";
+
+        link.style.background =
+            "rgba(8,127,91,.10)";
+
+        link.style.color =
+            "inherit";
+
+        link.style.textDecoration =
+            "none";
+
+
+        return link;
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =========================
+   OVERRIDE MESSAGE RENDER
+   WITH TEXT / FILE / VOICE
+========================= */
+
+function renderMessage(
+    message,
+    shouldScroll = true
+){
+
+    if(!message){
+
+        return;
+
+    }
+
+
+    const createdAt =
+        message.created_at ||
+        new Date().toISOString();
+
+
+    const dateKey =
+        getDateKey(
+            createdAt
+        );
+
+
+    if(
+        lastRenderedDateKey !==
+        dateKey
+    ){
+
+        addDateSeparator(
+            createdAt
+        );
+
+    }
+
+
+    const mine =
+        String(message.sender_id) ===
+        String(currentUser.id);
+
+
+    const row =
+        document.createElement(
+            "div"
+        );
+
+
+    row.className =
+        "messageRow " +
+        (
+            mine
+            ? "mine"
+            : "theirs"
+        );
+
+
+    if(message.id){
+
+        row.dataset.messageId =
+            message.id;
+
+    }
+
+
+    const bubble =
+        document.createElement(
+            "div"
+        );
+
+
+    bubble.className =
+        "messageBubble";
+
+
+    const special =
+        parseSpecialMessage(
+            message.content
+        );
+
+
+    if(
+        special.type === "text"
+    ){
+
+        const text =
+            document.createElement(
+                "div"
+            );
+
+
+        text.className =
+            "messageText";
+
+
+        text.textContent =
+            special.text;
+
+
+        bubble.appendChild(
+            text
+        );
+
+    }else{
+
+        const media =
+            createMediaContent(
+                special
+            );
+
+
+        if(media){
+
+            bubble.appendChild(
+                media
+            );
+
+        }else{
+
+            const fallback =
+                document.createElement(
+                    "div"
+                );
+
+
+            fallback.className =
+                "messageText";
+
+
+            fallback.textContent =
+                getLanguage() === "bn"
+                ? "মিডিয়া ফাইল খোলা যাচ্ছে না।"
+                : "Media file cannot be opened.";
+
+
+            bubble.appendChild(
+                fallback
+            );
+
+        }
+
+    }
+
+
+    const time =
+        document.createElement(
+            "div"
+        );
+
+
+    time.className =
+        "messageTime";
+
+
+    time.textContent =
+        formatTime(
+            createdAt
+        );
+
+
+    bubble.appendChild(
+        time
+    );
+
+
+    row.appendChild(
+        bubble
+    );
+
+
+    const empty =
+        messagesArea.querySelector(
+            ".emptyChat"
+        );
+
+
+    if(empty){
+
+        empty.remove();
+
+    }
+
+
+    messagesArea.appendChild(
+        row
+    );
+
+
+    if(shouldScroll){
+
+        scrollToBottom(true);
+
+    }
+
+}
+
+
+/* =========================
+   PROFILE CLICK
+========================= */
+
+function viewProfile(){
+
+    closeMenus();
+
+
+    if(!otherUserId){
+
+        showToast(
+
+            getLanguage() === "bn"
+
+            ? "ব্যবহারকারী পাওয়া যায়নি।"
+
+            : "User not found."
+
+        );
+
+        return;
+
+    }
+
+
+    window.location.href =
+        "user-profile.html?user=" +
+        encodeURIComponent(
+            otherUserId
+        );
+
+}
+
+
+/* =========================
+   CALL
+========================= */
+
+function startCall(){
+
+    closeMenus();
+
+
+    if(!otherUserId){
+
+        return;
+
+    }
+
+
+    /*
+     * এখানে ভবিষ্যতে WebRTC call
+     * system যুক্ত করা যাবে।
+     */
+
+    showToast(
+
+        getLanguage() === "bn"
+
+        ? "অডিও কল সিস্টেম এখনও সংযুক্ত করা হয়নি।"
+
+        : "Audio call system is not connected yet."
+
+    );
+
+}
+
+
+/* =========================
+   VIDEO CALL
+========================= */
+
+function startVideoCall(){
+
+    closeMenus();
+
+
+    if(!otherUserId){
+
+        return;
+
+    }
+
+
+    /*
+     * এখানে ভবিষ্যতে WebRTC video call
+     * system যুক্ত করা যাবে।
+     */
+
+    showToast(
+
+        getLanguage() === "bn"
+
+        ? "ভিডিও কল সিস্টেম এখনও সংযুক্ত করা হয়নি।"
+
+        : "Video call system is not connected yet."
+
+    );
+
+}
+
+
+/* =========================
+   MESSAGE DATE RECHECK
+========================= */
+
+function refreshMessageLanguage(){
+
+    const rows =
+        messagesArea.querySelectorAll(
+            ".messageRow"
+        );
+
+
+    rows.forEach(row => {
+
+        const messageId =
+            row.dataset.messageId;
+
+
+        if(!messageId){
+
+            return;
+
+        }
+
+
+        const message =
+            messages.find(
+                item =>
+                    String(item.id) ===
+                    String(messageId)
+            );
+
+
+        if(!message){
+
+            return;
+
+        }
+
+
+        const time =
+            row.querySelector(
+                ".messageTime"
+            );
+
+
+        if(time){
+
+            time.textContent =
+                formatTime(
+                    message.created_at
+                );
+
+        }
+
+    });
+
+
+    /*
+     * Rebuild date separators
+     * so Today / Yesterday changes
+     * with language.
+     */
+
+    const currentMessages =
+        [...messages];
+
+
+    messagesArea.innerHTML = "";
+
+    lastRenderedDateKey =
+        null;
+
+
+    if(!currentMessages.length){
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+        empty.className =
+            "emptyChat";
+
+        empty.textContent =
+            t("noMessages");
+
+        messagesArea.appendChild(
+            empty
+        );
+
+        return;
+
+    }
+
+
+    currentMessages.forEach(
+        message => {
+
+            renderMessage(
+                message,
+                false
+            );
+
+        }
+    );
+
+
+    scrollToBottom(false);
+
+}
+
+
+/* =========================
+   LANGUAGE STORAGE CHANGE
+========================= */
+
+window.addEventListener(
+    "storage",
+    event => {
+
+        if(
+            event.key ===
+            "raztara_language"
+        ){
+
+            applyLanguage();
+
+            renderOtherUser();
+
+            refreshMessageLanguage();
+
+        }
+
+    }
+);
+
+
+/* =========================
+   PAGE VISIBILITY
+========================= */
+
+document.addEventListener(
+    "visibilitychange",
+    async () => {
+
+        if(
+            !document.hidden &&
+            currentUser &&
+            otherUser
+        ){
+
+            try{
+
+                await loadOtherUser();
+
+            }catch(error){
+
+                console.warn(
+                    "Refresh user status failed:",
+                    error
+                );
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================
+   WINDOW FOCUS
+========================= */
+
+window.addEventListener(
+    "focus",
+    async () => {
+
+        if(
+            currentUser &&
+            otherUserId
+        ){
+
+            try{
+
+                await loadOtherUser();
+
+            }catch(error){
+
+                console.warn(
+                    error
+                );
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================
+   CLEANUP
+========================= */
+
+window.addEventListener(
+    "pagehide",
+    () => {
+
+        try{
+
+            if(
+                realtimeChannel &&
+                supabaseClient
+            ){
+
+                supabaseClient
+                    .removeChannel(
+                        realtimeChannel
+                    );
+
+            }
+
+        }catch(error){
+
+            console.warn(
+                "Channel cleanup error:",
+                error
+            );
+
+        }
+
+
+        if(
+            mediaRecorder &&
+            mediaRecorder.state !==
+            "inactive"
+        ){
+
+            try{
+
+                mediaRecorder.stop();
+
+            }catch(error){
+
+                console.warn(
+                    error
+                );
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================
+   FINAL LANGUAGE APPLY
+========================= */
+
+applyLanguage();
+
 </script>
 
 </body>
