@@ -65,16 +65,11 @@ a{
 .loginBox{
     width:100%;
     max-width:410px;
-
     padding:34px 24px 28px;
-
     border:1px solid rgba(255,255,255,.08);
     border-radius:28px;
-
     background:rgba(10,27,35,.92);
-
-    box-shadow:
-        0 25px 70px rgba(0,0,0,.45);
+    box-shadow:0 25px 70px rgba(0,0,0,.45);
 }
 
 .logo{
@@ -85,27 +80,15 @@ a{
 .logoIcon{
     width:76px;
     height:76px;
-
     margin:auto;
-
     border-radius:24px;
-
     display:flex;
     align-items:center;
     justify-content:center;
-
     font-size:38px;
     font-weight:800;
-
-    background:
-        linear-gradient(
-            135deg,
-            #00d4a5,
-            #008fa8
-        );
-
-    box-shadow:
-        0 12px 30px rgba(0,212,165,.25);
+    background:linear-gradient(135deg,#00d4a5,#008fa8);
+    box-shadow:0 12px 30px rgba(0,212,165,.25);
 }
 
 .logo h1{
@@ -138,17 +121,12 @@ a{
 .inputBox input{
     width:100%;
     height:54px;
-
     padding:0 48px 0 16px;
-
     border:none;
     outline:none;
-
     border-radius:15px;
-
     color:#fff;
     background:#10252e;
-
     border:1px solid #203b45;
 }
 
@@ -158,62 +136,37 @@ a{
 
 .inputBox input:focus{
     border-color:#00cda6;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(0,205,166,.10);
+    box-shadow:0 0 0 3px rgba(0,205,166,.10);
 }
 
 .eye{
     position:absolute;
-
     right:14px;
     top:50%;
-
     transform:translateY(-50%);
-
     border:0;
     background:none;
-
     color:#8fa7af;
-
     font-size:20px;
 }
 
 .forgot{
     display:block;
-
     text-align:right;
-
-    margin:
-        3px 2px 20px;
-
+    margin:3px 2px 20px;
     color:#00d4a5;
-
     font-size:13px;
 }
 
 .loginBtn{
     width:100%;
     height:54px;
-
     border:0;
     border-radius:15px;
-
     color:#001510;
-
     font-weight:800;
-
-    background:
-        linear-gradient(
-            135deg,
-            #00e0ad,
-            #00aebd
-        );
-
-    box-shadow:
-        0 12px 25px
-        rgba(0,212,165,.18);
+    background:linear-gradient(135deg,#00e0ad,#00aebd);
+    box-shadow:0 12px 25px rgba(0,212,165,.18);
 }
 
 .loginBtn:disabled{
@@ -224,77 +177,50 @@ a{
 .divider{
     display:flex;
     align-items:center;
-
     gap:12px;
-
     margin:25px 0;
-
     color:#66808a;
-
     font-size:12px;
 }
 
 .divider::before,
 .divider::after{
     content:"";
-
     flex:1;
-
     height:1px;
-
     background:#20343c;
 }
 
 .createBtn{
     width:100%;
     height:52px;
-
     border-radius:15px;
-
     border:1px solid #00b998;
-
     background:transparent;
-
     color:#00d4a5;
-
     font-weight:700;
 }
 
 .message{
     display:none;
-
     margin-bottom:16px;
-
     padding:12px 14px;
-
     border-radius:12px;
-
     font-size:13px;
     line-height:1.5;
 }
 
 .error{
-    background:
-        rgba(255,70,70,.10);
-
-    border:
-        1px solid
-        rgba(255,70,70,.25);
-
+    background:rgba(255,70,70,.10);
+    border:1px solid rgba(255,70,70,.25);
     color:#ff9c9c;
 }
 
 .success{
-    background:
-        rgba(0,212,165,.10);
-
-    border:
-        1px solid
-        rgba(0,212,165,.25);
-
+    background:rgba(0,212,165,.10);
+    border:1px solid rgba(0,212,165,.25);
     color:#72f1d2;
 }
-
 
 /* =====================================================
    APP
@@ -302,39 +228,22 @@ a{
 
 #appScreen{
     display:none;
-
     min-height:100vh;
-
     background:#07131a;
-
     padding-bottom:80px;
 }
 
 .appHeader{
     min-height:68px;
-
     display:grid;
-
-    grid-template-columns:
-        50px
-        1fr
-        auto
-        50px;
-
+    grid-template-columns:50px 1fr auto 50px;
     align-items:center;
-
     gap:8px;
-
     padding:0 14px;
-
-    border-bottom:
-        1px solid #193039;
-
+    border-bottom:1px solid #193039;
     background:#0a1b23;
-
     position:sticky;
     top:0;
-
     z-index:10;
 }
 
@@ -342,21 +251,14 @@ a{
 .profileBtn{
     width:42px;
     height:42px;
-
     border:0;
-
     border-radius:50%;
-
     background:#102b34;
-
     color:#fff;
-
     font-size:21px;
-
     display:flex;
     align-items:center;
     justify-content:center;
-
     overflow:hidden;
 }
 
@@ -368,68 +270,53 @@ a{
 .profileBtn img{
     width:100%;
     height:100%;
-
     border-radius:50%;
-
     object-fit:cover;
-
     display:block;
 }
 
 .appTitle{
     text-align:center;
-
     font-size:21px;
-
     letter-spacing:2px;
-
     font-weight:800;
 }
 
 .headerUserName{
     max-width:100px;
-
     overflow:hidden;
-
     white-space:nowrap;
-
     text-overflow:ellipsis;
-
     color:#9bb1b8;
-
     font-size:12px;
-
     text-align:right;
 }
-
 
 /* =====================================================
    SEARCH
 ===================================================== */
 
 .search{
-    margin:16px;
+    display:block;
+    width:100%;
+    margin:16px 0;
+    padding:0 16px;
 }
 
 .searchBox{
     position:relative;
+    width:100%;
 }
 
 .search input{
+    display:block;
     width:100%;
     height:48px;
-
     border:1px solid #1c3741;
-
     outline:none;
-
     border-radius:15px;
-
-    padding:
-        0 45px 0 16px;
-
+    padding:0 45px 0 16px;
     color:#fff;
-
     background:#0d222b;
 }
 
@@ -439,67 +326,45 @@ a{
 
 .search input:focus{
     border-color:#00cda6;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(0,205,166,.08);
+    box-shadow:0 0 0 3px rgba(0,205,166,.08);
 }
 
 .clearSearch{
     position:absolute;
-
     right:10px;
     top:50%;
-
     transform:translateY(-50%);
-
     width:32px;
     height:32px;
-
     border:0;
-
     border-radius:50%;
-
     background:#17333d;
-
     color:#b8cbd0;
-
     display:none;
-
     align-items:center;
     justify-content:center;
 }
-
 
 /* =====================================================
    USERS
 ===================================================== */
 
 .chatList{
-    padding:
-        0 10px 20px;
+    display:block;
+    width:100%;
+    padding:0 10px 20px;
 }
 
 .chat{
     width:100%;
-
     display:flex;
     align-items:center;
-
     gap:13px;
-
     padding:14px 8px;
-
-    border-bottom:
-        1px solid #142b33;
-
+    border-bottom:1px solid #142b33;
     cursor:pointer;
-
     border-radius:12px;
-
-    transition:
-        background .15s,
-        transform .1s;
+    transition:background .15s,transform .1s;
 }
 
 .chat:hover{
@@ -511,102 +376,69 @@ a{
 }
 
 .chat:focus{
-    outline:
-        2px solid #00cda6;
-
+    outline:2px solid #00cda6;
     outline-offset:-2px;
 }
 
 .avatar{
     width:52px;
     height:52px;
-
     flex:none;
-
     border-radius:50%;
-
     display:flex;
-
     align-items:center;
     justify-content:center;
-
-    background:
-        linear-gradient(
-            135deg,
-            #00cda6,
-            #087d99
-        );
-
+    background:linear-gradient(135deg,#00cda6,#087d99);
     font-weight:800;
-
     overflow:hidden;
 }
 
 .avatar img{
     width:52px;
     height:52px;
-
     border-radius:50%;
-
     object-fit:cover;
-
     display:block;
 }
 
 .chatInfo{
     flex:1;
-
     min-width:0;
 }
 
 .chatTop{
     display:flex;
-
     justify-content:space-between;
-
     gap:10px;
 }
 
 .chatName{
     font-weight:700;
-
     overflow:hidden;
-
     white-space:nowrap;
-
     text-overflow:ellipsis;
 }
 
 .chatTime{
     color:#718b94;
-
     font-size:11px;
 }
 
 .lastMessage{
     margin-top:5px;
-
     color:#78919a;
-
     font-size:13px;
-
     white-space:nowrap;
-
     overflow:hidden;
-
     text-overflow:ellipsis;
 }
 
 .emptyUsers{
     padding:40px 20px;
-
     text-align:center;
-
     color:#718b94;
-
     line-height:1.7;
 }
-
 
 /* =====================================================
    BOTTOM NAV
@@ -614,52 +446,32 @@ a{
 
 .bottomNav{
     position:fixed;
-
     left:0;
     right:0;
     bottom:0;
-
     height:72px;
-
     display:flex;
-
-    justify-content:
-        space-around;
-
+    justify-content:space-around;
     align-items:center;
-
     background:#091a22;
-
-    border-top:
-        1px solid #1b343d;
-
+    border-top:1px solid #1b343d;
     z-index:50;
-
-    padding-bottom:
-        env(safe-area-inset-bottom);
+    padding-bottom:env(safe-area-inset-bottom);
 }
 
 .navBtn{
     min-width:70px;
-
     border:0;
-
     background:none;
-
     color:#718b94;
-
     text-align:center;
-
     font-size:12px;
-
     padding:5px 8px;
 }
 
 .navBtn span{
     display:block;
-
     font-size:23px;
-
     margin-bottom:3px;
 }
 
@@ -671,86 +483,54 @@ a{
     transform:scale(.94);
 }
 
-
 /* =====================================================
    SIDE MENU
 ===================================================== */
 
 #sideMenu{
     display:none;
-
     position:fixed;
-
     inset:0;
-
     z-index:100;
-
-    background:
-        rgba(0,0,0,.65);
+    background:rgba(0,0,0,.65);
 }
 
 .menuPanel{
     width:285px;
-
     max-width:85vw;
-
     height:100%;
-
     overflow-y:auto;
-
     background:#0a1c24;
-
-    padding:
-        22px 16px;
-
-    box-shadow:
-        10px 0 40px
-        rgba(0,0,0,.35);
-
-    animation:
-        menuIn .18s ease;
+    padding:22px 16px;
+    box-shadow:10px 0 40px rgba(0,0,0,.35);
+    animation:menuIn .18s ease;
 }
 
 @keyframes menuIn{
-
     from{
         transform:translateX(-100%);
     }
-
     to{
         transform:translateX(0);
     }
-
 }
 
 .menuLogo{
     font-size:24px;
-
     font-weight:800;
-
     margin-bottom:28px;
-
     color:#00d4a5;
 }
 
 .menuItem{
     width:100%;
-
     min-height:50px;
-
-    padding:
-        14px 12px;
-
+    padding:14px 12px;
     border:0;
-
     border-radius:12px;
-
     background:transparent;
-
     color:#fff;
-
     text-align:left;
-
     margin-bottom:5px;
 }
 
@@ -764,10 +544,8 @@ a{
 
 .logout{
     margin-top:20px;
-
     color:#ff8585;
 }
-
 
 /* =====================================================
    RESPONSIVE
@@ -776,8 +554,7 @@ a{
 @media(max-width:360px){
 
     .loginBox{
-        padding:
-            28px 18px 24px;
+        padding:28px 18px 24px;
     }
 
     .logo h1{
@@ -794,51 +571,36 @@ a{
 
 }
 
-
 /* =====================================================
    LOADING
 ===================================================== */
 
 .loadingBox{
     padding:40px 20px;
-
     text-align:center;
-
     color:#718b94;
 }
 
 .spinner{
     width:28px;
     height:28px;
-
-    margin:
-        0 auto 12px;
-
-    border:
-        3px solid #21404b;
-
+    margin:0 auto 12px;
+    border:3px solid #21404b;
     border-top-color:#00d4a5;
-
     border-radius:50%;
-
-    animation:
-        spin .8s linear infinite;
+    animation:spin .8s linear infinite;
 }
 
 @keyframes spin{
-
     to{
         transform:rotate(360deg);
     }
-
 }
 
 </style>
 </head>
 
-
 <body>
-
 
 <!-- =====================================================
      LOGIN SCREEN
@@ -864,12 +626,7 @@ a{
 
         </div>
 
-
-        <div
-            id="message"
-            class="message"
-        ></div>
-
+        <div id="message" class="message"></div>
 
         <div class="inputGroup">
 
@@ -889,7 +646,6 @@ a{
             </div>
 
         </div>
-
 
         <div class="inputGroup">
 
@@ -920,14 +676,12 @@ a{
 
         </div>
 
-
         <a
             href="forgot-password.html"
             class="forgot"
         >
             Forgot Password?
         </a>
-
 
         <button
             class="loginBtn"
@@ -938,11 +692,9 @@ a{
             LOGIN
         </button>
 
-
         <div class="divider">
             অথবা
         </div>
-
 
         <button
             class="createBtn"
@@ -956,16 +708,11 @@ a{
 
 </section>
 
-
-
 <!-- =====================================================
      APP SCREEN
 ===================================================== -->
 
 <section id="appScreen">
-
-
-    <!-- HEADER -->
 
     <header class="appHeader">
 
@@ -978,17 +725,14 @@ a{
             ☰
         </button>
 
-
         <div class="appTitle">
             RAZTARA
         </div>
-
 
         <div
             id="headerUserName"
             class="headerUserName"
         ></div>
-
 
         <button
             class="profileBtn"
@@ -1007,9 +751,7 @@ a{
 
     </header>
 
-
-
-    <!-- SEARCH -->
+    <!-- SEARCH — এটি কখনো chatList-এর ভিতরে যাবে না -->
 
     <div class="search">
 
@@ -1037,8 +779,6 @@ a{
 
     </div>
 
-
-
     <!-- USER LIST -->
 
     <div
@@ -1055,8 +795,6 @@ a{
         </div>
 
     </div>
-
-
 
     <!-- BOTTOM NAV -->
 
@@ -1077,7 +815,6 @@ a{
 
         </button>
 
-
         <button
             id="navCalls"
             class="navBtn"
@@ -1092,7 +829,6 @@ a{
             Calls
 
         </button>
-
 
         <button
             id="navProfile"
@@ -1113,8 +849,6 @@ a{
 
 </section>
 
-
-
 <!-- =====================================================
      SIDE MENU
 ===================================================== -->
@@ -1133,7 +867,6 @@ a{
             RAZTARA
         </div>
 
-
         <button
             class="menuItem"
             type="button"
@@ -1141,7 +874,6 @@ a{
         >
             👤 Profile
         </button>
-
 
         <button
             class="menuItem"
@@ -1151,7 +883,6 @@ a{
             💬 Chats
         </button>
 
-
         <button
             class="menuItem"
             type="button"
@@ -1160,7 +891,6 @@ a{
             📞 Calls
         </button>
 
-
         <button
             class="menuItem"
             type="button"
@@ -1168,7 +898,6 @@ a{
         >
             ⚙️ Settings
         </button>
-
 
         <button
             class="menuItem logout"
@@ -1181,8 +910,6 @@ a{
     </div>
 
 </div>
-
-
 
 <script>
 
@@ -1305,9 +1032,7 @@ function hideMessage(){
 
 function togglePassword(){
 
-    if(
-        !passwordInput
-    ){
+    if(!passwordInput){
         return;
     }
 
@@ -1353,7 +1078,6 @@ async function loginUser(){
     const password =
         passwordInput.value;
 
-
     if(!email){
 
         showMessage(
@@ -1364,7 +1088,6 @@ async function loginUser(){
 
         return;
     }
-
 
     if(!password){
 
@@ -1377,13 +1100,11 @@ async function loginUser(){
         return;
     }
 
-
     loginBtn.disabled =
         true;
 
     loginBtn.textContent =
         "LOGIN হচ্ছে...";
-
 
     const {
         data,
@@ -1399,7 +1120,6 @@ async function loginUser(){
                     password
 
             });
-
 
     if(error){
 
@@ -1418,7 +1138,6 @@ async function loginUser(){
         return;
     }
 
-
     if(data.session){
 
         loginBtn.disabled =
@@ -1426,12 +1145,6 @@ async function loginUser(){
 
         loginBtn.textContent =
             "LOGIN";
-
-        /*
-         * Supabase auth listener
-         * নিজে থেকেই showApp()
-         * চালাবে।
-         */
 
     }
 
@@ -1451,7 +1164,6 @@ function getLoginError(
             error || ""
         ).toLowerCase();
 
-
     if(
         text.includes(
             "invalid login credentials"
@@ -1463,7 +1175,6 @@ function getLoginError(
         );
 
     }
-
 
     if(
         text.includes(
@@ -1477,7 +1188,6 @@ function getLoginError(
 
     }
 
-
     if(
         text.includes(
             "too many requests"
@@ -1489,7 +1199,6 @@ function getLoginError(
         );
 
     }
-
 
     return (
         error ||
@@ -1546,7 +1255,6 @@ async function loadMyProfile(){
         await supabaseClient.auth
             .getUser();
 
-
     if(
         error ||
         !data ||
@@ -1556,10 +1264,8 @@ async function loadMyProfile(){
         return;
     }
 
-
     currentUserId =
         data.user.id;
-
 
     const {
         data: profile,
@@ -1575,7 +1281,6 @@ async function loadMyProfile(){
                 data.user.id
             )
             .maybeSingle();
-
 
     if(profileError){
 
@@ -1629,7 +1334,6 @@ async function loadMyProfile(){
 
     }
 
-
     updateHomeProfile();
 
 }
@@ -1645,12 +1349,10 @@ function updateHomeProfile(){
         return;
     }
 
-
     const photo =
         document.getElementById(
             "headerProfilePhoto"
         );
-
 
     if(
         photo &&
@@ -1662,12 +1364,10 @@ function updateHomeProfile(){
 
     }
 
-
     const nameElement =
         document.getElementById(
             "headerUserName"
         );
-
 
     if(nameElement){
 
@@ -1691,7 +1391,6 @@ async function loadUsers(){
         return;
     }
 
-
     chatList.innerHTML = `
 
         <div class="loadingBox">
@@ -1704,14 +1403,12 @@ async function loadUsers(){
 
     `;
 
-
     const {
         data: authData,
         error: authError
     } =
         await supabaseClient.auth
             .getUser();
-
 
     if(
         authError ||
@@ -1732,9 +1429,69 @@ async function loadUsers(){
         return;
     }
 
-
     currentUserId =
         authData.user.id;
+
+
+    /* =================================================
+       BLOCKED USERS LOAD
+       শুধু নিজের করা Block নেওয়া হবে
+    ================================================= */
+
+    const {
+        data: blockedRows,
+        error: blockedError
+    } =
+        await supabaseClient
+            .from("blocked_users")
+            .select(
+                "blocked_id"
+            )
+            .eq(
+                "blocker_id",
+                currentUserId
+            );
+
+
+    if(blockedError){
+
+        console.error(
+            "Blocked users load error:",
+            blockedError
+        );
+
+        chatList.innerHTML = `
+
+            <div class="emptyUsers">
+
+                Users load করা যাচ্ছে না।
+
+                <br>
+
+                আবার চেষ্টা করুন।
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    /*
+     * Blocked ID Set
+     */
+
+    const blockedIds =
+        new Set(
+            (blockedRows || [])
+                .map(
+                    row =>
+                        String(
+                            row.blocked_id
+                        )
+                )
+        );
 
 
     const {
@@ -1766,7 +1523,6 @@ async function loadUsers(){
             error
         );
 
-
         chatList.innerHTML = `
 
             <div class="emptyUsers">
@@ -1785,8 +1541,22 @@ async function loadUsers(){
     }
 
 
+    /*
+     * Block করা user বাদ
+     */
+
     allUsers =
-        users || [];
+        (users || []).filter(
+            function(user){
+
+                return !blockedIds.has(
+                    String(
+                        user.id
+                    )
+                );
+
+            }
+        );
 
 
     displayUsers(
@@ -1808,6 +1578,16 @@ function displayUsers(
         return;
     }
 
+
+    /*
+     * গুরুত্বপূর্ণ:
+     *
+     * এখানে শুধু chatList পরিবর্তন হচ্ছে।
+     *
+     * Search element chatList-এর বাইরে।
+     *
+     * তাই Search কখনো মুছে যাবে না।
+     */
 
     if(
         !users ||
@@ -1835,11 +1615,6 @@ function displayUsers(
     users.forEach(
         function(user){
 
-            /*
-             * গুরুত্বপূর্ণ:
-             * user.id সরাসরি ব্যবহার করা হচ্ছে।
-             */
-
             const targetUserId =
                 String(
                     user.id || ""
@@ -1847,7 +1622,6 @@ function displayUsers(
 
 
             if(!targetUserId){
-
                 return;
             }
 
@@ -1985,10 +1759,6 @@ function displayUsers(
             }
 
 
-            /*
-             * Mouse / touch click
-             */
-
             chat.addEventListener(
                 "click",
                 function(){
@@ -2000,10 +1770,6 @@ function displayUsers(
                 }
             );
 
-
-            /*
-             * Keyboard support
-             */
 
             chat.addEventListener(
                 "keydown",
@@ -2096,10 +1862,6 @@ function openChat(
         return;
     }
 
-
-    /*
-     * এখানে অবশ্যই ?user= থাকবে।
-     */
 
     const chatUrl =
         "./chat.html?user=" +
@@ -2220,6 +1982,17 @@ function clearSearch(){
         allUsers
     );
 
+
+    /*
+     * Search input-এ আবার focus থাকবে
+     */
+
+    if(userSearch){
+
+        userSearch.focus();
+
+    }
+
 }
 
 
@@ -2309,12 +2082,6 @@ function openCalls(){
     setActiveNav(
         "navCalls"
     );
-
-
-    /*
-     * Calls page এখনো তৈরি করা হয়নি।
-     * তাই button হারাবে না বা error হবে না।
-     */
 
     window.location.assign(
         "calls.html"
@@ -2465,12 +2232,6 @@ function closeMenu(
         return;
     }
 
-
-    /*
-     * শুধু background-এ click করলে close হবে।
-     * Menu button-এ click করলে event propagation
-     * stop করা আছে।
-     */
 
     if(
         event &&
