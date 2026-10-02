@@ -653,6 +653,107 @@ input[type=file]{
     width:100%;
     font-size:16px;
 }
+
+/* =========================================================
+   INCOMING CALL
+========================================================= */
+
+.incoming-call-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.62);
+    z-index:5000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.incoming-call-overlay.show{
+    display:flex;
+}
+
+.incoming-call-box{
+    width:100%;
+    max-width:350px;
+    background:#fff;
+    border-radius:24px;
+    padding:25px 20px 20px;
+    text-align:center;
+    box-shadow:0 15px 45px rgba(0,0,0,.35);
+    animation:incomingCallPop .25s ease;
+}
+
+@keyframes incomingCallPop{
+    from{
+        opacity:0;
+        transform:scale(.92);
+    }
+    to{
+        opacity:1;
+        transform:scale(1);
+    }
+}
+
+.incoming-call-avatar{
+    width:82px;
+    height:82px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#d9eeee;
+    margin:0 auto 12px;
+    border:4px solid #e5f7ef;
+}
+
+.incoming-call-title{
+    font-size:14px;
+    color:#777;
+    margin-bottom:5px;
+}
+
+.incoming-call-name{
+    font-size:21px;
+    font-weight:700;
+    color:#222;
+    word-break:break-word;
+}
+
+.incoming-call-type{
+    font-size:14px;
+    color:#087f5b;
+    margin-top:7px;
+    font-weight:600;
+}
+
+.incoming-call-buttons{
+    display:flex;
+    gap:12px;
+    margin-top:25px;
+}
+
+.incoming-call-button{
+    flex:1;
+    height:48px;
+    border:0;
+    border-radius:25px;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.incoming-call-reject{
+    background:#fce8e8;
+    color:#d00000;
+}
+
+.incoming-call-accept{
+    background:#087f5b;
+    color:#fff;
+}
+
+.incoming-call-button:active{
+    transform:scale(.97);
+}
 </style>
 </head>
 
@@ -792,39 +893,33 @@ input[type=file]{
 
 <!-- HIDDEN FILE INPUTS -->
 
-<!-- Picture Camera -->
 <input id="photoCameraInput"
        type="file"
        accept="image/*"
        capture="environment"
        onchange="handleSelectedInput(this,'image')">
 
-<!-- Picture Gallery -->
 <input id="photoGalleryInput"
        type="file"
        accept="image/*"
        onchange="handleSelectedInput(this,'image')">
 
-<!-- Video Camera -->
 <input id="videoCameraInput"
        type="file"
        accept="video/*"
        capture="environment"
        onchange="handleSelectedInput(this,'video')">
 
-<!-- Video Gallery -->
 <input id="videoGalleryInput"
        type="file"
        accept="video/*"
        onchange="handleSelectedInput(this,'video')">
 
-<!-- PDF -->
 <input id="pdfInput"
        type="file"
        accept="application/pdf,.pdf"
        onchange="handleSelectedInput(this,'file')">
 
-<!-- Other File -->
 <input id="fileInput"
        type="file"
        onchange="handleSelectedInput(this,'file')">
@@ -844,7 +939,6 @@ input[type=file]{
             Select
         </div>
 
-        <!-- PHOTO OPTIONS -->
         <div id="photoPickerOptions"
              class="media-picker-buttons"
              style="display:none;">
@@ -866,7 +960,6 @@ input[type=file]{
 
         </div>
 
-        <!-- VIDEO OPTIONS -->
         <div id="videoPickerOptions"
              class="media-picker-buttons"
              style="display:none;">
@@ -888,7 +981,6 @@ input[type=file]{
 
         </div>
 
-        <!-- FILE OPTIONS -->
         <div id="filePickerOptions"
              class="media-picker-buttons"
              style="display:none;">
@@ -1031,6 +1123,51 @@ input[type=file]{
     </div>
 </div>
 
+<!-- =======================================================
+     INCOMING CALL OVERLAY
+======================================================= -->
+
+<div id="incomingCallOverlay"
+     class="incoming-call-overlay">
+
+    <div class="incoming-call-box">
+
+        <img id="incomingCallAvatar"
+             class="incoming-call-avatar"
+             src="https://i.pravatar.cc/150?img=12">
+
+        <div id="incomingCallTitle"
+             class="incoming-call-title">
+            Incoming Call
+        </div>
+
+        <div id="incomingCallName"
+             class="incoming-call-name">
+            RAZTARA User
+        </div>
+
+        <div id="incomingCallType"
+             class="incoming-call-type">
+            📞 Audio Call
+        </div>
+
+        <div class="incoming-call-buttons">
+
+            <button class="incoming-call-button incoming-call-reject"
+                    onclick="rejectIncomingCall()">
+                ❌ Reject
+            </button>
+
+            <button class="incoming-call-button incoming-call-accept"
+                    onclick="acceptIncomingCall()">
+                ✅ Accept
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <script>
@@ -1062,6 +1199,11 @@ let conversationId = null;
 
 let realtimeChannel = null;
 let profileRealtimeChannel = null;
+
+/* NEW: Incoming call realtime */
+let incomingCallChannel = null;
+let incomingCallData = null;
+let incomingCallBusy = false;
 
 let blocked = false;
 
@@ -1113,7 +1255,13 @@ const translations = {
         cancel:"Cancel",
         fileNotFound:"ফাইল পাওয়া যায়নি",
         saveStarted:"Save করার চেষ্টা করা হয়েছে",
-        saveFailed:"Save করা যায়নি"
+        saveFailed:"Save করা যায়নি",
+
+        incomingCall:"Incoming Call",
+        incomingAudio:"📞 Audio Call",
+        incomingVideo:"📹 Video Call",
+        accept:"Accept",
+        reject:"Reject"
     },
 
     en:{
@@ -1144,7 +1292,13 @@ const translations = {
         cancel:"Cancel",
         fileNotFound:"File not found",
         saveStarted:"Save requested",
-        saveFailed:"Could not save"
+        saveFailed:"Could not save",
+
+        incomingCall:"Incoming Call",
+        incomingAudio:"📞 Audio Call",
+        incomingVideo:"📹 Video Call",
+        accept:"Accept",
+        reject:"Reject"
     }
 
 };
@@ -1373,10 +1527,6 @@ function handleSelectedInput(
         return;
     }
 
-    /*
-     * Input reset করা হচ্ছে যাতে
-     * একই file আবার select করা যায়।
-     */
     const fileToSend =
         file;
 
@@ -1892,12 +2042,7 @@ function updateOnlineStatus(profile){
         visibility === "friends"
     ){
 
-        /*
-         * এখানে privacy setting friends হলে
-         * প্রয়োজনে friendship check করা যাবে।
-         * বর্তমান chat-এ status hide না করে
-         * last_seen ব্যবহার করা হচ্ছে।
-         */
+        /* Current behavior preserved */
     }
 
     if(!profile.last_seen_at){
@@ -2002,6 +2147,458 @@ function updateOnlineStatus(profile){
               dateText +
               " " +
               time;
+}
+
+/* =========================================================
+   INCOMING CALL FUNCTIONS
+========================================================= */
+
+/*
+ * Receiver-এর chat.html খোলা থাকলে নতুন calls INSERT
+ * realtime-এর মাধ্যমে এখানে আসবে।
+ */
+
+function subscribeIncomingCalls(){
+
+    if(!currentUser){
+
+        return;
+    }
+
+    if(incomingCallChannel){
+
+        supabaseClient
+            .removeChannel(
+                incomingCallChannel
+            );
+
+        incomingCallChannel = null;
+    }
+
+    incomingCallChannel =
+        supabaseClient
+            .channel(
+                "incoming-calls-" +
+                currentUser.id +
+                "-" +
+                Date.now()
+            )
+
+            /* নতুন incoming call */
+            .on(
+                "postgres_changes",
+                {
+                    event:"INSERT",
+                    schema:"public",
+                    table:"calls",
+                    filter:
+                        "receiver_id=eq." +
+                        currentUser.id
+                },
+                payload=>{
+
+                    handleIncomingCallRow(
+                        payload?.new
+                    );
+                }
+            )
+
+            /* Caller call কেটে দিলে */
+            .on(
+                "postgres_changes",
+                {
+                    event:"UPDATE",
+                    schema:"public",
+                    table:"calls",
+                    filter:
+                        "receiver_id=eq." +
+                        currentUser.id
+                },
+                payload=>{
+
+                    const call =
+                        payload?.new;
+
+                    if(!call){
+
+                        return;
+                    }
+
+                    if(
+                        incomingCallData &&
+                        incomingCallData.id ===
+                        call.id
+                    ){
+
+                        if(
+                            call.status ===
+                            "ended" ||
+                            call.status ===
+                            "rejected" ||
+                            call.status ===
+                            "cancelled"
+                        ){
+
+                            hideIncomingCall();
+                        }
+                    }
+                }
+            )
+
+            .subscribe(
+                status=>{
+
+                    console.log(
+                        "Incoming call realtime:",
+                        status
+                    );
+                }
+            );
+}
+
+async function handleIncomingCallRow(call){
+
+    if(!call){
+
+        return;
+    }
+
+    /*
+     * শুধু ringing call গ্রহণ করা হবে।
+     */
+    if(
+        call.status !== "ringing"
+    ){
+
+        return;
+    }
+
+    /*
+     * নিজের call কখনো incoming হিসেবে দেখাবে না।
+     */
+    if(
+        call.caller_id ===
+        currentUser.id
+    ){
+
+        return;
+    }
+
+    /*
+     * একই call দুইবার এলে duplicate overlay হবে না।
+     */
+    if(
+        incomingCallData &&
+        incomingCallData.id ===
+        call.id
+    ){
+
+        return;
+    }
+
+    /*
+     * অন্য incoming call ইতিমধ্যে দেখালে
+     * নতুনটি আপাতত ignore করা হচ্ছে।
+     */
+    if(
+        incomingCallData
+    ){
+
+        return;
+    }
+
+    /*
+     * Blocked caller হলে incoming call দেখাবে না।
+     */
+    const {
+        data:blockData
+    } = await supabaseClient
+        .from("blocked_users")
+        .select("id")
+        .eq(
+            "blocker_id",
+            currentUser.id
+        )
+        .eq(
+            "blocked_id",
+            call.caller_id
+        )
+        .maybeSingle();
+
+    if(blockData){
+
+        return;
+    }
+
+    incomingCallData =
+        call;
+
+    let callerName =
+        "RAZTARA User";
+
+    let callerAvatar =
+        "https://i.pravatar.cc/150?img=12";
+
+    const {
+        data:callerProfile,
+        error
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select(`
+                id,
+                username,
+                full_name,
+                avatar_url
+            `)
+            .eq(
+                "id",
+                call.caller_id
+            )
+            .maybeSingle();
+
+    if(error){
+
+        console.error(
+            "Incoming caller profile:",
+            error
+        );
+    }
+
+    if(callerProfile){
+
+        callerName =
+            callerProfile.full_name ||
+            callerProfile.username ||
+            "RAZTARA User";
+
+        if(callerProfile.avatar_url){
+
+            callerAvatar =
+                callerProfile.avatar_url;
+        }
+    }
+
+    const overlay =
+        document.getElementById(
+            "incomingCallOverlay"
+        );
+
+    const avatar =
+        document.getElementById(
+            "incomingCallAvatar"
+        );
+
+    const name =
+        document.getElementById(
+            "incomingCallName"
+        );
+
+    const title =
+        document.getElementById(
+            "incomingCallTitle"
+        );
+
+    const type =
+        document.getElementById(
+            "incomingCallType"
+        );
+
+    avatar.src =
+        callerAvatar;
+
+    name.textContent =
+        callerName;
+
+    title.textContent =
+        t("incomingCall");
+
+    type.textContent =
+        call.call_type === "video"
+            ? t("incomingVideo")
+            : t("incomingAudio");
+
+    overlay.classList.add(
+        "show"
+    );
+
+    /*
+     * Mobile browser-এর autoplay restriction থাকলে
+     * sound নাও বাজতে পারে। তাই শুধু vibration চেষ্টা।
+     */
+    try{
+
+        if(
+            navigator.vibrate
+        ){
+
+            navigator.vibrate(
+                [300,200,300,200,500]
+            );
+        }
+
+    }catch(error){
+
+        console.log(
+            "Vibration unavailable"
+        );
+    }
+}
+
+async function acceptIncomingCall(){
+
+    if(
+        incomingCallBusy ||
+        !incomingCallData
+    ){
+
+        return;
+    }
+
+    incomingCallBusy = true;
+
+    const call =
+        incomingCallData;
+
+    /*
+     * আগে status answered করা হচ্ছে।
+     */
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("calls")
+            .update({
+                status:"answered",
+                answered_at:
+                    new Date().toISOString()
+            })
+            .eq(
+                "id",
+                call.id
+            )
+            .eq(
+                "receiver_id",
+                currentUser.id
+            )
+            .eq(
+                "status",
+                "ringing"
+            );
+
+    if(error){
+
+        console.error(
+            "Accept call error:",
+            error
+        );
+
+        incomingCallBusy = false;
+
+        showToast(
+            error.message ||
+            t("callFailed")
+        );
+
+        return;
+    }
+
+    hideIncomingCall();
+
+    /*
+     * Call page-এ যাওয়া।
+     * call.html ইতিমধ্যে WebRTC signaling handle করবে।
+     */
+    window.location.href =
+        "call.html?call=" +
+        encodeURIComponent(
+            call.id
+        );
+}
+
+async function rejectIncomingCall(){
+
+    if(
+        incomingCallBusy ||
+        !incomingCallData
+    ){
+
+        return;
+    }
+
+    incomingCallBusy = true;
+
+    const call =
+        incomingCallData;
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("calls")
+            .update({
+                status:"rejected",
+                ended_at:
+                    new Date().toISOString()
+            })
+            .eq(
+                "id",
+                call.id
+            )
+            .eq(
+                "receiver_id",
+                currentUser.id
+            )
+            .eq(
+                "status",
+                "ringing"
+            );
+
+    if(error){
+
+        console.error(
+            "Reject call error:",
+            error
+        );
+
+        showToast(
+            error.message
+        );
+    }
+
+    hideIncomingCall();
+}
+
+function hideIncomingCall(){
+
+    const overlay =
+        document.getElementById(
+            "incomingCallOverlay"
+        );
+
+    if(overlay){
+
+        overlay.classList.remove(
+            "show"
+        );
+    }
+
+    incomingCallData =
+        null;
+
+    incomingCallBusy =
+        false;
+
+    try{
+
+        if(
+            navigator.vibrate
+        ){
+
+            navigator.vibrate(0);
+        }
+
+    }catch(error){}
 }
 
 /* =========================================================
@@ -3149,10 +3746,6 @@ async function handleFile(
         return;
     }
 
-    /*
-     * নিরাপত্তার জন্য type অনুযায়ী file check
-     */
-
     if(type === "image"){
 
         if(
@@ -3187,14 +3780,6 @@ async function handleFile(
         }
     }
 
-    if(type === "file"){
-
-        /*
-         * PDF input থেকে PDF-ই আসবে।
-         * General File input থেকে অন্য file-ও পাঠানো যাবে।
-         */
-    }
-
     try{
 
         const path =
@@ -3219,9 +3804,6 @@ async function handleFile(
                 sender_id:
                     currentUser.id,
 
-                /*
-                 * File/PDF-এর নাম দেখাবে।
-                 */
                 content:
                     (
                         type === "file" ||
@@ -3494,7 +4076,7 @@ function stopRecording(){
             "voiceBtn"
         )
         .textContent =
-            "🎙️";
+        "🎙️";
 }
 
 async function sendVoiceBlob(
@@ -3695,6 +4277,18 @@ async function startCall(type){
 
         showToast(
             t("blockedCannotSend")
+        );
+
+        return;
+    }
+
+    /*
+     * conversationId অবশ্যই থাকতে হবে।
+     */
+    if(!conversationId){
+
+        showToast(
+            t("callFailed")
         );
 
         return;
@@ -4632,12 +5226,16 @@ function applyLanguage(){
             t("recording");
     }
 
-    document
-        .getElementById(
+    const blockMenuText =
+        document.getElementById(
             "blockMenuText"
-        )
-        .textContent =
-        t("block");
+        );
+
+    if(blockMenuText){
+
+        blockMenuText.textContent =
+            t("block");
+    }
 
     const tippingMenuText =
         document.getElementById(
@@ -4648,6 +5246,47 @@ function applyLanguage(){
 
         tippingMenuText.textContent =
             t("tipping");
+    }
+
+    /*
+     * Incoming call button text
+     */
+    const incomingTitle =
+        document.getElementById(
+            "incomingCallTitle"
+        );
+
+    if(
+        incomingTitle &&
+        incomingCallData
+    ){
+
+        incomingTitle.textContent =
+            t("incomingCall");
+    }
+
+    const rejectButton =
+        document.querySelector(
+            ".incoming-call-reject"
+        );
+
+    const acceptButton =
+        document.querySelector(
+            ".incoming-call-accept"
+        );
+
+    if(rejectButton){
+
+        rejectButton.textContent =
+            "❌ " +
+            t("reject");
+    }
+
+    if(acceptButton){
+
+        acceptButton.textContent =
+            "✅ " +
+            t("accept");
     }
 
     if(otherProfile){
@@ -4728,6 +5367,16 @@ async function init(){
         return;
     }
 
+    /*
+     * Incoming call listener এখানে শুরু হচ্ছে।
+     *
+     * এটা conversationId-এর উপর নির্ভর করছে না।
+     * তাই receiver যে chat-এই থাকুক,
+     * তার জন্য calls table-এর incoming INSERT
+     * realtime-এ ধরা যাবে।
+     */
+    subscribeIncomingCalls();
+
     startPresence();
 
     otherUserId =
@@ -4735,6 +5384,10 @@ async function init(){
 
     if(!otherUserId){
 
+        /*
+         * Chat page-এ user না থাকলেও
+         * incoming call listener চালু থাকবে।
+         */
         showToast(
             t("noProfile")
         );
@@ -4746,6 +5399,20 @@ async function init(){
         await checkBlockStatus();
 
     if(isBlocked){
+
+        /*
+         * এই chat থেকে বের হলেও
+         * incoming listener-এর channel remove করা হবে।
+         */
+        if(incomingCallChannel){
+
+            await supabaseClient
+                .removeChannel(
+                    incomingCallChannel
+                );
+
+            incomingCallChannel = null;
+        }
 
         window.location.replace(
             "messages.html"
@@ -4793,6 +5460,46 @@ async function init(){
 
     applyLanguage();
 }
+
+/* =========================================================
+   PAGE CLEANUP
+========================================================= */
+
+window.addEventListener(
+    "pagehide",
+    function(){
+
+        if(incomingCallChannel){
+
+            supabaseClient
+                .removeChannel(
+                    incomingCallChannel
+                );
+
+            incomingCallChannel = null;
+        }
+
+        if(profileRealtimeChannel){
+
+            supabaseClient
+                .removeChannel(
+                    profileRealtimeChannel
+                );
+
+            profileRealtimeChannel = null;
+        }
+
+        if(realtimeChannel){
+
+            supabaseClient
+                .removeChannel(
+                    realtimeChannel
+                );
+
+            realtimeChannel = null;
+        }
+    }
+);
 
 /* =========================================================
    START
