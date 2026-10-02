@@ -617,6 +617,7 @@ function escapeHtml(value){
         .replace(/>/g,"&gt;")
         .replace(/"/g,"&quot;")
         .replace(/'/g,"&#039;");
+
 }
 
 
@@ -643,6 +644,7 @@ function formatDate(dateValue){
             minute:"2-digit"
         }
     );
+
 }
 
 
@@ -667,12 +669,80 @@ function isVisible(
     }
 
     return false;
+
 }
 
 
 function privateText(){
 
     return `<span class="private">${escapeHtml(T.private)}</span>`;
+
+}
+
+
+/* =====================================================
+   EMAIL PRIVACY
+===================================================== */
+
+/*
+   নিজের Email:
+   currentUser.email থেকে নেওয়া হবে।
+
+   অন্য user-এর Email:
+   Supabase RPC function
+   get_visible_profile_email()
+   ব্যবহার করা হবে।
+
+   RPC privacy অনুযায়ী Email
+   return করবে:
+   - public  → সবাই
+   - friend  → accepted friend
+   - only_me → কেউ না
+*/
+
+async function loadVisibleEmail(userId){
+
+    if(!currentUser || !userId){
+        return null;
+    }
+
+
+    /* নিজের profile */
+
+    if(currentUser.id === userId){
+
+        return currentUser.email || null;
+
+    }
+
+
+    /* অন্য user */
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.rpc(
+            "get_visible_profile_email",
+            {
+                target_user_id:userId
+            }
+        );
+
+
+    if(error){
+
+        console.warn(
+            "Visible email:",
+            error.message
+        );
+
+        return null;
+
+    }
+
+
+    return data || null;
 
 }
 
@@ -776,6 +846,7 @@ async function checkFriendship(){
             )
             .limit(1);
 
+
     if(error){
 
         console.warn(
@@ -784,7 +855,9 @@ async function checkFriendship(){
         );
 
         return false;
+
     }
+
 
     return Array.isArray(data) &&
            data.length > 0;
@@ -810,6 +883,7 @@ async function loadProfile(){
         currentUser =
             authData?.user || null;
 
+
         if(!currentUser){
 
             showError(
@@ -817,6 +891,7 @@ async function loadProfile(){
             );
 
             return;
+
         }
 
 
@@ -831,6 +906,7 @@ async function loadProfile(){
             );
 
             return;
+
         }
 
 
@@ -883,6 +959,7 @@ async function loadProfile(){
             );
 
             return;
+
         }
 
 
@@ -930,8 +1007,8 @@ async function loadProfile(){
 
 
         /*
-          যদি privacy row না থাকে,
-          নিরাপদ default ব্যবহার করা হবে।
+          Privacy row না থাকলে
+          নিরাপদ default
         */
 
         if(!privacy){
@@ -1015,6 +1092,16 @@ async function loadProfile(){
 
 
         /* -------------------------
+           EMAIL
+        ------------------------- */
+
+        const visibleEmail =
+            await loadVisibleEmail(
+                targetUserId
+            );
+
+
+        /* -------------------------
            Render
         ------------------------- */
 
@@ -1023,7 +1110,8 @@ async function loadProfile(){
             privacy,
             phone,
             address,
-            ownProfile
+            ownProfile,
+            visibleEmail
         });
 
     }catch(error){
@@ -1056,7 +1144,8 @@ function renderProfile({
     privacy,
     phone,
     address,
-    ownProfile
+    ownProfile,
+    visibleEmail
 }){
 
     const content =
@@ -1100,9 +1189,6 @@ function renderProfile({
 
     /* =========================
        PHONE PRIVACY
-
-       profile_phone RLS also
-       protects the actual row.
     ========================== */
 
     let phoneAllowed = false;
@@ -1161,7 +1247,10 @@ function renderProfile({
 
     let avatarHtml = "";
 
-    if(photoAllowed && profile.avatar_url){
+    if(
+        photoAllowed &&
+        profile.avatar_url
+    ){
 
         avatarHtml = `
             <img
@@ -1191,6 +1280,7 @@ function renderProfile({
             profile.username ||
             "User"
         );
+
 
         if(profile.username){
 
@@ -1251,13 +1341,9 @@ function renderProfile({
 
     if(onlineAllowed){
 
-        /*
-          last_seen_at-এর ভিত্তিতে
-          শুধু status দেখানো হচ্ছে।
-        */
-
         const lastSeen =
             profile.last_seen_at;
+
 
         if(lastSeen){
 
@@ -1265,7 +1351,9 @@ function renderProfile({
                 <div class="status">
                     <span class="statusDot"></span>
                     ${escapeHtml(T.lastSeen)}
-                    ${escapeHtml(formatDate(lastSeen))}
+                    ${escapeHtml(
+                        formatDate(lastSeen)
+                    )}
                 </div>
             `;
 
@@ -1298,6 +1386,7 @@ function renderProfile({
     let phoneValue =
         privateText();
 
+
     if(
         phoneAllowed &&
         phone?.phone
@@ -1318,6 +1407,7 @@ function renderProfile({
     let addressValue =
         privateText();
 
+
     if(
         addressAllowed &&
         address?.address
@@ -1334,20 +1424,18 @@ function renderProfile({
     /* =========================
        EMAIL
        
-       Current auth email can safely
-       be shown for own profile.
-       
-       For another user, auth.users
-       email is intentionally NOT
-       fetched/exposed from frontend.
+       FIXED:
+       এখন RPC থেকে visible email
+       পাওয়া গেলে সেটি দেখাবে।
     ========================== */
 
     let emailValue =
         privateText();
 
+
     if(
         ownProfile &&
-        currentUser.email
+        currentUser?.email
     ){
 
         emailValue =
@@ -1355,16 +1443,17 @@ function renderProfile({
                 currentUser.email
             );
 
+    }else if(
+        !ownProfile &&
+        visibleEmail
+    ){
+
+        emailValue =
+            escapeHtml(
+                visibleEmail
+            );
+
     }
-
-
-    /*
-      For another user, even if
-      profile_privacy.email says public,
-      there is currently no dedicated
-      public email table in this schema.
-      Therefore keep it Private.
-    */
 
 
     /* =========================
@@ -1373,6 +1462,7 @@ function renderProfile({
 
     let bioValue =
         privateText();
+
 
     if(bioAllowed){
 
@@ -1468,7 +1558,9 @@ function renderProfile({
                             <div class="infoValue">
                                 ${
                                     infoAllowed
-                                    ? "@"+escapeHtml(profile.username)
+                                    ? "@"+escapeHtml(
+                                        profile.username
+                                      )
                                     : privateText()
                                 }
                             </div>
@@ -1589,6 +1681,7 @@ function showError(message){
         document.getElementById(
             "profileContent"
         );
+
 
     content.innerHTML = `
 
