@@ -2959,6 +2959,13 @@ function appendMessage(
                 message
             );
 
+        }else if(type === "call"){
+
+            box.classList.add("call-message");
+
+            box.innerHTML =
+                escapeHtml(message.content || "📞 Call");
+
         }else if(type === "audio"){
 
             box.classList.add(
