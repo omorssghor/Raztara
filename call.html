@@ -574,6 +574,17 @@ button{
 
 
         <button
+            id="soundBtn"
+            class="control"
+            style="display:none"
+            onclick="enableCallSound()"
+            title="Sound"
+        >
+            🔊
+        </button>
+
+
+        <button
             class="control end"
             onclick="hangup()"
         >
@@ -1382,23 +1393,64 @@ function createPeerConnection(){
 
 async function playRemoteAudio(){
 
-    if(!remoteAudio){
-        return;
+    const isVideo =
+        callData &&
+        callData.call_type === "video";
+
+    const media =
+        isVideo
+            ? remoteVideo
+            : remoteAudio;
+
+    if(!media){
+        return false;
     }
 
     try{
-        remoteAudio.autoplay = true;
-        remoteAudio.playsInline = true;
-        remoteAudio.muted = false;
-        remoteAudio.volume = 1;
 
-        await remoteAudio.play();
+        media.autoplay = true;
+        media.playsInline = true;
+        media.muted = false;
+        media.volume = 1;
+
+        await media.play();
+
+        const soundBtn =
+            document.getElementById("soundBtn");
+
+        if(soundBtn){
+            soundBtn.style.display = "none";
+        }
+
+        return true;
 
     }catch(error){
+
         console.warn(
-            "REMOTE AUDIO AUTOPLAY BLOCKED:",
+            "REMOTE MEDIA AUTOPLAY BLOCKED:",
             error
         );
+
+        const soundBtn =
+            document.getElementById("soundBtn");
+
+        if(soundBtn){
+            soundBtn.style.display = "flex";
+        }
+
+        return false;
+    }
+}
+
+
+async function enableCallSound(){
+
+    const ok =
+        await playRemoteAudio();
+
+    if(ok){
+
+        showToast("🔊 শব্দ চালু হয়েছে");
     }
 }
 
