@@ -1261,6 +1261,13 @@ function createPeerConnection(){
             }
 
 
+            /*
+              Remote audio playback must be started explicitly.
+              iPhone/Safari can block autoplay after navigation.
+            */
+            playRemoteAudio();
+
+
             if(
                 callData.call_type ===
                 "video"
@@ -1367,6 +1374,46 @@ function createPeerConnection(){
 
     return peerConnection;
 }
+
+
+/* =====================================================
+   REMOTE AUDIO PLAYBACK
+===================================================== */
+
+async function playRemoteAudio(){
+
+    if(!remoteAudio){
+        return;
+    }
+
+    try{
+        remoteAudio.autoplay = true;
+        remoteAudio.playsInline = true;
+        remoteAudio.muted = false;
+        remoteAudio.volume = 1;
+
+        await remoteAudio.play();
+
+    }catch(error){
+        console.warn(
+            "REMOTE AUDIO AUTOPLAY BLOCKED:",
+            error
+        );
+    }
+}
+
+
+/*
+  A user interaction anywhere on the call screen can
+  unlock audio playback on iPhone/Safari.
+*/
+document.addEventListener(
+    "pointerdown",
+    ()=>{
+        playRemoteAudio();
+    },
+    {passive:true}
+);
 
 
 /* =====================================================
@@ -3353,12 +3400,19 @@ async function init(){
     }else{
 
         /*
-          Receiver-এর জন্য পুরোনো offer
-          থাকলে রেখে দিচ্ছি।
+          Chat page থেকে Accept করে এখানে এলে
+          call status ইতিমধ্যে answered থাকে।
+          তাই দ্বিতীয়বার Accept চাপতে হবে না।
         */
+        if(callData.status === "answered"){
 
-        callStatus.textContent =
-            "Incoming call...";
+            await acceptCall();
+
+        }else{
+
+            callStatus.textContent =
+                "Incoming call...";
+        }
     }
 }
 
