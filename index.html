@@ -1,9 +1,38 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#07131a">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+>
+
+<meta
+    name="theme-color"
+    content="#07131a"
+>
+
+<meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+>
+
+<meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+>
+
+<meta
+    name="apple-mobile-web-app-title"
+    content="RAZTARA"
+>
+
+<link
+    rel="manifest"
+    href="./manifest.json"
+>
 
 <title>RAZTARA</title>
 
@@ -751,8 +780,6 @@ a{
 
     </header>
 
-    <!-- SEARCH — এটি কখনো chatList-এর ভিতরে যাবে না -->
-
     <div class="search">
 
         <div class="searchBox">
@@ -779,8 +806,6 @@ a{
 
     </div>
 
-    <!-- USER LIST -->
-
     <div
         class="chatList"
         id="chatList"
@@ -795,8 +820,6 @@ a{
         </div>
 
     </div>
-
-    <!-- BOTTOM NAV -->
 
     <nav class="bottomNav">
 
@@ -912,6 +935,52 @@ a{
 </div>
 
 <script>
+
+/* =====================================================
+   PWA SERVICE WORKER
+===================================================== */
+
+if(
+    "serviceWorker" in navigator
+){
+
+    window.addEventListener(
+        "load",
+        function(){
+
+            navigator.serviceWorker
+                .register(
+                    "./service-worker.js",
+                    {
+                        scope:"./"
+                    }
+                )
+                .then(
+                    function(registration){
+
+                        console.log(
+                            "RAZTARA Service Worker চালু হয়েছে:",
+                            registration.scope
+                        );
+
+                    }
+                )
+                .catch(
+                    function(error){
+
+                        console.error(
+                            "RAZTARA Service Worker চালু করা যায়নি:",
+                            error
+                        );
+
+                    }
+                );
+
+        }
+    );
+
+}
+
 
 /* =====================================================
    SUPABASE
@@ -1433,11 +1502,6 @@ async function loadUsers(){
         authData.user.id;
 
 
-    /* =================================================
-       BLOCKED USERS LOAD
-       শুধু নিজের করা Block নেওয়া হবে
-    ================================================= */
-
     const {
         data: blockedRows,
         error: blockedError
@@ -1477,10 +1541,6 @@ async function loadUsers(){
         return;
     }
 
-
-    /*
-     * Blocked ID Set
-     */
 
     const blockedIds =
         new Set(
@@ -1541,10 +1601,6 @@ async function loadUsers(){
     }
 
 
-    /*
-     * Block করা user বাদ
-     */
-
     allUsers =
         (users || []).filter(
             function(user){
@@ -1577,17 +1633,6 @@ function displayUsers(
     if(!chatList){
         return;
     }
-
-
-    /*
-     * গুরুত্বপূর্ণ:
-     *
-     * এখানে শুধু chatList পরিবর্তন হচ্ছে।
-     *
-     * Search element chatList-এর বাইরে।
-     *
-     * তাই Search কখনো মুছে যাবে না।
-     */
 
     if(
         !users ||
@@ -1982,10 +2027,6 @@ function clearSearch(){
         allUsers
     );
 
-
-    /*
-     * Search input-এ আবার focus থাকবে
-     */
 
     if(userSearch){
 
