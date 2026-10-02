@@ -9,7 +9,11 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
 body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
@@ -61,7 +65,9 @@ body{
     margin:6px 0 27px;
 }
 
-.group{margin-bottom:16px}
+.group{
+    margin-bottom:16px;
+}
 
 label{
     display:block;
@@ -86,9 +92,13 @@ input:focus{
     background:#fff;
 }
 
-.password-box{position:relative}
+.password-box{
+    position:relative;
+}
 
-.password-box input{padding-right:50px}
+.password-box input{
+    padding-right:50px;
+}
 
 .eye{
     position:absolute;
@@ -116,6 +126,7 @@ input:focus{
 
 .btn:disabled{
     opacity:.65;
+    cursor:not-allowed;
 }
 
 .message{
@@ -154,6 +165,75 @@ input:focus{
     font-size:12px;
     margin-top:20px;
 }
+
+
+/* =========================
+   VERIFICATION SCREEN
+========================= */
+
+#verificationBox{
+    display:none;
+}
+
+.verify-title{
+    text-align:center;
+    color:#075e54;
+    font-size:24px;
+    font-weight:800;
+    margin-bottom:8px;
+}
+
+.verify-text{
+    text-align:center;
+    color:#777;
+    font-size:14px;
+    line-height:1.6;
+    margin-bottom:22px;
+}
+
+.email-show{
+    color:#075e54;
+    font-weight:700;
+    word-break:break-all;
+}
+
+.otp-input{
+    text-align:center;
+    letter-spacing:8px;
+    font-size:25px;
+    font-weight:800;
+    padding-left:20px;
+}
+
+.verify-btn{
+    margin-top:16px;
+}
+
+.resend{
+    width:100%;
+    border:0;
+    background:none;
+    color:#075e54;
+    font-weight:700;
+    font-size:14px;
+    margin-top:17px;
+    cursor:pointer;
+}
+
+.resend:disabled{
+    color:#999;
+    cursor:not-allowed;
+}
+
+.change-email{
+    width:100%;
+    border:0;
+    background:none;
+    color:#777;
+    font-size:13px;
+    margin-top:10px;
+    cursor:pointer;
+}
 </style>
 </head>
 
@@ -163,9 +243,19 @@ input:focus{
 
 <div class="card">
 
-<div class="logo">RZ</div>
+<!-- =========================
+     REGISTRATION
+========================= -->
 
-<div class="title">Create Account</div>
+<div id="registrationBox">
+
+<div class="logo">
+RZ
+</div>
+
+<div class="title">
+Create Account
+</div>
 
 <div class="subtitle">
 Join RAZTARA and connect with people
@@ -174,7 +264,10 @@ Join RAZTARA and connect with people
 <form id="registrationForm">
 
 <div class="group">
-<label>Full Name</label>
+
+<label>
+Full Name
+</label>
 
 <input
     type="text"
@@ -183,11 +276,15 @@ Join RAZTARA and connect with people
     autocomplete="name"
     required
 >
+
 </div>
 
 
 <div class="group">
-<label>Email</label>
+
+<label>
+Email
+</label>
 
 <input
     type="email"
@@ -196,12 +293,15 @@ Join RAZTARA and connect with people
     autocomplete="email"
     required
 >
+
 </div>
 
 
 <div class="group">
 
-<label>Password</label>
+<label>
+Password
+</label>
 
 <div class="password-box">
 
@@ -218,15 +318,20 @@ Join RAZTARA and connect with people
     type="button"
     class="eye"
     onclick="togglePassword('password',this)"
->👁</button>
+>
+👁
+</button>
 
 </div>
+
 </div>
 
 
 <div class="group">
 
-<label>Confirm Password</label>
+<label>
+Confirm Password
+</label>
 
 <div class="password-box">
 
@@ -242,9 +347,12 @@ Join RAZTARA and connect with people
     type="button"
     class="eye"
     onclick="togglePassword('confirmPassword',this)"
->👁</button>
+>
+👁
+</button>
 
 </div>
+
 </div>
 
 
@@ -271,6 +379,96 @@ Already have an account? Login
 
 </div>
 
+
+<!-- =========================
+     VERIFICATION
+========================= -->
+
+<div id="verificationBox">
+
+<div class="logo">
+✓
+</div>
+
+<div class="verify-title">
+Verify Your Email
+</div>
+
+<div class="verify-text">
+
+We sent a verification code to
+
+<div
+    class="email-show"
+    id="verifyEmail"
+>
+</div>
+
+<br>
+
+Enter the 6-digit code from your email.
+
+</div>
+
+
+<div class="group">
+
+<label>
+Verification Code
+</label>
+
+<input
+    type="text"
+    id="otp"
+    class="otp-input"
+    inputmode="numeric"
+    autocomplete="one-time-code"
+    maxlength="6"
+    placeholder="000000"
+>
+
+</div>
+
+
+<button
+    type="button"
+    class="btn verify-btn"
+    id="verifyBtn"
+    onclick="verifyCode()"
+>
+VERIFY EMAIL
+</button>
+
+
+<div
+    id="verifyMessage"
+    class="message"
+></div>
+
+
+<button
+    type="button"
+    class="resend"
+    id="resendBtn"
+    onclick="resendCode()"
+>
+RESEND CODE
+</button>
+
+
+<button
+    type="button"
+    class="change-email"
+    onclick="changeEmail()"
+>
+← Change Email
+</button>
+
+</div>
+
+</div>
+
+
 <div class="footer">
 © 2026 RAZTARA • Connect • Call • Share
 </div>
@@ -279,6 +477,10 @@ Already have an account? Login
 
 
 <script>
+
+/* =========================================
+   SUPABASE
+========================================= */
 
 const SUPABASE_URL =
 "https://pqyicaqpmojijjskpzcp.supabase.co";
@@ -292,6 +494,22 @@ supabase.createClient(
     SUPABASE_KEY
 );
 
+
+/* =========================================
+   GLOBAL DATA
+========================================= */
+
+let verificationEmail = "";
+let verificationName = "";
+let verificationPassword = "";
+
+let resendTimer = null;
+let resendSeconds = 60;
+
+
+/* =========================================
+   PASSWORD SHOW / HIDE
+========================================= */
 
 function togglePassword(id,button){
 
@@ -312,6 +530,10 @@ function togglePassword(id,button){
 }
 
 
+/* =========================================
+   LOGIN
+========================================= */
+
 function goLogin(){
 
     window.location.href =
@@ -320,78 +542,138 @@ function goLogin(){
 }
 
 
+/* =========================================
+   SHOW MESSAGE
+========================================= */
+
+function showMessage(element,type,text){
+
+    element.className =
+        "message " + type;
+
+    element.textContent =
+        text;
+
+    element.style.display =
+        "block";
+}
+
+
+/* =========================================
+   REGISTRATION
+========================================= */
+
 document
 .getElementById("registrationForm")
-.addEventListener("submit", async function(e){
+.addEventListener(
+    "submit",
+    async function(e){
 
-    e.preventDefault();
+        e.preventDefault();
 
-    const name =
-        document.getElementById("name")
-        .value.trim();
+        const name =
+            document
+            .getElementById("name")
+            .value
+            .trim();
 
-    const email =
-        document.getElementById("email")
-        .value.trim();
+        const email =
+            document
+            .getElementById("email")
+            .value
+            .trim()
+            .toLowerCase();
 
-    const password =
-        document.getElementById("password")
-        .value;
+        const password =
+            document
+            .getElementById("password")
+            .value;
 
-    const confirmPassword =
-        document.getElementById("confirmPassword")
-        .value;
+        const confirmPassword =
+            document
+            .getElementById("confirmPassword")
+            .value;
 
-    const button =
-        document.getElementById("registerBtn");
+        const button =
+            document
+            .getElementById("registerBtn");
 
-    const message =
-        document.getElementById("message");
-
-
-    message.style.display = "none";
-
-
-    if(password.length < 6){
-
-        message.className =
-            "message error";
-
-        message.textContent =
-            "Password must be at least 6 characters.";
-
-        message.style.display = "block";
-
-        return;
-    }
+        const message =
+            document
+            .getElementById("message");
 
 
-    if(password !== confirmPassword){
-
-        message.className =
-            "message error";
-
-        message.textContent =
-            "Passwords do not match.";
-
-        message.style.display = "block";
-
-        return;
-    }
+        message.style.display =
+            "none";
 
 
-    button.disabled = true;
-    button.textContent = "CREATING ACCOUNT...";
+        /* PASSWORD CHECK */
+
+        if(password.length < 6){
+
+            showMessage(
+                message,
+                "error",
+                "Password must be at least 6 characters."
+            );
+
+            return;
+        }
 
 
-    const redirectUrl =
-        new URL(
-            "login.html",
-            window.location.href
-        ).href;
+        /* CONFIRM PASSWORD */
+
+        if(password !== confirmPassword){
+
+            showMessage(
+                message,
+                "error",
+                "Passwords do not match."
+            );
+
+            return;
+        }
 
 
-    const {data,error} =
+        button.disabled = true;
+
+        button.textContent =
+            "CREATING ACCOUNT...";
+
+
+        /*
+         * SAVE DATA TEMPORARILY
+         */
+
+        verificationEmail =
+            email;
+
+        verificationName =
+            name;
+
+        verificationPassword =
+            password;
+
+
+        /*
+         * REDIRECT AFTER VERIFICATION
+         */
+
+        const redirectUrl =
+            new URL(
+                "login.html",
+                window.location.href
+            ).href;
+
+
+        /*
+         * SUPABASE SIGN UP
+         */
+
+        const {
+            data,
+            error
+        } =
         await supabaseClient.auth.signUp({
 
             email:email,
@@ -399,66 +681,393 @@ document
             password:password,
 
             options:{
-                emailRedirectTo:redirectUrl,
+
+                emailRedirectTo:
+                    redirectUrl,
 
                 data:{
                     full_name:name
                 }
+
             }
 
         });
 
 
-    if(error){
+        /* ERROR */
 
-        message.className =
-            "message error";
+        if(error){
 
-        message.textContent =
-            error.message;
+            showMessage(
+                message,
+                "error",
+                error.message
+            );
 
-        message.style.display = "block";
+            button.disabled = false;
 
-        button.disabled = false;
-        button.textContent = "CREATE ACCOUNT";
+            button.textContent =
+                "CREATE ACCOUNT";
+
+            return;
+        }
+
+
+        /*
+         * IF SESSION EXISTS
+         */
+
+        if(data.session){
+
+            showMessage(
+                message,
+                "success",
+                "Account created successfully. Opening RAZTARA..."
+            );
+
+            setTimeout(function(){
+
+                window.location.href =
+                    "index.html";
+
+            },1000);
+
+            return;
+        }
+
+
+        /*
+         * OPEN VERIFICATION SCREEN
+         */
+
+        document
+        .getElementById("registrationBox")
+        .style.display =
+            "none";
+
+        document
+        .getElementById("verificationBox")
+        .style.display =
+            "block";
+
+
+        document
+        .getElementById("verifyEmail")
+        .textContent =
+            verificationEmail;
+
+
+        /*
+         * START TIMER
+         */
+
+        startResendTimer();
+
+    }
+);
+
+
+/* =========================================
+   VERIFY OTP
+========================================= */
+
+async function verifyCode(){
+
+    const otpInput =
+        document
+        .getElementById("otp");
+
+    const verifyBtn =
+        document
+        .getElementById("verifyBtn");
+
+    const message =
+        document
+        .getElementById("verifyMessage");
+
+
+    const token =
+        otpInput
+        .value
+        .trim();
+
+
+    message.style.display =
+        "none";
+
+
+    /*
+     * CODE CHECK
+     */
+
+    if(!/^\d{6}$/.test(token)){
+
+        showMessage(
+            message,
+            "error",
+            "Please enter the 6-digit verification code."
+        );
 
         return;
     }
 
 
-    if(data.session){
+    verifyBtn.disabled = true;
 
-        message.className =
-            "message success";
+    verifyBtn.textContent =
+        "VERIFYING...";
 
-        message.textContent =
-            "Account created successfully. Opening RAZTARA...";
 
-        message.style.display = "block";
+    /*
+     * SUPABASE OTP VERIFY
+     */
 
-        setTimeout(function(){
+    const {
+        data,
+        error
+    } =
+    await supabaseClient.auth.verifyOtp({
 
-            window.location.href =
-                "index.html";
+        email:
+            verificationEmail,
+
+        token:
+            token,
+
+        type:
+            "email"
+
+    });
+
+
+    /*
+     * ERROR
+     */
+
+    if(error){
+
+        showMessage(
+            message,
+            "error",
+            error.message ||
+            "Invalid or expired verification code."
+        );
+
+        verifyBtn.disabled = false;
+
+        verifyBtn.textContent =
+            "VERIFY EMAIL";
+
+        return;
+    }
+
+
+    /*
+     * SUCCESS
+     */
+
+    showMessage(
+        message,
+        "success",
+        "Email verified successfully! Opening RAZTARA..."
+    );
+
+
+    verifyBtn.textContent =
+        "VERIFIED ✓";
+
+
+    clearInterval(resendTimer);
+
+
+    setTimeout(function(){
+
+        window.location.href =
+            "index.html";
+
+    },1200);
+
+}
+
+
+/* =========================================
+   RESEND CODE
+========================================= */
+
+async function resendCode(){
+
+    const resendBtn =
+        document
+        .getElementById("resendBtn");
+
+    const message =
+        document
+        .getElementById("verifyMessage");
+
+
+    if(!verificationEmail){
+
+        showMessage(
+            message,
+            "error",
+            "Email address not found."
+        );
+
+        return;
+    }
+
+
+    resendBtn.disabled = true;
+
+    resendBtn.textContent =
+        "SENDING...";
+
+
+    /*
+     * SEND NEW OTP
+     */
+
+    const {
+        error
+    } =
+    await supabaseClient.auth.resend({
+
+        type:
+            "signup",
+
+        email:
+            verificationEmail
+
+    });
+
+
+    if(error){
+
+        showMessage(
+            message,
+            "error",
+            error.message
+        );
+
+        resendBtn.disabled = false;
+
+        resendBtn.textContent =
+            "RESEND CODE";
+
+        return;
+    }
+
+
+    showMessage(
+        message,
+        "success",
+        "A new verification code has been sent to your email."
+    );
+
+
+    startResendTimer();
+
+}
+
+
+/* =========================================
+   RESEND TIMER
+========================================= */
+
+function startResendTimer(){
+
+    const resendBtn =
+        document
+        .getElementById("resendBtn");
+
+
+    clearInterval(resendTimer);
+
+
+    resendSeconds = 60;
+
+    resendBtn.disabled = true;
+
+    resendBtn.textContent =
+        "RESEND CODE (" +
+        resendSeconds +
+        "s)";
+
+
+    resendTimer =
+        setInterval(function(){
+
+            resendSeconds--;
+
+
+            if(resendSeconds <= 0){
+
+                clearInterval(resendTimer);
+
+                resendBtn.disabled =
+                    false;
+
+                resendBtn.textContent =
+                    "RESEND CODE";
+
+                return;
+            }
+
+
+            resendBtn.textContent =
+                "RESEND CODE (" +
+                resendSeconds +
+                "s)";
 
         },1000);
 
-    }else{
+}
 
-        message.className =
-            "message success";
 
-        message.textContent =
-            "Account created. Please check your email and confirm your account before logging in.";
+/* =========================================
+   CHANGE EMAIL
+========================================= */
 
-        message.style.display = "block";
+function changeEmail(){
 
-        button.disabled = false;
-        button.textContent = "CREATE ACCOUNT";
+    clearInterval(resendTimer);
 
-    }
 
-});
+    document
+    .getElementById("verificationBox")
+    .style.display =
+        "none";
+
+
+    document
+    .getElementById("registrationBox")
+    .style.display =
+        "block";
+
+
+    document
+    .getElementById("verifyMessage")
+    .style.display =
+        "none";
+
+
+    document
+    .getElementById("otp")
+    .value =
+        "";
+
+
+    const button =
+        document
+        .getElementById("registerBtn");
+
+    button.disabled =
+        false;
+
+    button.textContent =
+        "CREATE ACCOUNT";
+
+}
 
 </script>
 
