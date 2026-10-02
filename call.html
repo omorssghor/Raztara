@@ -574,6 +574,26 @@ button{
 
 
         <button
+            id="mediaSwitchBtn"
+            class="control"
+            onclick="toggleCallMedia()"
+            title="Audio / Video"
+        >
+            📹
+        </button>
+
+
+        <button
+            id="speakerBtn"
+            class="control"
+            onclick="toggleSpeaker()"
+            title="Speaker"
+        >
+            🔊
+        </button>
+
+
+        <button
             id="soundBtn"
             class="control"
             style="display:none"
@@ -1919,24 +1939,53 @@ async function handleOffer(offer){
 
     try{
 
+        const targetType =
+            offer.media_type ||
+            callData.call_type ||
+            "audio";
+
+
+        /*
+          Audio ↔ Video switch হলে আগে
+          local media একই mode-এ আনি।
+        */
+        await ensureMediaForType(
+            targetType
+        );
+
+
         createPeerConnection();
 
 
-        await getLocalMedia();
+        if(
+            !remoteDescriptionSet ||
+            offer.renegotiate === true
+        ){
 
+            await peerConnection
+                .setRemoteDescription(
+                    new RTCSessionDescription(
+                        offer
+                    )
+                );
 
-        if(remoteDescriptionSet){
+        }else{
 
             return;
         }
 
 
-        await peerConnection
-            .setRemoteDescription(
-                new RTCSessionDescription(
-                    offer
-                )
-            );
+        remoteDescriptionSet =
+            true;
+
+
+        callData.call_type =
+            targetType;
+
+
+        applyCallTypeUI(
+            targetType
+        );
 
 
         remoteDescriptionSet =
@@ -3272,28 +3321,397 @@ async function switchCamera(){
 
 
 /* =====================================================
+   MEDIA MODE + CALL CONTROLS
+===================================================== */
+
+function applyCallTypeUI(type){
+
+    const isVideo =
+        type === "video";
+
+    cameraBtn.style.display =
+        isVideo ? "flex" : "none";
+
+    switchBtnShow(
+        isVideo
+    );
+
+    if(mediaSwitchBtn){
+
+        mediaSwitchBtn.style.display =
+            "flex";
+
+        mediaSwitchBtn.textContent =
+            isVideo
+                ? "🎙️"
+                : "📹";
+
+        mediaSwitchBtn.title =
+            isVideo
+                ? "Audio Call"
+                : "Video Call";
+    }
+
+    if(isVideo){
+
+        remoteVideo.style.display =
+            "block";
+
+        audioScreen.style.display =
+            "none";
+
+    }else{
+
+        remoteVideo.style.display =
+            "none";
+
+        audioScreen.style.display =
+            "flex";
+    }
+
+    playRemoteAudio().catch(
+        ()=>{}
+    );
+}
+
+
+async function ensureMediaForType(type){
+
+    if(!peerConnection){
+
+        createPeerConnection();
+    }
+
+    const wantVideo =
+        type === "video";
+
+    if(!localStream){
+
+        localStream =
+            await navigator
+                .mediaDevices
+                .getUserMedia({
+                    audio:true,
+                    video:wantVideo
+                        ? {
+                            facingMode:
+                                currentFacingMode
+                          }
+                        : false
+                });
+
+        localStream
+            .getTracks()
+            .forEach(track => {
+
+                peerConnection.addTrack(
+                    track,
+                    localStream
+                );
+            });
+
+    }else{
+
+        const audioTrack =
+            localStream
+                .getAudioTracks()[0];
+
+        let videoTrack =
+            localStream
+                .getVideoTracks()[0];
+
+        if(wantVideo && !videoTrack){
+
+            const videoStream =
+                await navigator
+                    .mediaDevices
+                    .getUserMedia({
+                        audio:false,
+                        video:{
+                            facingMode:
+                                currentFacingMode
+                        }
+                    });
+
+            videoTrack =
+                videoStream
+                    .getVideoTracks()[0];
+
+            localStream.addTrack(
+                videoTrack
+            );
+
+            const videoSender =
+                peerConnection
+                    .getSenders()
+                    .find(
+                        s =>
+                            s.track?.kind ===
+                            "video"
+                    );
+
+            if(videoSender){
+
+                await videoSender
+                    .replaceTrack(
+                        videoTrack
+                    );
+
+            }else{
+
+                peerConnection.addTrack(
+                    videoTrack,
+                    localStream
+                );
+            }
+
+        }else if(!wantVideo && videoTrack){
+
+            const videoSender =
+                peerConnection
+                    .getSenders()
+                    .find(
+                        s =>
+                            s.track?.kind ===
+                            "video"
+                    );
+
+            if(videoSender){
+
+                await videoSender
+                    .replaceTrack(null);
+            }
+
+            videoTrack.stop();
+
+            localStream.removeTrack(
+                videoTrack
+            );
+        }
+
+        if(!audioTrack){
+
+            const audioStream =
+                await navigator
+                    .mediaDevices
+                    .getUserMedia({
+                        audio:true,
+                        video:false
+                    });
+
+            const newAudio =
+                audioStream
+                    .getAudioTracks()[0];
+
+            localStream.addTrack(
+                newAudio
+            );
+
+            const audioSender =
+                peerConnection
+                    .getSenders()
+                    .find(
+                        s =>
+                            s.track?.kind ===
+                            "audio"
+                    );
+
+            if(audioSender){
+
+                await audioSender
+                    .replaceTrack(
+                        newAudio
+                    );
+
+            }else{
+
+                peerConnection.addTrack(
+                    newAudio,
+                    localStream
+                );
+            }
+        }
+    }
+
+    if(wantVideo){
+
+        localVideo.srcObject =
+            localStream;
+
+        localVideo.style.display =
+            "block";
+
+        localVideo
+            .play()
+            .catch(
+                ()=>{}
+            );
+
+    }else{
+
+        localVideo.style.display =
+            "none";
+    }
+
+    applyCallTypeUI(
+        type
+    );
+}
+
+
+async function toggleCallMedia(){
+
+    if(
+        !peerConnection ||
+        !isAccepted ||
+        endingCall
+    ){
+
+        return;
+    }
+
+    const nextType =
+        callData.call_type ===
+        "video"
+            ? "audio"
+            : "video";
+
+    try{
+
+        callStatus.textContent =
+            nextType === "video"
+                ? "Switching to video..."
+                : "Switching to audio...";
+
+        await ensureMediaForType(
+            nextType
+        );
+
+        callData.call_type =
+            nextType;
+
+        const offer =
+            await peerConnection
+                .createOffer();
+
+        await peerConnection
+            .setLocalDescription(
+                offer
+            );
+
+        const description =
+            peerConnection
+                .localDescription
+                ?.toJSON
+                    ? peerConnection
+                        .localDescription
+                        .toJSON()
+                    : peerConnection
+                        .localDescription;
+
+        description.media_type =
+            nextType;
+
+        description.renegotiate =
+            true;
+
+        await sendSignal(
+            "offer",
+            description
+        );
+
+        callStatus.textContent =
+            "Connected";
+
+    }catch(error){
+
+        console.error(
+            "MEDIA SWITCH ERROR:",
+            error
+        );
+
+        showToast(
+            nextType === "video"
+                ? "Video Call চালু করা যায়নি।"
+                : "Audio Call চালু করা যায়নি।"
+        );
+    }
+}
+
+
+function toggleSpeaker(){
+
+    const media =
+        callData &&
+        callData.call_type === "video"
+            ? remoteVideo
+            : remoteAudio;
+
+    if(!media){
+
+        return;
+    }
+
+    /*
+      iOS Safari-তে programmatically
+      earpiece/speaker route force করার API
+      নেই। যেখানে setSinkId supported,
+      সেখানে ব্যবহার করছি।
+    */
+    if(
+        typeof media.setSinkId ===
+        "function"
+    ){
+
+        const current =
+            media.dataset.speaker ===
+            "on";
+
+        media
+            .setSinkId(
+                current
+                    ? ""
+                    : "default"
+            )
+            .then(
+                ()=>{
+                    media.dataset.speaker =
+                        current
+                            ? "off"
+                            : "on";
+
+                    speakerBtn.textContent =
+                        current
+                            ? "🔈"
+                            : "🔊";
+                }
+            )
+            .catch(
+                ()=>{
+                    showToast(
+                        "এই ফোনে Speaker control browser দ্বারা সীমিত।"
+                    );
+                }
+            );
+
+    }else{
+
+        showToast(
+            "এই iPhone/browser-এ Speaker route control সীমিত।"
+        );
+    }
+}
+
+
+/* =====================================================
    UI
 ===================================================== */
 
 function prepareUI(){
 
-    if(
-        callData.call_type ===
-        "video"
-    ){
-
-        cameraBtn.style.display =
-            "flex";
-
-        switchBtnShow(true);
-
-    }else{
-
-        cameraBtn.style.display =
-            "none";
-
-        switchBtnShow(false);
-    }
+    applyCallTypeUI(
+        callData.call_type
+    );
 
 
     if(isCaller()){
@@ -3446,6 +3864,28 @@ async function init(){
     */
 
     if(isCaller()){
+
+        /*
+          Video call হলে শুরুতেই camera + microphone
+          একবার request করা হয়। Browser permission
+          granted থাকলে সাধারণত আবার prompt দেখায় না।
+        */
+        if(callData.call_type === "video"){
+
+            try{
+
+                await ensureMediaForType(
+                    "video"
+                );
+
+            }catch(error){
+
+                console.error(
+                    "INITIAL VIDEO MEDIA:",
+                    error
+                );
+            }
+        }
 
         await startOutgoingCall();
 
