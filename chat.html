@@ -377,6 +377,70 @@ input[type=file]{
     display:none;
 }
 
+/* MEDIA PICKER */
+.media-picker-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.48);
+    z-index:1400;
+    display:none;
+    align-items:flex-end;
+}
+
+.media-picker-overlay.show{
+    display:flex;
+}
+
+.media-picker-sheet{
+    width:100%;
+    background:#fff;
+    border-radius:20px 20px 0 0;
+    padding:18px 15px 24px;
+    box-shadow:0 -5px 25px rgba(0,0,0,.18);
+}
+
+.media-picker-handle{
+    width:45px;
+    height:5px;
+    border-radius:10px;
+    background:#ccc;
+    margin:0 auto 16px;
+}
+
+.media-picker-title{
+    font-size:18px;
+    font-weight:700;
+    text-align:center;
+    margin-bottom:15px;
+}
+
+.media-picker-buttons{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.media-picker-button{
+    width:100%;
+    border:0;
+    background:#f4f7f7;
+    border-radius:12px;
+    padding:15px;
+    text-align:left;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.media-picker-button:active{
+    background:#e6eeeb;
+}
+
+.media-picker-button.cancel{
+    background:#eeeeee;
+    text-align:center;
+    color:#d00000;
+}
+
 /* SHEET */
 .overlay{
     position:fixed;
@@ -460,7 +524,7 @@ input[type=file]{
     opacity:0;
     pointer-events:none;
     transition:.25s;
-    z-index:1000;
+    z-index:2000;
     max-width:90%;
     text-align:center;
 }
@@ -680,26 +744,31 @@ input[type=file]{
 
 </div>
 
+<!-- COMPOSER -->
 <div class="composer">
 
     <button class="media-btn"
-            onclick="document.getElementById('photoInput').click()">
+            onclick="openMediaPicker('photo')"
+            title="Picture">
         🖼️
     </button>
 
     <button class="media-btn"
-            onclick="document.getElementById('videoInput').click()">
+            onclick="openMediaPicker('video')"
+            title="Video">
         🎥
     </button>
 
     <button class="media-btn"
-            onclick="document.getElementById('fileInput').click()">
+            onclick="openMediaPicker('file')"
+            title="File">
         📎
     </button>
 
     <button id="voiceBtn"
             class="media-btn"
-            onclick="toggleRecording()">
+            onclick="toggleRecording()"
+            title="Voice">
         🎙️
     </button>
 
@@ -721,19 +790,128 @@ input[type=file]{
 
 </div>
 
-<input id="photoInput"
+<!-- HIDDEN FILE INPUTS -->
+
+<!-- Picture Camera -->
+<input id="photoCameraInput"
        type="file"
        accept="image/*"
-       onchange="handleFile(this.files[0],'image')">
+       capture="environment"
+       onchange="handleSelectedInput(this,'image')">
 
-<input id="videoInput"
+<!-- Picture Gallery -->
+<input id="photoGalleryInput"
+       type="file"
+       accept="image/*"
+       onchange="handleSelectedInput(this,'image')">
+
+<!-- Video Camera -->
+<input id="videoCameraInput"
        type="file"
        accept="video/*"
-       onchange="handleFile(this.files[0],'video')">
+       capture="environment"
+       onchange="handleSelectedInput(this,'video')">
 
+<!-- Video Gallery -->
+<input id="videoGalleryInput"
+       type="file"
+       accept="video/*"
+       onchange="handleSelectedInput(this,'video')">
+
+<!-- PDF -->
+<input id="pdfInput"
+       type="file"
+       accept="application/pdf,.pdf"
+       onchange="handleSelectedInput(this,'file')">
+
+<!-- Other File -->
 <input id="fileInput"
        type="file"
-       onchange="handleFile(this.files[0],'file')">
+       onchange="handleSelectedInput(this,'file')">
+
+<!-- MEDIA PICKER -->
+<div id="mediaPickerOverlay"
+     class="media-picker-overlay"
+     onclick="closeMediaPicker(event)">
+
+    <div class="media-picker-sheet"
+         onclick="event.stopPropagation()">
+
+        <div class="media-picker-handle"></div>
+
+        <div id="mediaPickerTitle"
+             class="media-picker-title">
+            Select
+        </div>
+
+        <!-- PHOTO OPTIONS -->
+        <div id="photoPickerOptions"
+             class="media-picker-buttons"
+             style="display:none;">
+
+            <button class="media-picker-button"
+                    onclick="openPhotoCamera()">
+                📷 Camera
+            </button>
+
+            <button class="media-picker-button"
+                    onclick="openPhotoGallery()">
+                🖼️ Gallery
+            </button>
+
+            <button class="media-picker-button cancel"
+                    onclick="closeMediaPicker()">
+                ❌ Cancel
+            </button>
+
+        </div>
+
+        <!-- VIDEO OPTIONS -->
+        <div id="videoPickerOptions"
+             class="media-picker-buttons"
+             style="display:none;">
+
+            <button class="media-picker-button"
+                    onclick="openVideoCamera()">
+                📹 Camera
+            </button>
+
+            <button class="media-picker-button"
+                    onclick="openVideoGallery()">
+                🎥 Gallery — শুধু Video
+            </button>
+
+            <button class="media-picker-button cancel"
+                    onclick="closeMediaPicker()">
+                ❌ Cancel
+            </button>
+
+        </div>
+
+        <!-- FILE OPTIONS -->
+        <div id="filePickerOptions"
+             class="media-picker-buttons"
+             style="display:none;">
+
+            <button class="media-picker-button"
+                    onclick="openPdfPicker()">
+                📄 PDF
+            </button>
+
+            <button class="media-picker-button"
+                    onclick="openGeneralFilePicker()">
+                📎 File
+            </button>
+
+            <button class="media-picker-button cancel"
+                    onclick="closeMediaPicker()">
+                ❌ Cancel
+            </button>
+
+        </div>
+
+    </div>
+</div>
 
 <div id="recordingBox" class="recording">
 
@@ -976,6 +1154,238 @@ function t(key){
     return translations[currentLanguage]?.[key]
         || translations.bn[key]
         || key;
+}
+
+/* =========================================================
+   MEDIA PICKER
+========================================================= */
+
+function openMediaPicker(type){
+
+    const overlay =
+        document.getElementById(
+            "mediaPickerOverlay"
+        );
+
+    const title =
+        document.getElementById(
+            "mediaPickerTitle"
+        );
+
+    const photoOptions =
+        document.getElementById(
+            "photoPickerOptions"
+        );
+
+    const videoOptions =
+        document.getElementById(
+            "videoPickerOptions"
+        );
+
+    const fileOptions =
+        document.getElementById(
+            "filePickerOptions"
+        );
+
+    photoOptions.style.display =
+        "none";
+
+    videoOptions.style.display =
+        "none";
+
+    fileOptions.style.display =
+        "none";
+
+    if(type === "photo"){
+
+        title.textContent =
+            currentLanguage === "bn"
+                ? "ছবি পাঠান"
+                : "Send Picture";
+
+        photoOptions.style.display =
+            "flex";
+
+    }else if(type === "video"){
+
+        title.textContent =
+            currentLanguage === "bn"
+                ? "ভিডিও পাঠান"
+                : "Send Video";
+
+        videoOptions.style.display =
+            "flex";
+
+    }else if(type === "file"){
+
+        title.textContent =
+            currentLanguage === "bn"
+                ? "ফাইল পাঠান"
+                : "Send File";
+
+        fileOptions.style.display =
+            "flex";
+    }
+
+    overlay.classList.add(
+        "show"
+    );
+}
+
+function closeMediaPicker(event){
+
+    if(
+        event &&
+        event.target !==
+        document.getElementById(
+            "mediaPickerOverlay"
+        )
+    ){
+
+        return;
+    }
+
+    document
+        .getElementById(
+            "mediaPickerOverlay"
+        )
+        .classList.remove(
+            "show"
+        );
+}
+
+/* =========================================================
+   PHOTO PICKER
+========================================================= */
+
+function openPhotoCamera(){
+
+    closeMediaPicker();
+
+    const input =
+        document.getElementById(
+            "photoCameraInput"
+        );
+
+    input.value = "";
+
+    input.click();
+}
+
+function openPhotoGallery(){
+
+    closeMediaPicker();
+
+    const input =
+        document.getElementById(
+            "photoGalleryInput"
+        );
+
+    input.value = "";
+
+    input.click();
+}
+
+/* =========================================================
+   VIDEO PICKER
+========================================================= */
+
+function openVideoCamera(){
+
+    closeMediaPicker();
+
+    const input =
+        document.getElementById(
+            "videoCameraInput"
+        );
+
+    input.value = "";
+
+    input.click();
+}
+
+function openVideoGallery(){
+
+    closeMediaPicker();
+
+    const input =
+        document.getElementById(
+            "videoGalleryInput"
+        );
+
+    input.value = "";
+
+    input.click();
+}
+
+/* =========================================================
+   FILE PICKER
+========================================================= */
+
+function openPdfPicker(){
+
+    closeMediaPicker();
+
+    const input =
+        document.getElementById(
+            "pdfInput"
+        );
+
+    input.value = "";
+
+    input.click();
+}
+
+function openGeneralFilePicker(){
+
+    closeMediaPicker();
+
+    const input =
+        document.getElementById(
+            "fileInput"
+        );
+
+    input.value = "";
+
+    input.click();
+}
+
+/* =========================================================
+   SELECTED FILE
+========================================================= */
+
+function handleSelectedInput(
+    input,
+    type
+){
+
+    if(!input){
+
+        return;
+    }
+
+    const file =
+        input.files &&
+        input.files[0];
+
+    if(!file){
+
+        return;
+    }
+
+    /*
+     * Input reset করা হচ্ছে যাতে
+     * একই file আবার select করা যায়।
+     */
+    const fileToSend =
+        file;
+
+    input.value = "";
+
+    handleFile(
+        fileToSend,
+        type
+    );
 }
 
 /* =========================================================
@@ -1516,9 +1926,6 @@ function updateOnlineStatus(profile){
         now -
         last.getTime();
 
-    /*
-     * 60 সেকেন্ডের মধ্যে update হলে Online
-     */
     if(diff <= 60000){
 
         status.textContent =
@@ -2069,14 +2476,6 @@ async function markMessageDelivered(
 
         return;
     }
-
-    if(data){
-
-        /*
-         * Sender side Realtime UPDATE-এ
-         * tick পরিবর্তন হবে।
-         */
-    }
 }
 
 /* =========================================================
@@ -2177,10 +2576,6 @@ async function loadMessages(){
 
     scrollToBottom();
 
-    /*
-     * Chat খুলে থাকা অবস্থায় অন্যজনের
-     * সব unread message read হবে।
-     */
     await markIncomingMessagesRead();
 }
 
@@ -2554,10 +2949,6 @@ function appendMessage(
         )
     );
 
-    /*
-     * শুধু নিজের পাঠানো message-এ
-     * tick দেখাবে।
-     */
     if(
         message.sender_id ===
         currentUser.id
@@ -2582,10 +2973,6 @@ function appendMessage(
         row
     );
 
-    /*
-     * Receiver-এর chat খোলা থাকলে নতুন message
-     * সঙ্গে সঙ্গে delivered + read।
-     */
     if(
         message.sender_id ===
         otherUserId
@@ -2762,6 +3149,52 @@ async function handleFile(
         return;
     }
 
+    /*
+     * নিরাপত্তার জন্য type অনুযায়ী file check
+     */
+
+    if(type === "image"){
+
+        if(
+            !file.type ||
+            !file.type.startsWith("image/")
+        ){
+
+            showToast(
+                currentLanguage === "bn"
+                    ? "শুধু ছবি নির্বাচন করুন"
+                    : "Please select an image"
+            );
+
+            return;
+        }
+    }
+
+    if(type === "video"){
+
+        if(
+            !file.type ||
+            !file.type.startsWith("video/")
+        ){
+
+            showToast(
+                currentLanguage === "bn"
+                    ? "শুধু ভিডিও নির্বাচন করুন"
+                    : "Please select a video"
+            );
+
+            return;
+        }
+    }
+
+    if(type === "file"){
+
+        /*
+         * PDF input থেকে PDF-ই আসবে।
+         * General File input থেকে অন্য file-ও পাঠানো যাবে।
+         */
+    }
+
     try{
 
         const path =
@@ -2786,8 +3219,14 @@ async function handleFile(
                 sender_id:
                     currentUser.id,
 
+                /*
+                 * File/PDF-এর নাম দেখাবে।
+                 */
                 content:
-                    type === "file"
+                    (
+                        type === "file" ||
+                        type === "audio"
+                    )
                         ? file.name
                         : null,
 
@@ -4289,9 +4728,6 @@ async function init(){
         return;
     }
 
-    /*
-     * নিজের Last Seen/Online update শুরু
-     */
     startPresence();
 
     otherUserId =
@@ -4320,9 +4756,6 @@ async function init(){
 
     await loadOtherProfile();
 
-    /*
-     * অন্য user-এর profile live listen
-     */
     subscribeProfileRealtime();
 
     await applyProfilePrivacy();
@@ -4356,9 +4789,6 @@ async function init(){
 
     subscribeRealtime();
 
-    /*
-     * আবার unread messages read করে নিশ্চিত করা
-     */
     await markIncomingMessagesRead();
 
     applyLanguage();
