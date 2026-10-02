@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+
+<title>RAZTARA — Call</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
+    background:#101414;
+    color:#fff;
+}
+
+body{
+    position:relative;
+}
+
+/* =========================================================
+   VIDEO
+========================================================= */
+
+#remoteVideo{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    background:#111;
+}
+
+#localVideo{
+    position:absolute;
+    right:15px;
+    top:65px;
+    width:120px;
+    height:170px;
+    object-fit:cover;
+    background:#222;
+    border-radius:14px;
+    border:2px solid rgba(255,255,255,.7);
+    z-index:20;
+}
+
+/* AUDIO CALL */
+.audio-avatar{
+    position:absolute;
+    left:50%;
+    top:35%;
+    transform:translate(-50%,-50%);
+    width:110px;
+    height:110px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#087f5b;
+    border:3px solid rgba(255,255,255,.8);
+}
+
+.audio-name{
+    position:absolute;
+    left:0;
+    right:0;
+    top:calc(35% + 75px);
+    text-align:center;
+    font-size:21px;
+    font-weight:700;
+}
+
+/* =========================================================
+   TOP
+========================================================= */
+
+.top{
+    position:absolute;
+    left:0;
+    right:0;
+    top:0;
+    height:60px;
+    display:flex;
+    align-items:center;
+    padding:0 15px;
+    background:linear-gradient(
+        rgba(0,0,0,.65),
+        transparent
+    );
+    z-index:30;
+}
+
+.top-name{
+    font-size:17px;
+    font-weight:700;
+}
+
+.top-status{
+    font-size:12px;
+    margin-top:3px;
+    opacity:.85;
+}
+
+/* =========================================================
+   INCOMING
+========================================================= */
+
+.incoming{
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.82);
+    z-index:100;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:20px;
+}
+
+.incoming.show{
+    display:flex;
+}
+
+.incoming-box{
+    width:100%;
+    max-width:350px;
+}
+
+.incoming-avatar{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    object-fit:cover;
+    margin-bottom:18px;
+}
+
+.incoming-name{
+    font-size:23px;
+    font-weight:700;
+}
+
+.incoming-type{
+    margin-top:8px;
+    color:#ddd;
+}
+
+.incoming-buttons{
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    margin-top:35px;
+}
+
+.call-button{
+    width:65px;
+    height:65px;
+    border-radius:50%;
+    border:0;
+    font-size:27px;
+    color:#fff;
+    cursor:pointer;
+}
+
+.accept{
+    background:#087f5b;
+}
+
+.reject{
+    background:#d62828;
+}
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+.controls{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:25px;
+    display:flex;
+    justify-content:center;
+    gap:13px;
+    z-index:40;
+}
+
+.control{
+    width:54px;
+    height:54px;
+    border:0;
+    border-radius:50%;
+    background:rgba(255,255,255,.18);
+    color:#fff;
+    font-size:22px;
+    cursor:pointer;
+    backdrop-filter:blur(8px);
+}
+
+.control.active{
+    background:#fff;
+    color:#222;
+}
+
+.end{
+    background:#d62828 !important;
+    color:#fff !important;
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.call-status{
+    position:absolute;
+    left:0;
+    right:0;
+    top:75px;
+    text-align:center;
+    font-size:14px;
+    z-index:35;
+    text-shadow:0 1px 4px #000;
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+.toast{
+    position:absolute;
+    left:50%;
+    bottom:95px;
+    transform:translateX(-50%);
+    background:#222;
+    color:#fff;
+    padding:10px 17px;
+    border-radius:22px;
+    font-size:13px;
+    display:none;
+    z-index:200;
+    max-width:90%;
+    text-align:center;
+}
+
+.toast.show{
+    display:block;
+}
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.loading{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#101414;
+    z-index:150;
+    font-size:16px;
+}
+
+.loading.hide{
+    display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div id="loading" class="loading">
+    Connecting...
+</div>
+
+<video id="remoteVideo"
+       autoplay
+       playsinline>
+</video>
+
+<video id="localVideo"
+       autoplay
+       muted
+       playsinline>
+</video>
+
+<div id="audioAvatar"
+     class="audio-avatar"
+     style="display:none;">
+</div>
+
+<img id="audioAvatarImg"
+     class="audio-avatar"
+     style="display:none;"
+     src="https://i.pravatar.cc/150?img=12">
+
+<div id="audioName"
+     class="audio-name"
+     style="display:none;">
+    RAZTARA User
+</div>
+
+<div class="top">
+
+    <div>
+        <div id="userName"
+             class="top-name">
+            RAZTARA User
+        </div>
+
+        <div id="userStatus"
+             class="top-status">
+            Calling...
+        </div>
+    </div>
+
+</div>
+
+<div id="callStatus"
+     class="call-status">
+    Connecting...
+</div>
+
+<!-- =======================================================
+     CONTROLS
+======================================================= -->
+
+<div id="controls"
+     class="controls">
+
+    <button id="muteButton"
+            class="control"
+            onclick="toggleMute()">
+        🎙️
+    </button>
+
+    <button id="cameraButton"
+            class="control"
+            onclick="toggleCamera()">
+        🎥
+    </button>
+
+    <button id="switchCameraButton"
+            class="control"
+            onclick="switchCamera()">
+        🔄
+    </button>
+
+    <button class="control end"
+            onclick="endCall()">
+        ☎️
+    </button>
+
+</div>
+
+<!-- =======================================================
+     INCOMING CALL
+======================================================= -->
+
+<div id="incoming"
+     class="incoming">
+
+    <div class="incoming-box">
+
+        <img id="incomingAvatar"
+             class="incoming-avatar"
+             src="https://i.pravatar.cc/150?img=12">
+
+        <div id="incomingName"
+             class="incoming-name">
+            RAZTARA User
+        </div>
+
+        <div id="incomingType"
+             class="incoming-type">
+            Incoming Call
+        </div>
+
+        <div class="incoming-buttons">
+
+            <button class="call-button reject"
+                    onclick="rejectCall()">
+                ✕
+            </button>
+
+            <button class="call-button accept"
+                    onclick="acceptCall()">
+                ✓
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="toast"
+     class="toast">
+</div>
+
+<script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+    "https://pqyicaqpmojijjskpzcp.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let currentUser = null;
+let otherUserId = null;
+let callId = null;
+let conversationId = null;
+let callType = "audio";
+let callData = null;
+
+let peerConnection = null;
+let localStream = null;
+
+let signalChannel = null;
+let callChannel = null;
+
+let isCaller = false;
+let callAccepted = false;
+let ended = false;
+
+let audioEnabled = true;
+let videoEnabled = true;
+
+/* =========================================================
+   ICE SERVERS
+========================================================= */
+
+const rtcConfig = {
+
+    iceServers:[
+        {
+            urls:[
+                "stun:stun.l.google.com:19302",
+                "stun:stun1.l.google.com:19302"
+            ]
+        }
+    ]
+
+};
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function getParams(){
+
+    return new URLSearchParams(
+        window.location.search
+    );
+
+}
+
+function showToast(message){
+
+    const el =
+        document.getElementById(
+            "toast"
+        );
+
+    el.textContent =
+        message;
+
+    el.classList.add(
+        "show"
+    );
+
+    setTimeout(()=>{
+
+        el.classList.remove(
+            "show"
+        );
+
+    },2500);
+
+}
+
+function setStatus(text){
+
+    document.getElementById(
+        "callStatus"
+    ).textContent =
+        text;
+
+    document.getElementById(
+        "userStatus"
+    ).textContent =
+        text;
+
+}
+
+/* =========================================================
+   AUTH
+========================================================= */
+
+async function getCurrentUser(){
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.getUser();
+
+    if(error || !data?.user){
+
+        window.location.href =
+            "index.html";
+
+        return null;
+    }
+
+    return data.user;
+
+}
+
+/* =========================================================
+   LOAD CALL
+========================================================= */
+
+async function loadCall(){
+
+    const params =
+        getParams();
+
+    callId =
+        params.get("call");
+
+    if(!callId){
+
+        showToast(
+            "Call ID পাওয়া যায়নি"
+        );
+
+        setTimeout(
+            ()=>goBack(),
+            1200
+        );
+
+        return false;
+    }
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("calls")
+            .select(`
+                id,
+                conversation_id,
+                caller_id,
+                receiver_id,
+                call_type,
+                status,
+                started_at
+            `)
+            .eq(
+                "id",
+                callId
+            )
+            .single();
+
+    if(error){
+
+        console.error(error);
+
+        showToast(
+            error.message
+        );
+
+        return false;
+    }
+
+    callData =
+        data;
+
+    conversationId =
+        data.conversation_id;
+
+    callType =
+        data.call_type;
+
+    if(
+        currentUser.id ===
+        data.caller_id
+    ){
+
+        isCaller = true;
+
+        otherUserId =
+            data.receiver_id;
+
+    }else{
+
+        isCaller = false;
+
+        otherUserId =
+            data.caller_id;
+
+    }
+
+    return true;
+
+}
+
+/* =========================================================
+   LOAD PROFILE
+========================================================= */
+
+async function loadProfile(){
+
+    if(!otherUserId){
+
+        return;
+    }
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select(`
+                id,
+                username,
+                full_name,
+                avatar_url
+            `)
+            .eq(
+                "id",
+                otherUserId
+            )
+            .maybeSingle();
+
+    if(error){
+
+        console.error(error);
+
+        return;
+    }
+
+    const name =
+        data?.full_name ||
+        data?.username ||
+        "RAZTARA User";
+
+    document.getElementById(
+        "userName"
+    ).textContent =
+        name;
+
+    document.getElementById(
+        "audioName"
+    ).textContent =
+        name;
+
+    if(data?.avatar_url){
+
+        document.getElementById(
+            "audioAvatarImg"
+        ).src =
+            data.avatar_url;
+
+        document.getElementById(
+            "incomingAvatar"
+        ).src =
+            data.avatar_url;
+
+    }
+
+}
+
+/* =========================================================
+   MEDIA
+========================================================= */
+
+async function getLocalMedia(){
+
+    try{
+
+        localStream =
+            await navigator.mediaDevices
+                .getUserMedia({
+
+                    audio:true,
+
+                    video:
+                        callType ===
+                        "video"
+
+                });
+
+    }catch(error){
+
+        console.error(error);
+
+        showToast(
+            "Microphone/Camera permission দিন"
+        );
+
+        throw error;
+    }
+
+    document.getElementById(
+        "localVideo"
+    ).srcObject =
+        localStream;
+
+    if(callType === "audio"){
+
+        document.getElementById(
+            "localVideo"
+        ).style.display =
+            "none";
+
+        document.getElementById(
+            "audioAvatarImg"
+        ).style.display =
+            "block";
+
+        document.getElementById(
+            "audioName"
+        ).style.display =
+            "block";
+
+        document.getElementById(
+            "cameraButton"
+        ).style.display =
+            "none";
+
+        document.getElementById(
+            "switchCameraButton"
+        ).style.display =
+            "none";
+
+    }
+
+}
+
+/* =========================================================
+   PEER
+========================================================= */
+
+function createPeer(){
+
+    peerConnection =
+        new RTCPeerConnection(
+            rtcConfig
+        );
+
+    if(localStream){
+
+        localStream
+            .getTracks()
+            .forEach(
+                track=>{
+
+                    peerConnection.addTrack(
+                        track,
+                        localStream
+                    );
+
+                }
+            );
+
+    }
+
+    peerConnection.ontrack =
+        event=>{
+
+            const remoteVideo =
+                document.getElementById(
+                    "remoteVideo"
+                );
+
+            if(
+                event.streams &&
+                event.streams[0]
+            ){
+
+                remoteVideo.srcObject =
+                    event.streams[0];
+
+            }
+
+        };
+
+    peerConnection.onicecandidate =
+        async event=>{
+
+            if(
+                event.candidate
+            ){
+
+                await sendSignal(
+                    "ice",
+                    event.candidate.toJSON()
+                );
+
+            }
+
+        };
+
+    peerConnection.onconnectionstatechange =
+        ()=>{
+
+            const state =
+                peerConnection.connectionState;
+
+            console.log(
+                "WebRTC state:",
+                state
+            );
+
+            if(state === "connected"){
+
+                setStatus(
+                    "Connected"
+                );
+
+            }
+
+            if(
+                state === "failed" ||
+                state === "disconnected"
+            ){
+
+                setStatus(
+                    "Connection problem"
+                );
+
+            }
+
+        };
+
+}
+
+/* =========================================================
+   SIGNALING
+========================================================= */
+
+async function sendSignal(
+    type,
+    payload
+){
+
+    if(!conversationId){
+
+        return;
+    }
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("call_signals")
+            .insert({
+
+                conversation_id:
+                    conversationId,
+
+                sender_id:
+                    currentUser.id,
+
+                signal_type:
+                    type,
+
+                payload:
+                    payload
+
+            });
+
+    if(error){
+
+        console.error(
+            "Signal error:",
+            error
+        );
+
+    }
+
+}
+
+/* =========================================================
+   SIGNAL REALTIME
+========================================================= */
+
+function subscribeSignals(){
+
+    signalChannel =
+        supabaseClient
+            .channel(
+                "call-signals-" +
+                callId
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event:"INSERT",
+                    schema:"public",
+                    table:"call_signals"
+                },
+                async payload=>{
+
+                    const signal =
+                        payload.new;
+
+                    if(
+                        signal.conversation_id !==
+                        conversationId
+                    ){
+
+                        return;
+                    }
+
+                    if(
+                        signal.sender_id ===
+                        currentUser.id
+                    ){
+
+                        return;
+                    }
+
+                    await handleSignal(
+                        signal
+                    );
+
+                }
+            )
+            .subscribe();
+
+}
+
+/* =========================================================
+   HANDLE SIGNAL
+========================================================= */
+
+async function handleSignal(
+    signal
+){
+
+    if(!peerConnection){
+
+        return;
+    }
+
+    try{
+
+        if(
+            signal.signal_type ===
+            "offer"
+        ){
+
+            await peerConnection
+                .setRemoteDescription(
+                    new RTCSessionDescription(
+                        signal.payload
+                    )
+                );
+
+            const answer =
+                await peerConnection
+                    .createAnswer();
+
+            await peerConnection
+                .setLocalDescription(
+                    answer
+                );
+
+            await sendSignal(
+                "answer",
+                answer
+            );
+
+        }
+
+        else if(
+            signal.signal_type ===
+            "answer"
+        ){
+
+            await peerConnection
+                .setRemoteDescription(
+                    new RTCSessionDescription(
+                        signal.payload
+                    )
+                );
+
+            setStatus(
+                "Connected"
+            );
+
+        }
+
+        else if(
+            signal.signal_type ===
+            "ice"
+        ){
+
+            try{
+
+                await peerConnection
+                    .addIceCandidate(
+                        new RTCIceCandidate(
+                            signal.payload
+                        )
+                    );
+
+            }catch(error){
+
+                console.error(
+                    "ICE error:",
+                    error
+                );
+
+            }
+
+        }
+
+        else if(
+            signal.signal_type ===
+            "hangup"
+        ){
+
+            finishCall(
+                false
+            );
+
+        }
+
+        else if(
+            signal.signal_type ===
+            "reject"
+        ){
+
+            showToast(
+                "Call rejected"
+            );
+
+            finishCall(
+                false
+            );
+
+        }
+
+    }catch(error){
+
+        console.error(
+            "Signal handling:",
+            error
+        );
+
+    }
+
+}
+
+/* =========================================================
+   START CALL
+========================================================= */
+
+async function startOutgoingCall(){
+
+    setStatus(
+        "Calling..."
+    );
+
+    await getLocalMedia();
+
+    createPeer();
+
+    const offer =
+        await peerConnection
+            .createOffer();
+
+    await peerConnection
+        .setLocalDescription(
+            offer
+        );
+
+    await sendSignal(
+        "offer",
+        offer
+    );
+
+}
+
+/* =========================================================
+   ACCEPT
+========================================================= */
+
+async function acceptCall(){
+
+    document.getElementById(
+        "incoming"
+    ).classList.remove(
+        "show"
+    );
+
+    callAccepted =
+        true;
+
+    try{
+
+        await supabaseClient
+            .from("calls")
+            .update({
+                status:"accepted"
+            })
+            .eq(
+                "id",
+                callId
+            );
+
+    }catch(error){
+
+        console.error(error);
+
+    }
+
+    await getLocalMedia();
+
+    createPeer();
+
+    setStatus(
+        "Connecting..."
+    );
+
+}
+
+/* =========================================================
+   REJECT
+========================================================= */
+
+async function rejectCall(){
+
+    await supabaseClient
+        .from("calls")
+        .update({
+            status:"rejected"
+        })
+        .eq(
+            "id",
+            callId
+        );
+
+    await sendSignal(
+        "reject",
+        {
+            call_id:callId
+        }
+    );
+
+    finishCall(
+        false
+    );
+
+}
+
+/* =========================================================
+   MUTE
+========================================================= */
+
+function toggleMute(){
+
+    if(!localStream){
+
+        return;
+    }
+
+    const tracks =
+        localStream.getAudioTracks();
+
+    if(!tracks.length){
+
+        return;
+    }
+
+    audioEnabled =
+        !audioEnabled;
+
+    tracks.forEach(
+        track=>{
+            track.enabled =
+                audioEnabled;
+        }
+    );
+
+    const button =
+        document.getElementById(
+            "muteButton"
+        );
+
+    button.textContent =
+        audioEnabled
+            ? "🎙️"
+            : "🔇";
+
+}
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+function toggleCamera(){
+
+    if(!localStream){
+
+        return;
+    }
+
+    const tracks =
+        localStream.getVideoTracks();
+
+    if(!tracks.length){
+
+        return;
+    }
+
+    videoEnabled =
+        !videoEnabled;
+
+    tracks.forEach(
+        track=>{
+            track.enabled =
+                videoEnabled;
+        }
+    );
+
+    const button =
+        document.getElementById(
+            "cameraButton"
+        );
+
+    button.textContent =
+        videoEnabled
+            ? "🎥"
+            : "🚫";
+
+}
+
+/* =========================================================
+   SWITCH CAMERA
+========================================================= */
+
+async function switchCamera(){
+
+    if(
+        !localStream ||
+        callType !== "video"
+    ){
+
+        return;
+    }
+
+    const videoTrack =
+        localStream
+            .getVideoTracks()[0];
+
+    if(!videoTrack){
+
+        return;
+    }
+
+    const settings =
+        videoTrack.getSettings();
+
+    const currentFacing =
+        settings.facingMode ===
+        "user"
+            ? "environment"
+            : "user";
+
+    try{
+
+        const newStream =
+            await navigator.mediaDevices
+                .getUserMedia({
+
+                    audio:false,
+
+                    video:{
+                        facingMode:
+                            {
+                                ideal:
+                                    currentFacing
+                            }
+                    }
+
+                });
+
+        const newTrack =
+            newStream.getVideoTracks()[0];
+
+        const sender =
+            peerConnection
+                ?.getSenders()
+                .find(
+                    s =>
+                        s.track &&
+                        s.track.kind ===
+                        "video"
+                );
+
+        if(sender){
+
+            await sender.replaceTrack(
+                newTrack
+            );
+
+        }
+
+        videoTrack.stop();
+
+        localStream.removeTrack(
+            videoTrack
+        );
+
+        localStream.addTrack(
+            newTrack
+        );
+
+        document.getElementById(
+            "localVideo"
+        ).srcObject =
+            localStream;
+
+    }catch(error){
+
+        console.error(error);
+
+        showToast(
+            "Camera switch করা যায়নি"
+        );
+
+    }
+
+}
+
+/* =========================================================
+   END CALL
+========================================================= */
+
+async function endCall(){
+
+    if(ended){
+
+        return;
+    }
+
+    ended = true;
+
+    try{
+
+        await sendSignal(
+            "hangup",
+            {
+                call_id:callId
+            }
+        );
+
+        await supabaseClient
+            .from("calls")
+            .update({
+                status:"ended"
+            })
+            .eq(
+                "id",
+                callId
+            );
+
+    }catch(error){
+
+        console.error(error);
+
+    }
+
+    finishCall(
+        false
+    );
+
+}
+
+/* =========================================================
+   FINISH
+========================================================= */
+
+function finishCall(
+    redirect=true
+){
+
+    if(ended && redirect){
+
+        return;
+    }
+
+    ended = true;
+
+    if(localStream){
+
+        localStream
+            .getTracks()
+            .forEach(
+                track=>{
+                    track.stop();
+                }
+            );
+
+        localStream =
+            null;
+
+    }
+
+    if(peerConnection){
+
+        peerConnection.close();
+
+        peerConnection =
+            null;
+
+    }
+
+    if(signalChannel){
+
+        supabaseClient
+            .removeChannel(
+                signalChannel
+            );
+
+        signalChannel =
+            null;
+
+    }
+
+    if(callChannel){
+
+        supabaseClient
+            .removeChannel(
+                callChannel
+            );
+
+        callChannel =
+            null;
+
+    }
+
+    setTimeout(
+        ()=>{
+            goBack();
+        },
+        500
+    );
+
+}
+
+/* =========================================================
+   CALL REALTIME
+========================================================= */
+
+function subscribeCallStatus(){
+
+    callChannel =
+        supabaseClient
+            .channel(
+                "call-status-" +
+                callId
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event:"UPDATE",
+                    schema:"public",
+                    table:"calls",
+                    filter:
+                        "id=eq." +
+                        callId
+                },
+                payload=>{
+
+                    const row =
+                        payload.new;
+
+                    if(
+                        row.status ===
+                        "rejected"
+                    ){
+
+                        showToast(
+                            "Call rejected"
+                        );
+
+                        finishCall(
+                            false
+                        );
+
+                    }
+
+                    if(
+                        row.status ===
+                        "ended"
+                    ){
+
+                        finishCall(
+                            false
+                        );
+
+                    }
+
+                    if(
+                        row.status ===
+                        "accepted"
+                    ){
+
+                        callAccepted =
+                            true;
+
+                        setStatus(
+                            "Connecting..."
+                        );
+
+                    }
+
+                }
+            )
+            .subscribe();
+
+}
+
+/* =========================================================
+   INCOMING
+========================================================= */
+
+function showIncoming(){
+
+    document.getElementById(
+        "incomingName"
+    ).textContent =
+        document.getElementById(
+            "userName"
+        ).textContent;
+
+    document.getElementById(
+        "incomingType"
+    ).textContent =
+        callType === "video"
+            ? "📹 Incoming Video Call"
+            : "📞 Incoming Audio Call";
+
+    document.getElementById(
+        "incoming"
+    ).classList.add(
+        "show"
+    );
+
+    document.getElementById(
+        "controls"
+    ).style.display =
+        "none";
+
+    setStatus(
+        "Incoming Call"
+    );
+
+}
+
+/* =========================================================
+   BACK
+========================================================= */
+
+function goBack(){
+
+    if(
+        window.history.length > 1
+    ){
+
+        window.history.back();
+
+    }else{
+
+        window.location.href =
+            "messages.html";
+
+    }
+
+}
+
+/* =========================================================
+   INIT
+========================================================= */
+
+async function init(){
+
+    currentUser =
+        await getCurrentUser();
+
+    if(!currentUser){
+
+        return;
+    }
+
+    const loaded =
+        await loadCall();
+
+    if(!loaded){
+
+        return;
+    }
+
+    await loadProfile();
+
+    subscribeSignals();
+
+    subscribeCallStatus();
+
+    document.getElementById(
+        "loading"
+    ).classList.add(
+        "hide"
+    );
+
+    if(isCaller){
+
+        await startOutgoingCall();
+
+    }else{
+
+        showIncoming();
+
+    }
+
+}
+
+init();
+
+</script>
+
+</body>
+</html>
