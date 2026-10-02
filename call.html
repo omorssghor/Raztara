@@ -2157,6 +2157,57 @@ async function loadExistingSignals(){
    OUTGOING CALL
 ===================================================== */
 
+async function waitForReceiverAnswer(){
+
+    for(let attempt = 0; attempt < 120; attempt++){
+
+        try{
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("calls")
+                    .select("status")
+                    .eq("id", callId)
+                    .maybeSingle();
+
+            if(error){
+                console.error(
+                    "CALL STATUS CHECK:",
+                    error
+                );
+            }else if(data){
+
+                if(data.status === "answered"){
+                    return true;
+                }
+
+                if(
+                    data.status === "rejected" ||
+                    data.status === "ended" ||
+                    data.status === "cancelled"
+                ){
+                    return false;
+                }
+            }
+
+        }catch(error){
+
+            console.error(
+                "CALL STATUS CHECK ERROR:",
+                error
+            );
+        }
+
+        await wait(500);
+    }
+
+    return false;
+}
+
+
 async function startOutgoingCall(){
 
     if(startingCall){
@@ -2182,8 +2233,33 @@ async function startOutgoingCall(){
         callStatus.textContent =
             callData.call_type ===
             "video"
-                ? "Video calling..."
+                ? "Calling..."
                 : "Calling...";
+
+
+        /*
+          Caller আগে offer পাঠাবে না।
+          Receiver Accept করার পরেই
+          WebRTC offer পাঠানো হবে।
+        */
+        const answered =
+            await waitForReceiverAnswer();
+
+
+        if(!answered){
+
+            callStatus.textContent =
+                "Call ended";
+
+            return;
+        }
+
+
+        callStatus.textContent =
+            callData.call_type ===
+            "video"
+                ? "Connecting video..."
+                : "Connecting...";
 
 
         createPeerConnection();
@@ -2218,17 +2294,26 @@ async function startOutgoingCall(){
             );
 
 
-        await sendSignal(
-            "offer",
-            peerConnection
-                .localDescription
-                ?.toJSON
-                    ? peerConnection
-                        .localDescription
-                        .toJSON()
-                    : peerConnection
-                        .localDescription
-        );
+        const sent =
+            await sendSignal(
+                "offer",
+                peerConnection
+                    .localDescription
+                    ?.toJSON
+                        ? peerConnection
+                            .localDescription
+                            .toJSON()
+                        : peerConnection
+                            .localDescription
+            );
+
+
+        if(!sent){
+
+            throw new Error(
+                "Offer signal পাঠানো যায়নি"
+            );
+        }
 
 
         callStatus.textContent =
