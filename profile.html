@@ -2234,6 +2234,7 @@ async function uploadProfilePhoto(){
 
 /* =========================================================
    SAVE PROFILE
+   FIXED VERSION
 ========================================================= */
 
 async function saveProfile(){
@@ -2324,9 +2325,12 @@ async function saveProfile(){
         }
 
 
-        /* PROFILE */
+        /* =====================================================
+           PROFILE UPDATE
+        ===================================================== */
 
         const {
+            data: updatedProfile,
             error:
                 profileUpdateError
         } =
@@ -2354,7 +2358,18 @@ async function saveProfile(){
             .eq(
                 "id",
                 currentUser.id
-            );
+            )
+            .select(`
+                id,
+                username,
+                full_name,
+                avatar_url,
+                bio,
+                online_visibility,
+                last_seen_at,
+                updated_at
+            `)
+            .single();
 
 
         if(profileUpdateError){
@@ -2374,9 +2389,23 @@ async function saveProfile(){
         }
 
 
-        /* PHONE */
+        /* =====================================================
+           IMPORTANT:
+           SAVE হওয়ার সঙ্গে সঙ্গে currentProfile update
+        ===================================================== */
+
+        currentProfile = {
+            ...currentProfile,
+            ...updatedProfile
+        };
+
+
+        /* =====================================================
+           PHONE UPDATE
+        ===================================================== */
 
         const {
+            data: updatedPhone,
             error: phoneError
         } =
         await supabaseClient
@@ -2397,7 +2426,13 @@ async function saveProfile(){
                     onConflict:
                         "user_id"
                 }
-            );
+            )
+            .select(`
+                user_id,
+                phone,
+                visibility
+            `)
+            .single();
 
 
         if(phoneError){
@@ -2405,9 +2440,18 @@ async function saveProfile(){
         }
 
 
-        /* ADDRESS */
+        currentPhone = {
+            ...currentPhone,
+            ...updatedPhone
+        };
+
+
+        /* =====================================================
+           ADDRESS UPDATE
+        ===================================================== */
 
         const {
+            data: updatedAddress,
             error: addressError
         } =
         await supabaseClient
@@ -2428,7 +2472,13 @@ async function saveProfile(){
                     onConflict:
                         "user_id"
                 }
-            );
+            )
+            .select(`
+                user_id,
+                address,
+                visibility
+            `)
+            .single();
 
 
         if(addressError){
@@ -2436,14 +2486,65 @@ async function saveProfile(){
         }
 
 
+        currentAddress = {
+            ...currentAddress,
+            ...updatedAddress
+        };
+
+
+        /* =====================================================
+           EDIT BOX-এ নতুন তথ্য বসানো
+        ===================================================== */
+
+        $("fullNameInput").value =
+            currentProfile.full_name || "";
+
+
+        $("usernameInput").value =
+            currentProfile.username || "";
+
+
+        $("emailInput").value =
+            currentUser.email || "";
+
+
+        $("phoneInput").value =
+            currentPhone.phone || "";
+
+
+        $("addressInput").value =
+            currentAddress.address || "";
+
+
+        $("bioInput").value =
+            currentProfile.bio || "";
+
+
+        const newName =
+            currentProfile.full_name ||
+            currentProfile.username ||
+            "User";
+
+
+        $("editAvatar").src =
+            currentProfile.avatar_url ||
+            defaultAvatar(newName);
+
+
+        /* SUCCESS */
+
         showToast(
             t("saveSuccess"),
             "success"
         );
 
 
+        /* CLOSE */
+
         closeEditModal();
 
+
+        /* RELOAD PROFILE DISPLAY */
 
         await loadProfile();
 
@@ -2478,7 +2579,7 @@ async function saveProfile(){
 
 
 /* =========================================================
-   SAVE
+   SAVE BUTTON
 ========================================================= */
 
 $("saveProfileBtn")
