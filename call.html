@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="bn">
-
 <head>
 
 <meta charset="UTF-8">
@@ -28,12 +27,19 @@ body{
     height:100%;
     overflow:hidden;
     background:#000;
-    font-family:Arial,sans-serif;
+    color:#fff;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
 }
 
-body{
+#app{
+    width:100%;
+    height:100%;
     position:relative;
-    color:#fff;
+    background:#000;
 }
 
 /* =========================
@@ -41,13 +47,11 @@ body{
 ========================= */
 
 #remoteVideo{
-    position:absolute;
-    inset:0;
     width:100%;
     height:100%;
     object-fit:cover;
     background:#111;
-    z-index:1;
+    display:none;
 }
 
 /* =========================
@@ -56,252 +60,285 @@ body{
 
 #localVideo{
     position:absolute;
-    top:20px;
     right:15px;
-    width:120px;
-    height:170px;
+    top:55px;
+
+    width:105px;
+    height:150px;
+
     object-fit:cover;
-    border-radius:15px;
-    border:2px solid rgba(255,255,255,.7);
+
+    border-radius:14px;
+
     background:#222;
-    z-index:5;
+
     display:none;
+
+    z-index:20;
+
+    border:2px solid
+        rgba(255,255,255,.7);
 }
 
 /* =========================
-   AUDIO AVATAR
+   AUDIO SCREEN
 ========================= */
 
-#audioAvatar{
+#audioScreen{
+
     position:absolute;
+
     inset:0;
-    z-index:2;
 
     display:flex;
-    align-items:center;
-    justify-content:center;
+
     flex-direction:column;
 
-    background:
-        radial-gradient(
-            circle at center,
-            #263238 0%,
-            #111 45%,
-            #000 100%
-        );
-}
-
-.avatarCircle{
-    width:120px;
-    height:120px;
-    border-radius:50%;
-
-    display:flex;
     align-items:center;
+
     justify-content:center;
 
+    background:
+        linear-gradient(
+            160deg,
+            #111,
+            #202020
+        );
+
+    z-index:5;
+}
+
+.avatar{
+
+    width:110px;
+    height:110px;
+
+    border-radius:50%;
+
     background:#087f5b;
-    color:#fff;
 
-    font-size:55px;
-    font-weight:bold;
+    display:flex;
 
-    box-shadow:
-        0 0 0 8px rgba(8,127,91,.18),
-        0 0 50px rgba(8,127,91,.35);
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:52px;
+
+    margin-bottom:20px;
 }
 
-#audioName{
-    margin-top:18px;
-    font-size:22px;
-    font-weight:bold;
+#userName{
+
+    font-size:23px;
+
+    font-weight:600;
+
+    margin-bottom:10px;
+
 }
 
-#audioStatus{
-    margin-top:8px;
+#callStatus{
+
+    font-size:15px;
+
     color:#bbb;
-    font-size:14px;
+
 }
 
 /* =========================
    TOP BAR
 ========================= */
 
-.topBar{
+#topBar{
+
     position:absolute;
+
     top:0;
     left:0;
     right:0;
 
-    height:80px;
-
-    z-index:10;
-
-    padding:
-        env(safe-area-inset-top)
-        15px
-        10px
-        15px;
+    height:55px;
 
     display:flex;
+
     align-items:center;
-    justify-content:space-between;
+
+    padding:
+        0 15px;
 
     background:
         linear-gradient(
             rgba(0,0,0,.65),
             transparent
         );
+
+    z-index:30;
+
 }
 
-.callInfo{
-    display:flex;
-    flex-direction:column;
-}
+#backBtn{
 
-#name{
-    font-size:17px;
-    font-weight:bold;
-}
+    width:40px;
+    height:40px;
 
-#status{
-    margin-top:4px;
-    font-size:13px;
-    color:#ddd;
-}
+    border:none;
 
-.callType{
-    padding:8px 12px;
-    border-radius:20px;
-    background:rgba(0,0,0,.45);
-    font-size:12px;
+    border-radius:50%;
+
+    background:
+        rgba(0,0,0,.4);
+
+    color:#fff;
+
+    font-size:24px;
+
+    cursor:pointer;
 }
 
 /* =========================
    CONTROLS
 ========================= */
 
-.controls{
+#controls{
+
     position:absolute;
+
     left:0;
     right:0;
     bottom:0;
 
-    z-index:20;
-
-    padding:
-        15px
-        15px
-        calc(20px + env(safe-area-inset-bottom))
-        15px;
+    min-height:105px;
 
     display:flex;
+
     align-items:center;
+
     justify-content:center;
-    gap:18px;
+
+    gap:15px;
+
+    padding:
+        18px;
 
     background:
         linear-gradient(
             transparent,
             rgba(0,0,0,.85)
         );
+
+    z-index:40;
 }
 
-.controlBtn{
+.control{
+
     width:55px;
     height:55px;
 
     border:none;
+
     border-radius:50%;
 
     display:flex;
+
     align-items:center;
+
     justify-content:center;
 
     font-size:22px;
 
     color:#fff;
-    background:#333;
+
+    background:
+        rgba(255,255,255,.18);
 
     cursor:pointer;
 
-    -webkit-tap-highlight-color:transparent;
+    backdrop-filter:
+        blur(8px);
 }
 
-.controlBtn:active{
-    transform:scale(.94);
+.control.off{
+
+    background:#555;
 }
 
-.controlBtn.active{
-    background:#087f5b;
-}
+.control.end{
 
-.endBtn{
     background:#e53935;
-}
 
-.endBtn:active{
-    background:#c62828;
+    width:62px;
+    height:62px;
 }
 
 /* =========================
    INCOMING CALL
 ========================= */
 
-#incomingBox{
+#incoming{
+
     position:absolute;
+
     inset:0;
 
-    z-index:50;
+    background:
+        rgba(0,0,0,.92);
 
     display:none;
 
-    align-items:center;
-    justify-content:center;
     flex-direction:column;
 
-    background:
-        rgba(0,0,0,.88);
+    align-items:center;
 
-    padding:25px;
+    justify-content:center;
+
+    z-index:100;
 }
 
-.incomingTitle{
-    font-size:25px;
-    font-weight:bold;
+#incomingTitle{
+
+    font-size:24px;
+
+    margin-bottom:10px;
 }
 
-.incomingType{
-    margin-top:8px;
-    color:#bbb;
+#incomingType{
+
+    color:#aaa;
+
+    margin-bottom:30px;
 }
 
 .incomingButtons{
-    margin-top:35px;
 
     display:flex;
-    gap:25px;
+
+    gap:30px;
 }
 
 .incomingBtn{
-    width:70px;
-    height:70px;
+
+    width:65px;
+    height:65px;
 
     border:none;
+
     border-radius:50%;
 
     color:#fff;
 
-    font-size:28px;
+    font-size:25px;
 
     cursor:pointer;
 }
 
-.acceptBtn{
-    background:#087f5b;
+.accept{
+
+    background:#20b76b;
 }
 
-.rejectBtn{
+.reject{
+
     background:#e53935;
 }
 
@@ -310,18 +347,24 @@ body{
 ========================= */
 
 #loading{
+
     position:absolute;
+
     inset:0;
 
-    z-index:40;
-
     display:flex;
+
     align-items:center;
+
     justify-content:center;
 
     background:#000;
 
-    font-size:15px;
+    z-index:200;
+
+    font-size:16px;
+
+    color:#aaa;
 }
 
 /* =========================
@@ -329,226 +372,171 @@ body{
 ========================= */
 
 #toast{
-    position:absolute;
+
+    position:fixed;
 
     left:50%;
-    bottom:110px;
 
-    transform:translateX(-50%);
+    bottom:120px;
 
-    z-index:100;
+    transform:
+        translateX(-50%);
 
-    padding:10px 16px;
-
-    border-radius:20px;
-
-    background:rgba(0,0,0,.8);
+    background:
+        rgba(0,0,0,.88);
 
     color:#fff;
 
-    font-size:13px;
+    padding:
+        11px 18px;
+
+    border-radius:10px;
+
+    font-size:14px;
+
+    z-index:9999;
 
     display:none;
 
-    max-width:85%;
+    max-width:90%;
 
     text-align:center;
-}
-
-.hidden{
-    display:none !important;
 }
 
 </style>
 
 </head>
 
-
 <body>
 
+<div id="app">
 
-<!-- =========================
-     REMOTE VIDEO
-========================= -->
-
-<video
-    id="remoteVideo"
-    autoplay
-    playsinline
-></video>
-
-
-<!-- =========================
-     REMOTE AUDIO
-========================= -->
-
-<audio
-    id="remoteAudio"
-    autoplay
-    playsinline
-></audio>
-
-
-<!-- =========================
-     AUDIO AVATAR
-========================= -->
-
-<div id="audioAvatar">
-
-    <div class="avatarCircle" id="avatarLetter">
-        R
+    <div id="loading">
+        Call চালু হচ্ছে...
     </div>
 
-    <div id="audioName">
-        RAZTARA
-    </div>
 
-    <div id="audioStatus">
-        Connecting...
-    </div>
+    <div id="audioScreen">
 
-</div>
-
-
-<!-- =========================
-     LOCAL VIDEO
-========================= -->
-
-<video
-    id="localVideo"
-    autoplay
-    muted
-    playsinline
-></video>
-
-
-<!-- =========================
-     TOP BAR
-========================= -->
-
-<div class="topBar">
-
-    <div class="callInfo">
-
-        <div id="name">
-            RAZTARA
+        <div class="avatar">
+            👤
         </div>
 
-        <div id="status">
+        <div id="userName">
+            RAZTARA User
+        </div>
+
+        <div id="callStatus">
             Connecting...
         </div>
 
     </div>
 
-    <div
-        class="callType"
-        id="callTypeLabel"
-    >
-        Audio
-    </div>
 
-</div>
+    <video
+        id="remoteVideo"
+        autoplay
+        playsinline
+    ></video>
 
 
-<!-- =========================
-     CONTROLS
-========================= -->
-
-<div class="controls">
-
-    <button
-        class="controlBtn"
-        id="muteBtn"
-        onclick="toggleMute()"
-    >
-        🎤
-    </button>
-
-    <button
-        class="controlBtn"
-        id="cameraBtn"
-        onclick="toggleCamera()"
-    >
-        📹
-    </button>
-
-    <button
-        class="controlBtn"
-        id="switchBtn"
-        onclick="switchCamera()"
-    >
-        🔄
-    </button>
-
-    <button
-        class="controlBtn endBtn"
-        onclick="endCall()"
-    >
-        ☎
-    </button>
-
-</div>
+    <video
+        id="localVideo"
+        autoplay
+        muted
+        playsinline
+    ></video>
 
 
-<!-- =========================
-     INCOMING CALL
-========================= -->
+    <audio
+        id="remoteAudio"
+        autoplay
+        playsinline
+    ></audio>
 
-<div id="incomingBox">
 
-    <div class="avatarCircle">
-        📞
-    </div>
-
-    <div
-        class="incomingTitle"
-        id="incomingName"
-    >
-        Incoming Call
-    </div>
-
-    <div
-        class="incomingType"
-        id="incomingType"
-    >
-        Audio Call
-    </div>
-
-    <div class="incomingButtons">
+    <div id="topBar">
 
         <button
-            class="incomingBtn rejectBtn"
-            onclick="rejectCall()"
+            id="backBtn"
+            onclick="goBack()"
         >
-            ✕
-        </button>
-
-        <button
-            class="incomingBtn acceptBtn"
-            onclick="acceptCall()"
-        >
-            ✓
+            ‹
         </button>
 
     </div>
 
+
+    <div id="controls">
+
+        <button
+            id="muteBtn"
+            class="control"
+            onclick="toggleMute()"
+        >
+            🎙️
+        </button>
+
+        <button
+            id="cameraBtn"
+            class="control"
+            onclick="toggleCamera()"
+        >
+            📹
+        </button>
+
+        <button
+            id="switchBtn"
+            class="control"
+            onclick="switchCamera()"
+        >
+            🔄
+        </button>
+
+        <button
+            class="control end"
+            onclick="hangup()"
+        >
+            ☎
+        </button>
+
+    </div>
+
+
+    <div id="incoming">
+
+        <div id="incomingTitle">
+            Incoming Call
+        </div>
+
+        <div id="incomingType">
+            Call আসছে...
+        </div>
+
+        <div class="incomingButtons">
+
+            <button
+                class="incomingBtn reject"
+                onclick="rejectCall()"
+            >
+                ☎
+            </button>
+
+            <button
+                class="incomingBtn accept"
+                onclick="acceptCall()"
+            >
+                ✓
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div id="toast"></div>
+
 </div>
-
-
-<!-- =========================
-     LOADING
-========================= -->
-
-<div id="loading">
-    Loading call...
-</div>
-
-
-<!-- =========================
-     TOAST
-========================= -->
-
-<div id="toast"></div>
 
 
 <script>
@@ -563,7 +551,6 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
 
-
 const supabaseClient =
     window.supabase.createClient(
         SUPABASE_URL,
@@ -572,18 +559,14 @@ const supabaseClient =
 
 
 /* =====================================================
-   STATE
+   GLOBAL VARIABLES
 ===================================================== */
 
 let currentUser = null;
 
 let callId = null;
 
-let conversationId = null;
-
 let callData = null;
-
-let callType = "audio";
 
 let peerConnection = null;
 
@@ -595,224 +578,207 @@ let signalChannel = null;
 
 let callChannel = null;
 
-let ended = false;
+let pendingIceCandidates = [];
+
+let pendingSignals = [];
+
+let isAccepted = false;
 
 let isMuted = false;
 
 let isCameraOff = false;
 
-let usingFrontCamera = true;
+let currentFacingMode = "user";
+
+let initialized = false;
 
 
 /* =====================================================
-   SIGNAL QUEUE
+   DOM
 ===================================================== */
-
-let pendingSignals = [];
-
-let pendingIceCandidates = [];
-
-let remoteDescriptionSet = false;
-
-let queuedSignalIds = new Set();
-
-let handledSignalIds = new Set();
-
-
-/* =====================================================
-   ELEMENTS
-===================================================== */
-
-const remoteVideo =
-    document.getElementById("remoteVideo");
-
-const remoteAudio =
-    document.getElementById("remoteAudio");
-
-const localVideo =
-    document.getElementById("localVideo");
-
-const audioAvatar =
-    document.getElementById("audioAvatar");
-
-const audioName =
-    document.getElementById("audioName");
-
-const audioStatus =
-    document.getElementById("audioStatus");
-
-const nameEl =
-    document.getElementById("name");
-
-const statusEl =
-    document.getElementById("status");
-
-const callTypeLabel =
-    document.getElementById("callTypeLabel");
 
 const loading =
-    document.getElementById("loading");
-
-const incomingBox =
-    document.getElementById("incomingBox");
-
-const incomingName =
-    document.getElementById("incomingName");
-
-const incomingType =
-    document.getElementById("incomingType");
-
-const avatarLetter =
-    document.getElementById("avatarLetter");
-
-const toast =
-    document.getElementById("toast");
-
-
-/* =====================================================
-   URL PARAMETER
-===================================================== */
-
-const params =
-    new URLSearchParams(
-        window.location.search
+    document.getElementById(
+        "loading"
     );
 
-callId =
-    params.get("call_id") ||
-    params.get("callId") ||
-    params.get("id");
+const audioScreen =
+    document.getElementById(
+        "audioScreen"
+    );
 
-conversationId =
-    params.get("conversation_id") ||
-    params.get("conversationId");
+const remoteVideo =
+    document.getElementById(
+        "remoteVideo"
+    );
+
+const localVideo =
+    document.getElementById(
+        "localVideo"
+    );
+
+const remoteAudio =
+    document.getElementById(
+        "remoteAudio"
+    );
+
+const incoming =
+    document.getElementById(
+        "incoming"
+    );
+
+const callStatus =
+    document.getElementById(
+        "callStatus"
+    );
+
+const incomingType =
+    document.getElementById(
+        "incomingType"
+    );
+
+const cameraBtn =
+    document.getElementById(
+        "cameraBtn"
+    );
+
+const muteBtn =
+    document.getElementById(
+        "muteBtn"
+    );
 
 
 /* =====================================================
-   INIT
+   TOAST
 ===================================================== */
 
-async function init(){
+function showToast(message){
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+    toast.textContent =
+        message;
+
+    toast.style.display =
+        "block";
+
+    clearTimeout(
+        window.toastTimer
+    );
+
+    window.toastTimer =
+        setTimeout(
+            ()=>{
+                toast.style.display =
+                    "none";
+            },
+            3000
+        );
+}
+
+
+/* =====================================================
+   GET CALL ID
+===================================================== */
+
+function getCallId(){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    return (
+        params.get("call") ||
+        params.get("call_id") ||
+        params.get("callId") ||
+        params.get("id")
+    );
+}
+
+
+/* =====================================================
+   GET CURRENT USER
+===================================================== */
+
+async function loadCurrentUser(){
 
     try{
 
-        setStatus("Loading...");
-
-        if(!callId){
-
-            showToast(
-                "Call ID পাওয়া যায়নি"
-            );
-
-            setTimeout(
-                goBack,
-                1000
-            );
-
-            return;
-        }
-
-
-        /* =========================
-           CURRENT USER
-        ========================= */
-
         const {
-            data: userData,
-            error: userError
+            data:sessionData,
+            error:sessionError
         } =
             await supabaseClient
                 .auth
-                .getUser();
+                .getSession();
 
 
         if(
-            userError ||
-            !userData ||
-            !userData.user
+            !sessionError &&
+            sessionData?.session?.user
         ){
 
-            showToast(
-                "Login করুন"
-            );
-
-            setTimeout(
-                goBack,
-                1000
-            );
-
-            return;
-        }
-
-
-        currentUser =
-            userData.user;
-
-
-        /* =========================
-           LOAD CALL
-        ========================= */
-
-        const loaded =
-            await loadCall();
-
-
-        if(!loaded){
-            return;
-        }
-
-
-        /* =========================
-           PROFILE
-        ========================= */
-
-        await loadProfile();
-
-
-        /* =========================
-           SUBSCRIPTIONS
-        ========================= */
-
-        await subscribeSignals();
-
-        await subscribeCallStatus();
-
-
-        loading.style.display =
-            "none";
-
-
-        /* =========================
-           CALLER / RECEIVER
-        ========================= */
-
-        if(
-            callData.caller_id ===
-            currentUser.id
-        ){
-
-            await startOutgoingCall();
+            currentUser =
+                sessionData.session.user;
 
         }else{
 
-            showIncomingCall();
+            const {
+                data:userData,
+                error:userError
+            } =
+                await supabaseClient
+                    .auth
+                    .getUser();
 
+
+            if(
+                userError ||
+                !userData?.user
+            ){
+
+                throw new Error(
+                    "User ID পাওয়া যায়নি"
+                );
+            }
+
+            currentUser =
+                userData.user;
         }
+
+
+        console.log(
+            "CURRENT USER ID:",
+            currentUser.id
+        );
+
+        return true;
 
     }catch(error){
 
         console.error(
-            "Init error:",
+            "AUTH ERROR:",
             error
         );
 
         showToast(
-            error.message ||
-            "Call শুরু করা যায়নি"
+            "User ID পাওয়া যায়নি। আবার Login করুন।"
         );
 
-    }
+        setTimeout(
+            ()=>{
+                window.location.href =
+                    "index.html";
+            },
+            1500
+        );
 
+        return false;
+    }
 }
 
 
@@ -821,6 +787,27 @@ async function init(){
 ===================================================== */
 
 async function loadCall(){
+
+    if(!callId){
+
+        showToast(
+            "Call ID পাওয়া যায়নি।"
+        );
+
+        setTimeout(
+            goBack,
+            1500
+        );
+
+        return false;
+    }
+
+
+    console.log(
+        "CALL ID:",
+        callId
+    );
+
 
     const {
         data,
@@ -846,119 +833,51 @@ async function loadCall(){
     if(error){
 
         console.error(
-            "Load call:",
+            "CALL LOAD ERROR:",
             error
         );
 
         showToast(
-            "Call information পাওয়া যায়নি"
+            error.message ||
+            "Call তথ্য পাওয়া যায়নি।"
         );
 
         setTimeout(
             goBack,
-            1200
+            1800
         );
 
         return false;
     }
 
 
-    callData = data;
+    callData =
+        data;
+
+
+    console.log(
+        "CALL DATA:",
+        callData
+    );
 
 
     if(
         currentUser.id !==
-        data.caller_id &&
+            callData.caller_id &&
         currentUser.id !==
-        data.receiver_id
+            callData.receiver_id
     ){
 
         showToast(
-            "এই call-এ আপনার access নেই"
+            "এই Call-এর সাথে আপনার সম্পর্ক নেই।"
         );
 
         setTimeout(
             goBack,
-            1200
+            1800
         );
 
         return false;
-    }
-
-
-    conversationId =
-        data.conversation_id;
-
-
-    callType =
-        (
-            data.call_type ||
-            "audio"
-        ).toLowerCase();
-
-
-    if(
-        callType !== "video"
-    ){
-
-        callType = "audio";
-    }
-
-
-    callTypeLabel.textContent =
-        callType === "video"
-            ? "Video"
-            : "Audio";
-
-
-    incomingType.textContent =
-        callType === "video"
-            ? "Video Call"
-            : "Audio Call";
-
-
-    /* =========================
-       AUDIO / VIDEO UI
-    ========================= */
-
-    if(callType === "video"){
-
-        audioAvatar.style.display =
-            "none";
-
-        remoteVideo.style.display =
-            "block";
-
-        document.getElementById(
-            "cameraBtn"
-        ).style.display =
-            "flex";
-
-        document.getElementById(
-            "switchBtn"
-        ).style.display =
-            "flex";
-
-    }else{
-
-        audioAvatar.style.display =
-            "flex";
-
-        remoteVideo.style.display =
-            "none";
-
-        localVideo.style.display =
-            "none";
-
-        document.getElementById(
-            "cameraBtn"
-        ).style.display =
-            "none";
-
-        document.getElementById(
-            "switchBtn"
-        ).style.display =
-            "none";
     }
 
 
@@ -967,159 +886,267 @@ async function loadCall(){
 
 
 /* =====================================================
-   LOAD PROFILE
+   IS CALLER
 ===================================================== */
 
-async function loadProfile(){
+function isCaller(){
 
-    const otherUserId =
-        callData.caller_id === currentUser.id
-            ? callData.receiver_id
-            : callData.caller_id;
-
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("profiles")
-            .select(`
-                id,
-                username,
-                full_name,
-                avatar_url
-            `)
-            .eq(
-                "id",
-                otherUserId
-            )
-            .maybeSingle();
-
-
-    if(error){
-
-        console.error(
-            "Profile error:",
-            error
-        );
-
-        return;
-    }
-
-
-    if(!data){
-        return;
-    }
-
-
-    const displayName =
-        data.full_name ||
-        data.username ||
-        "RAZTARA User";
-
-
-    nameEl.textContent =
-        displayName;
-
-    audioName.textContent =
-        displayName;
-
-    incomingName.textContent =
-        displayName;
-
-
-    avatarLetter.textContent =
-        displayName
-            .trim()
-            .charAt(0)
-            .toUpperCase() ||
-        "R";
-}
-
-
-/* =====================================================
-   STATUS
-===================================================== */
-
-function setStatus(text){
-
-    statusEl.textContent =
-        text;
-
-    audioStatus.textContent =
-        text;
-}
-
-
-/* =====================================================
-   TOAST
-===================================================== */
-
-function showToast(message){
-
-    toast.textContent =
-        message;
-
-    toast.style.display =
-        "block";
-
-
-    clearTimeout(
-        showToast.timer
+    return (
+        currentUser.id ===
+        callData.caller_id
     );
-
-
-    showToast.timer =
-        setTimeout(
-            ()=>{
-                toast.style.display =
-                    "none";
-            },
-            2500
-        );
 }
 
 
 /* =====================================================
-   GET LOCAL MEDIA
+   IS RECEIVER
+===================================================== */
+
+function isReceiver(){
+
+    return (
+        currentUser.id ===
+        callData.receiver_id
+    );
+}
+
+
+/* =====================================================
+   WEBRTC CONFIG
+===================================================== */
+
+const rtcConfig = {
+
+    iceServers:[
+
+        {
+            urls:
+                "stun:stun.l.google.com:19302"
+        },
+
+        {
+            urls:
+                "stun:stun1.l.google.com:19302"
+        }
+
+    ]
+
+};
+
+
+/* =====================================================
+   CREATE PEER
+===================================================== */
+
+function createPeerConnection(){
+
+    if(peerConnection){
+
+        return peerConnection;
+    }
+
+
+    peerConnection =
+        new RTCPeerConnection(
+            rtcConfig
+        );
+
+
+    remoteStream =
+        new MediaStream();
+
+
+    remoteAudio.srcObject =
+        remoteStream;
+
+
+    remoteVideo.srcObject =
+        remoteStream;
+
+
+    peerConnection
+        .onicecandidate =
+        async event => {
+
+            if(
+                event.candidate
+            ){
+
+                await sendSignal(
+                    "ice",
+                    event.candidate
+                );
+            }
+        };
+
+
+    peerConnection
+        .ontrack =
+        event => {
+
+            console.log(
+                "REMOTE TRACK"
+            );
+
+
+            event.streams[0]
+                ?.getTracks()
+                .forEach(
+                    track => {
+
+                        if(
+                            !remoteStream
+                                .getTracks()
+                                .some(
+                                    t =>
+                                        t.id ===
+                                        track.id
+                                )
+                        ){
+
+                            remoteStream
+                                .addTrack(
+                                    track
+                                );
+                        }
+
+                    }
+                );
+
+
+            if(
+                callData.call_type ===
+                "video"
+            ){
+
+                remoteVideo.style.display =
+                    "block";
+
+                audioScreen.style.display =
+                    "none";
+
+                remoteVideo.play()
+                    .catch(
+                        ()=>{}
+                    );
+
+            }else{
+
+                remoteAudio.play()
+                    .catch(
+                        ()=>{}
+                    );
+            }
+
+
+            callStatus.textContent =
+                "Connected";
+        };
+
+
+    peerConnection
+        .onconnectionstatechange =
+        () => {
+
+            console.log(
+                "Connection:",
+                peerConnection
+                    .connectionState
+            );
+
+
+            if(
+                peerConnection
+                    .connectionState ===
+                "connected"
+            ){
+
+                callStatus.textContent =
+                    "Connected";
+
+            }
+
+
+            if(
+                peerConnection
+                    .connectionState ===
+                    "disconnected" ||
+                peerConnection
+                    .connectionState ===
+                    "failed"
+            ){
+
+                callStatus.textContent =
+                    "Connection lost";
+            }
+
+
+            if(
+                peerConnection
+                    .connectionState ===
+                    "closed"
+            ){
+
+                callStatus.textContent =
+                    "Call ended";
+            }
+        };
+
+
+    return peerConnection;
+}
+
+
+/* =====================================================
+   GET MEDIA
 ===================================================== */
 
 async function getLocalMedia(){
 
     if(localStream){
+
         return localStream;
     }
 
 
-    const constraints = {
-
-        audio:true,
-
-        video:
-            callType === "video"
-                ? {
-                    facingMode:
-                        usingFrontCamera
-                            ? "user"
-                            : "environment"
-                }
-                : false
-
-    };
+    const isVideo =
+        callData.call_type ===
+        "video";
 
 
     try{
 
         localStream =
-            await navigator
-                .mediaDevices
-                .getUserMedia(
-                    constraints
-                );
+            await navigator.mediaDevices
+                .getUserMedia({
+
+                    audio:true,
+
+                    video:
+                        isVideo
+                            ? {
+                                facingMode:
+                                    currentFacingMode
+                              }
+                            : false
+                });
 
 
-        if(callType === "video"){
+        localStream
+            .getTracks()
+            .forEach(
+                track => {
+
+                    createPeerConnection()
+                        .addTrack(
+                            track,
+                            localStream
+                        );
+                }
+            );
+
+
+        if(isVideo){
 
             localVideo.srcObject =
                 localStream;
@@ -1127,15 +1154,17 @@ async function getLocalMedia(){
             localVideo.style.display =
                 "block";
 
+            cameraBtn.style.display =
+                "flex";
 
-            try{
-                await localVideo.play();
-            }catch(e){
-                console.log(
-                    "Local video play:",
-                    e
-                );
-            }
+            switchBtnShow(true);
+
+        }else{
+
+            cameraBtn.style.display =
+                "none";
+
+            switchBtnShow(false);
         }
 
 
@@ -1144,7 +1173,7 @@ async function getLocalMedia(){
     }catch(error){
 
         console.error(
-            "getUserMedia:",
+            "MEDIA ERROR:",
             error
         );
 
@@ -1155,14 +1184,13 @@ async function getLocalMedia(){
         ){
 
             showToast(
-                "Camera/Microphone permission দিন"
+                "Microphone/Camera permission দিন।"
             );
 
         }else{
 
             showToast(
-                error.message ||
-                "Camera/Microphone চালু করা যায়নি"
+                "Microphone/Camera চালু করা যায়নি।"
             );
         }
 
@@ -1173,258 +1201,23 @@ async function getLocalMedia(){
 
 
 /* =====================================================
-   CREATE PEER
+   SWITCH BUTTON
 ===================================================== */
 
-function createPeer(){
+function switchBtnShow(show){
 
-    if(peerConnection){
-        return peerConnection;
+    const btn =
+        document.getElementById(
+            "switchBtn"
+        );
+
+    if(btn){
+
+        btn.style.display =
+            show
+                ? "flex"
+                : "none";
     }
-
-
-    peerConnection =
-        new RTCPeerConnection({
-
-            iceServers:[
-
-                {
-                    urls:
-                    "stun:stun.l.google.com:19302"
-                },
-
-                {
-                    urls:
-                    "stun:stun1.l.google.com:19302"
-                }
-
-            ]
-
-        });
-
-
-    remoteStream =
-        new MediaStream();
-
-
-    /* =========================
-       LOCAL TRACKS
-    ========================= */
-
-    if(localStream){
-
-        localStream
-            .getTracks()
-            .forEach(
-                track => {
-
-                    peerConnection.addTrack(
-                        track,
-                        localStream
-                    );
-
-                }
-            );
-
-    }
-
-
-    /* =========================
-       REMOTE TRACK
-    ========================= */
-
-    peerConnection.ontrack =
-        async event => {
-
-            const stream =
-                event.streams &&
-                event.streams[0]
-                    ? event.streams[0]
-                    : null;
-
-
-            if(stream){
-
-                remoteStream =
-                    stream;
-
-            }else{
-
-                remoteStream.addTrack(
-                    event.track
-                );
-
-            }
-
-
-            if(callType === "video"){
-
-                remoteVideo.srcObject =
-                    remoteStream;
-
-                remoteVideo.style.display =
-                    "block";
-
-                audioAvatar.style.display =
-                    "none";
-
-
-                try{
-
-                    await remoteVideo.play();
-
-                }catch(error){
-
-                    console.log(
-                        "Remote video play:",
-                        error
-                    );
-                }
-
-            }else{
-
-                remoteAudio.srcObject =
-                    remoteStream;
-
-                audioAvatar.style.display =
-                    "flex";
-
-
-                try{
-
-                    await remoteAudio.play();
-
-                }catch(error){
-
-                    console.log(
-                        "Remote audio play:",
-                        error
-                    );
-                }
-
-            }
-
-        };
-
-
-    /* =========================
-       ICE
-    ========================= */
-
-    peerConnection.onicecandidate =
-        event => {
-
-            if(
-                event.candidate &&
-                !ended
-            ){
-
-                sendSignal(
-                    "ice",
-                    event.candidate.toJSON()
-                );
-
-            }
-
-        };
-
-
-    /* =========================
-       CONNECTION STATE
-    ========================= */
-
-    peerConnection.onconnectionstatechange =
-        () => {
-
-            if(!peerConnection){
-                return;
-            }
-
-
-            const state =
-                peerConnection
-                    .connectionState;
-
-
-            console.log(
-                "Connection state:",
-                state
-            );
-
-
-            if(
-                state ===
-                "connected"
-            ){
-
-                setStatus(
-                    "Connected"
-                );
-
-            }
-
-            else if(
-                state ===
-                "connecting"
-            ){
-
-                setStatus(
-                    "Connecting..."
-                );
-
-            }
-
-            else if(
-                state ===
-                "disconnected"
-            ){
-
-                setStatus(
-                    "Disconnected"
-                );
-
-            }
-
-            else if(
-                state ===
-                "failed"
-            ){
-
-                setStatus(
-                    "Connection failed"
-                );
-
-                showToast(
-                    "Connection failed"
-                );
-
-            }
-
-        };
-
-
-    /* =========================
-       ICE CONNECTION STATE
-    ========================= */
-
-    peerConnection.oniceconnectionstatechange =
-        () => {
-
-            if(!peerConnection){
-                return;
-            }
-
-
-            console.log(
-                "ICE:",
-                peerConnection
-                    .iceConnectionState
-            );
-
-        };
-
-
-    return peerConnection;
 }
 
 
@@ -1434,63 +1227,58 @@ function createPeer(){
 
 async function sendSignal(
     type,
-    payload
+    data
 ){
 
-    if(
-        !conversationId ||
-        !currentUser ||
-        !callId
-    ){
-
-        console.error(
-            "Missing signal data"
-        );
+    if(!callData){
 
         return;
     }
 
 
-    const {
-        error
-    } =
-        await supabaseClient
-            .from("call_signals")
-            .insert({
+    try{
 
-                conversation_id:
-                    conversationId,
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("call_signals")
+                .insert({
 
-                sender_id:
-                    currentUser.id,
+                    conversation_id:
+                        callData.conversation_id,
 
-                signal_type:
-                    type,
+                    sender_id:
+                        currentUser.id,
 
-                payload:{
-                    call_id:
-                        callId,
+                    signal_type:
+                        type,
 
-                    data:
-                        payload
-                }
+                    payload:{
 
-            });
+                        call_id:
+                            callId,
+
+                        data:
+                            data
+                    }
+                });
 
 
-    if(error){
+        if(error){
+
+            console.error(
+                "SEND SIGNAL ERROR:",
+                error
+            );
+        }
+
+    }catch(error){
 
         console.error(
-            "Signal error:",
             error
         );
-
-        showToast(
-            "Call signal error"
-        );
-
     }
-
 }
 
 
@@ -1500,115 +1288,67 @@ async function sendSignal(
 
 function subscribeSignals(){
 
-    return new Promise(
-        (resolve,reject)=>{
-
-            signalChannel =
-                supabaseClient
-                    .channel(
-                        "call-signals-" +
-                        callId
-                    )
-                    .on(
-
-                        "postgres_changes",
-
-                        {
-                            event:
-                                "INSERT",
-
-                            schema:
-                                "public",
-
-                            table:
-                                "call_signals"
-                        },
-
-                        async payload => {
-
-                            const signal =
-                                payload.new;
+    signalChannel =
+        supabaseClient
+            .channel(
+                "call-signals-" +
+                callId
+            );
 
 
-                            if(
-                                signal.conversation_id !==
-                                conversationId
-                            ){
+    signalChannel
+        .on(
+            "postgres_changes",
+            {
+                event:"INSERT",
+                schema:"public",
+                table:"call_signals",
+                filter:
+                    "conversation_id=eq." +
+                    callData.conversation_id
+            },
+            payload => {
 
-                                return;
-                            }
-
-
-                            if(
-                                signal.sender_id ===
-                                currentUser.id
-                            ){
-
-                                return;
-                            }
-
-
-                            /* =========================
-                               CALL ID CHECK
-                            ========================= */
-
-                            if(
-                                signal.payload?.call_id !==
-                                callId
-                            ){
-
-                                return;
-                            }
+                const row =
+                    payload.new;
 
 
-                            await handleSignal(
-                                signal
-                            );
+                if(
+                    row.sender_id ===
+                    currentUser.id
+                ){
 
-                        }
-
-                    )
-
-                    .subscribe(
-                        status => {
-
-                            console.log(
-                                "Signal channel:",
-                                status
-                            );
+                    return;
+                }
 
 
-                            if(
-                                status ===
-                                "SUBSCRIBED"
-                            ){
-
-                                resolve();
-
-                            }
+                const rowCallId =
+                    row.payload?.call_id;
 
 
-                            if(
-                                status ===
-                                "CHANNEL_ERROR" ||
-                                status ===
-                                "TIMED_OUT"
-                            ){
+                if(
+                    rowCallId !==
+                    callId
+                ){
 
-                                reject(
-                                    new Error(
-                                        "Realtime signal connection failed"
-                                    )
-                                );
+                    return;
+                }
 
-                            }
 
-                        }
-                    );
+                handleSignal(
+                    row
+                );
+            }
+        )
+        .subscribe(
+            status => {
 
-        }
-    );
-
+                console.log(
+                    "SIGNAL CHANNEL:",
+                    status
+                );
+            }
+        );
 }
 
 
@@ -1620,364 +1360,240 @@ async function handleSignal(
     signal
 ){
 
-    if(!signal){
-        return;
-    }
+    const type =
+        signal.signal_type;
+
+    const data =
+        signal.payload?.data;
 
 
-    /* =========================
-       DUPLICATE CHECK
-    ========================= */
+    console.log(
+        "SIGNAL:",
+        type,
+        data
+    );
+
 
     if(
-        signal.id &&
-        handledSignalIds.has(
-            signal.id
-        )
+        type === "hangup"
     ){
 
-        return;
-    }
-
-
-    /* =========================
-       HANGUP
-    ========================= */
-
-    if(
-        signal.signal_type ===
-        "hangup"
-    ){
-
-        if(signal.id){
-
-            handledSignalIds.add(
-                signal.id
-            );
-
-        }
-
-
-        finishCall(false);
+        endCallLocal(
+            "Call ended"
+        );
 
         return;
     }
 
 
-    /* =========================
-       REJECT
-    ========================= */
-
     if(
-        signal.signal_type ===
-        "reject"
+        type === "reject"
     ){
 
-        if(signal.id){
-
-            handledSignalIds.add(
-                signal.id
-            );
-
-        }
-
-
-        showToast(
+        endCallLocal(
             "Call rejected"
         );
 
-
-        finishCall(false);
-
         return;
     }
 
 
-    /* =========================
-       PEER NOT READY
-    ========================= */
+    if(
+        type === "offer"
+    ){
 
-    if(!peerConnection){
-
-        if(
-            signal.id &&
-            !queuedSignalIds.has(
-                signal.id
-            )
-        ){
+        if(!isAccepted){
 
             pendingSignals.push(
                 signal
             );
 
-            queuedSignalIds.add(
-                signal.id
-            );
-
+            return;
         }
 
 
+        await handleOffer(
+            data
+        );
+
         return;
     }
 
 
-    const signalData =
-        signal.payload?.data;
+    if(
+        type === "answer"
+    ){
 
+        await handleAnswer(
+            data
+        );
 
-    if(!signalData){
         return;
     }
 
 
-    try{
-
-        /* =================================================
-           OFFER
-        ================================================= */
+    if(
+        type === "ice"
+    ){
 
         if(
-            signal.signal_type ===
-            "offer"
+            !peerConnection ||
+            !peerConnection
+                .remoteDescription
         ){
 
-            /*
-             * যদি আগেই remote description থাকে
-             * তাহলে একই offer আবার process করবে না
-             */
+            pendingIceCandidates
+                .push(data);
 
-            if(
-                remoteDescriptionSet
-            ){
-
-                if(signal.id){
-
-                    handledSignalIds.add(
-                        signal.id
-                    );
-
-                }
-
-                return;
-            }
-
-
-            await peerConnection
-                .setRemoteDescription(
-                    new RTCSessionDescription(
-                        signalData
-                    )
-                );
-
-
-            remoteDescriptionSet =
-                true;
-
-
-            const answer =
-                await peerConnection
-                    .createAnswer();
-
-
-            await peerConnection
-                .setLocalDescription(
-                    answer
-                );
-
-
-            await sendSignal(
-                "answer",
-                answer
-            );
-
-
-            if(signal.id){
-
-                handledSignalIds.add(
-                    signal.id
-                );
-
-                queuedSignalIds.delete(
-                    signal.id
-                );
-
-            }
-
-
-            setStatus(
-                "Connected"
-            );
-
-
-            await flushPendingIce();
-
+            return;
         }
 
 
-        /* =================================================
-           ANSWER
-        ================================================= */
-
-        else if(
-            signal.signal_type ===
-            "answer"
-        ){
-
-            if(
-                remoteDescriptionSet
-            ){
-
-                if(signal.id){
-
-                    handledSignalIds.add(
-                        signal.id
-                    );
-
-                }
-
-                return;
-            }
-
-
-            await peerConnection
-                .setRemoteDescription(
-                    new RTCSessionDescription(
-                        signalData
-                    )
-                );
-
-
-            remoteDescriptionSet =
-                true;
-
-
-            if(signal.id){
-
-                handledSignalIds.add(
-                    signal.id
-                );
-
-                queuedSignalIds.delete(
-                    signal.id
-                );
-
-            }
-
-
-            setStatus(
-                "Connected"
-            );
-
-
-            await flushPendingIce();
-
-        }
-
-
-        /* =================================================
-           ICE
-        ================================================= */
-
-        else if(
-            signal.signal_type ===
-            "ice"
-        ){
-
-            /*
-             * Remote description না আসা পর্যন্ত
-             * ICE queue হবে
-             */
-
-            if(
-                !remoteDescriptionSet
-            ){
-
-                pendingIceCandidates.push(
-                    {
-                        id:
-                            signal.id,
-
-                        candidate:
-                            signalData
-                    }
-                );
-
-
-                if(signal.id){
-
-                    handledSignalIds.add(
-                        signal.id
-                    );
-
-                    queuedSignalIds.delete(
-                        signal.id
-                    );
-
-                }
-
-                return;
-            }
-
+        try{
 
             await peerConnection
                 .addIceCandidate(
                     new RTCIceCandidate(
-                        signalData
+                        data
                     )
                 );
 
+        }catch(error){
 
-            if(signal.id){
-
-                handledSignalIds.add(
-                    signal.id
-                );
-
-                queuedSignalIds.delete(
-                    signal.id
-                );
-
-            }
-
+            console.error(
+                "ICE ERROR:",
+                error
+            );
         }
 
-    }catch(error){
-
-        console.error(
-            "Signal handling:",
-            error
-        );
-
+        return;
     }
-
 }
 
 
 /* =====================================================
-   FLUSH PENDING ICE
+   HANDLE OFFER
+===================================================== */
+
+async function handleOffer(
+    offer
+){
+
+    try{
+
+        createPeerConnection();
+
+
+        await getLocalMedia();
+
+
+        await peerConnection
+            .setRemoteDescription(
+                new RTCSessionDescription(
+                    offer
+                )
+            );
+
+
+        await flushPendingIce();
+
+
+        const answer =
+            await peerConnection
+                .createAnswer();
+
+
+        await peerConnection
+            .setLocalDescription(
+                answer
+            );
+
+
+        await sendSignal(
+            "answer",
+            answer
+        );
+
+
+        callStatus.textContent =
+            "Connected";
+
+    }catch(error){
+
+        console.error(
+            "OFFER ERROR:",
+            error
+        );
+    }
+}
+
+
+/* =====================================================
+   HANDLE ANSWER
+===================================================== */
+
+async function handleAnswer(
+    answer
+){
+
+    try{
+
+        if(!peerConnection){
+
+            return;
+        }
+
+
+        await peerConnection
+            .setRemoteDescription(
+                new RTCSessionDescription(
+                    answer
+                )
+            );
+
+
+        await flushPendingIce();
+
+
+        callStatus.textContent =
+            "Connected";
+
+    }catch(error){
+
+        console.error(
+            "ANSWER ERROR:",
+            error
+        );
+    }
+}
+
+
+/* =====================================================
+   FLUSH ICE
 ===================================================== */
 
 async function flushPendingIce(){
 
     if(
         !peerConnection ||
-        !remoteDescriptionSet
+        !peerConnection.remoteDescription
     ){
 
         return;
     }
 
 
-    const candidates =
-        [...pendingIceCandidates];
+    const list =
+        [
+            ...pendingIceCandidates
+        ];
 
 
-    pendingIceCandidates =
-        [];
+    pendingIceCandidates = [];
 
 
     for(
-        const item of candidates
+        const candidate of list
     ){
 
         try{
@@ -1985,273 +1601,18 @@ async function flushPendingIce(){
             await peerConnection
                 .addIceCandidate(
                     new RTCIceCandidate(
-                        item.candidate
+                        candidate
                     )
                 );
 
         }catch(error){
 
             console.error(
-                "Queued ICE error:",
+                "PENDING ICE ERROR:",
                 error
             );
-
         }
-
     }
-
-}
-
-
-/* =====================================================
-   PROCESS PENDING SIGNALS
-===================================================== */
-
-async function processPendingSignals(){
-
-    if(!peerConnection){
-        return;
-    }
-
-
-    const signals =
-        [...pendingSignals];
-
-
-    pendingSignals =
-        [];
-
-
-    for(
-        const signal of signals
-    ){
-
-        try{
-
-            await handleSignal(
-                signal
-            );
-
-        }catch(error){
-
-            console.error(
-                "Pending signal:",
-                error
-            );
-
-        }
-
-    }
-
-}
-
-
-/* =====================================================
-   LOAD OLD SIGNALS
-===================================================== */
-
-async function loadExistingSignals(){
-
-    if(
-        !conversationId ||
-        !callId
-    ){
-
-        return;
-    }
-
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("call_signals")
-            .select(`
-                id,
-                conversation_id,
-                sender_id,
-                signal_type,
-                payload,
-                created_at
-            `)
-            .eq(
-                "conversation_id",
-                conversationId
-            )
-            .order(
-                "created_at",
-                {
-                    ascending:true
-                }
-            );
-
-
-    if(error){
-
-        console.error(
-            "Load old signals:",
-            error
-        );
-
-        return;
-    }
-
-
-    if(!data){
-        return;
-    }
-
-
-    for(
-        const signal of data
-    ){
-
-        if(
-            signal.sender_id ===
-            currentUser.id
-        ){
-
-            continue;
-        }
-
-
-        if(
-            signal.payload?.call_id !==
-            callId
-        ){
-
-            continue;
-        }
-
-
-        await handleSignal(
-            signal
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   SUBSCRIBE CALL STATUS
-===================================================== */
-
-function subscribeCallStatus(){
-
-    return new Promise(
-        resolve => {
-
-            callChannel =
-                supabaseClient
-                    .channel(
-                        "call-status-" +
-                        callId
-                    )
-                    .on(
-
-                        "postgres_changes",
-
-                        {
-                            event:
-                                "UPDATE",
-
-                            schema:
-                                "public",
-
-                            table:
-                                "calls",
-
-                            filter:
-                                "id=eq." +
-                                callId
-                        },
-
-                        payload => {
-
-                            const updated =
-                                payload.new;
-
-
-                            if(
-                                updated.status ===
-                                "accepted"
-                            ){
-
-                                setStatus(
-                                    "Connected"
-                                );
-
-                            }
-
-
-                            if(
-                                updated.status ===
-                                "rejected"
-                            ){
-
-                                showToast(
-                                    "Call rejected"
-                                );
-
-                                finishCall(
-                                    false
-                                );
-
-                            }
-
-
-                            if(
-                                updated.status ===
-                                "ended"
-                            ){
-
-                                finishCall(
-                                    false
-                                );
-
-                            }
-
-                        }
-
-                    )
-
-                    .subscribe(
-                        status => {
-
-                            console.log(
-                                "Call status:",
-                                status
-                            );
-
-
-                            if(
-                                status ===
-                                "SUBSCRIBED"
-                            ){
-
-                                resolve();
-
-                            }
-
-                            if(
-                                status ===
-                                "CHANNEL_ERROR" ||
-                                status ===
-                                "TIMED_OUT"
-                            ){
-
-                                resolve();
-
-                            }
-
-                        }
-                    );
-
-        }
-    );
-
 }
 
 
@@ -2263,15 +1624,24 @@ async function startOutgoingCall(){
 
     try{
 
-        setStatus(
-            "Calling..."
-        );
+        isAccepted = true;
+
+
+        incoming.style.display =
+            "none";
+
+
+        callStatus.textContent =
+            callData.call_type ===
+            "video"
+                ? "Video calling..."
+                : "Calling...";
+
+
+        createPeerConnection();
 
 
         await getLocalMedia();
-
-
-        createPeer();
 
 
         const offer =
@@ -2290,49 +1660,17 @@ async function startOutgoingCall(){
             offer
         );
 
-
-        await supabaseClient
-            .from("calls")
-            .update({
-                status:
-                    "ringing"
-            })
-            .eq(
-                "id",
-                callId
-            );
-
-
     }catch(error){
 
         console.error(
-            "Outgoing call:",
+            "OUTGOING CALL ERROR:",
             error
         );
 
         showToast(
-            "Call শুরু করা যায়নি"
+            "Call শুরু করা যায়নি।"
         );
-
     }
-
-}
-
-
-/* =====================================================
-   SHOW INCOMING CALL
-===================================================== */
-
-function showIncomingCall(){
-
-    setStatus(
-        "Incoming call..."
-    );
-
-
-    incomingBox.style.display =
-        "flex";
-
 }
 
 
@@ -2344,95 +1682,291 @@ async function acceptCall(){
 
     try{
 
-        incomingBox.style.display =
+        isAccepted = true;
+
+
+        incoming.style.display =
             "none";
 
 
-        setStatus(
-            "Connecting..."
+        callStatus.textContent =
+            callData.call_type ===
+            "video"
+                ? "Connecting video..."
+                : "Connecting...";
+
+
+        createPeerConnection();
+
+
+        await getLocalMedia();
+
+
+        /*
+           Receiver আগে থেকে পাঠানো
+           offer এখন process করবে।
+        */
+
+        const offers =
+            [
+                ...pendingSignals
+            ];
+
+        pendingSignals = [];
+
+
+        for(
+            const signal of offers
+        ){
+
+            if(
+                signal.signal_type ===
+                "offer"
+            ){
+
+                await handleOffer(
+                    signal.payload?.data
+                );
+            }
+        }
+
+
+        /*
+           পুরোনো offer database
+           থেকেও খুঁজে নেওয়া হবে।
+        */
+
+        await loadExistingSignals();
+
+    }catch(error){
+
+        console.error(
+            "ACCEPT ERROR:",
+            error
         );
 
+        showToast(
+            "Call গ্রহণ করা যায়নি।"
+        );
+    }
+}
 
-        /* =========================
-           UPDATE CALL
-        ========================= */
+
+/* =====================================================
+   LOAD OLD SIGNALS
+===================================================== */
+
+async function loadExistingSignals(){
+
+    try{
 
         const {
+            data,
             error
         } =
             await supabaseClient
-                .from("calls")
-                .update({
-                    status:
-                        "accepted"
-                })
+                .from("call_signals")
+                .select(`
+                    id,
+                    conversation_id,
+                    sender_id,
+                    signal_type,
+                    payload,
+                    created_at
+                `)
                 .eq(
-                    "id",
-                    callId
+                    "conversation_id",
+                    callData.conversation_id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending:true
+                    }
                 );
 
 
         if(error){
 
             console.error(
-                "Accept update:",
+                "OLD SIGNAL ERROR:",
                 error
             );
 
+            return;
         }
 
 
-        /* =========================
-           MEDIA
-        ========================= */
+        if(!data){
 
-        await getLocalMedia();
-
-
-        /* =========================
-           PEER
-        ========================= */
-
-        createPeer();
+            return;
+        }
 
 
-        /*
-         * প্রথমে Realtime থেকে আসা
-         * pending offer process করবে
-         */
+        for(
+            const signal of data
+        ){
 
-        await processPendingSignals();
+            if(
+                signal.sender_id ===
+                currentUser.id
+            ){
 
-
-        /*
-         * এরপর database থেকে
-         * পুরোনো offer/ICE/answer খুঁজবে
-         */
-
-        await loadExistingSignals();
+                continue;
+            }
 
 
-        /*
-         * আবার pending থাকলে process
-         */
+            if(
+                signal.payload?.call_id !==
+                callId
+            ){
 
-        await processPendingSignals();
+                continue;
+            }
 
+
+            if(
+                signal.signal_type ===
+                "offer"
+            ){
+
+                await handleOffer(
+                    signal.payload?.data
+                );
+
+            }else if(
+                signal.signal_type ===
+                "ice"
+            ){
+
+                if(
+                    peerConnection?.remoteDescription
+                ){
+
+                    try{
+
+                        await peerConnection
+                            .addIceCandidate(
+                                new RTCIceCandidate(
+                                    signal.payload.data
+                                )
+                            );
+
+                    }catch(error){
+
+                        console.error(
+                            error
+                        );
+                    }
+
+                }else{
+
+                    pendingIceCandidates
+                        .push(
+                            signal.payload.data
+                        );
+                }
+            }
+        }
 
     }catch(error){
 
         console.error(
-            "Accept call:",
             error
         );
-
-        showToast(
-            error.message ||
-            "Call accept করা যায়নি"
-        );
-
     }
+}
 
+
+/* =====================================================
+   CALL STATUS
+===================================================== */
+
+function subscribeCallStatus(){
+
+    callChannel =
+        supabaseClient
+            .channel(
+                "call-status-" +
+                callId
+            );
+
+
+    callChannel
+        .on(
+            "postgres_changes",
+            {
+                event:"UPDATE",
+                schema:"public",
+                table:"calls",
+                filter:
+                    "id=eq." +
+                    callId
+            },
+            payload => {
+
+                const newData =
+                    payload.new;
+
+
+                console.log(
+                    "CALL STATUS:",
+                    newData.status
+                );
+
+
+                if(
+                    newData.status ===
+                    "rejected"
+                ){
+
+                    endCallLocal(
+                        "Call rejected"
+                    );
+                }
+
+
+                if(
+                    newData.status ===
+                    "ended"
+                ){
+
+                    endCallLocal(
+                        "Call ended"
+                    );
+                }
+            }
+        )
+        .subscribe();
+}
+
+
+/* =====================================================
+   UPDATE CALL STATUS
+===================================================== */
+
+async function updateCallStatus(
+    status
+){
+
+    try{
+
+        await supabaseClient
+            .from("calls")
+            .update({
+                status:status
+            })
+            .eq(
+                "id",
+                callId
+            );
+
+    }catch(error){
+
+        console.error(
+            error
+        );
+    }
 }
 
 
@@ -2442,404 +1976,69 @@ async function acceptCall(){
 
 async function rejectCall(){
 
-    try{
-
-        incomingBox.style.display =
-            "none";
-
-
-        await sendSignal(
-            "reject",
-            {}
-        );
-
-
-        await supabaseClient
-            .from("calls")
-            .update({
-                status:
-                    "rejected"
-            })
-            .eq(
-                "id",
-                callId
-            );
-
-
-    }catch(error){
-
-        console.error(
-            "Reject:",
-            error
-        );
-
-    }
-
-
-    finishCall(
-        false
+    await sendSignal(
+        "reject",
+        {
+            rejected:true
+        }
     );
 
+
+    await updateCallStatus(
+        "rejected"
+    );
+
+
+    endCallLocal(
+        "Call rejected"
+    );
 }
 
 
 /* =====================================================
-   MUTE
+   HANGUP
 ===================================================== */
 
-function toggleMute(){
-
-    if(!localStream){
-        return;
-    }
-
-
-    const audioTracks =
-        localStream.getAudioTracks();
-
-
-    if(!audioTracks.length){
-        return;
-    }
-
-
-    isMuted =
-        !isMuted;
-
-
-    audioTracks.forEach(
-        track => {
-
-            track.enabled =
-                !isMuted;
-
-        }
-    );
-
-
-    const btn =
-        document.getElementById(
-            "muteBtn"
-        );
-
-
-    btn.textContent =
-        isMuted
-            ? "🔇"
-            : "🎤";
-
-
-    btn.classList.toggle(
-        "active",
-        isMuted
-    );
-
-}
-
-
-/* =====================================================
-   CAMERA ON/OFF
-===================================================== */
-
-function toggleCamera(){
-
-    if(
-        callType !== "video" ||
-        !localStream
-    ){
-
-        return;
-    }
-
-
-    const videoTracks =
-        localStream.getVideoTracks();
-
-
-    if(!videoTracks.length){
-        return;
-    }
-
-
-    isCameraOff =
-        !isCameraOff;
-
-
-    videoTracks.forEach(
-        track => {
-
-            track.enabled =
-                !isCameraOff;
-
-        }
-    );
-
-
-    const btn =
-        document.getElementById(
-            "cameraBtn"
-        );
-
-
-    btn.textContent =
-        isCameraOff
-            ? "🚫"
-            : "📹";
-
-
-    btn.classList.toggle(
-        "active",
-        isCameraOff
-    );
-
-}
-
-
-/* =====================================================
-   SWITCH CAMERA
-===================================================== */
-
-async function switchCamera(){
-
-    if(
-        callType !== "video"
-    ){
-
-        return;
-    }
-
-
-    try{
-
-        usingFrontCamera =
-            !usingFrontCamera;
-
-
-        const newStream =
-            await navigator
-                .mediaDevices
-                .getUserMedia({
-
-                    audio:false,
-
-                    video:{
-                        facingMode:
-                            usingFrontCamera
-                                ? "user"
-                                : "environment"
-                    }
-
-                });
-
-
-        const newVideoTrack =
-            newStream
-                .getVideoTracks()[0];
-
-
-        if(!newVideoTrack){
-            return;
-        }
-
-
-        const sender =
-            peerConnection
-                ? peerConnection
-                    .getSenders()
-                    .find(
-                        s =>
-                            s.track &&
-                            s.track.kind ===
-                            "video"
-                    )
-                : null;
-
-
-        if(sender){
-
-            await sender
-                .replaceTrack(
-                    newVideoTrack
-                );
-
-        }
-
-
-        if(localStream){
-
-            const oldTrack =
-                localStream
-                    .getVideoTracks()[0];
-
-
-            if(oldTrack){
-
-                localStream.removeTrack(
-                    oldTrack
-                );
-
-                oldTrack.stop();
-
-            }
-
-
-            localStream.addTrack(
-                newVideoTrack
-            );
-
-        }
-
-
-        localVideo.srcObject =
-            localStream;
-
-
-        try{
-
-            await localVideo.play();
-
-        }catch(error){
-
-            console.log(
-                "Camera play:",
-                error
-            );
-
-        }
-
-
-    }catch(error){
-
-        console.error(
-            "Switch camera:",
-            error
-        );
-
-        showToast(
-            "Camera switch করা যায়নি"
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   END CALL
-===================================================== */
-
-async function endCall(){
-
-    if(ended){
-        return;
-    }
-
-
-    ended = true;
-
+async function hangup(){
 
     try{
 
         await sendSignal(
             "hangup",
-            {}
+            {
+                ended:true
+            }
+        );
+
+        await updateCallStatus(
+            "ended"
         );
 
     }catch(error){
 
         console.error(
-            "Hangup signal:",
             error
         );
-
     }
 
 
-    try{
-
-        await supabaseClient
-            .from("calls")
-            .update({
-                status:
-                    "ended"
-            })
-            .eq(
-                "id",
-                callId
-            );
-
-    }catch(error){
-
-        console.error(
-            "End call update:",
-            error
-        );
-
-    }
-
-
-    cleanup();
-
-
-    setTimeout(
-        goBack,
-        300
+    endCallLocal(
+        "Call ended"
     );
-
 }
 
 
 /* =====================================================
-   FINISH CALL
+   END LOCAL
 ===================================================== */
 
-function finishCall(
-    redirect = true
+function endCallLocal(
+    message
 ){
 
-    if(
-        ended &&
-        redirect
-    ){
+    callStatus.textContent =
+        message;
 
-        return;
-    }
-
-
-    ended = true;
-
-
-    cleanup();
-
-
-    if(redirect){
-
-        setTimeout(
-            goBack,
-            300
-        );
-
-    }else{
-
-        setTimeout(
-            goBack,
-            500
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   CLEANUP
-===================================================== */
-
-function cleanup(){
-
-    /* =========================
-       LOCAL STREAM
-    ========================= */
 
     if(localStream){
 
@@ -2851,43 +2050,20 @@ function cleanup(){
             );
 
         localStream = null;
-
     }
 
-
-    /* =========================
-       PEER
-    ========================= */
 
     if(peerConnection){
 
         try{
+
             peerConnection.close();
-        }catch(e){}
 
-        peerConnection =
-            null;
+        }catch(error){}
 
+        peerConnection = null;
     }
 
-
-    /* =========================
-       REMOTE
-    ========================= */
-
-    remoteVideo.srcObject =
-        null;
-
-    remoteAudio.srcObject =
-        null;
-
-    localVideo.srcObject =
-        null;
-
-
-    /* =========================
-       CHANNELS
-    ========================= */
 
     if(signalChannel){
 
@@ -2898,11 +2074,7 @@ function cleanup(){
                     signalChannel
                 );
 
-        }catch(e){}
-
-        signalChannel =
-            null;
-
+        }catch(error){}
     }
 
 
@@ -2915,39 +2087,229 @@ function cleanup(){
                     callChannel
                 );
 
-        }catch(e){}
-
-        callChannel =
-            null;
-
+        }catch(error){}
     }
 
 
-    pendingSignals =
-        [];
-
-    pendingIceCandidates =
-        [];
-
-    queuedSignalIds.clear();
-
-    handledSignalIds.clear();
-
-
-    remoteDescriptionSet =
-        false;
-
+    setTimeout(
+        goBack,
+        1200
+    );
 }
 
 
 /* =====================================================
-   GO BACK
+   MUTE
+===================================================== */
+
+function toggleMute(){
+
+    if(!localStream){
+
+        return;
+    }
+
+
+    const tracks =
+        localStream
+            .getAudioTracks();
+
+
+    if(!tracks.length){
+
+        return;
+    }
+
+
+    isMuted =
+        !isMuted;
+
+
+    tracks.forEach(
+        track => {
+
+            track.enabled =
+                !isMuted;
+        }
+    );
+
+
+    muteBtn.textContent =
+        isMuted
+            ? "🔇"
+            : "🎙️";
+
+
+    muteBtn.classList.toggle(
+        "off",
+        isMuted
+    );
+}
+
+
+/* =====================================================
+   CAMERA
+===================================================== */
+
+function toggleCamera(){
+
+    if(!localStream){
+
+        return;
+    }
+
+
+    const tracks =
+        localStream
+            .getVideoTracks();
+
+
+    if(!tracks.length){
+
+        return;
+    }
+
+
+    isCameraOff =
+        !isCameraOff;
+
+
+    tracks.forEach(
+        track => {
+
+            track.enabled =
+                !isCameraOff;
+        }
+    );
+
+
+    cameraBtn.textContent =
+        isCameraOff
+            ? "🚫"
+            : "📹";
+
+
+    cameraBtn.classList.toggle(
+        "off",
+        isCameraOff
+    );
+}
+
+
+/* =====================================================
+   SWITCH CAMERA
+===================================================== */
+
+async function switchCamera(){
+
+    if(
+        callData.call_type !==
+        "video"
+    ){
+
+        return;
+    }
+
+
+    currentFacingMode =
+        currentFacingMode ===
+        "user"
+            ? "environment"
+            : "user";
+
+
+    try{
+
+        const newStream =
+            await navigator
+                .mediaDevices
+                .getUserMedia({
+
+                    audio:false,
+
+                    video:{
+                        facingMode:
+                            currentFacingMode
+                    }
+                });
+
+
+        const newTrack =
+            newStream
+                .getVideoTracks()[0];
+
+
+        const sender =
+            peerConnection
+                ?.getSenders()
+                .find(
+                    s =>
+                        s.track &&
+                        s.track.kind ===
+                        "video"
+                );
+
+
+        if(sender){
+
+            await sender
+                .replaceTrack(
+                    newTrack
+                );
+        }
+
+
+        const oldTrack =
+            localStream
+                ?.getVideoTracks()[0];
+
+
+        if(oldTrack){
+
+            oldTrack.stop();
+        }
+
+
+        if(localStream){
+
+            localStream.removeTrack(
+                oldTrack
+            );
+
+            localStream.addTrack(
+                newTrack
+            );
+        }
+
+
+        localVideo.srcObject =
+            localStream;
+
+
+    }catch(error){
+
+        console.error(
+            "SWITCH CAMERA ERROR:",
+            error
+        );
+
+        showToast(
+            "Camera পরিবর্তন করা যায়নি।"
+        );
+    }
+}
+
+
+/* =====================================================
+   BACK
 ===================================================== */
 
 function goBack(){
 
     if(
-        window.history.length > 1
+        document.referrer &&
+        document.referrer !==
+        window.location.href
     ){
 
         window.history.back();
@@ -2956,20 +2318,178 @@ function goBack(){
 
         window.location.href =
             "chat.html";
-
     }
-
 }
 
 
 /* =====================================================
-   PAGE CLOSE
+   PREPARE UI
+===================================================== */
+
+function prepareUI(){
+
+    if(
+        callData.call_type ===
+        "video"
+    ){
+
+        cameraBtn.style.display =
+            "flex";
+
+        switchBtnShow(true);
+
+    }else{
+
+        cameraBtn.style.display =
+            "none";
+
+        switchBtnShow(false);
+    }
+
+
+    if(
+        isCaller()
+    ){
+
+        incoming.style.display =
+            "none";
+
+        callStatus.textContent =
+            callData.call_type ===
+            "video"
+                ? "Video calling..."
+                : "Calling...";
+
+    }else{
+
+        incoming.style.display =
+            "flex";
+
+        incomingType.textContent =
+            callData.call_type ===
+            "video"
+                ? "Incoming video call"
+                : "Incoming audio call";
+
+        callStatus.textContent =
+            "Incoming call...";
+    }
+}
+
+
+/* =====================================================
+   INIT
+===================================================== */
+
+async function init(){
+
+    if(initialized){
+
+        return;
+    }
+
+    initialized = true;
+
+
+    loading.style.display =
+        "flex";
+
+
+    callId =
+        getCallId();
+
+
+    console.log(
+        "CALL PARAM:",
+        callId
+    );
+
+
+    if(!callId){
+
+        loading.style.display =
+            "none";
+
+        showToast(
+            "Call ID পাওয়া যায়নি।"
+        );
+
+        setTimeout(
+            goBack,
+            1500
+        );
+
+        return;
+    }
+
+
+    const userLoaded =
+        await loadCurrentUser();
+
+
+    if(!userLoaded){
+
+        return;
+    }
+
+
+    const callLoaded =
+        await loadCall();
+
+
+    if(!callLoaded){
+
+        return;
+    }
+
+
+    prepareUI();
+
+
+    subscribeSignals();
+
+    subscribeCallStatus();
+
+
+    loading.style.display =
+        "none";
+
+
+    /*
+       Caller সরাসরি offer পাঠাবে।
+       Receiver Accept না করা পর্যন্ত
+       offer process করবে না।
+    */
+
+    if(isCaller()){
+
+        await startOutgoingCall();
+
+    }else{
+
+        callStatus.textContent =
+            "Incoming call...";
+    }
+}
+
+
+/* =====================================================
+   PAGE LOAD
+===================================================== */
+
+window.addEventListener(
+    "load",
+    init
+);
+
+
+/* =====================================================
+   CLEANUP
 ===================================================== */
 
 window.addEventListener(
     "beforeunload",
-    () => {
-
+    ()=>{
         if(localStream){
 
             localStream
@@ -2978,18 +2498,16 @@ window.addEventListener(
                     track =>
                         track.stop()
                 );
-
         }
 
+        if(peerConnection){
+
+            try{
+                peerConnection.close();
+            }catch(error){}
+        }
     }
 );
-
-
-/* =====================================================
-   START
-===================================================== */
-
-init();
 
 </script>
 
