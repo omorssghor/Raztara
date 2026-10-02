@@ -25,6 +25,17 @@
   content="RAZTARA"
 >
 
+<!-- PWA Manifest -->
+<link
+  rel="manifest"
+  href="/Raztara/manifest.json"
+>
+
+<meta
+  name="mobile-web-app-capable"
+  content="yes"
+>
+
 <title>RAZTARA</title>
 
 <style>
@@ -161,6 +172,46 @@ function openRAZTARA(){
   window.location.href = RAZTARA_URL;
 
 }
+
+
+/* ==========================================
+   RAZTARA PWA SERVICE WORKER
+   ========================================== */
+
+if ("serviceWorker" in navigator) {
+
+  window.addEventListener("load", function(){
+
+    navigator.serviceWorker.register(
+      "/Raztara/service-worker.js"
+    )
+
+    .then(function(registration){
+
+      console.log(
+        "RAZTARA Service Worker চালু হয়েছে:",
+        registration.scope
+      );
+
+    })
+
+    .catch(function(error){
+
+      console.error(
+        "RAZTARA Service Worker চালু করা যায়নি:",
+        error
+      );
+
+    });
+
+  });
+
+}
+
+
+/* ==========================================
+   STATUS
+   ========================================== */
 
 setTimeout(function(){
 
