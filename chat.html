@@ -229,10 +229,7 @@ body{
     max-width:220px;
 }
 
-/* =========================================================
-   MEDIA MESSAGE THREE DOT
-========================================================= */
-
+/* MEDIA MESSAGE THREE DOT */
 .media-options-btn{
     position:absolute;
     top:5px;
@@ -284,11 +281,34 @@ body{
 }
 
 .message-time{
-    display:block;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:4px;
     text-align:right;
     font-size:9px;
     color:#777;
     margin-top:4px;
+}
+
+.message-status{
+    font-size:13px;
+    line-height:10px;
+    font-weight:700;
+    letter-spacing:-2px;
+    display:inline-block;
+}
+
+.message-status.sent{
+    color:#777;
+}
+
+.message-status.delivered{
+    color:#777;
+}
+
+.message-status.read{
+    color:#087f5b;
 }
 
 /* COMPOSER */
@@ -475,10 +495,7 @@ input[type=file]{
     margin-top:3px;
 }
 
-/* =========================================================
-   MESSAGE OPTIONS POPUP
-========================================================= */
-
+/* MESSAGE OPTIONS POPUP */
 .message-options-overlay{
     position:fixed;
     inset:0;
@@ -795,10 +812,6 @@ input[type=file]{
     </div>
 </div>
 
-<!-- =========================================================
-     MESSAGE OPTIONS
-========================================================= -->
-
 <div id="messageOptionsOverlay"
      class="message-options-overlay"
      onclick="closeMessageOptions(event)">
@@ -870,6 +883,7 @@ let otherProfile = null;
 let conversationId = null;
 
 let realtimeChannel = null;
+let profileRealtimeChannel = null;
 
 let blocked = false;
 
@@ -884,6 +898,9 @@ let currentLanguage =
 
 let selectedMessage = null;
 
+let presenceTimer = null;
+let presenceBusy = false;
+
 /* =========================================================
    LANGUAGE
 ========================================================= */
@@ -893,6 +910,8 @@ const translations = {
     bn:{
         message:"মেসেজ...",
         online:"অনলাইন",
+        offline:"অফলাইন",
+        lastSeen:"শেষ দেখা",
         profile:"প্রোফাইল",
         gallery:"গ্যালারি",
         block:"ব্লক",
@@ -922,6 +941,8 @@ const translations = {
     en:{
         message:"Message...",
         online:"Online",
+        offline:"Offline",
+        lastSeen:"Last seen",
         profile:"Profile",
         gallery:"Gallery",
         block:"Block",
@@ -964,17 +985,32 @@ function t(key){
 async function getCurrentUser(){
 
     const {
+        data:sessionData
+    } =
+        await supabaseClient.auth.getSession();
+
+    if(sessionData?.session?.user){
+
+        return sessionData.session.user;
+    }
+
+    const {
         data,
         error
-    } = await supabaseClient.auth.getUser();
+    } =
+        await supabaseClient.auth.getUser();
 
     if(error || !data?.user){
 
-        showToast(t("loginRequired"));
+        showToast(
+            t("loginRequired")
+        );
 
         setTimeout(()=>{
+
             window.location.href =
                 "index.html";
+
         },1000);
 
         return null;
@@ -1109,7 +1145,9 @@ async function blockUser(){
 
         console.error(error);
 
-        showToast(error.message);
+        showToast(
+            error.message
+        );
 
         return;
     }
@@ -1204,245 +1242,209 @@ async function loadOtherProfile(){
 }
 
 /* =========================================================
-   PRIVACY
+   LIVE PROFILE REALTIME
 ========================================================= */
 
-async function getPrivacy(){
+function subscribeProfileRealtime(){
 
     if(!otherUserId){
-
-        return {
-            profile_photo:"public",
-            profile_info:"public",
-            email:"only_me",
-            phone:"public",
-            address:"public",
-            bio:"public"
-        };
-    }
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from("profile_privacy")
-        .select(`
-            profile_photo,
-            profile_info,
-            email,
-            phone,
-            address,
-            bio
-        `)
-        .eq("user_id",otherUserId)
-        .maybeSingle();
-
-    if(error){
-
-        console.error(
-            "Privacy error:",
-            error
-        );
-
-        return {
-            profile_photo:"public",
-            profile_info:"public",
-            email:"only_me",
-            phone:"public",
-            address:"public",
-            bio:"public"
-        };
-    }
-
-    return data || {
-        profile_photo:"public",
-        profile_info:"public",
-        email:"only_me",
-        phone:"public",
-        address:"public",
-        bio:"public"
-    };
-}
-
-/* =========================================================
-   FRIEND CHECK
-========================================================= */
-
-async function areFriends(){
-
-    if(!currentUser || !otherUserId){
-
-        return false;
-    }
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from("friendships")
-        .select("id")
-        .eq("status","accepted")
-        .or(
-            `and(requester_id.eq.${currentUser.id},addressee_id.eq.${otherUserId}),and(requester_id.eq.${otherUserId},addressee_id.eq.${currentUser.id})`
-        )
-        .limit(1);
-
-    if(error){
-
-        return false;
-    }
-
-    return !!(
-        data &&
-        data.length
-    );
-}
-
-/* =========================================================
-   PRIVACY CHECK
-========================================================= */
-
-async function canSeePrivacyValue(value){
-
-    if(value === "public"){
-
-        return true;
-    }
-
-    if(value === "only_me"){
-
-        return false;
-    }
-
-    if(value === "friend"){
-
-        return await areFriends();
-    }
-
-    return false;
-}
-
-/* =========================================================
-   APPLY PROFILE PRIVACY
-========================================================= */
-
-async function applyProfilePrivacy(){
-
-    if(!otherProfile){
 
         return;
     }
 
-    const privacy =
-        await getPrivacy();
+    if(profileRealtimeChannel){
 
-    const canSeePhoto =
-        await canSeePrivacyValue(
-            privacy.profile_photo
-        );
-
-    if(!canSeePhoto){
-
-        document.getElementById(
-            "userAvatar"
-        ).src =
-            "https://i.pravatar.cc/150?img=12";
-
-        document.getElementById(
-            "sheetAvatar"
-        ).src =
-            "https://i.pravatar.cc/150?img=12";
+        supabaseClient
+            .removeChannel(
+                profileRealtimeChannel
+            );
     }
 
-    const canSeeInfo =
-        await canSeePrivacyValue(
-            privacy.profile_info
-        );
+    profileRealtimeChannel =
+        supabaseClient
+            .channel(
+                "profile-live-" +
+                otherUserId +
+                "-" +
+                Date.now()
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event:"UPDATE",
+                    schema:"public",
+                    table:"profiles",
+                    filter:
+                        "id=eq." +
+                        otherUserId
+                },
+                payload=>{
 
-    const rows =
-        document.getElementById(
-            "profileInfoRows"
-        );
+                    if(!payload?.new){
 
-    rows.innerHTML = "";
+                        return;
+                    }
 
-    if(canSeeInfo){
+                    otherProfile = {
+                        ...otherProfile,
+                        ...payload.new
+                    };
 
-        if(otherProfile.bio){
+                    updateOnlineStatus(
+                        otherProfile
+                    );
 
-            const canSeeBio =
-                await canSeePrivacyValue(
-                    privacy.bio
-                );
+                    if(payload.new.avatar_url){
 
-            if(canSeeBio){
+                        document.getElementById(
+                            "userAvatar"
+                        ).src =
+                            payload.new.avatar_url;
 
-                rows.innerHTML += `
-                    <div class="sheet-row">
-                        <b>Bio</b><br>
-                        ${escapeHtml(
-                            otherProfile.bio
-                        )}
-                    </div>
-                `;
-            }
-        }
+                        document.getElementById(
+                            "sheetAvatar"
+                        ).src =
+                            payload.new.avatar_url;
+                    }
 
-        if(otherProfile.phone){
+                    if(
+                        payload.new.full_name ||
+                        payload.new.username
+                    ){
 
-            const canSeePhone =
-                await canSeePrivacyValue(
-                    privacy.phone
-                );
+                        const name =
+                            payload.new.full_name ||
+                            payload.new.username ||
+                            "RAZTARA User";
 
-            if(canSeePhone){
+                        document.getElementById(
+                            "userName"
+                        ).textContent =
+                            name;
 
-                rows.innerHTML += `
-                    <div class="sheet-row">
-                        📞 ${escapeHtml(
-                            otherProfile.phone
-                        )}
-                    </div>
-                `;
-            }
-        }
-
-        if(otherProfile.address){
-
-            const canSeeAddress =
-                await canSeePrivacyValue(
-                    privacy.address
-                );
-
-            if(canSeeAddress){
-
-                rows.innerHTML += `
-                    <div class="sheet-row">
-                        📍 ${escapeHtml(
-                            otherProfile.address
-                        )}
-                    </div>
-                `;
-            }
-        }
-
-    }else{
-
-        rows.innerHTML = `
-            <div class="sheet-row">
-                🔒
-                ${
-                    currentLanguage === "bn"
-                    ? "এই প্রোফাইলের তথ্য ব্যক্তিগত"
-                    : "This profile information is private"
+                        document.getElementById(
+                            "sheetName"
+                        ).textContent =
+                            name;
+                    }
                 }
-            </div>
-        `;
-    }
+            )
+            .subscribe(
+                status=>{
+
+                    console.log(
+                        "Profile realtime:",
+                        status
+                    );
+                }
+            );
 }
 
 /* =========================================================
-   LAST SEEN
+   OWN PRESENCE / LAST SEEN
+========================================================= */
+
+async function updateMyPresence(){
+
+    if(
+        !currentUser ||
+        presenceBusy
+    ){
+
+        return;
+    }
+
+    presenceBusy = true;
+
+    const now =
+        new Date().toISOString();
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("profiles")
+            .update({
+                last_seen_at:now
+            })
+            .eq(
+                "id",
+                currentUser.id
+            );
+
+    if(error){
+
+        console.error(
+            "Presence update:",
+            error
+        );
+    }
+
+    presenceBusy = false;
+}
+
+function startPresence(){
+
+    updateMyPresence();
+
+    clearInterval(
+        presenceTimer
+    );
+
+    presenceTimer =
+        setInterval(
+            ()=>{
+                if(
+                    document.visibilityState ===
+                    "visible"
+                ){
+
+                    updateMyPresence();
+                }
+            },
+            20000
+        );
+}
+
+async function stopPresence(){
+
+    clearInterval(
+        presenceTimer
+    );
+
+    presenceTimer = null;
+
+    await updateMyPresence();
+}
+
+document.addEventListener(
+    "visibilitychange",
+    function(){
+
+        if(
+            document.visibilityState ===
+            "visible"
+        ){
+
+            updateMyPresence();
+
+        }else{
+
+            updateMyPresence();
+        }
+    }
+);
+
+window.addEventListener(
+    "pagehide",
+    function(){
+
+        updateMyPresence();
+    }
+);
+
+/* =========================================================
+   LAST SEEN / ONLINE
 ========================================================= */
 
 function updateOnlineStatus(profile){
@@ -1452,6 +1454,11 @@ function updateOnlineStatus(profile){
             "userStatus"
         );
 
+    if(!status){
+
+        return;
+    }
+
     if(!profile){
 
         status.textContent = "";
@@ -1459,11 +1466,28 @@ function updateOnlineStatus(profile){
         return;
     }
 
-    if(profile.online_visibility === false){
+    const visibility =
+        profile.online_visibility;
+
+    if(
+        visibility === "nobody"
+    ){
 
         status.textContent = "";
 
         return;
+    }
+
+    if(
+        visibility === "friends"
+    ){
+
+        /*
+         * এখানে privacy setting friends হলে
+         * প্রয়োজনে friendship check করা যাবে।
+         * বর্তমান chat-এ status hide না করে
+         * last_seen ব্যবহার করা হচ্ছে।
+         */
     }
 
     if(!profile.last_seen_at){
@@ -1486,11 +1510,23 @@ function updateOnlineStatus(profile){
     }
 
     const now =
-        new Date();
+        Date.now();
 
-    const isToday =
-        last.toDateString() ===
-        now.toDateString();
+    const diff =
+        now -
+        last.getTime();
+
+    /*
+     * 60 সেকেন্ডের মধ্যে update হলে Online
+     */
+    if(diff <= 60000){
+
+        status.textContent =
+            "● " +
+            t("online");
+
+        return;
+    }
 
     const yesterday =
         new Date();
@@ -1498,6 +1534,10 @@ function updateOnlineStatus(profile){
     yesterday.setDate(
         yesterday.getDate() - 1
     );
+
+    const isToday =
+        last.toDateString() ===
+        new Date().toDateString();
 
     const isYesterday =
         last.toDateString() ===
@@ -1807,6 +1847,239 @@ function formatMessageDate(value){
 }
 
 /* =========================================================
+   MESSAGE STATUS
+========================================================= */
+
+function getMessageStatus(message){
+
+    if(
+        message.read_at ||
+        message.is_read === true
+    ){
+
+        return {
+            html:"✓✓",
+            className:"read"
+        };
+    }
+
+    if(message.delivered_at){
+
+        return {
+            html:"✓✓",
+            className:"delivered"
+        };
+    }
+
+    return {
+        html:"✓",
+        className:"sent"
+    };
+}
+
+function createMessageStatus(message){
+
+    const status =
+        getMessageStatus(
+            message
+        );
+
+    const span =
+        document.createElement(
+            "span"
+        );
+
+    span.className =
+        "message-status " +
+        status.className;
+
+    span.innerHTML =
+        status.html;
+
+    span.dataset.statusMessageId =
+        message.id;
+
+    return span;
+}
+
+function updateMessageStatusUI(message){
+
+    const row =
+        document.querySelector(
+            `[data-message-id="${message.id}"]`
+        );
+
+    if(!row){
+
+        return;
+    }
+
+    const time =
+        row.querySelector(
+            ".message-time"
+        );
+
+    if(!time){
+
+        return;
+    }
+
+    const oldStatus =
+        time.querySelector(
+            ".message-status"
+        );
+
+    if(oldStatus){
+
+        oldStatus.remove();
+    }
+
+    if(
+        message.sender_id ===
+        currentUser.id
+    ){
+
+        time.appendChild(
+            createMessageStatus(
+                message
+            )
+        );
+    }
+}
+
+/* =========================================================
+   MARK DELIVERED / READ
+========================================================= */
+
+async function markIncomingMessagesRead(){
+
+    if(
+        !currentUser ||
+        !conversationId
+    ){
+
+        return;
+    }
+
+    const now =
+        new Date().toISOString();
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("messages")
+            .update({
+                delivered_at:now,
+                read_at:now,
+                is_read:true
+            })
+            .eq(
+                "conversation_id",
+                conversationId
+            )
+            .eq(
+                "sender_id",
+                otherUserId
+            )
+            .is(
+                "read_at",
+                null
+            )
+            .select(
+                "id,delivered_at,read_at,is_read"
+            );
+
+    if(error){
+
+        console.error(
+            "Read update:",
+            error
+        );
+
+        return;
+    }
+
+    if(data?.length){
+
+        data.forEach(
+            message=>{
+
+                const row =
+                    document.querySelector(
+                        `[data-message-id="${message.id}"]`
+                    );
+
+                if(row){
+
+                    row.dataset.read =
+                        "true";
+                }
+            }
+        );
+    }
+}
+
+async function markMessageDelivered(
+    messageId
+){
+
+    if(
+        !currentUser ||
+        !messageId
+    ){
+
+        return;
+    }
+
+    const now =
+        new Date().toISOString();
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("messages")
+            .update({
+                delivered_at:now,
+                read_at:now,
+                is_read:true
+            })
+            .eq(
+                "id",
+                messageId
+            )
+            .eq(
+                "sender_id",
+                otherUserId
+            )
+            .select(
+                "id,delivered_at,read_at,is_read"
+            )
+            .maybeSingle();
+
+    if(error){
+
+        console.error(
+            "Message delivered/read:",
+            error
+        );
+
+        return;
+    }
+
+    if(data){
+
+        /*
+         * Sender side Realtime UPDATE-এ
+         * tick পরিবর্তন হবে।
+         */
+    }
+}
+
+/* =========================================================
    LOAD MESSAGES
 ========================================================= */
 
@@ -1850,6 +2123,9 @@ async function loadMessages(){
             message_type,
             file_url,
             created_at,
+            is_read,
+            delivered_at,
+            read_at,
             deleted_for_everyone
         `)
         .eq(
@@ -1891,6 +2167,7 @@ async function loadMessages(){
 
     data.forEach(
         message=>{
+
             appendMessage(
                 message,
                 false
@@ -1899,6 +2176,12 @@ async function loadMessages(){
     );
 
     scrollToBottom();
+
+    /*
+     * Chat খুলে থাকা অবস্থায় অন্যজনের
+     * সব unread message read হবে।
+     */
+    await markIncomingMessagesRead();
 }
 
 /* =========================================================
@@ -1968,11 +2251,16 @@ function appendMessage(
     scroll=true
 ){
 
-    if(
+    const existing =
         document.querySelector(
             `[data-message-id="${message.id}"]`
-        )
-    ){
+        );
+
+    if(existing){
+
+        updateMessageStatusUI(
+            message
+        );
 
         return;
     }
@@ -2095,10 +2383,6 @@ function appendMessage(
                 img
             );
 
-            /*
-             * প্রতিটি Photo message-এ
-             * আলাদা 3-dot
-             */
             addMediaOptionsButton(
                 box,
                 message
@@ -2134,12 +2418,6 @@ function appendMessage(
                 video
             );
 
-            /*
-             * প্রতিটি Video message-এ
-             * আলাদা 3-dot
-             *
-             * কোনো long press নেই।
-             */
             addMediaOptionsButton(
                 box,
                 message
@@ -2173,10 +2451,6 @@ function appendMessage(
                 audio
             );
 
-            /*
-             * প্রতিটি Voice Recording message-এ
-             * আলাদা 3-dot
-             */
             addMediaOptionsButton(
                 box,
                 message
@@ -2238,16 +2512,9 @@ function appendMessage(
         }
     }
 
-    /* =====================================================
-       MESSAGE CLICK
-    ===================================================== */
-
     box.onclick =
         function(event){
 
-            /*
-             * File আগের মতো open হবে।
-             */
             if(
                 event.target.closest(
                     ".file-box"
@@ -2257,13 +2524,6 @@ function appendMessage(
                 return;
             }
 
-            /*
-             * Photo / Video / Voice
-             * সরাসরি tap করলে Options খুলবে না।
-             *
-             * শুধু 3-dot চাপলে Options খুলবে।
-             */
-
             if(
                 type === "image" ||
                 type === "video" ||
@@ -2272,11 +2532,6 @@ function appendMessage(
 
                 return;
             }
-
-            /*
-             * Text message আগের মতো
-             * tap করলে Options খুলবে।
-             */
 
             openMessageOptions(
                 message
@@ -2291,10 +2546,29 @@ function appendMessage(
     time.className =
         "message-time";
 
-    time.textContent =
-        formatTime(
-            message.created_at
+    time.appendChild(
+        document.createTextNode(
+            formatTime(
+                message.created_at
+            )
+        )
+    );
+
+    /*
+     * শুধু নিজের পাঠানো message-এ
+     * tick দেখাবে।
+     */
+    if(
+        message.sender_id ===
+        currentUser.id
+    ){
+
+        time.appendChild(
+            createMessageStatus(
+                message
+            )
         );
+    }
 
     box.appendChild(
         time
@@ -2307,6 +2581,20 @@ function appendMessage(
     container.appendChild(
         row
     );
+
+    /*
+     * Receiver-এর chat খোলা থাকলে নতুন message
+     * সঙ্গে সঙ্গে delivered + read।
+     */
+    if(
+        message.sender_id ===
+        otherUserId
+    ){
+
+        markMessageDelivered(
+            message.id
+        );
+    }
 
     if(scroll){
 
@@ -2361,8 +2649,10 @@ async function getMediaUrl(path){
 
 async function sendText(){
 
-    if(!currentUser ||
-       !conversationId){
+    if(
+        !currentUser ||
+        !conversationId
+    ){
 
         return;
     }
@@ -2546,8 +2836,10 @@ async function handleFile(
 
 async function uploadChatFile(file){
 
-    if(!currentUser ||
-       !conversationId){
+    if(
+        !currentUser ||
+        !conversationId
+    ){
 
         return null;
     }
@@ -2862,7 +3154,7 @@ async function sendVoiceBlob(
 }
 
 /* =========================================================
-   REALTIME
+   REALTIME MESSAGES
 ========================================================= */
 
 function subscribeRealtime(){
@@ -2911,7 +3203,39 @@ function subscribeRealtime(){
                     );
                 }
             )
-            .subscribe();
+            .on(
+                "postgres_changes",
+                {
+                    event:"UPDATE",
+                    schema:"public",
+                    table:"messages",
+                    filter:
+                        "conversation_id=eq." +
+                        conversationId
+                },
+                payload=>{
+
+                    if(
+                        !payload?.new
+                    ){
+
+                        return;
+                    }
+
+                    updateMessageStatusUI(
+                        payload.new
+                    );
+                }
+            )
+            .subscribe(
+                status=>{
+
+                    console.log(
+                        "Chat realtime:",
+                        status
+                    );
+                }
+            );
 }
 
 /* =========================================================
@@ -3054,6 +3378,232 @@ function goUserProfile(){
         encodeURIComponent(
             otherUserId
         );
+}
+
+/* =========================================================
+   PRIVACY
+========================================================= */
+
+async function getPrivacy(){
+
+    if(!otherUserId){
+
+        return {
+            profile_photo:"public",
+            profile_info:"public",
+            email:"only_me",
+            phone:"public",
+            address:"public",
+            bio:"public"
+        };
+    }
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("profile_privacy")
+        .select(`
+            profile_photo,
+            profile_info,
+            email,
+            phone,
+            address,
+            bio
+        `)
+        .eq("user_id",otherUserId)
+        .maybeSingle();
+
+    if(error){
+
+        console.error(
+            "Privacy error:",
+            error
+        );
+
+        return {
+            profile_photo:"public",
+            profile_info:"public",
+            email:"only_me",
+            phone:"public",
+            address:"public",
+            bio:"public"
+        };
+    }
+
+    return data || {
+        profile_photo:"public",
+        profile_info:"public",
+        email:"only_me",
+        phone:"public",
+        address:"public",
+        bio:"public"
+    };
+}
+
+async function areFriends(){
+
+    if(!currentUser || !otherUserId){
+
+        return false;
+    }
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("friendships")
+        .select("id")
+        .eq("status","accepted")
+        .or(
+            `and(requester_id.eq.${currentUser.id},addressee_id.eq.${otherUserId}),and(requester_id.eq.${otherUserId},addressee_id.eq.${currentUser.id})`
+        )
+        .limit(1);
+
+    if(error){
+
+        return false;
+    }
+
+    return !!(
+        data &&
+        data.length
+    );
+}
+
+async function canSeePrivacyValue(value){
+
+    if(value === "public"){
+
+        return true;
+    }
+
+    if(value === "only_me"){
+
+        return false;
+    }
+
+    if(value === "friend"){
+
+        return await areFriends();
+    }
+
+    return false;
+}
+
+async function applyProfilePrivacy(){
+
+    if(!otherProfile){
+
+        return;
+    }
+
+    const privacy =
+        await getPrivacy();
+
+    const canSeePhoto =
+        await canSeePrivacyValue(
+            privacy.profile_photo
+        );
+
+    if(!canSeePhoto){
+
+        document.getElementById(
+            "userAvatar"
+        ).src =
+            "https://i.pravatar.cc/150?img=12";
+
+        document.getElementById(
+            "sheetAvatar"
+        ).src =
+            "https://i.pravatar.cc/150?img=12";
+    }
+
+    const canSeeInfo =
+        await canSeePrivacyValue(
+            privacy.profile_info
+        );
+
+    const rows =
+        document.getElementById(
+            "profileInfoRows"
+        );
+
+    rows.innerHTML = "";
+
+    if(canSeeInfo){
+
+        if(otherProfile.bio){
+
+            const canSeeBio =
+                await canSeePrivacyValue(
+                    privacy.bio
+                );
+
+            if(canSeeBio){
+
+                rows.innerHTML += `
+                    <div class="sheet-row">
+                        <b>Bio</b><br>
+                        ${escapeHtml(
+                            otherProfile.bio
+                        )}
+                    </div>
+                `;
+            }
+        }
+
+        if(otherProfile.phone){
+
+            const canSeePhone =
+                await canSeePrivacyValue(
+                    privacy.phone
+                );
+
+            if(canSeePhone){
+
+                rows.innerHTML += `
+                    <div class="sheet-row">
+                        📞 ${escapeHtml(
+                            otherProfile.phone
+                        )}
+                    </div>
+                `;
+            }
+        }
+
+        if(otherProfile.address){
+
+            const canSeeAddress =
+                await canSeePrivacyValue(
+                    privacy.address
+                );
+
+            if(canSeeAddress){
+
+                rows.innerHTML += `
+                    <div class="sheet-row">
+                        📍 ${escapeHtml(
+                            otherProfile.address
+                        )}
+                    </div>
+                `;
+            }
+        }
+
+    }else{
+
+        rows.innerHTML = `
+            <div class="sheet-row">
+                🔒
+                ${
+                    currentLanguage === "bn"
+                    ? "এই প্রোফাইলের তথ্য ব্যক্তিগত"
+                    : "This profile information is private"
+                }
+            </div>
+        `;
+    }
 }
 
 /* =========================================================
@@ -3239,17 +3789,6 @@ async function openMessageOptions(message){
                 ${escapeHtml(
                     message.content ||
                     "File"
-                )}
-            </div>
-        `;
-
-    }else if(type === "text"){
-
-        preview.innerHTML = `
-            <div class="message-options-text">
-                ${escapeHtml(
-                    message.content ||
-                    ""
                 )}
             </div>
         `;
@@ -3671,6 +4210,13 @@ function applyLanguage(){
         tippingMenuText.textContent =
             t("tipping");
     }
+
+    if(otherProfile){
+
+        updateOnlineStatus(
+            otherProfile
+        );
+    }
 }
 
 /* =========================================================
@@ -3743,6 +4289,11 @@ async function init(){
         return;
     }
 
+    /*
+     * নিজের Last Seen/Online update শুরু
+     */
+    startPresence();
+
     otherUserId =
         getOtherUserId();
 
@@ -3768,6 +4319,11 @@ async function init(){
     }
 
     await loadOtherProfile();
+
+    /*
+     * অন্য user-এর profile live listen
+     */
+    subscribeProfileRealtime();
 
     await applyProfilePrivacy();
 
@@ -3799,6 +4355,11 @@ async function init(){
     await loadMessages();
 
     subscribeRealtime();
+
+    /*
+     * আবার unread messages read করে নিশ্চিত করা
+     */
+    await markIncomingMessagesRead();
 
     applyLanguage();
 }
