@@ -974,65 +974,63 @@ key;
 ========================================================= */
 
 function $(id){
-
-return document.getElementById(id);
-
+    return document.getElementById(id);
 }
 
 
 function showToast(message,type=""){
 
-const toast=$("toast");
+    const toast=$("toast");
 
-toast.textContent=message;
+    toast.textContent=message;
 
-toast.className="toast show "+type;
+    toast.className="toast show "+type;
 
-clearTimeout(window.__toastTimer);
+    clearTimeout(window.__toastTimer);
 
-window.__toastTimer=setTimeout(()=>{
+    window.__toastTimer=setTimeout(()=>{
 
-toast.className="toast";
+        toast.className="toast";
 
-},3000);
+    },3000);
 
 }
 
 
 function defaultAvatar(name="User"){
 
-const letter=
-String(name||"U")
-.trim()
-.charAt(0)
-.toUpperCase()||"U";
+    const letter=
+        String(name||"U")
+        .trim()
+        .charAt(0)
+        .toUpperCase()||"U";
 
-return "https://ui-avatars.com/api/?name="+
-encodeURIComponent(letter)+
-"&background=087f5b&color=ffffff&size=256";
+    return "https://ui-avatars.com/api/?name="+
+        encodeURIComponent(letter)+
+        "&background=087f5b&color=ffffff&size=256";
 
 }
 
 
 function formatLastSeen(value){
 
-if(!value){
-return t("notAvailable");
-}
+    if(!value){
+        return t("notAvailable");
+    }
 
-const date=new Date(value);
+    const date=new Date(value);
 
-if(Number.isNaN(date.getTime())){
-return t("notAvailable");
-}
+    if(Number.isNaN(date.getTime())){
+        return t("notAvailable");
+    }
 
-return date.toLocaleString(
-currentLanguage==="bn"?"bn-BD":"en-US",
-{
-dateStyle:"medium",
-timeStyle:"short"
-}
-);
+    return date.toLocaleString(
+        currentLanguage==="bn"?"bn-BD":"en-US",
+        {
+            dateStyle:"medium",
+            timeStyle:"short"
+        }
+    );
 
 }
 
@@ -1043,40 +1041,40 @@ timeStyle:"short"
 
 function applyLanguage(){
 
-$("loadingText").textContent=t("loading");
+    $("loadingText").textContent=t("loading");
 
-$("usernameLabel").textContent=t("username");
-$("phoneLabel").textContent=t("phone");
-$("emailLabel").textContent=t("email");
-$("addressLabel").textContent=t("address");
-$("lastSeenLabel").textContent=t("lastSeen");
+    $("usernameLabel").textContent=t("username");
+    $("phoneLabel").textContent=t("phone");
+    $("emailLabel").textContent=t("email");
+    $("addressLabel").textContent=t("address");
+    $("lastSeenLabel").textContent=t("lastSeen");
 
-$("homeText").textContent=t("home");
-$("editText").textContent=t("editProfile");
-$("logoutText").textContent=t("logout");
+    $("homeText").textContent=t("home");
+    $("editText").textContent=t("editProfile");
+    $("logoutText").textContent=t("logout");
 
-$("editModalTitle").textContent=t("editTitle");
-$("photoChangeText").textContent=t("changePhoto");
+    $("editModalTitle").textContent=t("editTitle");
+    $("photoChangeText").textContent=t("changePhoto");
 
-$("fullNameLabel").textContent=t("fullName");
-$("usernameInputLabel").textContent=t("usernameField");
-$("emailInputLabel").textContent=t("emailField");
-$("phoneInputLabel").textContent=t("phoneField");
-$("addressInputLabel").textContent=t("addressField");
-$("bioInputLabel").textContent=t("bioField");
+    $("fullNameLabel").textContent=t("fullName");
+    $("usernameInputLabel").textContent=t("usernameField");
+    $("emailInputLabel").textContent=t("emailField");
+    $("phoneInputLabel").textContent=t("phoneField");
+    $("addressInputLabel").textContent=t("addressField");
+    $("bioInputLabel").textContent=t("bioField");
 
-$("fullNameInput").placeholder=t("namePlaceholder");
-$("phoneInput").placeholder=t("phonePlaceholder");
-$("addressInput").placeholder=t("addressPlaceholder");
-$("bioInput").placeholder=t("bioPlaceholder");
+    $("fullNameInput").placeholder=t("namePlaceholder");
+    $("phoneInput").placeholder=t("phonePlaceholder");
+    $("addressInput").placeholder=t("addressPlaceholder");
+    $("bioInput").placeholder=t("bioPlaceholder");
 
-if(!$("saveProfileBtn").disabled){
-$("saveProfileBtn").textContent=t("save");
-}
+    if(!$("saveProfileBtn").disabled){
+        $("saveProfileBtn").textContent=t("save");
+    }
 
-if(isOwnProfile){
-$("topTitle").textContent=t("myProfile");
-}
+    if(isOwnProfile){
+        $("topTitle").textContent=t("myProfile");
+    }
 
 }
 
@@ -1087,15 +1085,15 @@ $("topTitle").textContent=t("myProfile");
 
 $("backBtn").addEventListener("click",()=>{
 
-if(window.history.length>1){
+    if(window.history.length>1){
 
-window.history.back();
+        window.history.back();
 
-}else{
+    }else{
 
-window.location.href="index.html";
+        window.location.href="index.html";
 
-}
+    }
 
 });
 
@@ -1106,7 +1104,7 @@ window.location.href="index.html";
 
 $("homeBtn").addEventListener("click",()=>{
 
-window.location.href="index.html";
+    window.location.href="index.html";
 
 });
 
@@ -1117,23 +1115,24 @@ window.location.href="index.html";
 
 async function loadCurrentUser(){
 
-const {data,error}=await supabaseClient.auth.getUser();
+    const {data,error} =
+        await supabaseClient.auth.getUser();
 
-if(error){
-throw error;
-}
+    if(error){
+        throw error;
+    }
 
-if(!data || !data.user){
+    if(!data || !data.user){
 
-window.location.href="login.html";
+        window.location.href="login.html";
 
-return null;
+        return null;
 
-}
+    }
 
-currentUser=data.user;
+    currentUser=data.user;
 
-return currentUser;
+    return currentUser;
 
 }
 
@@ -1144,32 +1143,39 @@ return currentUser;
 
 async function areUsersFriends(userA,userB){
 
-if(!userA || !userB){
-return false;
-}
+    if(!userA || !userB){
+        return false;
+    }
 
-if(userA===userB){
-return true;
-}
+    if(userA===userB){
+        return true;
+    }
 
-const {data,error}=await supabaseClient
-.from("friendships")
-.select("id")
-.eq("status","accepted")
-.or(
-"and(requester_id.eq."+userA+",addressee_id.eq."+userB+"),and(requester_id.eq."+userB+",addressee_id.eq."+userA+")"
-)
-.limit(1);
+    const {data,error} =
+        await supabaseClient
+        .from("friendships")
+        .select("id")
+        .eq("status","accepted")
+        .or(
+            "and(requester_id.eq."+userA+
+            ",addressee_id.eq."+userB+
+            "),and(requester_id.eq."+userB+
+            ",addressee_id.eq."+userA+")"
+        )
+        .limit(1);
 
-if(error){
+    if(error){
 
-console.warn("Friend check error:",error);
+        console.warn(
+            "Friend check error:",
+            error
+        );
 
-return false;
+        return false;
 
-}
+    }
 
-return Array.isArray(data)&&data.length>0;
+    return Array.isArray(data)&&data.length>0;
 
 }
 
@@ -1180,26 +1186,32 @@ return Array.isArray(data)&&data.length>0;
 
 async function loadPhone(targetUserId){
 
-const {data,error}=await supabaseClient
-.from("profile_phone")
-.select("user_id, phone, visibility")
-.eq("user_id",targetUserId)
-.maybeSingle();
+    const {data,error} =
+        await supabaseClient
+        .from("profile_phone")
+        .select(
+            "user_id, phone, visibility"
+        )
+        .eq(
+            "user_id",
+            targetUserId
+        )
+        .maybeSingle();
 
-if(error){
-throw error;
-}
+    if(error){
+        throw error;
+    }
 
-if(!data){
+    if(!data){
 
-return{
-phone:null,
-visibility:"only_me"
-};
+        return{
+            phone:null,
+            visibility:"only_me"
+        };
 
-}
+    }
 
-return data;
+    return data;
 
 }
 
@@ -1210,79 +1222,105 @@ return data;
 
 async function loadAddress(targetUserId){
 
-const {data,error}=await supabaseClient
-.from("profile_address")
-.select("user_id, address, visibility")
-.eq("user_id",targetUserId)
-.maybeSingle();
+    const {data,error} =
+        await supabaseClient
+        .from("profile_address")
+        .select(
+            "user_id, address, visibility"
+        )
+        .eq(
+            "user_id",
+            targetUserId
+        )
+        .maybeSingle();
 
-if(error){
-throw error;
-}
+    if(error){
+        throw error;
+    }
 
-if(!data){
+    if(!data){
 
-return{
-address:null,
-visibility:"only_me"
-};
+        return{
+            address:null,
+            visibility:"only_me"
+        };
 
-}
+    }
 
-return data;
+    return data;
 
 }
 
 
 /* =========================================================
    FRESH PROFILE DATA
-   নতুন
 ========================================================= */
 
 async function getFreshProfileData(){
 
-if(!currentUser){
-throw new Error("User not logged in");
-}
+    if(!currentUser){
+        throw new Error(
+            "User not logged in"
+        );
+    }
 
-const {data:profile,error:profileError}=await supabaseClient
-.from("profiles")
-.select(`
-id,
-username,
-full_name,
-avatar_url,
-bio,
-online_visibility,
-last_seen_at,
-updated_at
-`)
-.eq("id",currentUser.id)
-.maybeSingle();
 
-if(profileError){
-throw profileError;
-}
+    const {
+        data:profile,
+        error:profileError
+    } =
+        await supabaseClient
+        .from("profiles")
+        .select(`
+            id,
+            username,
+            full_name,
+            avatar_url,
+            bio,
+            online_visibility,
+            last_seen_at,
+            updated_at
+        `)
+        .eq(
+            "id",
+            currentUser.id
+        )
+        .maybeSingle();
 
-if(!profile){
 
-throw new Error(
-currentLanguage==="bn"
-?"আপনার profile পাওয়া যায়নি।"
-:"Your profile was not found."
-);
+    if(profileError){
+        throw profileError;
+    }
 
-}
 
-const phone=await loadPhone(currentUser.id);
+    if(!profile){
 
-const address=await loadAddress(currentUser.id);
+        throw new Error(
+            currentLanguage==="bn"
+            ?"আপনার profile পাওয়া যায়নি।"
+            :"Your profile was not found."
+        );
 
-return{
-profile,
-phone,
-address
-};
+    }
+
+
+    const phone =
+        await loadPhone(
+            currentUser.id
+        );
+
+
+    const address =
+        await loadAddress(
+            currentUser.id
+        );
+
+
+    return{
+        profile,
+        phone,
+        address
+    };
 
 }
 
@@ -1291,26 +1329,29 @@ address
    FIELD VISIBILITY
 ========================================================= */
 
-async function canViewPrivateField(ownerId,visibility){
+async function canViewPrivateField(
+    ownerId,
+    visibility
+){
 
-if(ownerId===currentUser.id){
-return true;
-}
+    if(ownerId===currentUser.id){
+        return true;
+    }
 
-if(visibility==="public"){
-return true;
-}
+    if(visibility==="public"){
+        return true;
+    }
 
-if(visibility==="friend"){
+    if(visibility==="friend"){
 
-return await areUsersFriends(
-currentUser.id,
-ownerId
-);
+        return await areUsersFriends(
+            currentUser.id,
+            ownerId
+        );
 
-}
+    }
 
-return false;
+    return false;
 
 }
 
@@ -1321,361 +1362,460 @@ return false;
 
 async function loadProfile(){
 
-try{
+    try{
 
-$("loadingBox").classList.remove("hidden");
-$("profileContent").classList.add("hidden");
+        $("loadingBox")
+        .classList
+        .remove("hidden");
 
-const params=new URLSearchParams(
-window.location.search
-);
+        $("profileContent")
+        .classList
+        .add("hidden");
 
-const targetUserId=
-params.get("user")||
-currentUser.id;
 
-isOwnProfile=
-targetUserId===currentUser.id;
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
 
 
-const {
-data:profile,
-error:profileError
-}=await supabaseClient
-.from("profiles")
-.select(`
-id,
-username,
-full_name,
-avatar_url,
-bio,
-online_visibility,
-last_seen_at,
-updated_at
-`)
-.eq("id",targetUserId)
-.maybeSingle();
+        const targetUserId =
+            params.get("user") ||
+            currentUser.id;
 
-if(profileError){
-throw profileError;
-}
 
-if(!profile){
+        isOwnProfile =
+            targetUserId ===
+            currentUser.id;
 
-throw new Error(
-"এই user-এর profile পাওয়া যায়নি।"
-);
 
-}
+        const {
+            data:profile,
+            error:profileError
+        } =
+            await supabaseClient
+            .from("profiles")
+            .select(`
+                id,
+                username,
+                full_name,
+                avatar_url,
+                bio,
+                online_visibility,
+                last_seen_at,
+                updated_at
+            `)
+            .eq(
+                "id",
+                targetUserId
+            )
+            .maybeSingle();
 
-currentProfile=profile;
 
-currentPhone=
-await loadPhone(targetUserId);
+        if(profileError){
+            throw profileError;
+        }
 
-currentAddress=
-await loadAddress(targetUserId);
 
+        if(!profile){
 
-let isFriend=false;
+            throw new Error(
+                "এই user-এর profile পাওয়া যায়নি।"
+            );
 
-if(!isOwnProfile){
+        }
 
-isFriend=
-await areUsersFriends(
-currentUser.id,
-targetUserId
-);
 
-}
+        currentProfile =
+            profile;
 
 
-const name=
-profile.full_name||
-profile.username||
-"User";
+        currentPhone =
+            await loadPhone(
+                targetUserId
+            );
 
 
-$("profileName").textContent=name;
+        currentAddress =
+            await loadAddress(
+                targetUserId
+            );
 
-$("profileUsername").textContent=
-profile.username
-?"@"+profile.username
-:t("noUsername");
 
-$("detailUsername").textContent=
-profile.username
-?"@"+profile.username
-:t("noUsername");
+        let isFriend=false;
 
-$("profileBio").textContent=
-profile.bio||"";
 
+        if(!isOwnProfile){
 
-const avatar=
-profile.avatar_url||
-defaultAvatar(name);
+            isFriend =
+                await areUsersFriends(
+                    currentUser.id,
+                    targetUserId
+                );
 
-$("profileAvatar").src=avatar;
+        }
 
-$("profileAvatar").onerror=()=>{
 
-$("profileAvatar").src=
-defaultAvatar(name);
+        const name =
+            profile.full_name ||
+            profile.username ||
+            "User";
 
-};
 
+        $("profileName")
+            .textContent=name;
 
-if(isOwnProfile){
 
-$("detailEmail").textContent=
-currentUser.email||
-t("noEmail");
+        $("profileUsername")
+            .textContent =
+                profile.username
+                ? "@"+profile.username
+                : t("noUsername");
 
-}else{
 
-$("detailEmail").textContent=t("private");
+        $("detailUsername")
+            .textContent =
+                profile.username
+                ? "@"+profile.username
+                : t("noUsername");
 
-}
 
+        $("profileBio")
+            .textContent =
+                profile.bio || "";
 
-const phoneVisible=
-await canViewPrivateField(
-targetUserId,
-currentPhone.visibility
-);
 
-if(phoneVisible&&currentPhone.phone){
+        const avatar =
+            profile.avatar_url ||
+            defaultAvatar(name);
 
-$("detailPhone").textContent=
-currentPhone.phone;
 
-}else{
+        $("profileAvatar").src =
+            avatar;
 
-$("detailPhone").textContent=t("private");
 
-}
+        $("profileAvatar").onerror=()=>{
 
+            $("profileAvatar").src =
+                defaultAvatar(name);
 
-const addressVisible=
-await canViewPrivateField(
-targetUserId,
-currentAddress.visibility
-);
+        };
 
-if(addressVisible&&currentAddress.address){
 
-$("detailAddress").textContent=
-currentAddress.address;
+        if(isOwnProfile){
 
-}else{
+            $("detailEmail")
+                .textContent =
+                    currentUser.email ||
+                    t("noEmail");
 
-$("detailAddress").textContent=t("private");
+        }else{
 
-}
+            $("detailEmail")
+                .textContent =
+                    t("private");
 
+        }
 
-let statusAllowed=false;
 
-if(isOwnProfile){
+        const phoneVisible =
+            await canViewPrivateField(
+                targetUserId,
+                currentPhone.visibility
+            );
 
-statusAllowed=true;
 
-}else if(
-profile.online_visibility==="everyone"
-){
+        if(
+            phoneVisible &&
+            currentPhone.phone
+        ){
 
-statusAllowed=true;
+            $("detailPhone")
+                .textContent =
+                    currentPhone.phone;
 
-}else if(
-profile.online_visibility==="friends"&&
-isFriend
-){
+        }else{
 
-statusAllowed=true;
+            $("detailPhone")
+                .textContent =
+                    t("private");
 
-}
+        }
 
 
-if(statusAllowed){
+        const addressVisible =
+            await canViewPrivateField(
+                targetUserId,
+                currentAddress.visibility
+            );
 
-$("detailLastSeen").textContent=
-formatLastSeen(profile.last_seen_at);
 
-if(profile.online_visibility!=="nobody"){
+        if(
+            addressVisible &&
+            currentAddress.address
+        ){
 
-$("profileStatus").textContent=
-t("onlineStatus");
+            $("detailAddress")
+                .textContent =
+                    currentAddress.address;
 
-$("onlineDot").style.display="block";
+        }else{
 
-}
+            $("detailAddress")
+                .textContent =
+                    t("private");
 
-}else{
+        }
 
-$("detailLastSeen").textContent=t("private");
-$("profileStatus").textContent="";
-$("onlineDot").style.display="none";
 
-}
+        let statusAllowed=false;
 
 
-if(isOwnProfile){
+        if(isOwnProfile){
 
-$("topTitle").textContent=t("myProfile");
+            statusAllowed=true;
 
-$("bottomNav").classList.remove("hidden");
+        }else if(
+            profile.online_visibility ===
+            "everyone"
+        ){
 
-}else{
+            statusAllowed=true;
 
-$("topTitle").textContent=name;
+        }else if(
+            profile.online_visibility ===
+            "friends" &&
+            isFriend
+        ){
 
-$("bottomNav").classList.add("hidden");
+            statusAllowed=true;
 
-}
+        }
 
 
-applyLanguage();
+        if(statusAllowed){
 
-$("loadingBox").classList.add("hidden");
+            $("detailLastSeen")
+                .textContent =
+                    formatLastSeen(
+                        profile.last_seen_at
+                    );
 
-$("profileContent").classList.remove("hidden");
 
+            if(
+                profile.online_visibility !==
+                "nobody"
+            ){
 
-}catch(error){
+                $("profileStatus")
+                    .textContent =
+                        t("onlineStatus");
 
-console.error("Profile load error:",error);
+                $("onlineDot")
+                    .style
+                    .display="block";
 
-$("loadingBox").innerHTML=`
+            }
 
-<div style="
-color:#c62828;
-font-weight:700;
-margin-bottom:10px;
-">
-${t("loadError")}
-</div>
+        }else{
 
-<div style="
-color:#666;
-font-size:14px;
-line-height:1.5;
-">
-${String(error.message||"")}
-</div>
+            $("detailLastSeen")
+                .textContent =
+                    t("private");
 
-<button
-type="button"
-onclick="location.reload()"
-style="
-margin-top:16px;
-border:0;
-background:#087f5b;
-color:white;
-padding:10px 18px;
-border-radius:10px;
-font-weight:700;
-">
-${t("retry")}
-</button>
+            $("profileStatus")
+                .textContent="";
 
-`;
+            $("onlineDot")
+                .style
+                .display="none";
 
-}
+        }
+
+
+        if(isOwnProfile){
+
+            $("topTitle")
+                .textContent =
+                    t("myProfile");
+
+            $("bottomNav")
+                .classList
+                .remove("hidden");
+
+        }else{
+
+            $("topTitle")
+                .textContent =
+                    name;
+
+            $("bottomNav")
+                .classList
+                .add("hidden");
+
+        }
+
+
+        applyLanguage();
+
+
+        $("loadingBox")
+            .classList
+            .add("hidden");
+
+
+        $("profileContent")
+            .classList
+            .remove("hidden");
+
+
+    }catch(error){
+
+        console.error(
+            "Profile load error:",
+            error
+        );
+
+
+        $("loadingBox").innerHTML=`
+
+            <div style="
+                color:#c62828;
+                font-weight:700;
+                margin-bottom:10px;
+            ">
+                ${t("loadError")}
+            </div>
+
+            <div style="
+                color:#666;
+                font-size:14px;
+                line-height:1.5;
+            ">
+                ${String(
+                    error.message || ""
+                )}
+            </div>
+
+            <button
+                type="button"
+                onclick="location.reload()"
+                style="
+                    margin-top:16px;
+                    border:0;
+                    background:#087f5b;
+                    color:white;
+                    padding:10px 18px;
+                    border-radius:10px;
+                    font-weight:700;
+                ">
+                ${t("retry")}
+            </button>
+
+        `;
+
+    }
 
 }
 
 
 /* =========================================================
    OPEN EDIT
-   ★ মূল FIX ★
-   প্রতিবার Edit খুললে Supabase থেকে fresh data
+   ★ প্রতিবার Supabase থেকে fresh data
 ========================================================= */
 
 async function openEditModal(){
 
-if(!isOwnProfile || !currentUser){
-return;
-}
-
-try{
-
-/*
-   পুরোনো currentProfile ব্যবহার না করে
-   সরাসরি Supabase থেকে সর্বশেষ data আনা
-*/
-
-const fresh=
-await getFreshProfileData();
+    if(
+        !isOwnProfile ||
+        !currentUser
+    ){
+        return;
+    }
 
 
-currentProfile=
-fresh.profile;
+    try{
 
-currentPhone=
-fresh.phone;
-
-currentAddress=
-fresh.address;
+        const fresh =
+            await getFreshProfileData();
 
 
-/* FRESH DATA → EDIT BOX */
+        currentProfile =
+            fresh.profile;
 
-$("fullNameInput").value=
-fresh.profile.full_name||"";
+        currentPhone =
+            fresh.phone;
 
-$("usernameInput").value=
-fresh.profile.username||"";
-
-$("emailInput").value=
-currentUser.email||"";
-
-$("phoneInput").value=
-fresh.phone.phone||"";
-
-$("addressInput").value=
-fresh.address.address||"";
-
-$("bioInput").value=
-fresh.profile.bio||"";
+        currentAddress =
+            fresh.address;
 
 
-const name=
-fresh.profile.full_name||
-fresh.profile.username||
-"User";
+        $("fullNameInput").value =
+            fresh.profile.full_name || "";
 
 
-$("editAvatar").src=
-fresh.profile.avatar_url||
-defaultAvatar(name);
+        $("usernameInput").value =
+            fresh.profile.username || "";
 
 
-selectedPhoto=null;
-
-$("photoInput").value="";
-
-
-$("editModal")
-.classList.add("show");
-
-applyLanguage();
+        $("emailInput").value =
+            currentUser.email || "";
 
 
-}catch(error){
+        $("phoneInput").value =
+            fresh.phone.phone || "";
 
-console.error(
-"Fresh profile load error:",
-error
-);
 
-showToast(
-"Profile data load করতে সমস্যা হয়েছে: "+
-(error.message||"Unknown error"),
-"error"
-);
+        $("addressInput").value =
+            fresh.address.address || "";
 
-}
+
+        $("bioInput").value =
+            fresh.profile.bio || "";
+
+
+        const name =
+            fresh.profile.full_name ||
+            fresh.profile.username ||
+            "User";
+
+
+        $("editAvatar").src =
+            fresh.profile.avatar_url ||
+            defaultAvatar(name);
+
+
+        selectedPhoto=null;
+
+        $("photoInput").value="";
+
+
+        $("editModal")
+            .classList
+            .add("show");
+
+
+        applyLanguage();
+
+
+    }catch(error){
+
+        console.error(
+            "Fresh profile load error:",
+            error
+        );
+
+
+        showToast(
+            "Profile data load করতে সমস্যা হয়েছে: "+
+            (
+                error.message ||
+                "Unknown error"
+            ),
+            "error"
+        );
+
+    }
 
 }
 
@@ -1686,12 +1826,13 @@ showToast(
 
 function closeEditModal(){
 
-$("editModal")
-.classList.remove("show");
+    $("editModal")
+        .classList
+        .remove("show");
 
-selectedPhoto=null;
+    selectedPhoto=null;
 
-$("photoInput").value="";
+    $("photoInput").value="";
 
 }
 
@@ -1700,9 +1841,10 @@ $("photoInput").value="";
    EDIT BUTTON
 ========================================================= */
 
-$("editBtn").addEventListener(
-"click",
-openEditModal
+$("editBtn")
+.addEventListener(
+    "click",
+    openEditModal
 );
 
 
@@ -1710,9 +1852,10 @@ openEditModal
    CLOSE BUTTON
 ========================================================= */
 
-$("closeEditBtn").addEventListener(
-"click",
-closeEditModal
+$("closeEditBtn")
+.addEventListener(
+    "click",
+    closeEditModal
 );
 
 
@@ -1720,17 +1863,21 @@ closeEditModal
    OUTSIDE MODAL
 ========================================================= */
 
-$("editModal").addEventListener(
-"click",
-event=>{
+$("editModal")
+.addEventListener(
+    "click",
+    event=>{
 
-if(event.target===$("editModal")){
+        if(
+            event.target ===
+            $("editModal")
+        ){
 
-closeEditModal();
+            closeEditModal();
 
-}
+        }
 
-}
+    }
 );
 
 
@@ -1738,57 +1885,74 @@ closeEditModal();
    PHOTO
 ========================================================= */
 
-$("photoInput").addEventListener(
-"change",
-event=>{
+$("photoInput")
+.addEventListener(
+    "change",
+    event=>{
 
-const file=
-event.target.files&&
-event.target.files[0];
+        const file =
+            event.target.files &&
+            event.target.files[0];
 
-if(!file){
-return;
-}
 
-if(!file.type.startsWith("image/")){
+        if(!file){
+            return;
+        }
 
-showToast(
-t("photoOnly"),
-"error"
-);
 
-event.target.value="";
+        if(
+            !file.type.startsWith(
+                "image/"
+            )
+        ){
 
-return;
+            showToast(
+                t("photoOnly"),
+                "error"
+            );
 
-}
+            event.target.value="";
 
-if(file.size>6*1024*1024){
+            return;
 
-showToast(
-t("photoSize"),
-"error"
-);
+        }
 
-event.target.value="";
 
-return;
+        if(
+            file.size >
+            6*1024*1024
+        ){
 
-}
+            showToast(
+                t("photoSize"),
+                "error"
+            );
 
-selectedPhoto=file;
+            event.target.value="";
 
-const reader=new FileReader();
+            return;
 
-reader.onload=e=>{
+        }
 
-$("editAvatar").src=e.target.result;
 
-};
+        selectedPhoto=file;
 
-reader.readAsDataURL(file);
 
-}
+        const reader =
+            new FileReader();
+
+
+        reader.onload=e=>{
+
+            $("editAvatar").src =
+                e.target.result;
+
+        };
+
+
+        reader.readAsDataURL(file);
+
+    }
 );
 
 
@@ -1796,9 +1960,12 @@ reader.readAsDataURL(file);
    USERNAME
 ========================================================= */
 
-function validateUsername(username){
+function validateUsername(
+    username
+){
 
-return /^[a-zA-Z0-9_]{3,30}$/.test(username);
+    return /^[a-zA-Z0-9_]{3,30}$/
+        .test(username);
 
 }
 
@@ -1809,322 +1976,481 @@ return /^[a-zA-Z0-9_]{3,30}$/.test(username);
 
 async function uploadProfilePhoto(){
 
-if(!selectedPhoto){
+    if(!selectedPhoto){
 
-return currentProfile.avatar_url||null;
+        return currentProfile.avatar_url ||
+            null;
 
-}
+    }
 
-const originalName=
-selectedPhoto.name||"";
 
-const parts=
-originalName.split(".");
+    const originalName =
+        selectedPhoto.name || "";
 
-let extension=
-parts.length>1
-?parts.pop().toLowerCase()
-:"jpg";
 
-extension=
-extension.replace(/[^a-z0-9]/g,"");
+    const parts =
+        originalName.split(".");
 
-if(!extension){
-extension="jpg";
-}
 
-const filePath=
-currentUser.id+
-"/profile-"+
-Date.now()+
-"-"+
-crypto.randomUUID()+
-"."+
-extension;
+    let extension =
+        parts.length > 1
+        ? parts.pop().toLowerCase()
+        : "jpg";
 
-const {error:uploadError}=
-await supabaseClient
-.storage
-.from("avatars")
-.upload(
-filePath,
-selectedPhoto,
-{
-cacheControl:"3600",
-contentType:
-selectedPhoto.type||
-"image/jpeg",
-upsert:false
-}
-);
 
-if(uploadError){
-throw uploadError;
-}
+    extension =
+        extension.replace(
+            /[^a-z0-9]/g,
+            ""
+        );
 
-const {data}=
-supabaseClient
-.storage
-.from("avatars")
-.getPublicUrl(filePath);
 
-return data.publicUrl;
+    if(!extension){
+        extension="jpg";
+    }
+
+
+    const filePath =
+        currentUser.id+
+        "/profile-"+
+        Date.now()+
+        "-"+
+        crypto.randomUUID()+
+        "."+
+        extension;
+
+
+    const {
+        error:uploadError
+    } =
+        await supabaseClient
+        .storage
+        .from("avatars")
+        .upload(
+            filePath,
+            selectedPhoto,
+            {
+                cacheControl:"3600",
+                contentType:
+                    selectedPhoto.type ||
+                    "image/jpeg",
+                upsert:false
+            }
+        );
+
+
+    if(uploadError){
+        throw uploadError;
+    }
+
+
+    const {data} =
+        supabaseClient
+        .storage
+        .from("avatars")
+        .getPublicUrl(
+            filePath
+        );
+
+
+    return data.publicUrl;
 
 }
 
 
 /* =========================================================
    SAVE PROFILE
+   ★ FINAL FIX
 ========================================================= */
 
 async function saveProfile(){
 
-if(!currentUser){
-return;
-}
+    if(!currentUser){
+        return;
+    }
 
-const saveButton=
-$("saveProfileBtn");
 
-try{
+    const saveButton =
+        $("saveProfileBtn");
 
-saveButton.disabled=true;
 
-saveButton.textContent=t("saving");
+    try{
 
+        saveButton.disabled=true;
 
-const fullName=
-$("fullNameInput")
-.value
-.trim();
+        saveButton.textContent =
+            t("saving");
 
-const username=
-$("usernameInput")
-.value
-.trim()
-.toLowerCase();
 
-const phone=
-$("phoneInput")
-.value
-.trim();
+        const fullName =
+            $("fullNameInput")
+            .value
+            .trim();
 
-const address=
-$("addressInput")
-.value
-.trim();
 
-const bio=
-$("bioInput")
-.value
-.trim();
+        const username =
+            $("usernameInput")
+            .value
+            .trim()
+            .toLowerCase();
 
 
-if(!username){
+        const phone =
+            $("phoneInput")
+            .value
+            .trim();
 
-throw new Error(
-t("usernameRequired")
-);
 
-}
+        const address =
+            $("addressInput")
+            .value
+            .trim();
 
-if(!validateUsername(username)){
 
-throw new Error(
-t("usernameInvalid")
-);
+        const bio =
+            $("bioInput")
+            .value
+            .trim();
 
-}
 
+        /* =========================
+           USERNAME
+        ========================= */
 
-/* PHOTO */
+        if(!username){
 
-let avatarUrl=
-currentProfile.avatar_url||null;
+            throw new Error(
+                t("usernameRequired")
+            );
 
-if(selectedPhoto){
+        }
 
-avatarUrl=
-await uploadProfilePhoto();
 
-}
+        if(
+            !validateUsername(
+                username
+            )
+        ){
 
+            throw new Error(
+                t("usernameInvalid")
+            );
 
-/* PROFILE */
+        }
 
-const {
-error:profileUpdateError
-}=
-await supabaseClient
-.from("profiles")
-.update({
 
-full_name:
-fullName||null,
+        /* =========================
+           PHOTO
+        ========================= */
 
-username:
-username,
+        let avatarUrl =
+            currentProfile?.avatar_url ||
+            null;
 
-bio:
-bio||null,
 
-avatar_url:
-avatarUrl,
+        if(selectedPhoto){
 
-updated_at:
-new Date().toISOString()
+            avatarUrl =
+                await uploadProfilePhoto();
 
-})
-.eq(
-"id",
-currentUser.id
-);
+        }
 
-if(profileUpdateError){
 
-if(profileUpdateError.code==="23505"){
+        /* =====================================================
+           PROFILE UPDATE
+        ===================================================== */
 
-throw new Error(
-t("usernameTaken")
-);
+        const {
+            data:updatedProfile,
+            error:profileUpdateError
+        } =
+            await supabaseClient
+            .from("profiles")
+            .update({
+
+                full_name:
+                    fullName || null,
 
-}
+                username:
+                    username,
 
-throw profileUpdateError;
+                bio:
+                    bio || null,
 
-}
+                avatar_url:
+                    avatarUrl,
 
+                updated_at:
+                    new Date().toISOString()
 
-/* PHONE */
+            })
+            .eq(
+                "id",
+                currentUser.id
+            )
+            .select(`
+                id,
+                username,
+                full_name,
+                avatar_url,
+                bio,
+                online_visibility,
+                last_seen_at,
+                updated_at
+            `)
+            .single();
 
-const {
-error:phoneError
-}=
-await supabaseClient
-.from("profile_phone")
-.upsert(
-{
-user_id:currentUser.id,
-phone:phone||null,
-updated_at:new Date().toISOString()
-},
-{
-onConflict:"user_id"
-}
-);
 
-if(phoneError){
-throw phoneError;
-}
+        if(profileUpdateError){
 
+            if(
+                profileUpdateError.code ===
+                "23505"
+            ){
+
+                throw new Error(
+                    t("usernameTaken")
+                );
+
+            }
+
+            throw profileUpdateError;
+
+        }
+
+
+        if(!updatedProfile){
 
-/* ADDRESS */
+            throw new Error(
+                currentLanguage === "bn"
+                ? "Profile database-এ update হয়নি।"
+                : "Profile was not updated in the database."
+            );
 
-const {
-error:addressError
-}=
-await supabaseClient
-.from("profile_address")
-.upsert(
-{
-user_id:currentUser.id,
-address:address||null,
-updated_at:new Date().toISOString()
-},
-{
-onConflict:"user_id"
-}
-);
+        }
 
-if(addressError){
-throw addressError;
-}
 
+        /* =====================================================
+           PHONE UPDATE
+        ===================================================== */
 
-/* =====================================================
-   ★ SAVE-এর পর সরাসরি Supabase থেকে আবার পড়ি
-===================================================== */
+        const {
+            data:updatedPhone,
+            error:phoneError
+        } =
+            await supabaseClient
+            .from("profile_phone")
+            .upsert(
+                {
+                    user_id:
+                        currentUser.id,
 
-const fresh=
-await getFreshProfileData();
+                    phone:
+                        phone || null,
 
-currentProfile=
-fresh.profile;
+                    updated_at:
+                        new Date().toISOString()
+                },
+                {
+                    onConflict:
+                        "user_id"
+                }
+            )
+            .select(`
+                user_id,
+                phone,
+                visibility
+            `)
+            .single();
 
-currentPhone=
-fresh.phone;
 
-currentAddress=
-fresh.address;
+        if(phoneError){
 
+            throw phoneError;
 
-/* EDIT BOX-এ FRESH DATA */
+        }
 
-$("fullNameInput").value=
-currentProfile.full_name||"";
 
-$("usernameInput").value=
-currentProfile.username||"";
+        if(!updatedPhone){
 
-$("emailInput").value=
-currentUser.email||"";
+            throw new Error(
+                currentLanguage === "bn"
+                ? "Phone database-এ update হয়নি।"
+                : "Phone was not updated in the database."
+            );
 
-$("phoneInput").value=
-currentPhone.phone||"";
+        }
 
-$("addressInput").value=
-currentAddress.address||"";
 
-$("bioInput").value=
-currentProfile.bio||"";
+        /* =====================================================
+           ADDRESS UPDATE
+        ===================================================== */
 
+        const {
+            data:updatedAddress,
+            error:addressError
+        } =
+            await supabaseClient
+            .from("profile_address")
+            .upsert(
+                {
+                    user_id:
+                        currentUser.id,
 
-const newName=
-currentProfile.full_name||
-currentProfile.username||
-"User";
+                    address:
+                        address || null,
 
-$("editAvatar").src=
-currentProfile.avatar_url||
-defaultAvatar(newName);
+                    updated_at:
+                        new Date().toISOString()
+                },
+                {
+                    onConflict:
+                        "user_id"
+                }
+            )
+            .select(`
+                user_id,
+                address,
+                visibility
+            `)
+            .single();
 
 
-showToast(
-t("saveSuccess"),
-"success"
-);
+        if(addressError){
 
+            throw addressError;
 
-/* PROFILE DISPLAY-ও refresh */
+        }
 
-await loadProfile();
 
+        if(!updatedAddress){
 
-/* Modal বন্ধ */
+            throw new Error(
+                currentLanguage === "bn"
+                ? "Address database-এ update হয়নি।"
+                : "Address was not updated in the database."
+            );
 
-closeEditModal();
+        }
 
 
-}catch(error){
+        /* =====================================================
+           DATABASE থেকে আবার FRESH DATA
+        ===================================================== */
 
-console.error(
-"Profile save error:",
-error
-);
+        const fresh =
+            await getFreshProfileData();
 
-showToast(
-t("saveError")+
-(error.message||"Unknown error"),
-"error"
-);
 
-}finally{
+        currentProfile =
+            fresh.profile;
 
-saveButton.disabled=false;
+        currentPhone =
+            fresh.phone;
 
-saveButton.textContent=t("save");
+        currentAddress =
+            fresh.address;
 
-}
+
+        /* =====================================================
+           EDIT BOX FRESH DATA
+        ===================================================== */
+
+        $("fullNameInput").value =
+            currentProfile.full_name ||
+            "";
+
+
+        $("usernameInput").value =
+            currentProfile.username ||
+            "";
+
+
+        $("emailInput").value =
+            currentUser.email ||
+            "";
+
+
+        $("phoneInput").value =
+            currentPhone.phone ||
+            "";
+
+
+        $("addressInput").value =
+            currentAddress.address ||
+            "";
+
+
+        $("bioInput").value =
+            currentProfile.bio ||
+            "";
+
+
+        const newName =
+            currentProfile.full_name ||
+            currentProfile.username ||
+            "User";
+
+
+        $("editAvatar").src =
+            currentProfile.avatar_url ||
+            defaultAvatar(newName);
+
+
+        selectedPhoto=null;
+
+        $("photoInput").value="";
+
+
+        /* =====================================================
+           SUCCESS
+        ===================================================== */
+
+        showToast(
+            t("saveSuccess"),
+            "success"
+        );
+
+
+        /* =====================================================
+           PROFILE DISPLAY REFRESH
+        ===================================================== */
+
+        await loadProfile();
+
+
+        /* =====================================================
+           CLOSE MODAL
+        ===================================================== */
+
+        closeEditModal();
+
+
+    }catch(error){
+
+        console.error(
+            "Profile save error:",
+            error
+        );
+
+
+        showToast(
+            t("saveError")+
+            (
+                error.message ||
+                "Unknown error"
+            ),
+            "error"
+        );
+
+    }finally{
+
+        saveButton.disabled=false;
+
+        saveButton.textContent =
+            t("save");
+
+    }
 
 }
 
@@ -2133,9 +2459,10 @@ saveButton.textContent=t("save");
    SAVE BUTTON
 ========================================================= */
 
-$("saveProfileBtn").addEventListener(
-"click",
-saveProfile
+$("saveProfileBtn")
+.addEventListener(
+    "click",
+    saveProfile
 );
 
 
@@ -2143,39 +2470,45 @@ saveProfile
    LOGOUT
 ========================================================= */
 
-$("logoutBtn").addEventListener(
-"click",
-async()=>{
+$("logoutBtn")
+.addEventListener(
+    "click",
+    async()=>{
 
-const confirmed=
-window.confirm(
-t("logoutConfirm")
-);
+        const confirmed =
+            window.confirm(
+                t("logoutConfirm")
+            );
 
-if(!confirmed){
-return;
-}
 
-const {error}=
-await supabaseClient
-.auth
-.signOut();
+        if(!confirmed){
+            return;
+        }
 
-if(error){
 
-showToast(
-t("logoutError")+
-error.message,
-"error"
-);
+        const {error} =
+            await supabaseClient
+            .auth
+            .signOut();
 
-return;
 
-}
+        if(error){
 
-window.location.href="login.html";
+            showToast(
+                t("logoutError")+
+                error.message,
+                "error"
+            );
 
-}
+            return;
+
+        }
+
+
+        window.location.href =
+            "login.html";
+
+    }
 );
 
 
@@ -2188,43 +2521,49 @@ applyLanguage();
 
 (async function(){
 
-try{
+    try{
 
-const user=
-await loadCurrentUser();
+        const user =
+            await loadCurrentUser();
 
-if(!user){
-return;
-}
 
-await loadProfile();
+        if(!user){
+            return;
+        }
 
-}catch(error){
 
-console.error(
-"Initial profile error:",
-error
-);
+        await loadProfile();
 
-$("loadingBox").innerHTML=`
 
-<div style="
-color:#c62828;
-font-weight:700;
-">
-${t("loadError")}
-</div>
+    }catch(error){
 
-<div style="
-margin-top:8px;
-color:#666;
-">
-${String(error.message||"")}
-</div>
+        console.error(
+            "Initial profile error:",
+            error
+        );
 
-`;
 
-}
+        $("loadingBox").innerHTML=`
+
+            <div style="
+                color:#c62828;
+                font-weight:700;
+            ">
+                ${t("loadError")}
+            </div>
+
+            <div style="
+                margin-top:8px;
+                color:#666;
+            ">
+                ${String(
+                    error.message || ""
+                )}
+            </div>
+
+        `;
+
+    }
 
 })();
 
