@@ -42,7 +42,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
 <input id="bgInput" class="hidden" type="file" accept="image/*" onchange="saveBackground(this)">
 <script>
 const supabaseClient=supabase.createClient(
-"https://rflmzqkzqjzqzqzqzqzq.supabase.co",
+"https://pqyicaqpmojijjskpzcp.supabase.co",
 ""
 );
 const params=new URLSearchParams(location.search);
@@ -79,7 +79,7 @@ function saveBackground(input){
    const data=cv.toDataURL("image/jpeg",.82);
    localStorage.setItem("raztara_chat_background_user_"+userId,data);
    localStorage.setItem("raztara_chat_background_"+userId,data);
-   input.value="";
+   input.value="sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
    location.href=chatUrl();
   };
   img.src=e.target.result;
