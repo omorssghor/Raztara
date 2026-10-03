@@ -95,11 +95,7 @@ let toastTimer=null;
 
 function goHome(){ location.href="index.html"; }
 
-function esc(v){
-  return String(v??"").replace(/[&<>"']/g,c=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&#92;",""":"&quot;","'":"&#039;"
-  }[c]));
-}
+function esc(v){return String(v??"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]||c})}
 
 function avatarUrl(u){
   if(u.avatar_url) return u.avatar_url;
