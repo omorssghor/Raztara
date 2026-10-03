@@ -1044,9 +1044,7 @@ async function getExistingConversation(){
         throw error;
     }
 
-    if(!memberships ||
-       memberships.length === 0){
-
+    if(!memberships?.length){
         return null;
     }
 
@@ -1087,13 +1085,13 @@ async function getExistingConversation(){
     }
 
     /*
-     * একই দুই User-এর একাধিক পুরোনো conversation থাকলে
-     * শুধু প্রথম ID নেওয়া যাবে না।
-     * সর্বশেষ message যে conversation-এ আছে সেটিই আসল active chat।
+     * Duplicate conversation থাকলে সবচেয়ে বেশি message
+     * থাকা conversation-টি পুরোনো আসল chat হিসেবে নেব।
+     * এতে নতুন খালি conversation খুলে পুরোনো message হারাবে না।
      */
     const {
-        data:latestMessages,
-        error:latestMessageError
+        data:rows,
+        error:messageError
     } =
         await supabaseClient
         .from("messages")
@@ -1107,20 +1105,55 @@ async function getExistingConversation(){
             {
                 ascending:false
             }
-        )
-        .limit(1);
+        );
 
-    if(
-        !latestMessageError &&
-        latestMessages &&
-        latestMessages.length
-    ){
-        return latestMessages[0].conversation_id;
+    if(!messageError && rows?.length){
+
+        const stats = new Map();
+
+        for(const row of rows){
+
+            const current =
+                stats.get(row.conversation_id) ||
+                {
+                    count:0,
+                    latest:0
+                };
+
+            current.count += 1;
+
+            const time =
+                new Date(row.created_at).getTime();
+
+            if(time > current.latest){
+                current.latest = time;
+            }
+
+            stats.set(
+                row.conversation_id,
+                current
+            );
+        }
+
+        candidateIds.sort(
+            (a,b)=>{
+
+                const A =
+                    stats.get(a) ||
+                    {count:0,latest:0};
+
+                const B =
+                    stats.get(b) ||
+                    {count:0,latest:0};
+
+                return (
+                    B.count - A.count ||
+                    B.latest - A.latest
+                );
+            }
+        );
     }
 
-    /*
-     * কোনো message না থাকলে candidate-এর প্রথমটিই ব্যবহার হবে।
-     */
     return candidateIds[0];
 }
 
