@@ -2228,125 +2228,137 @@ function getSavedConversationId(){
 
 async function findConversation(){
 
-    if(!currentUser || !otherUserId){
-        return null;
-    }
-
-    /*
-     * LocalStorage-এর পুরোনো conversation ID একা বিশ্বাস করা যাবে না।
-     * আগে database থেকে এই দুই User-এর সব common conversation বের করি।
-     */
     const {
-        data:myMembers,
-        error:myError
-    } = await supabaseClient
+        data: memberships,
+        error
+    } =
+        await supabaseClient
         .from("conversation_members")
-        .select("conversation_id")
-        .eq(
-            "user_id",
-            currentUser.id
-        );
-
-    if(myError){
-        console.error(myError);
-        return null;
-    }
-
-    if(!myMembers?.length){
-        return null;
-    }
-
-    const ids =
-        myMembers.map(
-            x=>x.conversation_id
-        );
-
-    const {
-        data:otherMembers,
-        error:otherError
-    } = await supabaseClient
-        .from("conversation_members")
-        .select("conversation_id")
-        .eq(
-            "user_id",
-            otherUserId
-        )
+        .select("conversation_id,user_id")
         .in(
-            "conversation_id",
-            ids
+            "user_id",
+            [
+                currentUser.id,
+                otherUserId
+            ]
         );
 
-    if(otherError){
-        console.error(otherError);
+    if(error){
+        throw error;
+    }
+
+    if(!memberships?.length){
         return null;
     }
 
-    const commonIds =
-        (otherMembers || [])
-        .map(
-            x=>x.conversation_id
-        );
+    const grouped = new Map();
 
-    if(!commonIds.length){
+    for(const row of memberships){
+
+        if(!grouped.has(row.conversation_id)){
+            grouped.set(
+                row.conversation_id,
+                new Set()
+            );
+        }
+
+        grouped
+        .get(row.conversation_id)
+        .add(row.user_id);
+    }
+
+    const candidateIds = [];
+
+    for(
+        const [id,members]
+        of grouped.entries()
+    ){
+
+        if(
+            members.has(currentUser.id) &&
+            members.has(targetUserId) &&
+            members.size === 2
+        ){
+            candidateIds.push(id);
+        }
+    }
+
+    if(!candidateIds.length){
         return null;
     }
 
     /*
-     * একই দুই User-এর একাধিক conversation থাকলে
-     * সর্বশেষ message যে conversation-এ আছে সেটিই ব্যবহার করব।
-     * এতে পুরোনো chat আবার খুললে message অন্য/খালি conversation-এ
-     * চলে যাওয়ার সমস্যা বন্ধ হবে।
+     * Duplicate conversation থাকলে সবচেয়ে বেশি message
+     * থাকা conversation-টি পুরোনো আসল chat হিসেবে নেব।
+     * এতে নতুন খালি conversation খুলে পুরোনো message হারাবে না।
      */
     const {
-        data:latestMessages,
-        error:latestMessageError
+        data:rows,
+        error:messageError
     } =
         await supabaseClient
         .from("messages")
         .select("conversation_id,created_at")
         .in(
             "conversation_id",
-            commonIds
+            candidateIds
         )
         .order(
             "created_at",
             {
                 ascending:false
             }
-        )
-        .limit(1);
+        );
 
-    if(
-        !latestMessageError &&
-        latestMessages &&
-        latestMessages.length
-    ){
-        const id =
-            latestMessages[0].conversation_id;
+    if(!messageError && rows?.length){
 
-        saveConversationId(id);
+        const stats = new Map();
 
-        return id;
+        for(const row of rows){
+
+            const current =
+                stats.get(row.conversation_id) ||
+                {
+                    count:0,
+                    latest:0
+                };
+
+            current.count += 1;
+
+            const time =
+                new Date(row.created_at).getTime();
+
+            if(time > current.latest){
+                current.latest = time;
+            }
+
+            stats.set(
+                row.conversation_id,
+                current
+            );
+        }
+
+        candidateIds.sort(
+            (a,b)=>{
+
+                const A =
+                    stats.get(a) ||
+                    {count:0,latest:0};
+
+                const B =
+                    stats.get(b) ||
+                    {count:0,latest:0};
+
+                return (
+                    B.count - A.count ||
+                    B.latest - A.latest
+                );
+            }
+        );
     }
 
-    /*
-     * Message না থাকলে আগের saved ID থাকলে সেটি ব্যবহার করি।
-     */
-    const savedId =
-        getSavedConversationId();
-
-    if(
-        savedId &&
-        commonIds.includes(savedId)
-    ){
-        return savedId;
-    }
-
-    return commonIds[0] || null;
+    return candidateIds[0];
 }
-/* =========================================================
-   CREATE CONVERSATION
-========================================================= */
 
 async function createConversation(){
 
