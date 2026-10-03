@@ -30,6 +30,8 @@
 <script>
 const sb=supabase.createClient("https://pqyicaqpmojijjskpzcp.supabase.co","sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho");
 let all=[];
+async function updateMyPresence(){try{const u=await sb.auth.getUser();if(u.data.user)await sb.from("profiles").update({last_seen_at:new Date().toISOString()}).eq("id",u.data.user.id)}catch(e){console.warn("presence update",e)}}
+
 function esc(v){return String(v==null?"":v).replace(/[&<>"]/g,function(c){if(c==="&")return "&amp;";if(c==="<")return "&lt;";if(c===">")return "&gt;";return "&quot;";})}
 function focusSearch(){document.getElementById("search").focus()}
 function toast(x){const e=document.getElementById("toast");e.textContent=x;e.style.display="block";setTimeout(()=>e.style.display="none",1800)}
@@ -61,6 +63,7 @@ async function init(){
    return {p,conv:conv||"",msg};
  }).sort((a,b)=>new Date(b.msg?.created_at||0)-new Date(a.msg?.created_at||0));
  render();
+ updateMyPresence(); setInterval(updateMyPresence,30000);
  document.getElementById("search").addEventListener("input",render);
 }
 function render(){
