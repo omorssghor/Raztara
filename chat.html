@@ -214,9 +214,6 @@ body{
     gap:7px;
 }
 
-.chat-board.initializing{
-    visibility:visible;
-}
 
 .empty-chat{
     text-align:center;
@@ -651,11 +648,6 @@ input[type=file]{
     padding:7px 18px;
 }
 
-.loading{
-    text-align:center;
-    padding:30px;
-    color:#777;
-}
 
 .toast{
     position:fixed;
@@ -2815,9 +2807,6 @@ async function loadMessages(){
             </div>
         `;
 
-        if(board){
-            board.classList.remove("initializing");
-        }
 
         return;
     }
