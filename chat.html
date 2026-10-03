@@ -2855,16 +2855,14 @@ async function loadMessages(){
         ]);
     }
 
-    scrollToBottom();
-
+    /*
+     * Chat খুললে কোনো auto-scroll নয়।
+     * বর্তমান scroll position-এই message দেখানো হবে।
+     */
     if(board){
 
         board.classList.remove(
             "initializing"
-        );
-
-        requestAnimationFrame(
-            scrollToBottom
         );
     }
 
@@ -3284,7 +3282,9 @@ function appendMessage(
 
     if(scroll){
 
-        scrollToBottom();
+        requestAnimationFrame(()=>{
+            revealNewMessage(row);
+        });
     }
 }
 
@@ -4789,40 +4789,38 @@ function goBack(){
    SCROLL
 ========================================================= */
 
-function scrollToBottom(){
+function revealNewMessage(row){
 
     const board =
         document.getElementById(
             "chatBoard"
         );
 
-    if(!board){
+    if(!board || !row){
 
         return;
     }
 
-    const goBottom = ()=>{
+    /*
+     * নতুন message এলে একেবারে bottom-এ যাওয়া যাবে না।
+     * শুধু নতুন message-টি দেখা না গেলে যতটুকু দরকার
+     * ঠিক ততটুকুই scroll করা হবে।
+     */
+    const boardRect =
+        board.getBoundingClientRect();
 
-        board.scrollTop =
-            board.scrollHeight;
-    };
+    const rowRect =
+        row.getBoundingClientRect();
 
-    requestAnimationFrame(goBottom);
+    const bottomGap =
+        rowRect.bottom -
+        boardRect.bottom;
 
-    setTimeout(
-        goBottom,
-        50
-    );
+    if(bottomGap > 0){
 
-    setTimeout(
-        goBottom,
-        150
-    );
-
-    setTimeout(
-        goBottom,
-        400
-    );
+        board.scrollTop +=
+            bottomGap + 8;
+    }
 }
 
 /* =========================================================
