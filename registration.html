@@ -1,1075 +1,404 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>RAZTARA | Registration</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>RAZTARA | Create Account</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
 body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
     min-height:100vh;
-    background:linear-gradient(135deg,#075e54,#128c7e);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
+    background:#f5f7f7;
+    color:#172321;
+    padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
 }
-
-.container{
-    width:100%;
-    max-width:430px;
+.page{width:100%;max-width:520px;margin:auto;min-height:100vh;background:#fff}
+.topbar{
+    height:64px;display:flex;align-items:center;gap:10px;padding:0 18px;
+    border-bottom:1px solid #edf0ef;background:#fff;
+    position:sticky;top:0;z-index:5;
 }
-
-.card{
-    background:#fff;
-    border-radius:24px;
-    padding:30px 24px;
-    box-shadow:0 15px 45px rgba(0,0,0,.2);
+.back{
+    width:42px;height:42px;border:0;background:#f1f5f4;border-radius:50%;
+    color:#075e54;font-size:23px;cursor:pointer
 }
-
-.logo{
-    width:72px;
-    height:72px;
-    margin:0 auto 15px;
-    border-radius:20px;
-    background:#075e54;
-    color:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:25px;
-    font-weight:800;
+.brand{font-size:20px;font-weight:800;color:#075e54;letter-spacing:.4px}
+.content{padding:24px 20px 32px}
+h1{text-align:center;font-size:27px;color:#172321;margin-top:2px}
+.sub{text-align:center;color:#7a8582;font-size:14px;margin:7px 0 23px}
+.photo-wrap{text-align:center;margin-bottom:22px}
+.photo{
+    width:86px;height:86px;border-radius:50%;margin:auto;background:#e8f2f0;
+    color:#075e54;display:flex;align-items:center;justify-content:center;
+    font-size:34px;font-weight:700;overflow:hidden;border:3px solid #fff;
+    box-shadow:0 3px 14px rgba(0,0,0,.08)
 }
-
-.title{
-    text-align:center;
-    color:#075e54;
-    font-size:28px;
-    font-weight:800;
+.photo img{width:100%;height:100%;object-fit:cover;display:none}
+.photo-label{
+    display:inline-block;margin-top:9px;color:#075e54;font-size:13px;font-weight:700;cursor:pointer
 }
-
-.subtitle{
-    text-align:center;
-    color:#777;
-    font-size:14px;
-    margin:6px 0 27px;
+.photo-label input{display:none}
+.group{margin-bottom:14px}
+label{display:block;font-size:13px;font-weight:700;color:#3d4946;margin:0 0 7px 3px}
+.field{
+    height:51px;border:1px solid #dfe6e4;border-radius:13px;background:#fafbfb;
+    display:flex;align-items:center;padding:0 14px;gap:10px;transition:.15s
 }
-
-.group{
-    margin-bottom:16px;
-}
-
-label{
-    display:block;
-    font-size:14px;
-    font-weight:600;
-    margin-bottom:7px;
-}
-
+.field:focus-within{border-color:#128c7e;background:#fff;box-shadow:0 0 0 3px rgba(18,140,126,.08)}
+.icon{font-size:17px;width:22px;text-align:center}
 input{
-    width:100%;
-    height:50px;
-    border:1px solid #ddd;
-    border-radius:12px;
-    padding:0 14px;
-    font-size:15px;
-    outline:none;
-    background:#fafafa;
+    width:100%;height:100%;border:0;outline:0;background:transparent;
+    font-size:15px;color:#172321
 }
-
-input:focus{
-    border-color:#128c7e;
-    background:#fff;
-}
-
-.password-box{
-    position:relative;
-}
-
-.password-box input{
-    padding-right:50px;
-}
-
+input::placeholder{color:#9aa4a1}
+.password{position:relative}
+.password input{padding-right:42px}
 .eye{
-    position:absolute;
-    right:12px;
-    top:50%;
-    transform:translateY(-50%);
-    border:0;
-    background:none;
-    font-size:20px;
-    cursor:pointer;
+    position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    width:36px;height:36px;border:0;background:transparent;font-size:18px;cursor:pointer
 }
-
+.hint{font-size:11px;color:#8a9491;margin:5px 3px 0}
+.terms{display:flex;align-items:flex-start;gap:9px;margin:7px 2px 17px;font-size:13px;color:#68726f;line-height:1.45}
+.terms input{width:18px;height:18px;flex:none;margin-top:1px;accent-color:#075e54}
+.terms a{color:#075e54;font-weight:700;text-decoration:none}
 .btn{
-    width:100%;
-    height:52px;
-    border:0;
-    border-radius:13px;
-    background:#075e54;
-    color:#fff;
-    font-size:16px;
-    font-weight:700;
-    cursor:pointer;
-    margin-top:4px;
+    width:100%;height:52px;border:0;border-radius:13px;background:#075e54;color:#fff;
+    font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 5px 14px rgba(7,94,84,.18)
 }
-
-.btn:disabled{
-    opacity:.65;
-    cursor:not-allowed;
+.btn:disabled{opacity:.65;cursor:not-allowed}
+.message{display:none;margin-top:13px;padding:11px 12px;border-radius:11px;font-size:13px;line-height:1.45}
+.error{background:#fff0f0;color:#c62828}.success{background:#eaf8f2;color:#087f5b}
+.login{text-align:center;margin-top:18px;color:#7a8582;font-size:13px}
+.login button{border:0;background:none;color:#075e54;font-weight:800;font-size:13px;cursor:pointer}
+.footer{text-align:center;color:#9aa4a1;font-size:11px;padding:0 20px 25px}
+#verificationBox{display:none}
+.verify-icon{
+    width:70px;height:70px;border-radius:50%;background:#e8f2f0;color:#075e54;
+    display:flex;align-items:center;justify-content:center;font-size:32px;margin:5px auto 17px
 }
-
-.message{
-    display:none;
-    margin-top:15px;
-    padding:12px;
-    border-radius:10px;
-    font-size:13px;
-    line-height:1.5;
+.verify-title{text-align:center;font-size:24px;font-weight:800}
+.verify-text{text-align:center;color:#7a8582;font-size:14px;line-height:1.6;margin:8px 0 23px}
+.email-show{color:#075e54;font-weight:800;word-break:break-all}
+.otp{height:56px;text-align:center;letter-spacing:9px;font-size:24px;font-weight:800}
+.verify-btn{margin-top:2px}
+.resend,.change{
+    width:100%;border:0;background:none;cursor:pointer;font-weight:700;font-size:13px
 }
-
-.error{
-    background:#fff0f0;
-    color:#d93025;
-}
-
-.success{
-    background:#eaf8f2;
-    color:#087f5b;
-}
-
-.login{
-    width:100%;
-    border:0;
-    background:none;
-    color:#075e54;
-    font-weight:700;
-    margin-top:20px;
-    font-size:14px;
-    cursor:pointer;
-}
-
-.footer{
-    text-align:center;
-    color:#eee;
-    font-size:12px;
-    margin-top:20px;
-}
-
-
-/* =========================
-   VERIFICATION SCREEN
-========================= */
-
-#verificationBox{
-    display:none;
-}
-
-.verify-title{
-    text-align:center;
-    color:#075e54;
-    font-size:24px;
-    font-weight:800;
-    margin-bottom:8px;
-}
-
-.verify-text{
-    text-align:center;
-    color:#777;
-    font-size:14px;
-    line-height:1.6;
-    margin-bottom:22px;
-}
-
-.email-show{
-    color:#075e54;
-    font-weight:700;
-    word-break:break-all;
-}
-
-.otp-input{
-    text-align:center;
-    letter-spacing:8px;
-    font-size:25px;
-    font-weight:800;
-    padding-left:20px;
-}
-
-.verify-btn{
-    margin-top:16px;
-}
-
-.resend{
-    width:100%;
-    border:0;
-    background:none;
-    color:#075e54;
-    font-weight:700;
-    font-size:14px;
-    margin-top:17px;
-    cursor:pointer;
-}
-
-.resend:disabled{
-    color:#999;
-    cursor:not-allowed;
-}
-
-.change-email{
-    width:100%;
-    border:0;
-    background:none;
-    color:#777;
-    font-size:13px;
-    margin-top:10px;
-    cursor:pointer;
+.resend{color:#075e54;margin-top:17px}.resend:disabled{color:#999}
+.change{color:#7a8582;margin-top:12px}
+@media(min-width:521px){
+    body{padding:20px 0;background:#f5f7f7}
+    .page{min-height:calc(100vh - 40px);border-radius:20px;overflow:hidden;box-shadow:0 10px 35px rgba(0,0,0,.08)}
 }
 </style>
 </head>
 
 <body>
+<div class="page">
+    <div class="topbar">
+        <button class="back" type="button" onclick="goLogin()">←</button>
+        <div class="brand">RAZTARA</div>
+    </div>
 
-<div class="container">
+    <main class="content">
+        <div id="registrationBox">
+            <h1>Create Account</h1>
+            <div class="sub">RAZTARA-তে যোগ দিন</div>
 
-<div class="card">
+            <div class="photo-wrap">
+                <div class="photo">
+                    <span id="photoIcon">👤</span>
+                    <img id="photoPreview" alt="Profile photo">
+                </div>
+                <label class="photo-label">
+                    Profile Photo
+                    <input type="file" id="photoInput" accept="image/*">
+                </label>
+            </div>
 
-<!-- =========================
-     REGISTRATION
-========================= -->
+            <form id="registrationForm">
+                <div class="group">
+                    <label>Full Name</label>
+                    <div class="field"><span class="icon">👤</span>
+                        <input id="name" type="text" placeholder="আপনার পুরো নাম" autocomplete="name" required>
+                    </div>
+                </div>
 
-<div id="registrationBox">
+                <div class="group">
+                    <label>Username</label>
+                    <div class="field"><span class="icon">🔖</span>
+                        <input id="username" type="text" placeholder="যেমন: raju123" autocomplete="username" minlength="3" maxlength="30" required>
+                    </div>
+                    <div class="hint">৩–৩০ অক্ষর, ইংরেজি অক্ষর, সংখ্যা ও _ ব্যবহার করুন</div>
+                </div>
 
-<div class="logo">
-RZ
+                <div class="group">
+                    <label>Email</label>
+                    <div class="field"><span class="icon">📧</span>
+                        <input id="email" type="email" placeholder="আপনার ইমেইল" autocomplete="email" required>
+                    </div>
+                </div>
+
+                <div class="group">
+                    <label>Password</label>
+                    <div class="field password"><span class="icon">🔒</span>
+                        <input id="password" type="password" placeholder="কমপক্ষে ৬ অক্ষর" autocomplete="new-password" minlength="6" required>
+                        <button class="eye" type="button" onclick="togglePassword('password',this)">👁</button>
+                    </div>
+                </div>
+
+                <div class="group">
+                    <label>Confirm Password</label>
+                    <div class="field password"><span class="icon">🔒</span>
+                        <input id="confirmPassword" type="password" placeholder="পাসওয়ার্ড আবার লিখুন" autocomplete="new-password" required>
+                        <button class="eye" type="button" onclick="togglePassword('confirmPassword',this)">👁</button>
+                    </div>
+                </div>
+
+                <label class="terms">
+                    <input id="terms" type="checkbox" required>
+                    <span>আমি RAZTARA-এর <a href="#" onclick="return false">Terms</a> ও <a href="#" onclick="return false">Privacy</a>-তে সম্মত।</span>
+                </label>
+
+                <button class="btn" id="registerBtn" type="submit">CREATE ACCOUNT</button>
+                <div id="message" class="message"></div>
+            </form>
+
+            <div class="login">Already have an account?
+                <button type="button" onclick="goLogin()">Login</button>
+            </div>
+        </div>
+
+        <div id="verificationBox">
+            <div class="verify-icon">✓</div>
+            <div class="verify-title">Verify Your Email</div>
+            <div class="verify-text">
+                আপনার ইমেইলে একটি verification code পাঠানো হয়েছে।
+                <div class="email-show" id="verifyEmail"></div>
+                <br>ইমেইল থেকে ৬ সংখ্যার কোডটি এখানে দিন।
+            </div>
+
+            <div class="group">
+                <label>Verification Code</label>
+                <div class="field"><span class="icon">🔐</span>
+                    <input id="otp" class="otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000">
+                </div>
+            </div>
+
+            <button class="btn verify-btn" id="verifyBtn" type="button" onclick="verifyCode()">VERIFY EMAIL</button>
+            <div id="verifyMessage" class="message"></div>
+            <button class="resend" id="resendBtn" type="button" onclick="resendCode()">RESEND CODE</button>
+            <button class="change" type="button" onclick="changeEmail()">← Change Email</button>
+        </div>
+    </main>
+
+    <div class="footer">© 2026 RAZTARA • Connect • Chat • Call</div>
 </div>
-
-<div class="title">
-Create Account
-</div>
-
-<div class="subtitle">
-Join RAZTARA and connect with people
-</div>
-
-<form id="registrationForm">
-
-<div class="group">
-
-<label>
-Full Name
-</label>
-
-<input
-    type="text"
-    id="name"
-    placeholder="Enter your full name"
-    autocomplete="name"
-    required
->
-
-</div>
-
-
-<div class="group">
-
-<label>
-Email
-</label>
-
-<input
-    type="email"
-    id="email"
-    placeholder="Enter your email"
-    autocomplete="email"
-    required
->
-
-</div>
-
-
-<div class="group">
-
-<label>
-Password
-</label>
-
-<div class="password-box">
-
-<input
-    type="password"
-    id="password"
-    placeholder="Minimum 6 characters"
-    autocomplete="new-password"
-    minlength="6"
-    required
->
-
-<button
-    type="button"
-    class="eye"
-    onclick="togglePassword('password',this)"
->
-👁
-</button>
-
-</div>
-
-</div>
-
-
-<div class="group">
-
-<label>
-Confirm Password
-</label>
-
-<div class="password-box">
-
-<input
-    type="password"
-    id="confirmPassword"
-    placeholder="Confirm your password"
-    autocomplete="new-password"
-    required
->
-
-<button
-    type="button"
-    class="eye"
-    onclick="togglePassword('confirmPassword',this)"
->
-👁
-</button>
-
-</div>
-
-</div>
-
-
-<button
-    type="submit"
-    class="btn"
-    id="registerBtn"
->
-CREATE ACCOUNT
-</button>
-
-
-<div id="message" class="message"></div>
-
-</form>
-
-
-<button
-    class="login"
-    onclick="goLogin()"
->
-Already have an account? Login
-</button>
-
-</div>
-
-
-<!-- =========================
-     VERIFICATION
-========================= -->
-
-<div id="verificationBox">
-
-<div class="logo">
-✓
-</div>
-
-<div class="verify-title">
-Verify Your Email
-</div>
-
-<div class="verify-text">
-
-We sent a verification code to
-
-<div
-    class="email-show"
-    id="verifyEmail"
->
-</div>
-
-<br>
-
-Enter the 6-digit code from your email.
-
-</div>
-
-
-<div class="group">
-
-<label>
-Verification Code
-</label>
-
-<input
-    type="text"
-    id="otp"
-    class="otp-input"
-    inputmode="numeric"
-    autocomplete="one-time-code"
-    maxlength="6"
-    placeholder="000000"
->
-
-</div>
-
-
-<button
-    type="button"
-    class="btn verify-btn"
-    id="verifyBtn"
-    onclick="verifyCode()"
->
-VERIFY EMAIL
-</button>
-
-
-<div
-    id="verifyMessage"
-    class="message"
-></div>
-
-
-<button
-    type="button"
-    class="resend"
-    id="resendBtn"
-    onclick="resendCode()"
->
-RESEND CODE
-</button>
-
-
-<button
-    type="button"
-    class="change-email"
-    onclick="changeEmail()"
->
-← Change Email
-</button>
-
-</div>
-
-</div>
-
-
-<div class="footer">
-© 2026 RAZTARA • Connect • Call • Share
-</div>
-
-</div>
-
 
 <script>
+const SUPABASE_URL="https://pqyicaqpmojijjskpzcp.supabase.co";
+const SUPABASE_KEY="sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-/* =========================================
-   SUPABASE
-========================================= */
+let verificationEmail="";
+let resendTimer=null;
+let resendSeconds=60;
 
-const SUPABASE_URL =
-"https://pqyicaqpmojijjskpzcp.supabase.co";
-
-const SUPABASE_KEY =
-"sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
-
-const supabaseClient =
-supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-
-
-/* =========================================
-   GLOBAL DATA
-========================================= */
-
-let verificationEmail = "";
-let verificationName = "";
-let verificationPassword = "";
-
-let resendTimer = null;
-let resendSeconds = 60;
-
-
-/* =========================================
-   PASSWORD SHOW / HIDE
-========================================= */
+function goLogin(){window.location.href="login.html"}
 
 function togglePassword(id,button){
-
-    const input =
-        document.getElementById(id);
-
-    if(input.type === "password"){
-
-        input.type = "text";
-        button.textContent = "🙈";
-
-    }else{
-
-        input.type = "password";
-        button.textContent = "👁";
-
-    }
+    const input=document.getElementById(id);
+    if(input.type==="password"){input.type="text";button.textContent="🙈"}
+    else{input.type="password";button.textContent="👁"}
 }
-
-
-/* =========================================
-   LOGIN
-========================================= */
-
-function goLogin(){
-
-    window.location.href =
-        "login.html";
-
-}
-
-
-/* =========================================
-   SHOW MESSAGE
-========================================= */
 
 function showMessage(element,type,text){
-
-    element.className =
-        "message " + type;
-
-    element.textContent =
-        text;
-
-    element.style.display =
-        "block";
+    element.className="message "+type;
+    element.textContent=text;
+    element.style.display="block";
 }
 
-
-/* =========================================
-   REGISTRATION
-========================================= */
-
-document
-.getElementById("registrationForm")
-.addEventListener(
-    "submit",
-    async function(e){
-
-        e.preventDefault();
-
-        const name =
-            document
-            .getElementById("name")
-            .value
-            .trim();
-
-        const email =
-            document
-            .getElementById("email")
-            .value
-            .trim()
-            .toLowerCase();
-
-        const password =
-            document
-            .getElementById("password")
-            .value;
-
-        const confirmPassword =
-            document
-            .getElementById("confirmPassword")
-            .value;
-
-        const button =
-            document
-            .getElementById("registerBtn");
-
-        const message =
-            document
-            .getElementById("message");
-
-
-        message.style.display =
-            "none";
-
-
-        /* PASSWORD CHECK */
-
-        if(password.length < 6){
-
-            showMessage(
-                message,
-                "error",
-                "Password must be at least 6 characters."
-            );
-
-            return;
-        }
-
-
-        /* CONFIRM PASSWORD */
-
-        if(password !== confirmPassword){
-
-            showMessage(
-                message,
-                "error",
-                "Passwords do not match."
-            );
-
-            return;
-        }
-
-
-        button.disabled = true;
-
-        button.textContent =
-            "CREATING ACCOUNT...";
-
-
-        /*
-         * SAVE DATA TEMPORARILY
-         */
-
-        verificationEmail =
-            email;
-
-        verificationName =
-            name;
-
-        verificationPassword =
-            password;
-
-
-        /*
-         * REDIRECT AFTER VERIFICATION
-         */
-
-        const redirectUrl =
-            new URL(
-                "login.html",
-                window.location.href
-            ).href;
-
-
-        /*
-         * SUPABASE SIGN UP
-         */
-
-        const {
-            data,
-            error
-        } =
-        await supabaseClient.auth.signUp({
-
-            email:email,
-
-            password:password,
-
-            options:{
-
-                emailRedirectTo:
-                    redirectUrl,
-
-                data:{
-                    full_name:name
-                }
-
-            }
-
-        });
-
-
-        /* ERROR */
-
-        if(error){
-
-            showMessage(
-                message,
-                "error",
-                error.message
-            );
-
-            button.disabled = false;
-
-            button.textContent =
-                "CREATE ACCOUNT";
-
-            return;
-        }
-
-
-        /*
-         * IF SESSION EXISTS
-         */
-
-        if(data.session){
-
-            showMessage(
-                message,
-                "success",
-                "Account created successfully. Opening RAZTARA..."
-            );
-
-            setTimeout(function(){
-
-                window.location.href =
-                    "index.html";
-
-            },1000);
-
-            return;
-        }
-
-
-        /*
-         * OPEN VERIFICATION SCREEN
-         */
-
-        document
-        .getElementById("registrationBox")
-        .style.display =
-            "none";
-
-        document
-        .getElementById("verificationBox")
-        .style.display =
-            "block";
-
-
-        document
-        .getElementById("verifyEmail")
-        .textContent =
-            verificationEmail;
-
-
-        /*
-         * START TIMER
-         */
-
-        startResendTimer();
-
+document.getElementById("photoInput").addEventListener("change",function(){
+    const file=this.files[0];
+    if(!file)return;
+    if(!file.type.startsWith("image/"))return;
+    if(file.size>6*1024*1024){alert("Profile photo must be 6 MB or smaller.");this.value="";return}
+    const reader=new FileReader();
+    reader.onload=function(e){
+        document.getElementById("photoPreview").src=e.target.result;
+        document.getElementById("photoPreview").style.display="block";
+        document.getElementById("photoIcon").style.display="none";
+    };
+    reader.readAsDataURL(file);
+});
+
+document.getElementById("username").addEventListener("input",function(){
+    this.value=this.value.toLowerCase().replace(/[^a-z0-9_]/g,"");
+});
+
+document.getElementById("otp").addEventListener("input",function(){
+    this.value=this.value.replace(/\D/g,"").slice(0,6);
+});
+
+document.getElementById("registrationForm").addEventListener("submit",async function(e){
+    e.preventDefault();
+
+    const name=document.getElementById("name").value.trim();
+    const username=document.getElementById("username").value.trim().toLowerCase();
+    const email=document.getElementById("email").value.trim().toLowerCase();
+    const password=document.getElementById("password").value;
+    const confirmPassword=document.getElementById("confirmPassword").value;
+    const button=document.getElementById("registerBtn");
+    const message=document.getElementById("message");
+
+    message.style.display="none";
+
+    if(!/^[a-z0-9_]{3,30}$/.test(username)){
+        showMessage(message,"error","Username ৩–৩০ অক্ষরের হতে হবে এবং শুধু ইংরেজি অক্ষর, সংখ্যা ও _ ব্যবহার করতে পারবেন।");
+        return;
     }
-);
+    if(password.length<6){
+        showMessage(message,"error","Password কমপক্ষে ৬ অক্ষরের হতে হবে।");
+        return;
+    }
+    if(password!==confirmPassword){
+        showMessage(message,"error","দুইটি Password একই নয়।");
+        return;
+    }
+    if(!document.getElementById("terms").checked){
+        showMessage(message,"error","Terms ও Privacy-তে সম্মতি দিন।");
+        return;
+    }
 
+    button.disabled=true;
+    button.textContent="CREATING ACCOUNT...";
 
-/* =========================================
-   VERIFY OTP
-========================================= */
+    const redirectUrl=new URL("login.html",window.location.href).href;
+
+    const {data,error}=await supabaseClient.auth.signUp({
+        email,
+        password,
+        options:{
+            emailRedirectTo:redirectUrl,
+            data:{
+                full_name:name,
+                username:username
+            }
+        }
+    });
+
+    if(error){
+        showMessage(message,"error",error.message);
+        button.disabled=false;
+        button.textContent="CREATE ACCOUNT";
+        return;
+    }
+
+    verificationEmail=email;
+
+    if(data.session){
+        showMessage(message,"success","Account তৈরি হয়েছে। RAZTARA খুলছে...");
+        setTimeout(()=>window.location.href="index.html",900);
+        return;
+    }
+
+    document.getElementById("registrationBox").style.display="none";
+    document.getElementById("verificationBox").style.display="block";
+    document.getElementById("verifyEmail").textContent=email;
+    startResendTimer();
+});
 
 async function verifyCode(){
+    const token=document.getElementById("otp").value.trim();
+    const button=document.getElementById("verifyBtn");
+    const message=document.getElementById("verifyMessage");
 
-    const otpInput =
-        document
-        .getElementById("otp");
-
-    const verifyBtn =
-        document
-        .getElementById("verifyBtn");
-
-    const message =
-        document
-        .getElementById("verifyMessage");
-
-
-    const token =
-        otpInput
-        .value
-        .trim();
-
-
-    message.style.display =
-        "none";
-
-
-    /*
-     * CODE CHECK
-     */
+    message.style.display="none";
 
     if(!/^\d{6}$/.test(token)){
-
-        showMessage(
-            message,
-            "error",
-            "Please enter the 6-digit verification code."
-        );
-
+        showMessage(message,"error","৬ সংখ্যার verification code দিন।");
         return;
     }
 
+    button.disabled=true;
+    button.textContent="VERIFYING...";
 
-    verifyBtn.disabled = true;
-
-    verifyBtn.textContent =
-        "VERIFYING...";
-
-
-    /*
-     * SUPABASE OTP VERIFY
-     */
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient.auth.verifyOtp({
-
-        email:
-            verificationEmail,
-
-        token:
-            token,
-
-        type:
-            "email"
-
+    const {error}=await supabaseClient.auth.verifyOtp({
+        email:verificationEmail,
+        token,
+        type:"email"
     });
 
-
-    /*
-     * ERROR
-     */
-
     if(error){
-
-        showMessage(
-            message,
-            "error",
-            error.message ||
-            "Invalid or expired verification code."
-        );
-
-        verifyBtn.disabled = false;
-
-        verifyBtn.textContent =
-            "VERIFY EMAIL";
-
+        showMessage(message,"error",error.message||"Code সঠিক নয় বা মেয়াদ শেষ হয়েছে।");
+        button.disabled=false;
+        button.textContent="VERIFY EMAIL";
         return;
     }
 
-
-    /*
-     * SUCCESS
-     */
-
-    showMessage(
-        message,
-        "success",
-        "Email verified successfully! Opening RAZTARA..."
-    );
-
-
-    verifyBtn.textContent =
-        "VERIFIED ✓";
-
-
+    showMessage(message,"success","Email verified হয়েছে। RAZTARA খুলছে...");
     clearInterval(resendTimer);
-
-
-    setTimeout(function(){
-
-        window.location.href =
-            "index.html";
-
-    },1200);
-
+    button.textContent="VERIFIED ✓";
+    setTimeout(()=>window.location.href="index.html",1000);
 }
-
-
-/* =========================================
-   RESEND CODE
-========================================= */
 
 async function resendCode(){
+    const button=document.getElementById("resendBtn");
+    const message=document.getElementById("verifyMessage");
 
-    const resendBtn =
-        document
-        .getElementById("resendBtn");
+    if(!verificationEmail)return;
 
-    const message =
-        document
-        .getElementById("verifyMessage");
+    button.disabled=true;
+    button.textContent="SENDING...";
 
-
-    if(!verificationEmail){
-
-        showMessage(
-            message,
-            "error",
-            "Email address not found."
-        );
-
-        return;
-    }
-
-
-    resendBtn.disabled = true;
-
-    resendBtn.textContent =
-        "SENDING...";
-
-
-    /*
-     * SEND NEW OTP
-     */
-
-    const {
-        error
-    } =
-    await supabaseClient.auth.resend({
-
-        type:
-            "signup",
-
-        email:
-            verificationEmail
-
+    const {error}=await supabaseClient.auth.resend({
+        type:"signup",
+        email:verificationEmail
     });
 
-
     if(error){
-
-        showMessage(
-            message,
-            "error",
-            error.message
-        );
-
-        resendBtn.disabled = false;
-
-        resendBtn.textContent =
-            "RESEND CODE";
-
+        showMessage(message,"error",error.message);
+        button.disabled=false;
+        button.textContent="RESEND CODE";
         return;
     }
 
-
-    showMessage(
-        message,
-        "success",
-        "A new verification code has been sent to your email."
-    );
-
-
+    showMessage(message,"success","নতুন verification email পাঠানো হয়েছে।");
     startResendTimer();
-
 }
-
-
-/* =========================================
-   RESEND TIMER
-========================================= */
 
 function startResendTimer(){
-
-    const resendBtn =
-        document
-        .getElementById("resendBtn");
-
-
+    const button=document.getElementById("resendBtn");
     clearInterval(resendTimer);
+    resendSeconds=60;
+    button.disabled=true;
+    button.textContent="RESEND CODE ("+resendSeconds+"s)";
 
-
-    resendSeconds = 60;
-
-    resendBtn.disabled = true;
-
-    resendBtn.textContent =
-        "RESEND CODE (" +
-        resendSeconds +
-        "s)";
-
-
-    resendTimer =
-        setInterval(function(){
-
-            resendSeconds--;
-
-
-            if(resendSeconds <= 0){
-
-                clearInterval(resendTimer);
-
-                resendBtn.disabled =
-                    false;
-
-                resendBtn.textContent =
-                    "RESEND CODE";
-
-                return;
-            }
-
-
-            resendBtn.textContent =
-                "RESEND CODE (" +
-                resendSeconds +
-                "s)";
-
-        },1000);
-
+    resendTimer=setInterval(()=>{
+        resendSeconds--;
+        if(resendSeconds<=0){
+            clearInterval(resendTimer);
+            button.disabled=false;
+            button.textContent="RESEND CODE";
+        }else{
+            button.textContent="RESEND CODE ("+resendSeconds+"s)";
+        }
+    },1000);
 }
-
-
-/* =========================================
-   CHANGE EMAIL
-========================================= */
 
 function changeEmail(){
-
     clearInterval(resendTimer);
-
-
-    document
-    .getElementById("verificationBox")
-    .style.display =
-        "none";
-
-
-    document
-    .getElementById("registrationBox")
-    .style.display =
-        "block";
-
-
-    document
-    .getElementById("verifyMessage")
-    .style.display =
-        "none";
-
-
-    document
-    .getElementById("otp")
-    .value =
-        "";
-
-
-    const button =
-        document
-        .getElementById("registerBtn");
-
-    button.disabled =
-        false;
-
-    button.textContent =
-        "CREATE ACCOUNT";
-
+    document.getElementById("verificationBox").style.display="none";
+    document.getElementById("registrationBox").style.display="block";
+    document.getElementById("verifyMessage").style.display="none";
+    document.getElementById("otp").value="";
+    const button=document.getElementById("registerBtn");
+    button.disabled=false;
+    button.textContent="CREATE ACCOUNT";
 }
-
 </script>
-
 </body>
 </html>
