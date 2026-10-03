@@ -130,31 +130,61 @@ async function uploadSelectedFile(file){
 }
 async function toggleRecording(){
  if(recording){
-   mediaRecorder.stop(); return;
+   if(mediaRecorder&&mediaRecorder.state!=="inactive") mediaRecorder.stop();
+   return;
  }
- if(!navigator.mediaDevices?.getUserMedia){showToast("এই ফোনে Voice recording চালু করা যাচ্ছে না");return}
+ if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+   showToast("Microphone চালু করা যাচ্ছে না");
+   return;
+ }
  try{
-   const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-   voiceChunks=[]; mediaRecorder=new MediaRecorder(stream);
-   mediaRecorder.ondataavailable=e=>{if(e.data.size)voiceChunks.push(e.data)};
-   mediaRecorder.onstop=async()=>{
-     stream.getTracks().forEach(t=>t.stop()); recording=false;
+   const stream=await navigator.mediaDevices.getUserMedia({
+     audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}
+   });
+   const types=["audio/mp4","audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus"];
+   const mime=types.find(t=>window.MediaRecorder && MediaRecorder.isTypeSupported(t))||"";
+   mediaRecorder=mime?new MediaRecorder(stream,{mimeType:mime}):new MediaRecorder(stream);
+   voiceChunks=[];
+   mediaRecorder.ondataavailable=e=>{if(e.data&&e.data.size>0)voiceChunks.push(e.data)};
+   mediaRecorder.onerror=e=>{
+     stream.getTracks().forEach(t=>t.stop());
+     recording=false;
      document.getElementById("voiceBtn").textContent="🎤";
-     const blob=new Blob(voiceChunks,{type:mediaRecorder.mimeType||"audio/webm"});
-     if(blob.size>25*1024*1024){showToast("Voice file অনেক বড়");return}
-     const path=currentUser.id+"/"+conversationId+"/"+crypto.randomUUID()+".webm";
+     showToast("Voice recording error");
+   };
+   mediaRecorder.onstop=async()=>{
+     stream.getTracks().forEach(t=>t.stop());
+     recording=false;
+     document.getElementById("voiceBtn").textContent="🎤";
+     if(!voiceChunks.length){showToast("কোনো voice record হয়নি");return}
+     const actualType=mediaRecorder.mimeType||"audio/mp4";
+     const blob=new Blob(voiceChunks,{type:actualType});
+     if(!blob.size){showToast("Voice record হয়নি");return}
+     const ext=actualType.includes("mp4")?"m4a":actualType.includes("ogg")?"ogg":"webm";
+     const path=currentUser.id+"/"+conversationId+"/"+crypto.randomUUID()+"."+ext;
      showToast("Voice upload হচ্ছে...");
-     const up=await sb.storage.from("raztara-media").upload(path,blob,{contentType:blob.type,upsert:false});
-     if(up.error){showToast(up.error.message);return}
+     const up=await sb.storage.from("raztara-media").upload(path,blob,{contentType:actualType,upsert:false});
+     if(up.error){showToast("Voice upload হয়নি: "+up.error.message);return}
      const {data,error}=await sb.from("messages").insert({
-       conversation_id:conversationId,sender_id:currentUser.id,content:"Voice message",message_type:"voice",file_url:path
+       conversation_id:conversationId,
+       sender_id:currentUser.id,
+       content:"Voice message",
+       message_type:"voice",
+       file_url:path
      }).select().single();
-     if(error){showToast(error.message);return}
+     if(error){showToast("Voice message save হয়নি: "+error.message);return}
      if(data&&!document.querySelector('[data-message-id="'+data.id+'"]'))renderMessage(data);
    };
-   mediaRecorder.start(); recording=true; document.getElementById("voiceBtn").textContent="⏹️";
-   showToast("Recording চলছে... আবার চাপলে পাঠাবে");
- }catch(e){showToast("Microphone permission দিন")}
+   mediaRecorder.start();
+   recording=true;
+   document.getElementById("voiceBtn").textContent="⏹️";
+   showToast("Recording চলছে... শেষ করতে আবার 🎤 চাপুন");
+ }catch(e){
+   recording=false;
+   document.getElementById("voiceBtn").textContent="🎤";
+   if(e&&e.name==="NotAllowedError") showToast("Microphone permission Allow করুন");
+   else showToast("Microphone চালু করা যায়নি");
+ }
 }
 
 async function init(){
