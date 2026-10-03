@@ -1773,16 +1773,22 @@ async function loadOtherProfile(){
         "userName"
     ).textContent = name;
 
-    document.getElementById(
-        "sheetName"
-    ).textContent = name;
+    const sheetName =
+        document.getElementById("sheetName");
 
-    document.getElementById(
-        "sheetUsername"
-    ).textContent =
-        data?.username
-            ? "@" + data.username
-            : "";
+    if(sheetName){
+        sheetName.textContent = name;
+    }
+
+    const sheetUsername =
+        document.getElementById("sheetUsername");
+
+    if(sheetUsername){
+        sheetUsername.textContent =
+            data?.username
+                ? "@" + data.username
+                : "";
+    }
 
     if(data?.avatar_url){
 
@@ -1790,9 +1796,12 @@ async function loadOtherProfile(){
             "userAvatar"
         ).src = data.avatar_url;
 
-        document.getElementById(
-            "sheetAvatar"
-        ).src = data.avatar_url;
+        const sheetAvatar =
+            document.getElementById("sheetAvatar");
+
+        if(sheetAvatar){
+            sheetAvatar.src = data.avatar_url;
+        }
     }
 
     updateOnlineStatus(data);
@@ -1858,10 +1867,13 @@ function subscribeProfileRealtime(){
                         ).src =
                             payload.new.avatar_url;
 
-                        document.getElementById(
-                            "sheetAvatar"
-                        ).src =
-                            payload.new.avatar_url;
+                        const sheetAvatar =
+                            document.getElementById("sheetAvatar");
+
+                        if(sheetAvatar){
+                            sheetAvatar.src =
+                                payload.new.avatar_url;
+                        }
                     }
 
                     if(
