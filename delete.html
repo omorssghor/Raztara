@@ -19,7 +19,7 @@ html,body{
     width:100%;
     min-height:100%;
     font-family:Arial,sans-serif;
-    background:#f4f7f7;
+    background:linear-gradient(135deg,#ffffff 0%,#f5fbf8 55%,#eef9f5 100%);
     color:#222;
 }
 
@@ -263,10 +263,12 @@ body{
 
 /* MODAL */
 
-.modal{
+ .modal{
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,.48);
+    background:rgba(238,249,245,.58);
+    backdrop-filter:blur(7px);
+    -webkit-backdrop-filter:blur(7px);
     display:none;
     align-items:center;
     justify-content:center;
@@ -281,19 +283,22 @@ body{
 .modal-box{
     width:100%;
     max-width:380px;
-    background:#fff;
-    border-radius:16px;
-    padding:20px;
+    background:linear-gradient(145deg,#ffffff,#f3fbf8);
+    border:1px solid rgba(8,127,91,.10);
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0 12px 40px rgba(8,127,91,.14);
 }
 
 .modal-title{
     font-size:18px;
     font-weight:700;
+    color:#18352d;
     margin-bottom:10px;
 }
 
-.modal-text{
-    color:#666;
+ .modal-text{
+    color:#52655f;
     font-size:14px;
     line-height:1.5;
     margin-bottom:18px;
@@ -307,6 +312,7 @@ body{
 .modal-actions button{
     flex:1;
     border:0;
+    background:transparent;
     padding:12px;
     border-radius:10px;
     font-size:14px;
@@ -315,17 +321,15 @@ body{
 }
 
 .cancel-btn{
-    background:#eee;
+    color:#52655f;
 }
 
 .confirm-btn{
-    background:#087f5b;
-    color:#fff;
+    color:#087f5b;
 }
 
 .confirm-danger{
-    background:#c62828;
-    color:#fff;
+    color:#b3262e;
 }
 
 /* TOAST */
