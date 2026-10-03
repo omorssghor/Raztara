@@ -30,7 +30,7 @@
 <script>
 const sb=supabase.createClient("https://pqyicaqpmojijjskpzcp.supabase.co","sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho");
 let all=[];
-function esc(x){return String(x||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&#92;","\"":"&#92;",""":"&quot;","'":"&#039;"}[c]||c))}
+function esc(v){return String(v==null?"":v).replace(/[&<>"]/g,function(c){if(c==="&")return "&amp;";if(c==="<")return "&lt;";if(c===">")return "&gt;";return "&quot;";})}
 function focusSearch(){document.getElementById("search").focus()}
 function toast(x){const e=document.getElementById("toast");e.textContent=x;e.style.display="block";setTimeout(()=>e.style.display="none",1800)}
 function avatar(p){return p.avatar_url||"https://ui-avatars.com/api/?name="+encodeURIComponent((p.full_name||p.username||"R").slice(0,1))+"&background=075e54&color=fff"}
