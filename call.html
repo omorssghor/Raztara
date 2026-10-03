@@ -259,37 +259,54 @@ function toggleCamera(){
  document.getElementById("cameraBtn").textContent=cameraOff?"📷":"📹";
 }
 async function switchCamera(){
- if(!localStream||type!=="video"||callMode!=="video")return;
+ if(!localStream||type!=="video"||callMode!=="video"){toast("Video camera চালু নেই");return}
  const oldTrack=localStream.getVideoTracks()[0];
  if(!oldTrack){toast("Camera পাওয়া যায়নি");return}
- const nextMode=facingMode==="user"?"environment":"user";
+
  try{
-  let newTrack=null;
+  const currentId=oldTrack.getSettings().deviceId||"";
+  const nextMode=facingMode==="user"?"environment":"user";
 
-  // First try the camera facingMode directly. "exact" prevents Safari/iPhone
-  // from silently keeping the front camera.
-  try{
-   const s=await navigator.mediaDevices.getUserMedia({
-    video:{facingMode:{exact:nextMode}},
-    audio:false
-   });
-   newTrack=s.getVideoTracks()[0];
-  }catch(e){
-   // Fallback: find another physical camera by deviceId.
-   const devices=await navigator.mediaDevices.enumerateDevices();
-   const cams=devices.filter(d=>d.kind==="videoinput");
-   const oldId=oldTrack.getSettings().deviceId;
-   const next=cams.find(d=>d.deviceId&&d.deviceId!==oldId);
-   if(!next)throw e;
+  // Permission already আছে, তাই সব camera device পাওয়া যাবে।
+  const devices=await navigator.mediaDevices.enumerateDevices();
+  const cams=devices.filter(d=>d.kind==="videoinput");
 
-   const s=await navigator.mediaDevices.getUserMedia({
-    video:{deviceId:{exact:next.deviceId}},
-    audio:false
-   });
-   newTrack=s.getVideoTracks()[0];
+  if(cams.length<2){
+   toast("এই ফোনে দ্বিতীয় camera পাওয়া যায়নি");
+   return;
   }
 
-  if(!newTrack)throw new Error("No camera track");
+  const oldLabel=(oldTrack.label||"").toLowerCase();
+  let next=null;
+
+  if(nextMode==="environment"){
+   next=cams.find(d=>{
+    const label=(d.label||"").toLowerCase();
+    return d.deviceId!==currentId &&
+      /back|rear|environment|wide|ultra/.test(label);
+   });
+  }else{
+   next=cams.find(d=>{
+    const label=(d.label||"").toLowerCase();
+    return d.deviceId!==currentId &&
+      /front|user|facetime/.test(label);
+   });
+  }
+
+  // Label না পাওয়া গেলে অন্য physical camera ব্যবহার করবে।
+  if(!next) next=cams.find(d=>d.deviceId!==currentId);
+
+  if(!next){
+   toast("Back camera পাওয়া যায়নি");
+   return;
+  }
+
+  const s=await navigator.mediaDevices.getUserMedia({
+   video:{deviceId:{exact:next.deviceId}},
+   audio:false
+  });
+  const newTrack=s.getVideoTracks()[0];
+  if(!newTrack)throw new Error("camera track missing");
 
   const sender=pc?.getSenders().find(x=>x.track&&x.track.kind==="video");
   if(sender)await sender.replaceTrack(newTrack);
@@ -300,16 +317,19 @@ async function switchCamera(){
   facingMode=nextMode;
 
   const lv=document.getElementById("localVideo");
+  lv.srcObject=null;
   lv.srcObject=localStream;
   lv.muted=true;
+  lv.setAttribute("playsinline","");
+  lv.setAttribute("webkit-playsinline","");
   await lv.play().catch(()=>{});
-  newTrack.enabled=!cameraOff;
 
-  toast(facingMode==="environment"?"Back camera চালু হয়েছে":"Front camera চালু হয়েছে");
+  newTrack.enabled=!cameraOff;
+  toast(nextMode==="environment"?"Back camera চালু হয়েছে":"Front camera চালু হয়েছে");
  }catch(e){
-  console.error("switchCamera",e);
-  toast(nextMode==="environment"?"Back camera পাওয়া যায়নি":"Front camera পাওয়া যায়নি");
- }
+  console.error("camera switch error",e);
+  toast("Back camera চালু করা যায়নি");
+}
 }
 async function toggleCallMode(){
  if(!localStream||!pc)return;
