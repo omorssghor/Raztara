@@ -350,28 +350,21 @@ async function loadMessages(){
 
  data.forEach(m=>renderMessage(m));
 
-// Chat open হলে একদম উপরে নয়,
-// সর্বশেষ message-এর কাছাকাছি অবস্থান দেখাবে।
-const board = document.getElementById("board");
-
 requestAnimationFrame(() => {
+  const board = document.getElementById("board");
   const rows = board.querySelectorAll(".row");
 
-  if (rows.length) {
-    const lastRow = rows[rows.length - 1];
+  if (!rows.length) return;
 
-    // সর্বশেষ message-এর অবস্থান বের করি
-    const rowTop = lastRow.offsetTop;
+  const lastRow = rows[rows.length - 1];
 
-    // সর্বশেষ message-টি যেন নিচের দিকে দেখা যায়,
-    // কিন্তু পুরো chat জোর করে bottom-এ না যায়
-    const target = Math.max(
-      0,
-      rowTop - board.clientHeight + lastRow.offsetHeight + 24
-    );
+  const target =
+    lastRow.offsetTop -
+    board.clientHeight +
+    lastRow.offsetHeight +
+    24;
 
-    board.scrollTop = target;
-  }
+  board.scrollTop = Math.max(0, target);
 });
 
 }
