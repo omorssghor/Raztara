@@ -116,22 +116,27 @@ function pickFile(accept){
  const input=document.getElementById("mediaInput");
  input.accept=accept; input.value=""; input.click(); closeMenu();
 }
+let mediaUploading=false;
 async function uploadSelectedFile(file){
  if(!file||!conversationId)return;
- if(file.size>25*1024*1024){showToast("ফাইল সর্বোচ্চ 25 MB হতে পারবে");return}
+ if(mediaUploading)return;
+ mediaUploading=true;
+ if(file.size>25*1024*1024){mediaUploading=false;showToast("ফাইল সর্বোচ্চ 25 MB হতে পারবে");return}
  showToast("Upload হচ্ছে...");
  const ext=(file.name.split(".").pop()||"bin").toLowerCase();
  const path=currentUser.id+"/"+conversationId+"/"+crypto.randomUUID()+"."+ext;
  const {error}=await sb.storage.from("raztara-media").upload(path,file,{contentType:file.type||"application/octet-stream",upsert:false});
- if(error){showToast(error.message);return}
+ if(error){mediaUploading=false;showToast(error.message);return}
  let type="file";
  if(file.type.startsWith("image/"))type="image";
  else if(file.type.startsWith("video/"))type="video";
  const {data,error:me}=await sb.from("messages").insert({
    conversation_id:conversationId,sender_id:currentUser.id,content:file.name,message_type:type,file_url:path
  }).select().single();
- if(me){showToast(me.message);return}
+ if(me){mediaUploading=false;showToast(me.message);return}
  if(data&&!document.querySelector('[data-message-id="'+data.id+'"]'))renderMessage(data);
+ const input=document.getElementById("mediaInput"); if(input) input.value="";
+ mediaUploading=false;
 }
 let voiceStream=null;
 let recordingStartedAt=0;
