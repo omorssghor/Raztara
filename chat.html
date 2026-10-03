@@ -318,7 +318,7 @@ async function openConversation(){
 async function loadMessages(){
  const box=document.getElementById("messages");
  const {data,error}=await sb.from("messages")
-   .select("id,sender_id,content,message_type,created_at,deleted_for_everyone,delivered_at,read_at")
+   .select("id,sender_id,content,message_type,file_url,created_at,deleted_for_everyone,delivered_at,read_at")
    .eq("conversation_id",conversationId)
    .order("created_at",{ascending:true});
 
