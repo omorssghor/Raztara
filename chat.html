@@ -4747,15 +4747,28 @@ function getChatBackgroundKey(){
     /*
      * Background সবসময় এই User-এর জন্য save হবে।
      * Conversation ID বদলালেও background হারাবে না।
+     *
+     * IMPORTANT:
+     * এই function init()-এর একদম শুরুতেই চলে।
+     * তাই এখানে undefined global "params" ব্যবহার করা যাবে না।
      */
+    const urlParams =
+        new URLSearchParams(
+            window.location.search
+        );
+
     const user =
         otherUserId ||
-        params.get("user") ||
-        params.get("user_id") ||
-        params.get("id") ||
+        urlParams.get("user") ||
+        urlParams.get("user_id") ||
+        urlParams.get("id") ||
+        localStorage.getItem(
+            "raztara_last_chat_user_id"
+        ) ||
         "default";
 
-    return "raztara_chat_background_user_" + user;
+    return "raztara_chat_background_user_" +
+        String(user).trim();
 }
 
 
