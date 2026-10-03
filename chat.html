@@ -33,8 +33,19 @@ button,input{font:inherit}
 .plus{width:43px;height:43px;border:0;border-radius:50%;background:#fff;color:var(--g);font-size:27px;box-shadow:0 1px 3px #0002}
 .inputbox{flex:1;min-width:0;min-height:43px;background:#fff;border-radius:23px;display:flex;align-items:center;padding:0 13px;box-shadow:0 1px 3px #0002}
 .inputbox input{width:100%;border:0;outline:0;background:transparent;font-size:15px}
-.voice,.send{width:43px;height:43px;border:0;border-radius:50%;color:#fff;background:var(--g);font-size:19px;flex:none}
+.voice,.send{width:43px;height:43px;border:0;border-radius:50%;color:#fff;background:var(--g);font-size:19px;flex:none;touch-action:none;user-select:none;-webkit-user-select:none}
+.voice.recording{background:#d93025;transform:scale(1.06)}
 .send{font-size:18px}
+.record-ui{position:fixed;left:10px;right:10px;bottom:calc(78px + env(safe-area-inset-bottom));height:58px;background:#fff;border-radius:18px;box-shadow:0 5px 22px #0003;display:none;align-items:center;gap:10px;padding:8px 12px;z-index:50}
+.record-ui.show{display:flex}
+.record-ui .rec-dot{width:10px;height:10px;border-radius:50%;background:#d93025;animation:pulse 1s infinite;flex:none}
+.record-ui .rec-time{font-variant-numeric:tabular-nums;font-weight:700;min-width:42px}
+.record-ui .rec-hint{flex:1;color:#667;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.record-ui .rec-cancel{border:0;background:#f2f3f5;border-radius:20px;padding:9px 12px;color:#d93025;font-weight:700}
+.record-ui .rec-send{border:0;background:var(--g);color:#fff;border-radius:20px;padding:9px 14px;font-weight:700;display:none}
+.record-ui.locked .rec-send{display:block}
+.record-ui.locked .rec-hint{color:var(--g);font-weight:700}
+@keyframes pulse{50%{opacity:.35}}
 .menu{position:fixed;left:10px;bottom:calc(72px + env(safe-area-inset-bottom));background:#fff;border-radius:14px;box-shadow:0 4px 18px #0003;padding:6px;width:145px;z-index:30;display:none}
 .menu.show{display:block}
 .menu button{width:100%;border:0;background:#fff;text-align:left;padding:11px;border-radius:9px}
@@ -74,9 +85,11 @@ button,input{font:inherit}
   <div class="inputbox">
     <input id="messageInput" type="text" placeholder="Message..." autocomplete="off">
   </div>
-  <button id="voiceBtn" class="voice" onclick="toggleRecording()">🎤</button>
+  <button id="voiceBtn" class="voice" aria-label="Voice message">🎤</button>
   <button class="send" onclick="sendText()">➤</button>
 </div>
+
+<div id="recordUI" class="record-ui" aria-hidden="true"><span class="rec-dot"></span><span id="recTime" class="rec-time">0:00</span><span id="recHint" class="rec-hint">↑ Lock করতে উপরে টানুন</span><button id="recCancel" class="rec-cancel" type="button">✕</button><button id="recSend" class="rec-send" type="button">➤ Send</button></div>
 
 <div id="toast" class="toast"></div>
 
@@ -128,67 +141,176 @@ async function uploadSelectedFile(file){
  if(me){showToast(me.message);return}
  if(data&&!document.querySelector('[data-message-id="'+data.id+'"]'))renderMessage(data);
 }
-async function toggleRecording(){
- if(recording){
-   if(mediaRecorder&&mediaRecorder.state!=="inactive") mediaRecorder.stop();
-   return;
- }
- if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-   showToast("Microphone চালু করা যাচ্ছে না");
+let recordingStartedAt=0;
+let recordingLocked=false;
+let voicePointerId=null;
+let voiceStartX=0;
+let voiceStartY=0;
+let voiceTimer=null;
+let voiceStream=null;
+
+function setVoiceButton(text,active=false){
+ const b=document.getElementById("voiceBtn");
+ b.textContent=text;
+ b.classList.toggle("recording",active);
+}
+function setRecordUI(show){
+ const ui=document.getElementById("recordUI");
+ ui.classList.toggle("show",show);
+ ui.setAttribute("aria-hidden",show?"false":"true");
+}
+function updateRecordUI(){
+ if(!recordingStartedAt)return;
+ const sec=Math.max(0,Math.floor((Date.now()-recordingStartedAt)/1000));
+ const m=Math.floor(sec/60),s=String(sec%60).padStart(2,"0");
+ document.getElementById("recTime").textContent=m+":"+s;
+}
+function lockRecording(){
+ if(!recording||recordingLocked)return;
+ recordingLocked=true;
+ const ui=document.getElementById("recordUI");
+ ui.classList.add("locked");
+ document.getElementById("recHint").textContent="🔒 Recording locked — Send চাপুন";
+ showToast("Voice lock হয়েছে 🔒");
+}
+function cancelRecording(){
+ if(!recording)return;
+ recordingCancelled=true;
+ recordingLocked=false;
+ if(mediaRecorder&&mediaRecorder.state!=="inactive") mediaRecorder.stop();
+ else finishVoiceRecording();
+}
+let recordingCancelled=false;
+
+async function startRecording(){
+ if(recording)return;
+ if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){
+   showToast("এই browser-এ voice recording support নেই");
    return;
  }
  try{
-   const stream=await navigator.mediaDevices.getUserMedia({
-     audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}
-   });
-   const types=["audio/webm;codecs=opus","audio/mp4","audio/webm","audio/ogg;codecs=opus"];
-   const mime=types.find(t=>window.MediaRecorder && MediaRecorder.isTypeSupported(t))||"";
-   mediaRecorder=mime?new MediaRecorder(stream,{mimeType:mime}):new MediaRecorder(stream);
+   voiceStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+   const types=["audio/mp4","audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus"];
+   const mime=types.find(t=>MediaRecorder.isTypeSupported(t))||"";
+   mediaRecorder=mime?new MediaRecorder(voiceStream,{mimeType:mime}):new MediaRecorder(voiceStream);
    voiceChunks=[];
-   mediaRecorder.ondataavailable=e=>{if(e.data&&e.data.size>0)voiceChunks.push(e.data)};
+   recordingCancelled=false;
+   recordingLocked=false;
+   recording=true;
+   recordingStartedAt=Date.now();
+   setRecordUI(true);
+   setVoiceButton("⏺",true);
+   updateRecordUI();
+   clearInterval(voiceTimer);
+   voiceTimer=setInterval(updateRecordUI,500);
+
+   mediaRecorder.ondataavailable=e=>{if(e.data?.size)voiceChunks.push(e.data)};
    mediaRecorder.onerror=e=>{
-     stream.getTracks().forEach(t=>t.stop());
-     recording=false;
-     document.getElementById("voiceBtn").textContent="🎤";
+     console.error("RAZTARA voice recorder error",e);
+     recordingCancelled=true;
+     cleanupVoice();
      showToast("Voice recording error");
    };
-   mediaRecorder.onstop=async()=>{
-     stream.getTracks().forEach(t=>t.stop());
-     recording=false;
-     document.getElementById("voiceBtn").textContent="🎤";
-     if(!voiceChunks.length){showToast("কোনো voice record হয়নি");return}
-     const actualType=mediaRecorder.mimeType||"audio/mp4";
-     const blob=new Blob(voiceChunks,{type:actualType});
-     if(!blob.size){showToast("Voice record হয়নি");return}
-     const ext=actualType.includes("mp4")?"m4a":actualType.includes("ogg")?"ogg":"webm";
-     const path=currentUser.id+"/"+conversationId+"/"+crypto.randomUUID()+"."+ext;
-     showToast("Voice upload হচ্ছে...");
-     const up=await sb.storage.from("raztara-media").upload(path,blob,{contentType:actualType,upsert:false});
-     if(up.error){showToast("Voice upload হয়নি: "+up.error.message);return}
-     const {data,error}=await sb.from("messages").insert({
-       conversation_id:conversationId,
-       sender_id:currentUser.id,
-       content:"Voice message",
-       message_type:"voice",
-       file_url:path
-     }).select().single();
-     if(error){showToast("Voice message save হয়নি: "+error.message);return}
-     if(data&&!document.querySelector('[data-message-id="'+data.id+'"]'))renderMessage(data);
-   };
+   mediaRecorder.onstop=finishVoiceRecording;
    mediaRecorder.start(250);
-   recording=true;
-   document.getElementById("voiceBtn").textContent="⏹️";
-   showToast("Recording চলছে... শেষ করতে আবার 🎤 চাপুন");
  }catch(e){
-   recording=false;
-   document.getElementById("voiceBtn").textContent="🎤";
-   console.error("RAZTARA voice error",e);
-   if(e&&e.name==="NotAllowedError") showToast("Microphone permission Allow করুন");
-   else if(e&&e.name==="NotFoundError") showToast("Microphone পাওয়া যায়নি");
-   else if(e&&e.name==="NotSupportedError") showToast("Voice recording এই browser-এ supported নয়");
+   console.error("RAZTARA voice start error",e);
+   cleanupVoice();
+   if(e?.name==="NotAllowedError")showToast("Microphone permission Allow করুন");
+   else if(e?.name==="NotFoundError")showToast("Microphone পাওয়া যায়নি");
    else showToast("Microphone চালু করা যায়নি: "+(e?.message||"Unknown error"));
  }
 }
+
+function cleanupVoice(){
+ clearInterval(voiceTimer);
+ voiceTimer=null;
+ if(voiceStream)voiceStream.getTracks().forEach(t=>t.stop());
+ voiceStream=null;
+ recording=false;
+ recordingStartedAt=0;
+ recordingLocked=false;
+ voicePointerId=null;
+ setRecordUI(false);
+ setVoiceButton("🎤",false);
+}
+
+async function finishVoiceRecording(){
+ clearInterval(voiceTimer);
+ voiceTimer=null;
+ const cancelled=recordingCancelled;
+ const chunks=voiceChunks.slice();
+ const recorder=mediaRecorder;
+ const stream=voiceStream;
+ if(stream)stream.getTracks().forEach(t=>t.stop());
+ voiceStream=null;
+ recording=false;
+ recordingStartedAt=0;
+ voicePointerId=null;
+ const locked=recordingLocked;
+ recordingLocked=false;
+ setRecordUI(false);
+ setVoiceButton("🎤",false);
+ if(cancelled){voiceChunks=[];showToast("Voice বাতিল হয়েছে");return}
+ if(!chunks.length){voiceChunks=[];showToast("কোনো voice record হয়নি");return}
+ const actualType=recorder?.mimeType||"audio/mp4";
+ const blob=new Blob(chunks,{type:actualType});
+ voiceChunks=[];
+ if(!blob.size){showToast("Voice record হয়নি");return}
+ if(!conversationId){showToast("Chat connection নেই");return}
+ const ext=actualType.includes("mp4")?"m4a":actualType.includes("ogg")?"ogg":"webm";
+ const path=currentUser.id+"/"+conversationId+"/"+crypto.randomUUID()+"."+ext;
+ showToast("Voice upload হচ্ছে...");
+ const up=await sb.storage.from("raztara-media").upload(path,blob,{contentType:actualType,upsert:false});
+ if(up.error){showToast("Voice upload হয়নি: "+up.error.message);return}
+ const {data,error}=await sb.from("messages").insert({
+   conversation_id:conversationId,sender_id:currentUser.id,
+   content:"Voice message",message_type:"voice",file_url:path
+ }).select().single();
+ if(error){showToast("Voice message save হয়নি: "+error.message);return}
+ if(data&&!document.querySelector('[data-message-id="'+data.id+'"]'))renderMessage(data);
+}
+
+function voicePointerDown(e){
+ if(e.pointerType==="mouse"&&e.button!==0)return;
+ if(recording)return;
+ e.preventDefault();
+ voicePointerId=e.pointerId;
+ voiceStartX=e.clientX;
+ voiceStartY=e.clientY;
+ const b=document.getElementById("voiceBtn");
+ try{b.setPointerCapture(e.pointerId)}catch(_){}
+ startRecording();
+}
+function voicePointerMove(e){
+ if(!recording||e.pointerId!==voicePointerId||recordingLocked)return;
+ const dx=e.clientX-voiceStartX;
+ const dy=e.clientY-voiceStartY;
+ if(dy<-55){lockRecording();return}
+ if(dx<-100){cancelRecording()}
+}
+function voicePointerUp(e){
+ if(e.pointerId!==voicePointerId)return;
+ e.preventDefault();
+ if(!recording)return;
+ if(recordingLocked)return;
+ if(mediaRecorder&&mediaRecorder.state!=="inactive")mediaRecorder.stop();
+ else finishVoiceRecording();
+}
+function voicePointerCancel(e){
+ if(e.pointerId!==voicePointerId)return;
+ if(recording&&!recordingLocked)cancelRecording();
+}
+document.getElementById("voiceBtn").addEventListener("pointerdown",voicePointerDown);
+document.getElementById("voiceBtn").addEventListener("pointermove",voicePointerMove);
+document.getElementById("voiceBtn").addEventListener("pointerup",voicePointerUp);
+document.getElementById("voiceBtn").addEventListener("pointercancel",voicePointerCancel);
+document.getElementById("voiceBtn").addEventListener("contextmenu",e=>e.preventDefault());
+document.getElementById("recCancel").addEventListener("click",()=>{if(recording)cancelRecording()});
+document.getElementById("recSend").addEventListener("click",()=>{
+ if(recordingLocked&&mediaRecorder&&mediaRecorder.state!=="inactive")mediaRecorder.stop();
+});
+
 
 async function init(){
  const auth=await sb.auth.getUser();
