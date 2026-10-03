@@ -112,8 +112,13 @@ async function init(){
  other=await profile(user);if(!other){toast("User profile পাওয়া যায়নি");return}
  setProfile(other);
  if(!incoming) showControls();
+ if(incoming){showIncoming();}
+ if(!incoming){
+  otherOnline=await getOtherOnline();
+  setState(otherOnline?"Ringing...":"Calling...");
+ }
  await setupChannel();
- if(incoming){showIncoming();return}
+ if(incoming)return;
  await startOutgoing();
 }
 async function setupPresence(){
