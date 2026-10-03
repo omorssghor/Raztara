@@ -342,31 +342,17 @@ async function loadMessages(){
    return;
  }
 
- // Resolve media URLs before drawing the messages so media loading does not
- // change the scroll position while the chat is opening.
- await Promise.all((data||[]).map(async m=>{
+ // Prepare media URLs before rendering, so rendering itself does not change height later.
+ await Promise.all(data.map(async m=>{
    if(m.file_url) m._signedUrl=await getSignedMedia(m.file_url);
  }));
 
+ // Render all messages first. No scrolling while rows are being created.
  data.forEach(m=>renderMessage(m));
 
-requestAnimationFrame(() => {
-  const board = document.getElementById("board");
-  const rows = board.querySelectorAll(".row");
-
-  if (!rows.length) return;
-
-  const lastRow = rows[rows.length - 1];
-
-  const target =
-    lastRow.offsetTop -
-    board.clientHeight +
-    lastRow.offsetHeight +
-    24;
-
-  board.scrollTop = Math.max(0, target);
-});
-
+ // One and only one opening position change.
+ const board=document.getElementById("board");
+ board.scrollTop=board.scrollHeight;
 }
 
 async function getSignedMedia(path){
@@ -397,7 +383,7 @@ function renderMessage(m){
    else if(m.message_type==="video") bubble.innerHTML='<div class="media-loading">ভিডিও খুলছে...</div>';
    else if(m.message_type==="voice"||m.message_type==="audio") bubble.innerHTML='<div class="media-loading">Voice খুলছে...</div>';
    else bubble.innerHTML='<div class="media-loading">📎 '+esc(text)+'</div>';
-   (m._signedUrl?Promise.resolve(m._signedUrl):getSignedMedia(m.file_url)).then(url=>{
+   Promise.resolve(m._signedUrl).then(url=>{
      if(!url){
        bubble.innerHTML='<div class="media-error">ভিডিও/মিডিয়া লোড হয়নি<br><button type="button" onclick="renderMessage('+JSON.stringify(m).replace(/</g,"\\u003c")+')">↻ আবার চেষ্টা</button></div>';
        bubble.appendChild(time);
