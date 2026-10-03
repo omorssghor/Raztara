@@ -215,7 +215,7 @@ body{
 }
 
 .chat-board.initializing{
-    visibility:hidden;
+    visibility:visible;
 }
 
 .empty-chat{
@@ -2190,10 +2190,15 @@ function getConversationStorageKey(){
         return "";
     }
 
+    const ids = [
+        String(currentUser.id),
+        String(otherUserId)
+    ].sort();
+
     return "raztara_conversation_" +
-        String(currentUser.id) +
+        ids[0] +
         "_" +
-        String(otherUserId);
+        ids[1];
 }
 
 function saveConversationId(id){
@@ -2245,28 +2250,14 @@ async function findConversation(){
 
     if(savedId){
 
-        const {
-            data:savedConversation,
-            error:savedError
-        } = await supabaseClient
-            .from("conversations")
-            .select("id,is_group")
-            .eq("id",savedId)
-            .eq("is_group",false)
-            .maybeSingle();
-
-        if(!savedError && savedConversation?.id){
-
-            return savedConversation.id;
-        }
-
         /*
-         * Saved ID আর valid না হলে নিচের normal
-         * member search দিয়ে পুরোনো conversation খোঁজা হবে।
+         * Saved conversation ID আগে ব্যবহার করব।
+         * conversations SELECT RLS-এ সাময়িক সমস্যা হলেও
+         * পুরোনো chat যেন অন্য conversation-এ চলে না যায়।
+         * পরে loadMessages() যদি সত্যিই invalid হয়,
+         * তখনই fallback lookup হবে।
          */
-        localStorage.removeItem(
-            getConversationStorageKey()
-        );
+        return savedId;
     }
 
     const {
@@ -2344,8 +2335,7 @@ async function findConversation(){
         .eq(
             "is_group",
             false
-        )
-        .limit(1);
+        );
 
     if(conversationError){
 
