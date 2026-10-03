@@ -19,7 +19,7 @@ html,body{
     width:100%;
     min-height:100%;
     font-family:Arial,sans-serif;
-    background:linear-gradient(135deg,#ffffff 0%,#f5fbf8 55%,#eef9f5 100%);
+    background:#f1faf7;
     color:#222;
 }
 
@@ -32,8 +32,8 @@ body{
 .header{
     height:62px;
     min-height:62px;
-    background:#087f5b;
-    color:#fff;
+    background:transparent;
+    color:#087f5b;
     display:flex;
     align-items:center;
     padding:0 8px;
@@ -78,8 +78,8 @@ body{
 /* TOP BAR */
 
 .top-bar{
-    background:#fff;
-    border-bottom:1px solid #ddd;
+    background:transparent;
+    border-bottom:1px solid rgba(8,127,91,.10);
     padding:10px 12px;
     display:flex;
     align-items:center;
@@ -109,13 +109,13 @@ body{
 
 .info{
     margin:12px;
-    background:#fff;
-    border-radius:12px;
-    padding:12px;
-    color:#666;
+    background:transparent;
+    border-radius:0;
+    padding:12px 0;
+    color:#35584e;
     font-size:13px;
     line-height:1.5;
-    box-shadow:0 1px 5px rgba(0,0,0,.06);
+    box-shadow:none;
 }
 
 /* LIST */
@@ -125,19 +125,20 @@ body{
 }
 
 .message-item{
-    background:#fff;
-    border-radius:13px;
+    background:transparent;
+    border-radius:0;
     margin-bottom:9px;
-    padding:11px;
+    padding:11px 0;
     display:flex;
     align-items:flex-start;
     gap:10px;
-    box-shadow:0 1px 4px rgba(0,0,0,.07);
+    box-shadow:none;
+    border-bottom:1px solid rgba(8,127,91,.08);
 }
 
 .message-item.selected{
     outline:2px solid #087f5b;
-    background:#f0fff9;
+    background:rgba(8,127,91,.055);
 }
 
 .checkbox-wrap{
@@ -159,7 +160,7 @@ body{
 
 .sender-line{
     font-size:11px;
-    color:#777;
+    color:#087f5b;
     margin-bottom:5px;
 }
 
@@ -167,6 +168,7 @@ body{
     font-size:14px;
     line-height:1.4;
     word-break:break-word;
+    color:#18352d;
 }
 
 .media-preview{
@@ -205,20 +207,20 @@ body{
 
 .message-time{
     margin-top:5px;
-    color:#999;
+    color:#6d8980;
     font-size:10px;
 }
 
 .empty{
     text-align:center;
-    color:#777;
+    color:#5f7d73;
     padding:45px 15px;
     font-size:14px;
 }
 
 .loading{
     text-align:center;
-    color:#777;
+    color:#5f7d73;
     padding:40px 15px;
 }
 
@@ -229,8 +231,8 @@ body{
     left:0;
     right:0;
     bottom:0;
-    background:#fff;
-    border-top:1px solid #ddd;
+    background:transparent;
+    border-top:1px solid rgba(8,127,91,.10);
     padding:8px;
     display:flex;
     gap:7px;
@@ -248,8 +250,8 @@ body{
 }
 
 .delete-me{
-    background:#eee;
-    color:#333;
+    background:transparent;
+    color:#52655f;
 }
 
 .delete-everyone{
@@ -266,7 +268,7 @@ body{
  .modal{
     position:fixed;
     inset:0;
-    background:rgba(238,249,245,.58);
+    background:rgba(8,127,91,.10);
     backdrop-filter:blur(7px);
     -webkit-backdrop-filter:blur(7px);
     display:none;
@@ -283,7 +285,7 @@ body{
 .modal-box{
     width:100%;
     max-width:380px;
-    background:linear-gradient(145deg,#ffffff,#f3fbf8);
+    background:#f4fbf8;
     border:1px solid rgba(8,127,91,.10);
     border-radius:18px;
     padding:22px;
@@ -339,7 +341,7 @@ body{
     left:50%;
     bottom:90px;
     transform:translateX(-50%) translateY(20px);
-    background:#222;
+    background:#087f5b;
     color:#fff;
     padding:10px 17px;
     border-radius:22px;
