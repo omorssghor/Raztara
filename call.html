@@ -86,7 +86,7 @@ button{font:inherit}
 
 <script>
 const sb=supabase.createClient("https://pqyicaqpmojijjskpzcp.supabase.co","sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho");
-let me=null,other=null,conversationId="",type="audio",incoming=false,channel=null,pc=null,localStream=null,muted=false,cameraOff=false,remoteReady=false,callId="",callStartedAt=0,durationTimer=null,callLogged=false,facingMode="user",callMode="audio";
+let me=null,other=null,conversationId="",type="audio",incoming=false,channel=null,pc=null,localStream=null,muted=false,cameraOff=false,remoteReady=false,callId="",callStartedAt=0,durationTimer=null,callLogged=false,facingMode="user",callMode="audio",onlineChannel=null,otherOnline=false;
 const qs=n=>new URLSearchParams(location.search).get(n)||"";
 const avatar=u=>u?.avatar_url||"https://ui-avatars.com/api/?name="+encodeURIComponent((u?.full_name||u?.username||"R").slice(0,1))+"&background=075e54&color=fff&bold=true";
 function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2300)}
@@ -111,9 +111,22 @@ async function init(){
  if(!user||!conversationId){toast("Call information পাওয়া যায়নি");return}
  other=await profile(user);if(!other){toast("User profile পাওয়া যায়নি");return}
  setProfile(other);
+ await setupPresence();
  await setupChannel();
  if(incoming){showIncoming();return}
  await startOutgoing();
+}
+async function setupPresence(){
+ try{
+  onlineChannel=sb.channel("raztara-online",{config:{presence:{key:me.id}}});
+  onlineChannel.on("presence",{event:"sync"},()=>{
+   const state=onlineChannel.presenceState();
+   otherOnline=!!(other?.id && state[other.id]?.length);
+  });
+  await new Promise(resolve=>onlineChannel.subscribe(async status=>{
+   if(status==="SUBSCRIBED"){await onlineChannel.track({user_id:me.id,online_at:new Date().toISOString()});resolve();}
+  }));
+ }catch(e){console.warn("presence",e)}
 }
 async function setupChannel(){
  const topic="raztara-call-"+conversationId;
@@ -175,11 +188,11 @@ async function createPeer(offerer){
  pc.onicecandidate=e=>{if(e.candidate)send("ice",{candidate:e.candidate})};
  pc.onconnectionstatechange=()=>{if(["failed","disconnected"].includes(pc.connectionState))setState("Connection lost")};
  if(offerer){
-  const offer=await pc.createOffer();await pc.setLocalDescription(offer);await send("offer",{offer});setState("Calling...");
+  const offer=await pc.createOffer();await pc.setLocalDescription(offer);await send("offer",{offer});setState(otherOnline?"Ringing...":"Calling...");
  }
 }
 async function startOutgoing(){
- await ensureMedia();await createPeer(true);setState("Calling...");
+ await ensureMedia();await createPeer(true);setState(otherOnline?"Ringing...":"Calling...");
  await send("ring",{to:other.id,from:me.id,type,call_id:callId});
 }
 function showIncoming(){
@@ -254,6 +267,7 @@ function finish(msg){
  if(pc){pc.close();pc=null}
  if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}
  if(channel){sb.removeChannel(channel);channel=null}
+ if(onlineChannel){sb.removeChannel(onlineChannel);onlineChannel=null}
  toast(msg);setTimeout(()=>history.back(),500)
 }
 window.addEventListener("pagehide",()=>{if(channel)sb.removeChannel(channel)});
