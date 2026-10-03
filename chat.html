@@ -344,17 +344,15 @@ async function loadMessages(){
 
  data.forEach(m=>renderMessage(m));
 
- // Open chat exactly at the latest message.
- requestAnimationFrame(()=>{
-   const board=document.getElementById("board");
-   const rows=board.querySelectorAll(".row");
-   const last=rows[rows.length-1];
-   if(last){
-     board.scrollTop=Math.max(0,last.offsetTop+last.offsetHeight-board.clientHeight+16);
-   }else{
-     board.scrollTop=board.scrollHeight;
-   }
- });
+ // Opening only: put the chat at the bottom once after the initial layout.
+ // Do not observe/re-scroll continuously, otherwise media loading can make
+ // the chat visibly jump upward/downward.
+ const board=document.getElementById("board");
+ const goLatest=()=>{
+   board.scrollTop=board.scrollHeight;
+ };
+ requestAnimationFrame(goLatest);
+ setTimeout(goLatest,300);
 }
 
 async function getSignedMedia(path){
