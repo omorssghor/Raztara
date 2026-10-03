@@ -1574,11 +1574,23 @@ function getOtherUserId(){
             window.location.search
         );
 
-    return (
-        params.get("user") ||
-        params.get("user_id") ||
-        params.get("id")
-    );
+    const urlUserId =
+        String(
+            params.get("user") ||
+            params.get("user_id") ||
+            params.get("id") ||
+            ""
+        ).trim();
+
+    if(urlUserId){
+        return urlUserId;
+    }
+
+    return String(
+        localStorage.getItem(
+            "raztara_last_chat_user_id"
+        ) || ""
+    ).trim();
 }
 
 /* =========================================================
@@ -1732,9 +1744,42 @@ async function loadOtherProfile(){
 
     if(error){
 
-        console.error(error);
+        console.error(
+            "Profile load error:",
+            error
+        );
 
         otherProfile = null;
+
+        const fallbackName =
+            "RAZTARA User";
+
+        const nameElement =
+            document.getElementById(
+                "userName"
+            );
+
+        if(nameElement){
+            nameElement.textContent =
+                fallbackName;
+        }
+
+        return;
+    }
+
+    if(!data){
+
+        otherProfile = null;
+
+        const nameElement =
+            document.getElementById(
+                "userName"
+            );
+
+        if(nameElement){
+            nameElement.textContent =
+                "RAZTARA User";
+        }
 
         return;
     }
@@ -1742,8 +1787,8 @@ async function loadOtherProfile(){
     otherProfile = data;
 
     const name =
-        data?.full_name ||
-        data?.username ||
+        data.full_name ||
+        data.username ||
         "RAZTARA User";
 
     document.getElementById(
