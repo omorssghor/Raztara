@@ -1023,7 +1023,66 @@ function updateTargetStatus(){
    CONVERSATION
 ========================================================= */
 
+function getConversationStorageKey(){
+    if(!currentUser || !targetUserId){
+        return "";
+    }
+
+    const ids = [
+        String(currentUser.id),
+        String(targetUserId)
+    ].sort();
+
+    return "raztara_conversation_" +
+        ids[0] +
+        "_" +
+        ids[1];
+}
+
+function saveConversationId(id){
+    if(!id){
+        return;
+    }
+
+    const key = getConversationStorageKey();
+
+    if(key){
+        localStorage.setItem(key,String(id));
+    }
+}
+
+function getSavedConversationId(){
+    const key = getConversationStorageKey();
+
+    if(!key){
+        return "";
+    }
+
+    return String(
+        localStorage.getItem(key) || ""
+    ).trim();
+}
+
 async function getExistingConversation(){
+
+    const savedId = getSavedConversationId();
+
+    if(savedId){
+
+        const {
+            data:savedMember,
+            error:savedError
+        } = await supabaseClient
+            .from("conversation_members")
+            .select("conversation_id")
+            .eq("conversation_id",savedId)
+            .eq("user_id",currentUser.id)
+            .maybeSingle();
+
+        if(!savedError && savedMember){
+            return savedId;
+        }
+    }
 
     const {
         data: memberships,
