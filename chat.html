@@ -350,13 +350,6 @@ async function loadMessages(){
 
  data.forEach(m=>renderMessage(m));
 
- // Exactly one opening scroll. No timers, observers, or repeated scrolling.
- const board=document.getElementById("board");
- requestAnimationFrame(()=>{
-   requestAnimationFrame(()=>{
-     board.scrollTop=board.scrollHeight;
-   });
- });
 }
 
 async function getSignedMedia(path){
