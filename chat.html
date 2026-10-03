@@ -5094,6 +5094,15 @@ async function init(){
     otherUserId =
         getOtherUserId();
 
+    if(otherUserId){
+
+        localStorage.setItem(
+            "raztara_last_chat_user_id",
+            otherUserId
+        );
+
+    }
+
     if(!otherUserId){
 
         /*
