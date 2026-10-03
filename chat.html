@@ -213,7 +213,7 @@ async function finishVoiceRecording(){
  if(up.error){showToast("Voice upload হয়নি: "+up.error.message);return}
  const {data,error}=await sb.from("messages").insert({
    conversation_id:conversationId,sender_id:currentUser.id,
-   content:"Voice message",message_type:"voice",file_url:path
+   content:"Voice message",message_type:"audio",file_url:path
  }).select().single();
  if(error){showToast("Voice message save হয়নি: "+error.message);return}
  if(data&&!document.querySelector('[data-message-id="'+data.id+'"]'))renderMessage(data);
@@ -362,13 +362,13 @@ function renderMessage(m){
  else if(m.file_url){
    if(m.message_type==="image") bubble.innerHTML='<div class="media-loading">ছবি খুলছে...</div>';
    else if(m.message_type==="video") bubble.innerHTML='<div class="media-loading">ভিডিও খুলছে...</div>';
-   else if(m.message_type==="voice") bubble.innerHTML='<div class="media-loading">Voice খুলছে...</div>';
+   else if(m.message_type==="voice"||m.message_type==="audio") bubble.innerHTML='<div class="media-loading">Voice খুলছে...</div>';
    else bubble.innerHTML='<div class="media-loading">📎 '+esc(text)+'</div>';
    getSignedMedia(m.file_url).then(url=>{
      if(!url)return;
      if(m.message_type==="image") bubble.innerHTML='<img class="chat-image" src="'+url+'" alt="">';
      else if(m.message_type==="video") bubble.innerHTML='<video class="chat-video" controls playsinline src="'+url+'"></video>';
-     else if(m.message_type==="voice") bubble.innerHTML='<audio class="chat-audio" controls src="'+url+'"></audio>';
+     else if(m.message_type==="voice"||m.message_type==="audio") bubble.innerHTML='<audio class="chat-audio" controls src="'+url+'"></audio>';
      else bubble.innerHTML='<a class="chat-file" href="'+url+'" target="_blank" rel="noopener">📎 '+esc(text)+'</a>';
      bubble.appendChild(time);
    });
