@@ -1113,6 +1113,7 @@ let currentUser = null;
 let otherUserId = null;
 let otherProfile = null;
 let conversationId = null;
+let conversationIdsForChat = [];
 
 let realtimeChannel = null;
 let profileRealtimeChannel = null;
@@ -2228,31 +2229,6 @@ function getSavedConversationId(){
 
 async function findConversation(){
 
-    /*
-     * আগে এই দুই User-এর জন্য localStorage-এ রাখা
-     * conversation ID ব্যবহার করি।
-     * conversation_members-এর RLS অন্য User-এর row
-     * না দেখালেও পুরোনো chat যেন হারিয়ে না যায়।
-     */
-    const savedId = getSavedConversationId();
-
-    if(savedId){
-
-        const {
-            data:savedMember,
-            error:savedError
-        } = await supabaseClient
-            .from("conversation_members")
-            .select("conversation_id")
-            .eq("conversation_id",savedId)
-            .eq("user_id",currentUser.id)
-            .maybeSingle();
-
-        if(!savedError && savedMember){
-            return savedId;
-        }
-    }
-
     const {
         data: memberships,
         error
@@ -2272,13 +2248,9 @@ async function findConversation(){
         throw error;
     }
 
-    if(!memberships?.length){
-        return null;
-    }
-
     const grouped = new Map();
 
-    for(const row of memberships){
+    for(const row of (memberships || [])){
 
         if(!grouped.has(row.conversation_id)){
             grouped.set(
@@ -2308,15 +2280,13 @@ async function findConversation(){
         }
     }
 
+    conversationIdsForChat =
+        [...candidateIds];
+
     if(!candidateIds.length){
         return null;
     }
 
-    /*
-     * Duplicate conversation থাকলে সবচেয়ে বেশি message
-     * থাকা conversation-টি পুরোনো আসল chat হিসেবে নেব।
-     * এতে নতুন খালি conversation খুলে পুরোনো message হারাবে না।
-     */
     const {
         data:rows,
         error:messageError
@@ -2384,7 +2354,6 @@ async function findConversation(){
 
     return candidateIds[0];
 }
-
 async function createConversation(){
 
     /*
@@ -2862,9 +2831,11 @@ async function loadMessages(){
             read_at,
             deleted_for_everyone
         `)
-        .eq(
+        .in(
             "conversation_id",
-            conversationId
+            conversationIdsForChat.length
+                ? conversationIdsForChat
+                : [conversationId]
         )
         .order(
             "created_at",
