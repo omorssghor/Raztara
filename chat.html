@@ -114,12 +114,12 @@ body{
  .menu{
     position:fixed;
     top:calc(57px + env(safe-area-inset-top));
-    right:7px;
+    right:12px;
     width:185px;
-    background:#fff;
-    border-radius:10px;
-    box-shadow:0 5px 25px rgba(0,0,0,.22);
-    overflow:hidden;
+    background:transparent;
+    border-radius:0;
+    box-shadow:none;
+    overflow:visible;
     z-index:300;
     display:none;
 }
@@ -131,16 +131,22 @@ body{
 .menu button{
     width:100%;
     border:0;
-    background:#fff;
+    border-bottom:1px solid rgba(8,127,91,.08);
+    background:transparent;
     text-align:left;
-    padding:14px 16px;
+    padding:12px 4px;
     font-size:15px;
-    color:#222;
+    color:#35584e;
     cursor:pointer;
 }
 
+.menu button:last-child{
+    border-bottom:0;
+}
+
 .menu button:hover{
-    background:#f1f8f5;
+    background:transparent;
+    color:#087f5b;
 }
 
 /* CHAT BACKGROUND SETTINGS */
