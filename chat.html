@@ -330,30 +330,30 @@ async function loadMessages(){
  }
 
  if(data&&data.length){
-   const incoming=data.filter(m=>m.sender_id!==currentUser.id && !m.delivered_at).map(m=>m.id);
+   const incoming=data.filter(m=>m.sender_id!==currentUser.id&&!m.delivered_at).map(m=>m.id);
    if(incoming.length) await sb.from("messages").update({delivered_at:new Date().toISOString()}).in("id",incoming);
-   const unread=data.filter(m=>m.sender_id!==currentUser.id && !m.read_at).map(m=>m.id);
+   const unread=data.filter(m=>m.sender_id!==currentUser.id&&!m.read_at).map(m=>m.id);
    if(unread.length) await sb.from("messages").update({read_at:new Date().toISOString(),is_read:true}).in("id",unread);
  }
+
+ box.innerHTML="";
  if(!data||!data.length){
    box.innerHTML='<div class="empty">এখনও কোনো message নেই।<br><br>প্রথম message পাঠান 👋</div>';
    return;
  }
 
- box.innerHTML="";
- initialChatLoading=true;
- let lastDate="";
- data.forEach(m=>renderMessage(m,lastDate));
+ data.forEach(m=>renderMessage(m));
+
+ // Open chat exactly at the latest message.
  requestAnimationFrame(()=>{
    const board=document.getElementById("board");
-   board.scrollTo({top:board.scrollHeight,behavior:"auto"});
-   setTimeout(()=>{
-     board.scrollTo({top:board.scrollHeight,behavior:"auto"});
-   },120);
-   setTimeout(()=>{
-     board.scrollTo({top:board.scrollHeight,behavior:"auto"});
-   },500);
-   setTimeout(()=>{initialChatLoading=false},1200);
+   const rows=board.querySelectorAll(".row");
+   const last=rows[rows.length-1];
+   if(last){
+     board.scrollTop=Math.max(0,last.offsetTop+last.offsetHeight-board.clientHeight+16);
+   }else{
+     board.scrollTop=board.scrollHeight;
+   }
  });
 }
 
