@@ -2642,10 +2642,11 @@ async function ensureConversation(){
         return conversationId;
     }
 
-    conversationId = await findConversation();
-
-    if(!conversationId){
-        conversationId = await createConversation();
+    try{
+        conversationId = await findConversation();
+    }catch(error){
+        console.error("Conversation find error:",error);
+        conversationId = null;
     }
 
     return conversationId;
@@ -2675,8 +2676,10 @@ async function loadMessages(){
 
     container.innerHTML = "";
 
-    await ensureConversation();
-
+    /*
+     * Conversation init() থেকেই তৈরি/নির্ধারণ করা হয়েছে।
+     * এখানে নতুন conversation তৈরি করা হবে না।
+     */
     if(!conversationId){
 
         container.innerHTML = `
@@ -2867,6 +2870,10 @@ async function loadMessages(){
     }
 
     await markIncomingMessagesRead();
+
+    if(board){
+        board.classList.remove("initializing");
+    }
 }
 
 /* =========================================================
@@ -5187,7 +5194,37 @@ async function init(){
         }
     }
 
-    await loadMessages();
+    try{
+
+        await loadMessages();
+
+    }catch(error){
+
+        console.error(
+            "Chat load error:",
+            error
+        );
+
+        const board =
+            document.getElementById("chatBoard");
+
+        if(board){
+            board.classList.remove("initializing");
+        }
+
+        const container =
+            document.getElementById("messages");
+
+        if(container){
+            container.innerHTML = "";
+        }
+
+        showToast(
+            currentLanguage === "bn"
+                ? "Chat লোড করা যায়নি। আবার চেষ্টা করুন।"
+                : "Could not load chat. Please try again."
+        );
+    }
 
     subscribeRealtime();
 
