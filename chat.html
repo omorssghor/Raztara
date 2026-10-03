@@ -56,8 +56,8 @@ button,input{font:inherit}
     <div id="headName" class="name">Loading...</div>
     <div id="headStatus" class="status">Connecting...</div>
   </div>
-  <button class="headaction" onclick="showToast('Call system পরের ধাপে যুক্ত হবে')">☎</button>
-  <button class="headaction" onclick="showToast('Video call system পরের ধাপে যুক্ত হবে')">▣</button>
+  <button class="headaction" onclick="openCall('audio')">☎</button>
+  <button class="headaction" onclick="openCall('video')">▣</button>
 </header>
 
 <main id="board" class="board">
@@ -103,6 +103,10 @@ let voiceChunks=[];
 let recording=false;
 
 function qs(name){return new URLSearchParams(location.search).get(name)||""}
+function openCall(type){
+ if(!otherUserId||!conversationId){showToast("Call connection এখনও প্রস্তুত নয়");return}
+ location.href="call.html?user="+encodeURIComponent(otherUserId)+"&conversation="+encodeURIComponent(conversationId)+"&type="+encodeURIComponent(type);
+}
 function esc(v){return String(v==null?"":v).replace(/[&<>"]/g,function(c){if(c==="&")return "&amp;";if(c==="<")return "&lt;";if(c===">")return "&gt;";return "&quot;";})}
 function avatar(u){
  return u?.avatar_url || "https://ui-avatars.com/api/?name="+encodeURIComponent((u?.full_name||u?.username||"R").slice(0,1))+"&background=075e54&color=fff&bold=true";
