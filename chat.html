@@ -2280,8 +2280,23 @@ async function findConversation(){
         }
     }
 
+    const savedId =
+        getSavedConversationId();
+
     conversationIdsForChat =
         [...candidateIds];
+
+    if(
+        savedId &&
+        candidateIds.includes(savedId)
+    ){
+        candidateIds.splice(
+            candidateIds.indexOf(savedId),
+            1
+        );
+
+        candidateIds.unshift(savedId);
+    }
 
     if(!candidateIds.length){
         return null;
@@ -2352,7 +2367,17 @@ async function findConversation(){
         );
     }
 
-    return candidateIds[0];
+    const selectedConversationId =
+        candidateIds[0];
+
+    conversationIdsForChat =
+        [...candidateIds];
+
+    saveConversationId(
+        selectedConversationId
+    );
+
+    return selectedConversationId;
 }
 async function createConversation(){
 
