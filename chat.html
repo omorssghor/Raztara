@@ -4550,12 +4550,33 @@ function scrollToBottom(){
             "chatBoard"
         );
 
-    setTimeout(()=>{
+    if(!board){
+
+        return;
+    }
+
+    const goBottom = ()=>{
 
         board.scrollTop =
             board.scrollHeight;
+    };
 
-    },50);
+    requestAnimationFrame(goBottom);
+
+    setTimeout(
+        goBottom,
+        50
+    );
+
+    setTimeout(
+        goBottom,
+        150
+    );
+
+    setTimeout(
+        goBottom,
+        400
+    );
 }
 
 /* =========================================================
