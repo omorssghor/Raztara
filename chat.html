@@ -110,46 +110,25 @@ body{
     cursor:pointer;
 }
 
-/* THREE DOT */
- .menu{
-    position:fixed;
-    top:calc(57px + env(safe-area-inset-top));
-    right:12px;
-    width:185px;
-    background:transparent;
-    border-radius:0;
-    box-shadow:none;
-    overflow:visible;
-    z-index:300;
-    display:none;
+/* CHAT HEADER ACTIONS */
+.header-actions{
+    display:flex;
+    align-items:center;
+    gap:1px;
 }
 
-.menu.show{
-    display:block;
-}
-
-.menu button{
-    width:100%;
+.header-action{
+    width:39px;
+    height:42px;
     border:0;
-    border-bottom:1px solid rgba(8,127,91,.08);
     background:transparent;
-    text-align:left;
-    padding:12px 4px;
-    font-size:15px;
-    color:#35584e;
+    color:#fff;
+    font-size:20px;
     cursor:pointer;
 }
 
-.menu button:last-child{
-    border-bottom:0;
-}
+/* CHAT */
 
-.menu button:hover{
-    background:transparent;
-    color:#087f5b;
-}
-
-/* CHAT BACKGROUND SETTINGS */
 .chat-background-modal{
     position:fixed;
     inset:0;
@@ -876,49 +855,8 @@ input[type=file]{
             📹
         </button>
 
-        <button class="header-action"
-                onclick="toggleMenu()"
-                title="More">
-            ⋮
-        </button>
-
     </div>
 </div>
-
-<div id="menu" class="menu">
-
-    <button onclick="openProfile();closeMenu()">
-        👤 Profile
-    </button>
-
-    <button onclick="openGallery();closeMenu()">
-        🖼️ Gallery
-    </button>
-
-    <button onclick="openTipping();closeMenu()">
-        💰 <span id="tippingMenuText">Tipping</span>
-    </button>
-
-    <button onclick="openChatBackground();closeMenu()">
-        <span id="chatBackgroundMenuText">Chat Background</span>
-    </button>
-
-    <button onclick="blockUser();closeMenu()">
-        <span id="blockMenuText">Block</span>
-    </button>
-
-</div>
-
-<input
-    id="chatBackgroundInput"
-    type="file"
-    accept="image/*"
-    hidden
-    onchange="handleChatBackground(this)">
-
-<div id="chatBackgroundModal" class="chat-background-modal" onclick="closeChatBackground(event)">
-    <div class="chat-background-box" onclick="event.stopPropagation()">
-        <div class="chat-background-title">Chat Background</div>
 
         <button class="chat-background-option" onclick="setWhiteChatBackground()">
             Default White
@@ -4721,40 +4659,7 @@ function getChatBackgroundKey(){
     return "raztara_chat_background_" + conversation;
 }
 
-function openChatBackground(){
-    document.getElementById("chatBackgroundModal").classList.add("show");
-}
 
-function closeChatBackground(event){
-    const modal = document.getElementById("chatBackgroundModal");
-    if(event && event.target !== modal) return;
-    modal.classList.remove("show");
-}
-
-function chooseChatBackgroundImage(){
-    closeChatBackground();
-    document.getElementById("chatBackgroundInput").removeAttribute("capture");
-    document.getElementById("chatBackgroundInput").click();
-}
-
-function takeChatBackgroundPhoto(){
-    closeChatBackground();
-    const input = document.getElementById("chatBackgroundInput");
-    input.setAttribute("capture","environment");
-    input.click();
-}
-
-function setWhiteChatBackground(){
-    localStorage.removeItem(getChatBackgroundKey());
-    applyChatBackground();
-    closeChatBackground();
-}
-
-function removeChatBackground(){
-    localStorage.removeItem(getChatBackgroundKey());
-    applyChatBackground();
-    closeChatBackground();
-}
 
 function handleChatBackground(input){
     const file = input.files && input.files[0];
@@ -4817,27 +4722,7 @@ function applyChatBackground(){
     }
 }
 
-function toggleMenu(){
 
-    document
-        .getElementById(
-            "menu"
-        )
-        .classList.toggle(
-            "show"
-        );
-}
-
-function closeMenu(){
-
-    document
-        .getElementById(
-            "menu"
-        )
-        .classList.remove(
-            "show"
-        );
-}
 
 /* =========================================================
    FOCUS
