@@ -171,11 +171,34 @@ async function logCall(){
 async function ensureMedia(){
  if(localStream)return;
  try{
-  localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:type==="video"?{facingMode:{ideal:facingMode}}:false});
+  if(type==="video"){
+   try{
+    localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:{facingMode:{ideal:facingMode}}});
+   }catch(videoErr){
+    try{
+     localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+     callMode="audio";
+     toast("এই user-এর camera নেই, Audio call চালু হয়েছে");
+    }catch(audioErr){
+     toast(audioErr.name==="NotAllowedError"?"Microphone permission দিন":"Media চালু করা যায়নি");
+     throw audioErr;
+    }
+   }
+  }else{
+   localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+  }
   const lv=document.getElementById("localVideo");lv.srcObject=localStream;
   showControls();
-  if(type==="video"){document.getElementById("localWrap").classList.remove("hidden");document.getElementById("cameraBtn").classList.remove("hidden");document.getElementById("switchCameraBtn").classList.remove("hidden");document.getElementById("modeBtn").classList.remove("hidden")}
- }catch(e){toast(e.name==="NotAllowedError"?"Microphone/Camera permission দিন":"Media চালু করা যায়নি");throw e}
+  if(type==="video"&&callMode==="video"){
+   document.getElementById("localWrap").classList.remove("hidden");
+   document.getElementById("cameraBtn").classList.remove("hidden");
+   document.getElementById("switchCameraBtn").classList.remove("hidden");
+   document.getElementById("modeBtn").classList.remove("hidden");
+  }
+ }catch(e){
+  if(e.name==="NotAllowedError")toast("Microphone/Camera permission দিন");
+  throw e;
+ }
 }
 async function createPeer(offerer){
  if(pc)return;
@@ -238,18 +261,32 @@ function toggleCamera(){
 async function switchCamera(){
  if(!localStream||type!=="video"||callMode!=="video")return;
  const oldTrack=localStream.getVideoTracks()[0];
+ if(!oldTrack){toast("এই user-এর camera নেই");return}
  try{
   const nextMode=facingMode==="user"?"environment":"user";
-  const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:{exact:nextMode}},audio:false});
+  let s;
+  try{
+   s=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:nextMode}},audio:false});
+  }catch(e){
+   const devices=await navigator.mediaDevices.enumerateDevices();
+   const cams=devices.filter(d=>d.kind==="videoinput");
+   const next=cams.find(d=>d.deviceId!==oldTrack.getSettings().deviceId);
+   if(!next)throw e;
+   s=await navigator.mediaDevices.getUserMedia({video:{deviceId:{exact:next.deviceId}},audio:false});
+  }
   const newTrack=s.getVideoTracks()[0];
   const sender=pc?.getSenders().find(x=>x.track&&x.track.kind==="video");
   if(sender)await sender.replaceTrack(newTrack);
-  if(oldTrack){oldTrack.stop();localStream.removeTrack(oldTrack)}
-  localStream.addTrack(newTrack);facingMode=nextMode;
+  oldTrack.stop();
+  localStream.removeTrack(oldTrack);
+  localStream.addTrack(newTrack);
+  facingMode=nextMode;
   document.getElementById("localVideo").srcObject=localStream;
   newTrack.enabled=!cameraOff;
   toast(facingMode==="environment"?"Back camera":"Front camera");
- }catch(e){toast("Back camera চালু করা যায়নি")}
+ }catch(e){
+  toast("Back camera নেই বা এই device-এ available নয়");
+ }
 }
 async function toggleCallMode(){
  if(!localStream||!pc)return;
