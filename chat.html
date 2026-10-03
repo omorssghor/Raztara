@@ -1260,73 +1260,18 @@ function t(key){
 function openMediaPicker(type){
 
     const overlay =
-        document.getElementById(
-            "mediaPickerOverlay"
-        );
+        document.getElementById("mediaPickerOverlay");
 
-    const title =
-        document.getElementById(
-            "mediaPickerTitle"
-        );
-
-    const photoOptions =
-        document.getElementById(
-            "photoPickerOptions"
-        );
-
-    const videoOptions =
-        document.getElementById(
-            "videoPickerOptions"
-        );
-
-    const fileOptions =
-        document.getElementById(
-            "filePickerOptions"
-        );
-
-    photoOptions.style.display =
-        "none";
-
-    videoOptions.style.display =
-        "none";
-
-    fileOptions.style.display =
-        "none";
-
-    if(type === "photo"){
-
-        title.textContent =
-            currentLanguage === "bn"
-                ? "ছবি পাঠান"
-                : "Send Picture";
-
-        photoOptions.style.display =
-            "flex";
-
-    }else if(type === "video"){
-
-        title.textContent =
-            currentLanguage === "bn"
-                ? "ভিডিও পাঠান"
-                : "Send Video";
-
-        videoOptions.style.display =
-            "flex";
-
-    }else if(type === "file"){
-
-        title.textContent =
-            currentLanguage === "bn"
-                ? "ফাইল পাঠান"
-                : "Send File";
-
-        fileOptions.style.display =
-            "flex";
+    if(!overlay){
+        return;
     }
 
-    overlay.classList.add(
-        "show"
-    );
+    if(type === "plus"){
+        overlay.classList.add("show");
+        return;
+    }
+
+    overlay.classList.add("show");
 }
 
 function closeMediaPicker(event){
