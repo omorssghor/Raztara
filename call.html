@@ -111,6 +111,7 @@ async function init(){
  if(!user||!conversationId){toast("Call information পাওয়া যায়নি");return}
  other=await profile(user);if(!other){toast("User profile পাওয়া যায়নি");return}
  setProfile(other);
+ if(!incoming) showControls();
  await setupChannel();
  if(incoming){showIncoming();return}
  await startOutgoing();
