@@ -2,1205 +2,203 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#087f5b">
-
-<title>Edit Profile | Raztara</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#075e54">
+<title>RAZTARA — Edit Profile</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
-
-body{
-    font-family:Arial,sans-serif;
-    background:#f4f7f6;
-    color:#222;
-}
-
-.header{
-    height:60px;
-    background:#087f5b;
-    color:#fff;
-    display:flex;
-    align-items:center;
-    gap:14px;
-    padding:0 15px;
-    position:sticky;
-    top:0;
-    z-index:100;
-}
-
-.back{
-    width:38px;
-    height:38px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#fff;
-    text-decoration:none;
-    font-size:30px;
-    border-radius:50%;
-}
-
-.back:active{
-    background:rgba(255,255,255,.15);
-}
-
-.header-title{
-    font-size:20px;
-    font-weight:bold;
-}
-
-.container{
-    width:100%;
-    max-width:650px;
-    margin:20px auto;
-    padding:0 15px 40px;
-}
-
-.card{
-    background:#fff;
-    border-radius:16px;
-    padding:22px;
-    box-shadow:0 3px 15px rgba(0,0,0,.08);
-}
-
-.loading{
-    text-align:center;
-    padding:45px 10px;
-    color:#777;
-}
-
-.photo-section{
-    text-align:center;
-    margin-bottom:24px;
-}
-
-.avatar{
-    width:120px;
-    height:120px;
-    border-radius:50%;
-    object-fit:cover;
-    background:#e8eeee;
-    border:4px solid #087f5b;
-}
-
-.photo-button{
-    display:inline-block;
-    margin-top:12px;
-    padding:10px 15px;
-    border-radius:9px;
-    background:#e8f5f1;
-    color:#087f5b;
-    cursor:pointer;
-    font-size:14px;
-}
-
-#photoInput{
-    display:none;
-}
-
-.note{
-    margin-top:6px;
-    font-size:12px;
-    color:#777;
-}
-
-.form-group{
-    margin-bottom:18px;
-}
-
-label{
-    display:block;
-    margin-bottom:7px;
-    font-size:14px;
-    font-weight:bold;
-}
-
-input,
-textarea{
-    width:100%;
-    border:1px solid #d4dddd;
-    border-radius:10px;
-    padding:13px;
-    font-size:15px;
-    outline:none;
-    background:#fff;
-}
-
-input:focus,
-textarea:focus{
-    border-color:#087f5b;
-}
-
-input:disabled{
-    background:#f1f3f3;
-    color:#777;
-}
-
-textarea{
-    min-height:105px;
-    resize:vertical;
-}
-
-.status{
-    min-height:22px;
-    margin:12px 0;
-    text-align:center;
-    font-size:14px;
-}
-
-.status.error{
-    color:#d93025;
-}
-
-.status.success{
-    color:#087f5b;
-}
-
-.status.loading{
-    color:#777;
-}
-
-.buttons{
-    display:flex;
-    gap:10px;
-    margin-top:20px;
-}
-
-button{
-    border:none;
-    border-radius:10px;
-    padding:13px 16px;
-    font-size:15px;
-    cursor:pointer;
-}
-
-button:disabled{
-    opacity:.65;
-    cursor:not-allowed;
-}
-
-.primary{
-    flex:1;
-    background:#087f5b;
-    color:#fff;
-}
-
-.secondary{
-    flex:1;
-    background:#e9efed;
-    color:#222;
-}
-
-.hidden{
-    display:none !important;
-}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#f0f2f5;color:#111}
+.header{position:fixed;top:0;left:0;right:0;height:60px;padding-top:env(safe-area-inset-top);height:calc(60px + env(safe-area-inset-top));background:#075e54;color:#fff;display:flex;align-items:center;padding-left:8px;padding-right:10px;z-index:20;box-shadow:0 1px 2px #0002}
+.back,.menu{width:44px;height:44px;border:0;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;text-decoration:none;border-radius:50%}
+.back:active,.menu:active{background:#ffffff22}
+.title{font-size:20px;font-weight:700;flex:1;margin-left:4px}
+.page{position:fixed;top:calc(60px + env(safe-area-inset-top));bottom:calc(62px + env(safe-area-inset-bottom));left:0;right:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 14px 28px}
+.card{max-width:620px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 1px 4px #00000012;padding:20px 16px}
+.photo{text-align:center;padding:4px 0 22px}
+.avatar{width:116px;height:116px;border-radius:50%;object-fit:cover;border:4px solid #128c7e;background:#e8eeee}
+.photoLabel{display:block;width:max-content;margin:10px auto 0;padding:8px 14px;border-radius:20px;background:#e8f5f2;color:#075e54;font-weight:600;font-size:14px}
+#photoInput{display:none}
+.note{font-size:12px;color:#667781;margin-top:6px}
+.group{margin-bottom:17px}
+label{display:block;font-size:13px;font-weight:700;color:#667781;margin:0 0 7px 3px}
+input,textarea{width:100%;border:1px solid #d8dde0;border-radius:11px;background:#fff;padding:13px 14px;font-size:16px;outline:none;color:#111}
+input:focus,textarea:focus{border-color:#128c7e;box-shadow:0 0 0 2px #128c7e18}
+textarea{min-height:92px;resize:none}
+input:disabled{background:#f5f6f6;color:#667781}
+.section{font-size:13px;font-weight:800;color:#075e54;margin:7px 0 12px}
+.privacyRow{display:flex;align-items:center;justify-content:space-between;padding:14px 3px;border-top:1px solid #edf0f1}
+.privacyText strong{display:block;font-size:15px}
+.privacyText span{display:block;color:#667781;font-size:12px;margin-top:3px}
+select{border:1px solid #d8dde0;border-radius:9px;background:#fff;padding:9px 8px;font-size:14px;color:#075e54;font-weight:600}
+.status{text-align:center;min-height:22px;font-size:14px;margin:8px 0}
+.error{color:#d93025}.success{color:#075e54}
+.actions{display:flex;gap:10px;margin-top:18px}
+button.save,button.cancel{flex:1;border:0;border-radius:12px;padding:14px;font-size:16px;font-weight:700}
+.save{background:#128c7e;color:#fff}.cancel{background:#e9edef;color:#111}
+button:disabled{opacity:.65}
+.bottom{position:fixed;left:0;right:0;bottom:0;height:calc(62px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:#fff;border-top:1px solid #ddd;display:flex;z-index:20}
+.nav{flex:1;text-decoration:none;color:#667781;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;gap:3px}
+.nav .icon{font-size:22px;line-height:20px}.nav.active{color:#075e54;font-weight:700}
+.loading{padding:40px;text-align:center;color:#667781}
+.hidden{display:none!important}
+@media(min-width:700px){.page{padding-top:24px}.card{padding:24px}}
 </style>
 </head>
-
 <body>
-
 <header class="header">
-
-    <a
-        href="profile.html"
-        class="back"
-        aria-label="Back"
-    >
-        ‹
-    </a>
-
-    <div class="header-title">
-        Edit Profile
-    </div>
-
+<a class="back" href="profile.html" aria-label="Back">‹</a>
+<div class="title">Edit Profile</div>
+<button class="menu" type="button" aria-label="Menu">⋮</button>
 </header>
 
+<main class="page">
+<section class="card">
+<div id="loading" class="loading">Profile loading...</div>
+<form id="form" class="hidden">
+<div class="photo">
+<img id="avatar" class="avatar" alt="Profile Photo">
+<label for="photoInput" class="photoLabel">📷 Change Photo</label>
+<input id="photoInput" type="file" accept="image/*">
+<div class="note">সর্বোচ্চ 6 MB</div>
+</div>
 
-<main class="container">
+<div class="group"><label for="name">Full Name</label><input id="name" maxlength="100" autocomplete="name" placeholder="আপনার নাম"></div>
+<div class="group"><label for="username">Username</label><input id="username" maxlength="30" autocomplete="username" placeholder="username"><div class="note">3–30 characters: letters, numbers, _, -, .</div></div>
+<div class="group"><label for="email">Email</label><input id="email" type="email" disabled><div class="note">Login email এখান থেকে পরিবর্তন হবে না।</div></div>
+<div class="group"><label for="bio">Bio</label><textarea id="bio" maxlength="1000" placeholder="আপনার সম্পর্কে কিছু লিখুন..."></textarea></div>
 
-    <section class="card">
+<div class="section">CONTACT INFORMATION</div>
+<div class="group"><label for="phone">Phone</label><input id="phone" type="tel" maxlength="30" autocomplete="tel" placeholder="Phone number"></div>
+<div class="group"><label for="address">Address</label><textarea id="address" maxlength="500" autocomplete="street-address" placeholder="আপনার ঠিকানা"></textarea></div>
 
-        <div
-            id="loadingBox"
-            class="loading"
-        >
-            Profile loading...
-        </div>
+<div class="section">PRIVACY</div>
+<div class="privacyRow">
+<div class="privacyText"><strong>Phone visibility</strong><span>আপনার ফোন কে দেখতে পারবে?</span></div>
+<select id="phoneVisibility"><option value="public">Everyone</option><option value="private">Only Me</option></select>
+</div>
+<div class="privacyRow">
+<div class="privacyText"><strong>Address visibility</strong><span>আপনার ঠিকানা কে দেখতে পারবে?</span></div>
+<select id="addressVisibility"><option value="public">Everyone</option><option value="private">Only Me</option></select>
+</div>
 
-
-        <form
-            id="editForm"
-            class="hidden"
-        >
-
-            <!-- PHOTO -->
-
-            <div class="photo-section">
-
-                <img
-                    id="editAvatar"
-                    class="avatar"
-                    src=""
-                    alt="Profile Photo"
-                >
-
-                <br>
-
-                <label
-                    for="photoInput"
-                    class="photo-button"
-                >
-                    📷 Change Photo
-                </label>
-
-                <input
-                    id="photoInput"
-                    type="file"
-                    accept="image/*"
-                >
-
-                <div class="note">
-                    Maximum photo size: 6 MB
-                </div>
-
-            </div>
-
-
-            <!-- NAME -->
-
-            <div class="form-group">
-
-                <label for="nameInput">
-                    Name
-                </label>
-
-                <input
-                    id="nameInput"
-                    type="text"
-                    autocomplete="name"
-                    maxlength="100"
-                    placeholder="Your name"
-                >
-
-            </div>
-
-
-            <!-- USERNAME -->
-
-            <div class="form-group">
-
-                <label for="usernameInput">
-                    Username
-                </label>
-
-                <input
-                    id="usernameInput"
-                    type="text"
-                    autocomplete="username"
-                    maxlength="30"
-                    placeholder="username"
-                >
-
-                <div class="note">
-                    3–30 characters: letters, numbers, _, -, .
-                </div>
-
-            </div>
-
-
-            <!-- EMAIL -->
-
-            <div class="form-group">
-
-                <label for="emailInput">
-                    Email
-                </label>
-
-                <input
-                    id="emailInput"
-                    type="email"
-                    disabled
-                >
-
-                <div class="note">
-                    Login email এখান থেকে পরিবর্তন হবে না।
-                </div>
-
-            </div>
-
-
-            <!-- PHONE -->
-
-            <div class="form-group">
-
-                <label for="phoneInput">
-                    Phone
-                </label>
-
-                <input
-                    id="phoneInput"
-                    type="tel"
-                    autocomplete="tel"
-                    maxlength="30"
-                    placeholder="Phone number"
-                >
-
-            </div>
-
-
-            <!-- ADDRESS -->
-
-            <div class="form-group">
-
-                <label for="addressInput">
-                    Address
-                </label>
-
-                <textarea
-                    id="addressInput"
-                    autocomplete="street-address"
-                    maxlength="500"
-                    placeholder="Your address"
-                ></textarea>
-
-            </div>
-
-
-            <!-- BIO -->
-
-            <div class="form-group">
-
-                <label for="bioInput">
-                    Bio
-                </label>
-
-                <textarea
-                    id="bioInput"
-                    maxlength="1000"
-                    placeholder="Write something about yourself..."
-                ></textarea>
-
-            </div>
-
-
-            <div
-                id="status"
-                class="status"
-            >
-            </div>
-
-
-            <!-- BUTTONS -->
-
-            <div class="buttons">
-
-                <button
-                    type="submit"
-                    id="saveButton"
-                    class="primary"
-                >
-                    💾 Save
-                </button>
-
-                <button
-                    type="button"
-                    id="cancelButton"
-                    class="secondary"
-                >
-                    Cancel
-                </button>
-
-            </div>
-
-        </form>
-
-    </section>
-
+<div id="status" class="status"></div>
+<div class="actions">
+<button id="save" class="save" type="submit">SAVE CHANGES</button>
+<button id="cancel" class="cancel" type="button">Cancel</button>
+</div>
+</form>
+</section>
 </main>
 
+<nav class="bottom">
+<a class="nav" href="index.html"><span class="icon">🏠</span><span>Home</span></a>
+<a class="nav" href="index.html"><span class="icon">💬</span><span>Chat</span></a>
+<a class="nav" href="index.html"><span class="icon">📞</span><span>Calls</span></a>
+<a class="nav active" href="profile.html"><span class="icon">👤</span><span>Profile</span></a>
+</nav>
 
 <script>
+const SUPABASE_URL="https://pqyicaqpmojijjskpzcp.supabase.co";
+const SUPABASE_KEY="sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let user=null,profile=null,phoneRow=null,addressRow=null,photo=null;
 
-const SUPABASE_URL =
-    "https://pqyicaqpmojijjskpzcp.supabase.co";
+const $=id=>document.getElementById(id);
+const avatarFor=name=>"https://ui-avatars.com/api/?name="+encodeURIComponent((name||"U").charAt(0))+"&background=075e54&color=fff&size=256";
 
-const SUPABASE_KEY =
-    "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+function status(msg,type=""){ $("status").textContent=msg; $("status").className="status "+type; }
 
+async function load(){
+  try{
+    const {data,error}=await supabaseClient.auth.getUser();
+    if(error||!data.user){location.replace("login.html");return}
+    user=data.user;
 
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+    const p=await supabaseClient.from("profiles").select("id,username,full_name,avatar_url,bio").eq("id",user.id).maybeSingle();
+    if(p.error) throw p.error;
+    if(!p.data) throw new Error("Profile পাওয়া যায়নি।");
+    profile=p.data;
 
+    const ph=await supabaseClient.from("profile_phone").select("phone,visibility").eq("user_id",user.id).maybeSingle();
+    if(ph.error && ph.error.code!=="PGRST116") throw ph.error;
+    phoneRow=ph.data||null;
 
-let currentUser = null;
-let currentProfile = null;
-let currentPhone = null;
-let currentAddress = null;
+    const ad=await supabaseClient.from("profile_address").select("address,visibility").eq("user_id",user.id).maybeSingle();
+    if(ad.error && ad.error.code!=="PGRST116") throw ad.error;
+    addressRow=ad.data||null;
 
-let selectedPhoto = null;
+    $("avatar").src=profile.avatar_url||avatarFor(profile.full_name||profile.username);
+    $("name").value=profile.full_name||"";
+    $("username").value=profile.username||"";
+    $("email").value=user.email||"";
+    $("bio").value=profile.bio||"";
+    $("phone").value=phoneRow?.phone||"";
+    $("address").value=addressRow?.address||"";
+    $("phoneVisibility").value=phoneRow?.visibility==="private"?"private":"public";
+    $("addressVisibility").value=addressRow?.visibility==="private"?"private":"public";
 
-
-function $(id){
-    return document.getElementById(id);
+    $("loading").classList.add("hidden");
+    $("form").classList.remove("hidden");
+  }catch(e){
+    $("loading").textContent=e.message||"Profile load করতে সমস্যা হয়েছে।";
+    $("loading").style.color="#d93025";
+  }
 }
 
-
-/* ================================
-   DEFAULT AVATAR
-================================ */
-
-function defaultAvatar(name){
-
-    const first =
-        String(name || "User")
-        .trim()
-        .charAt(0)
-        .toUpperCase() || "U";
-
-    return (
-        "https://ui-avatars.com/api/" +
-        "?name=" +
-        encodeURIComponent(first) +
-        "&background=087f5b" +
-        "&color=ffffff" +
-        "&size=256"
-    );
-}
-
-
-/* ================================
-   STATUS
-================================ */
-
-function setStatus(
-    message,
-    type=""
-){
-
-    $("status").textContent =
-        message;
-
-    $("status").className =
-        "status " + type;
-}
-
-
-/* ================================
-   LOAD CURRENT USER
-================================ */
-
-async function loadProfile(){
-
-    try{
-
-        const {
-            data:{
-                user
-            },
-            error
-        } =
-        await supabaseClient
-        .auth
-        .getUser();
-
-
-        if(error || !user){
-
-            window.location.replace(
-                "index.html"
-            );
-
-            return;
-        }
-
-
-        currentUser = user;
-
-
-        /* ==========================
-           PROFILE
-        ========================== */
-
-        const {
-            data:profile,
-            error:profileError
-        } =
-        await supabaseClient
-        .from("profiles")
-        .select(`
-            id,
-            username,
-            full_name,
-            avatar_url,
-            bio,
-            online_visibility,
-            last_seen_at
-        `)
-        .eq(
-            "id",
-            currentUser.id
-        )
-        .maybeSingle();
-
-
-        if(profileError){
-
-            throw new Error(
-                "Profile load করতে সমস্যা হয়েছে: " +
-                profileError.message
-            );
-        }
-
-
-        if(!profile){
-
-            throw new Error(
-                "আপনার Profile পাওয়া যায়নি।"
-            );
-        }
-
-
-        currentProfile =
-            profile;
-
-
-        /* ==========================
-           PHONE
-        ========================== */
-
-        const {
-            data:phoneData
-        } =
-        await supabaseClient
-        .from("profile_phone")
-        .select(
-            "phone, visibility"
-        )
-        .eq(
-            "user_id",
-            currentUser.id
-        )
-        .maybeSingle();
-
-
-        currentPhone =
-            phoneData || null;
-
-
-        /* ==========================
-           ADDRESS
-        ========================== */
-
-        const {
-            data:addressData
-        } =
-        await supabaseClient
-        .from("profile_address")
-        .select(
-            "address, visibility"
-        )
-        .eq(
-            "user_id",
-            currentUser.id
-        )
-        .maybeSingle();
-
-
-        currentAddress =
-            addressData || null;
-
-
-        /* ==========================
-           FILL FORM
-        ========================== */
-
-        const name =
-            currentProfile.full_name ||
-            currentProfile.username ||
-            "User";
-
-
-        $("editAvatar").src =
-            currentProfile.avatar_url ||
-            defaultAvatar(name);
-
-
-        $("nameInput").value =
-            currentProfile.full_name ||
-            "";
-
-
-        $("usernameInput").value =
-            currentProfile.username ||
-            "";
-
-
-        $("emailInput").value =
-            currentUser.email ||
-            "";
-
-
-        $("phoneInput").value =
-            currentPhone &&
-            currentPhone.phone
-                ? currentPhone.phone
-                : "";
-
-
-        $("addressInput").value =
-            currentAddress &&
-            currentAddress.address
-                ? currentAddress.address
-                : "";
-
-
-        $("bioInput").value =
-            currentProfile.bio ||
-            "";
-
-
-        $("loadingBox")
-            .classList.add(
-                "hidden"
-            );
-
-        $("editForm")
-            .classList.remove(
-                "hidden"
-            );
-
-
-    }catch(error){
-
-        $("loadingBox")
-            .textContent =
-            error.message ||
-            "Profile load করতে সমস্যা হয়েছে।";
-
-        $("loadingBox")
-            .style.color =
-            "#d93025";
+$("photoInput").addEventListener("change",e=>{
+  const f=e.target.files?.[0]; if(!f)return;
+  if(!f.type.startsWith("image/")){status("শুধু Image file নির্বাচন করুন।","error");e.target.value="";return}
+  if(f.size>6*1024*1024){status("ছবির size সর্বোচ্চ 6 MB হতে পারবে।","error");e.target.value="";return}
+  photo=f;$("avatar").src=URL.createObjectURL(f);status("নতুন photo নির্বাচন করা হয়েছে।","success");
+});
+
+$("form").addEventListener("submit",async e=>{
+  e.preventDefault();
+  $("save").disabled=true;$("cancel").disabled=true;status("Profile save হচ্ছে...");
+  let uploaded=null;
+  try{
+    const full_name=$("name").value.trim();
+    const username=$("username").value.trim().replace(/^@+/,"").toLowerCase();
+    const bio=$("bio").value.trim();
+    const phone=$("phone").value.trim();
+    const address=$("address").value.trim();
+    if(username && !/^[a-z0-9_.-]{3,30}$/i.test(username)) throw new Error("Username 3–30 characters হতে হবে।");
+
+    let avatar_url=profile.avatar_url||null;
+    if(photo){
+      const ext=(photo.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg";
+      uploaded=user.id+"/profile-"+Date.now()+"."+ext;
+      const up=await supabaseClient.storage.from("avatars").upload(uploaded,photo,{contentType:photo.type,cacheControl:"3600",upsert:false});
+      if(up.error) throw new Error("Profile photo upload করা যায়নি: "+up.error.message);
+      avatar_url=supabaseClient.storage.from("avatars").getPublicUrl(uploaded).data.publicUrl;
     }
-}
 
-
-/* ================================
-   PHOTO
-================================ */
-
-$("photoInput")
-.addEventListener(
-    "change",
-    function(){
-
-        const file =
-            this.files &&
-            this.files[0];
-
-
-        if(!file){
-            return;
-        }
-
-
-        if(
-            !file.type ||
-            !file.type.startsWith(
-                "image/"
-            )
-        ){
-
-            setStatus(
-                "শুধু Image file নির্বাচন করুন।",
-                "error"
-            );
-
-            this.value = "";
-            selectedPhoto = null;
-
-            return;
-        }
-
-
-        if(
-            file.size >
-            6 * 1024 * 1024
-        ){
-
-            setStatus(
-                "ছবির size সর্বোচ্চ 6 MB হতে পারবে।",
-                "error"
-            );
-
-            this.value = "";
-            selectedPhoto = null;
-
-            return;
-        }
-
-
-        selectedPhoto =
-            file;
-
-
-        const previewUrl =
-            URL.createObjectURL(
-                file
-            );
-
-
-        $("editAvatar").src =
-            previewUrl;
-
-
-        setStatus(
-            "নতুন photo নির্বাচন করা হয়েছে।",
-            "success"
-        );
+    const pr=await supabaseClient.from("profiles").update({full_name:full_name||null,username:username||null,bio:bio||null,avatar_url,updated_at:new Date().toISOString()}).eq("id",user.id);
+    if(pr.error){
+      if(pr.error.code==="23505") throw new Error("এই Username ইতিমধ্যে অন্য একজন ব্যবহার করছে।");
+      throw new Error("Profile save করতে সমস্যা হয়েছে: "+pr.error.message);
     }
-);
 
-
-/* ================================
-   SAVE
-================================ */
-
-$("editForm")
-.addEventListener(
-    "submit",
-    async function(event){
-
-        event.preventDefault();
-
-
-        if(!currentUser){
-            return;
-        }
-
-
-        const saveButton =
-            $("saveButton");
-
-
-        saveButton.disabled =
-            true;
-
-        saveButton.textContent =
-            "Saving...";
-
-
-        setStatus(
-            "Profile save হচ্ছে...",
-            "loading"
-        );
-
-
-        let uploadedPath = null;
-
-
-        try{
-
-            /* ======================
-               INPUTS
-            ====================== */
-
-            const fullName =
-                $("nameInput")
-                .value
-                .trim();
-
-
-            const username =
-                $("usernameInput")
-                .value
-                .trim()
-                .replace(
-                    /^@+/,
-                    ""
-                )
-                .toLowerCase();
-
-
-            const phone =
-                $("phoneInput")
-                .value
-                .trim();
-
-
-            const address =
-                $("addressInput")
-                .value
-                .trim();
-
-
-            const bio =
-                $("bioInput")
-                .value
-                .trim();
-
-
-            /* ======================
-               USERNAME VALIDATION
-            ====================== */
-
-            if(username){
-
-                if(
-                    !/^[a-z0-9_.-]{3,30}$/i
-                    .test(username)
-                ){
-
-                    throw new Error(
-                        "Username 3–30 characters হতে হবে। শুধু letters, numbers, _, -, . ব্যবহার করুন।"
-                    );
-                }
-            }
-
-
-            /* ======================
-               AVATAR
-            ====================== */
-
-            let avatarUrl =
-                currentProfile.avatar_url ||
-                null;
-
-
-            if(selectedPhoto){
-
-                let extension =
-                    selectedPhoto.name
-                    .split(".")
-                    .pop()
-                    .toLowerCase();
-
-
-                if(
-                    !/^[a-z0-9]+$/
-                    .test(extension)
-                ){
-
-                    extension =
-                        "jpg";
-                }
-
-
-                const filePath =
-                    currentUser.id +
-                    "/profile-" +
-                    Date.now() +
-                    "." +
-                    extension;
-
-
-                const {
-                    data:uploadData,
-                    error:uploadError
-                } =
-                await supabaseClient
-                .storage
-                .from("avatars")
-                .upload(
-                    filePath,
-                    selectedPhoto,
-                    {
-                        cacheControl:
-                            "3600",
-
-                        contentType:
-                            selectedPhoto.type,
-
-                        upsert:false
-                    }
-                );
-
-
-                if(uploadError){
-
-                    throw new Error(
-                        "Profile photo upload করা যায়নি: " +
-                        uploadError.message
-                    );
-                }
-
-
-                uploadedPath =
-                    uploadData.path;
-
-
-                const {
-                    data:publicData
-                } =
-                supabaseClient
-                .storage
-                .from("avatars")
-                .getPublicUrl(
-                    uploadedPath
-                );
-
-
-                avatarUrl =
-                    publicData.publicUrl;
-            }
-
-
-            /* ======================
-               UPDATE PROFILE
-            ====================== */
-
-            const {
-                error:profileError
-            } =
-            await supabaseClient
-            .from("profiles")
-            .update({
-
-                full_name:
-                    fullName || null,
-
-                username:
-                    username || null,
-
-                bio:
-                    bio || null,
-
-                avatar_url:
-                    avatarUrl,
-
-                updated_at:
-                    new Date()
-                    .toISOString()
-
-            })
-            .eq(
-                "id",
-                currentUser.id
-            );
-
-
-            if(profileError){
-
-                if(
-                    profileError.code ===
-                    "23505"
-                ){
-
-                    throw new Error(
-                        "এই Username ইতিমধ্যে অন্য একজন ব্যবহার করছে।"
-                    );
-                }
-
-
-                throw new Error(
-                    "Profile save করতে সমস্যা হয়েছে: " +
-                    profileError.message
-                );
-            }
-
-
-            /* ======================
-               PHONE
-            ====================== */
-
-            const phoneVisibility =
-                currentPhone &&
-                currentPhone.visibility
-                    ? currentPhone.visibility
-                    : "public";
-
-
-            const {
-                error:phoneError
-            } =
-            await supabaseClient
-            .from("profile_phone")
-            .upsert(
-                {
-                    user_id:
-                        currentUser.id,
-
-                    phone:
-                        phone || null,
-
-                    visibility:
-                        phoneVisibility,
-
-                    updated_at:
-                        new Date()
-                        .toISOString()
-                },
-                {
-                    onConflict:
-                        "user_id"
-                }
-            );
-
-
-            if(phoneError){
-
-                throw new Error(
-                    "Phone save করতে সমস্যা হয়েছে: " +
-                    phoneError.message
-                );
-            }
-
-
-            /* ======================
-               ADDRESS
-            ====================== */
-
-            const addressVisibility =
-                currentAddress &&
-                currentAddress.visibility
-                    ? currentAddress.visibility
-                    : "public";
-
-
-            const {
-                error:addressError
-            } =
-            await supabaseClient
-            .from("profile_address")
-            .upsert(
-                {
-                    user_id:
-                        currentUser.id,
-
-                    address:
-                        address || null,
-
-                    visibility:
-                        addressVisibility,
-
-                    updated_at:
-                        new Date()
-                        .toISOString()
-                },
-                {
-                    onConflict:
-                        "user_id"
-                }
-            );
-
-
-            if(addressError){
-
-                throw new Error(
-                    "Address save করতে সমস্যা হয়েছে: " +
-                    addressError.message
-                );
-            }
-
-
-            /* ======================
-               SUCCESS
-            ====================== */
-
-            selectedPhoto = null;
-
-            $("photoInput").value =
-                "";
-
-
-            setStatus(
-                "Profile সফলভাবে Save হয়েছে।",
-                "success"
-            );
-
-
-            /*
-               Profile page-এ ফিরে যাবে
-            */
-
-            setTimeout(
-                function(){
-
-                    window.location.replace(
-                        "profile.html"
-                    );
-
-                },
-                700
-            );
-
-
-        }catch(error){
-
-            /*
-               Upload হয়েছে কিন্তু
-               Database save ব্যর্থ হলে
-               uploaded file delete করার চেষ্টা
-            */
-
-            if(uploadedPath){
-
-                try{
-
-                    await supabaseClient
-                    .storage
-                    .from("avatars")
-                    .remove([
-                        uploadedPath
-                    ]);
-
-                }catch(removeError){
-                    /* Ignore cleanup error */
-                }
-            }
-
-
-            setStatus(
-                error.message ||
-                "Profile save করতে সমস্যা হয়েছে।",
-                "error"
-            );
-
-
-        }finally{
-
-            saveButton.disabled =
-                false;
-
-            saveButton.textContent =
-                "💾 Save";
-        }
-    }
-);
-
-
-/* ================================
-   CANCEL
-================================ */
-
-$("cancelButton")
-.addEventListener(
-    "click",
-    function(){
-
-        window.location.replace(
-            "profile.html"
-        );
-    }
-);
-
-
-/* ================================
-   START
-================================ */
-
-loadProfile();
-
+    const pv=await supabaseClient.from("profile_phone").upsert({user_id:user.id,phone:phone||null,visibility:$("phoneVisibility").value,updated_at:new Date().toISOString()},{onConflict:"user_id"});
+    if(pv.error) throw new Error("Phone save করতে সমস্যা হয়েছে: "+pv.error.message);
+
+    const av=await supabaseClient.from("profile_address").upsert({user_id:user.id,address:address||null,visibility:$("addressVisibility").value,updated_at:new Date().toISOString()},{onConflict:"user_id"});
+    if(av.error) throw new Error("Address save করতে সমস্যা হয়েছে: "+av.error.message);
+
+    status("Profile সফলভাবে Save হয়েছে।","success");
+    setTimeout(()=>location.replace("profile.html"),600);
+  }catch(err){
+    if(uploaded) await supabaseClient.storage.from("avatars").remove([uploaded]).catch(()=>{});
+    status(err.message||"Profile save করতে সমস্যা হয়েছে।","error");
+  }finally{
+    $("save").disabled=false;$("cancel").disabled=false;
+  }
+});
+
+$("cancel").onclick=()=>location.replace("profile.html");
+load();
 </script>
-
 </body>
 </html>
