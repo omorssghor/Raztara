@@ -204,6 +204,11 @@ async function loadMessages(){
  box.innerHTML="";
  let lastDate="";
  data.forEach(m=>renderMessage(m,lastDate));
+ requestAnimationFrame(()=>{
+   const board=document.getElementById("board");
+   board.scrollTop=board.scrollHeight;
+   setTimeout(()=>{board.scrollTop=board.scrollHeight;},80);
+ });
 }
 
 function renderMessage(m){
