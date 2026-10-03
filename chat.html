@@ -18,7 +18,7 @@ button,input{font:inherit}
 .name{font-size:17px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .status{font-size:11px;opacity:.82;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .headaction{width:43px;height:43px;border:0;background:transparent;color:#fff;font-size:21px}
-.board{scroll-behavior:auto;position:fixed;top:calc(64px + env(safe-area-inset-top));bottom:calc(72px + env(safe-area-inset-bottom));left:0;right:0;overflow-y:auto;padding:12px 10px 16px;-webkit-overflow-scrolling:touch;background-color:#efe7de;background-image:radial-gradient(#cdbfaf 1px,transparent 1px);background-size:20px 20px}
+.board{overflow-anchor:none;scroll-behavior:auto;position:fixed;top:calc(64px + env(safe-area-inset-top));bottom:calc(72px + env(safe-area-inset-bottom));left:0;right:0;overflow-y:auto;padding:12px 10px 16px;-webkit-overflow-scrolling:touch;background-color:#efe7de;background-image:radial-gradient(#cdbfaf 1px,transparent 1px);background-size:20px 20px}
 .center{display:flex;justify-content:center;margin:4px 0 12px}
 .date{background:#fff9;border-radius:12px;padding:5px 10px;color:#667;font-size:11px;box-shadow:0 1px 2px #0001}
 .row{display:flex;margin:3px 0}
@@ -342,17 +342,21 @@ async function loadMessages(){
    return;
  }
 
+ // Resolve media URLs before drawing the messages so media loading does not
+ // change the scroll position while the chat is opening.
+ await Promise.all((data||[]).map(async m=>{
+   if(m.file_url) m._signedUrl=await getSignedMedia(m.file_url);
+ }));
+
  data.forEach(m=>renderMessage(m));
 
- // Opening only: put the chat at the bottom once after the initial layout.
- // Do not observe/re-scroll continuously, otherwise media loading can make
- // the chat visibly jump upward/downward.
+ // Exactly one opening scroll. No timers, observers, or repeated scrolling.
  const board=document.getElementById("board");
- const goLatest=()=>{
-   board.scrollTop=board.scrollHeight;
- };
- requestAnimationFrame(goLatest);
- setTimeout(goLatest,300);
+ requestAnimationFrame(()=>{
+   requestAnimationFrame(()=>{
+     board.scrollTop=board.scrollHeight;
+   });
+ });
 }
 
 async function getSignedMedia(path){
@@ -383,7 +387,7 @@ function renderMessage(m){
    else if(m.message_type==="video") bubble.innerHTML='<div class="media-loading">ভিডিও খুলছে...</div>';
    else if(m.message_type==="voice"||m.message_type==="audio") bubble.innerHTML='<div class="media-loading">Voice খুলছে...</div>';
    else bubble.innerHTML='<div class="media-loading">📎 '+esc(text)+'</div>';
-   getSignedMedia(m.file_url).then(url=>{
+   (m._signedUrl?Promise.resolve(m._signedUrl):getSignedMedia(m.file_url)).then(url=>{
      if(!url){
        bubble.innerHTML='<div class="media-error">ভিডিও/মিডিয়া লোড হয়নি<br><button type="button" onclick="renderMessage('+JSON.stringify(m).replace(/</g,"\\u003c")+')">↻ আবার চেষ্টা</button></div>';
        bubble.appendChild(time);
