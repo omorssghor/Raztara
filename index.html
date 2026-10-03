@@ -1,67 +1,74 @@
 <!doctype html>
 <html lang="bn">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#075e54">
-<title>RAZTARA — Chats</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#075e54"><title>RAZTARA — Chats</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:#d9dbd5;color:#111b21}body{display:flex;justify-content:center}.app{width:100%;max-width:520px;height:100dvh;background:#fff;position:relative;overflow:hidden}.top{position:absolute;top:0;left:0;right:0;z-index:10;background:#075e54;color:white;padding:calc(12px + env(safe-area-inset-top)) 16px 0}.head{display:flex;align-items:center;justify-content:space-between}.brand{font-size:24px;font-weight:800;letter-spacing:.3px}.icons{display:flex;gap:18px}.icon{border:0;background:none;color:#fff;font-size:22px}.tabs{display:grid;grid-template-columns:repeat(3,1fr);margin-top:13px}.tab{padding:10px;text-align:center;color:#cfe6e3;font-weight:700;font-size:14px;position:relative}.tab.active{color:#fff}.tab.active:after{content:"";position:absolute;height:3px;left:15%;right:15%;bottom:0;background:#fff;border-radius:3px}.search{position:absolute;top:calc(98px + env(safe-area-inset-top));left:0;right:0;z-index:9;background:#f0f2f5;padding:9px 12px}.searchbox{height:40px;border-radius:22px;background:#fff;display:flex;align-items:center;padding:0 14px;gap:8px;color:#667781}.searchbox input{border:0;outline:0;width:100%;font-size:15px;background:transparent}.list{position:absolute;top:calc(157px + env(safe-area-inset-top));bottom:calc(64px + env(safe-area-inset-bottom));left:0;right:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;background:#fff}.section{padding:11px 16px 5px;color:#667781;font-size:12px;font-weight:700}.chat{height:76px;display:flex;align-items:center;gap:12px;padding:8px 14px;border-bottom:1px solid #e9edef}.chat:active{background:#f5f6f6}.avatar{width:56px;height:56px;flex:0 0 56px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:21px;font-weight:800;background:linear-gradient(135deg,#25a18e,#075e54);position:relative}.online{position:absolute;right:0;bottom:1px;width:11px;height:11px;border:2px solid white;background:#25d366;border-radius:50%}.info{flex:1;min-width:0}.row{display:flex;justify-content:space-between;gap:8px}.name{font-size:16px;font-weight:650}.time{font-size:11px;color:#667781}.preview{margin-top:4px;color:#667781;font-size:13px;display:flex;gap:5px;white-space:nowrap;overflow:hidden}.preview span:last-child{overflow:hidden;text-overflow:ellipsis}.badge{background:#25d366;color:#fff;min-width:20px;height:20px;border-radius:10px;padding:0 6px;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}.fab{position:absolute;right:18px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:12;width:56px;height:56px;border:0;border-radius:18px;background:#128c7e;color:#fff;font-size:27px;box-shadow:0 5px 18px #0003}.bottom{position:absolute;left:0;right:0;bottom:0;z-index:11;height:calc(64px + env(safe-area-inset-bottom));border-top:1px solid #e9edef;display:grid;grid-template-columns:repeat(4,1fr);padding-bottom:env(safe-area-inset-bottom);background:#fff}.nav{border:0;background:white;color:#667781;font-size:11px;font-weight:650;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}.nav b{font-size:20px}.nav.active{color:#075e54}.menu{display:none;position:absolute;right:8px;top:58px;background:white;border-radius:10px;box-shadow:0 7px 25px #0004;z-index:20;overflow:hidden}.menu button{display:block;width:170px;text-align:left;border:0;background:#fff;padding:13px 16px;font-size:14px}.toast{display:none;position:absolute;bottom:calc(82px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:#202c33;color:#fff;border-radius:18px;padding:9px 14px;font-size:12px;white-space:nowrap;z-index:30}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#f0f2f5;color:#172b2f}
+.app{height:100dvh;max-width:600px;margin:auto;background:#fff;position:relative;overflow:hidden}
+.top{position:absolute;top:0;left:0;right:0;background:#075e54;color:#fff;padding:calc(11px + env(safe-area-inset-top)) 14px 0;z-index:10}
+.head{height:43px;display:flex;align-items:center;justify-content:space-between}.brand{font-size:23px;font-weight:800}.icons{display:flex;gap:12px}.icon{border:0;background:none;color:#fff;font-size:23px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);margin-top:8px}.tab{text-align:center;padding:10px 4px 11px;color:#cfe6e3;font-weight:700;font-size:14px}.tab.active{color:#fff;border-bottom:3px solid #fff}
+.search{position:absolute;top:calc(102px + env(safe-area-inset-top));left:0;right:0;background:#f0f2f5;padding:9px 12px;z-index:5}.searchbox{height:42px;border-radius:23px;background:#fff;display:flex;align-items:center;padding:0 14px;gap:8px;color:#667781}.searchbox input{width:100%;border:0;outline:0;font-size:15px}
+.list{position:absolute;top:calc(159px + env(safe-area-inset-top));bottom:calc(65px + env(safe-area-inset-bottom));left:0;right:0;overflow:auto}.state{text-align:center;color:#718084;padding:55px 20px;font-size:14px}
+.section{padding:11px 15px 6px;color:#718084;font-size:12px;font-weight:750}.chat{height:76px;display:flex;align-items:center;gap:12px;padding:8px 14px;border-bottom:1px solid #e9edef}.chat:active{background:#f5f6f6}
+.avatar{width:56px;height:56px;border-radius:50%;object-fit:cover;background:#d8e7e4;flex:none}.info{flex:1;min-width:0}.row{display:flex;justify-content:space-between;gap:8px}.name{font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.time{font-size:11px;color:#718084}.preview{margin-top:5px;color:#667781;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{background:#25d366;color:#fff;border-radius:12px;padding:2px 7px;font-size:10px;font-weight:800}
+.fab{position:absolute;right:17px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:8;width:55px;height:55px;border:0;border-radius:18px;background:#128c7e;color:#fff;font-size:25px;box-shadow:0 5px 18px #0003}
+.bottom{position:absolute;left:0;right:0;bottom:0;height:calc(65px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:#fff;border-top:1px solid #e9edef;display:grid;grid-template-columns:repeat(4,1fr);z-index:9}.nav{border:0;background:#fff;color:#667781;font-size:11px;font-weight:650}.nav b{display:block;font-size:20px;margin-bottom:2px}.nav.active{color:#075e54}
+.toast{display:none;position:absolute;left:50%;bottom:85px;transform:translateX(-50%);background:#263238;color:#fff;padding:9px 14px;border-radius:20px;font-size:12px;z-index:30}
 </style>
 </head>
-<body>
-<main class="app">
-<header class="top">
-<div class="head"><div class="brand">RAZTARA</div><div class="icons"><button class="icon" onclick="focusSearch()">⌕</button><button class="icon" onclick="toggleMenu()">⋮</button></div></div>
-<div class="tabs"><div class="tab active">Chats</div><div class="tab" onclick="toast('Updates screen পরে যুক্ত হবে')">Updates</div><div class="tab" onclick="toast('Calls screen পরে যুক্ত হবে')">Calls</div></div>
-</header>
-
-<div id="menu" class="menu">
-<button onclick="location.href='profile.html'">Profile</button>
-<button onclick="toast('New group পরে যুক্ত হবে')">New group</button>
-<button onclick="toast('Settings পরে যুক্ত হবে')">Settings</button>
-</div>
-
-<div class="search"><div class="searchbox">⌕<input id="search" placeholder="Search" oninput="filter()"></div></div>
-
-<section class="list" id="list">
-<div class="section">Pinned</div>
-<div class="chat" data-name="Rahim" onclick="openChat('Rahim')"><div class="avatar">R<span class="online"></span></div><div class="info"><div class="row"><div class="name">Rahim</div><div class="time">10:25</div></div><div class="preview"><span>✓✓</span><span>আসসালামু আলাইকুম...</span></div></div></div>
-<div class="section">Recent chats</div>
-<div class="chat" data-name="Karim" onclick="openChat('Karim')"><div class="avatar">K</div><div class="info"><div class="row"><div class="name">Karim</div><div class="time">09:48</div></div><div class="preview"><span>কেমন আছেন?</span><span class="badge">2</span></div></div></div>
-<div class="chat" data-name="Hasan" onclick="openChat('Hasan')"><div class="avatar">H<span class="online"></span></div><div class="info"><div class="row"><div class="name">Hasan</div><div class="time">09:12</div></div><div class="preview"><span>📷</span><span>Photo</span></div></div></div>
-<div class="chat" data-name="Sakib" onclick="openChat('Sakib')"><div class="avatar">S</div><div class="info"><div class="row"><div class="name">Sakib</div><div class="time">08:45</div></div><div class="preview"><span>🎙️</span><span>Voice message</span></div></div></div>
-<div class="chat" data-name="Raju" onclick="openChat('Raju')"><div class="avatar">R</div><div class="info"><div class="row"><div class="name">Raju</div><div class="time">গতকাল</div></div><div class="preview"><span>ঠিক আছে</span></div></div></div>
-</section>
-
-<button class="fab" onclick="toast('New chat screen পরে যুক্ত হবে')">✎</button>
-
-<nav class="bottom">
-<button class="nav active"><b>⌂</b>Home</button>
-<button class="nav" onclick="toast('Chat screen পরে যুক্ত হবে')"><b>💬</b>Chat</button>
-<button class="nav" onclick="toast('Calls screen পরে যুক্ত হবে')"><b>☎</b>Calls</button>
-<button class="nav" onclick="location.href='profile.html'"><b>◉</b>Profile</button>
-</nav>
+<body><main class="app">
+<header class="top"><div class="head"><div class="brand">RAZTARA</div><div class="icons"><button class="icon" onclick="focusSearch()">⌕</button><button class="icon" onclick="location.href='profile.html'">◉</button></div></div><div class="tabs"><div class="tab active">Chats</div><div class="tab">Updates</div><div class="tab">Calls</div></div></header>
+<div class="search"><div class="searchbox">⌕<input id="search" placeholder="Search"></div></div>
+<section class="list" id="list"><div class="state">Loading...</div></section>
+<button class="fab" onclick="location.href='connect.html'">✎</button>
+<nav class="bottom"><button class="nav active"><b>⌂</b>Home</button><button class="nav" onclick="location.href='connect.html'"><b>💬</b>Chat</button><button class="nav"><b>☎</b>Calls</button><button class="nav" onclick="location.href='profile.html'"><b>◉</b>Profile</button></nav>
 <div id="toast" class="toast"></div>
-</main>
-
 <script>
-const SUPABASE_URL="https://pqyicaqpmojijjskpzcp.supabase.co";
-const SUPABASE_KEY="sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
-const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-
-async function checkSession(){
- const {data:{user}}=await supabaseClient.auth.getUser();
- if(!user) location.replace("login.html");
-}
+const sb=supabase.createClient("https://pqyicaqpmojijjskpzcp.supabase.co","sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho");
+let all=[];
+function esc(x){return String(x||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&#92;","\"":"&#92;",""":"&quot;","'":"&#039;"}[c]||c))}
 function focusSearch(){document.getElementById("search").focus()}
-function toggleMenu(){const m=document.getElementById("menu");m.style.display=m.style.display==="block"?"none":"block"}
-function toast(x){const t=document.getElementById("toast");t.textContent=x;t.style.display="block";clearTimeout(window.tt);window.tt=setTimeout(()=>t.style.display="none",1800)}
-function filter(){const q=document.getElementById("search").value.toLowerCase();document.querySelectorAll(".chat").forEach(x=>x.style.display=x.dataset.name.toLowerCase().includes(q)?"flex":"none")}
-function openChat(name){toast(name+" chat screen পরে যুক্ত হবে")}
-document.addEventListener("click",e=>{if(!e.target.closest(".icons")&&!e.target.closest(".menu"))document.getElementById("menu").style.display="none"});
-checkSession();
-</script>
-</body>
-</html>
+function toast(x){const e=document.getElementById("toast");e.textContent=x;e.style.display="block";setTimeout(()=>e.style.display="none",1800)}
+function avatar(p){return p.avatar_url||"https://ui-avatars.com/api/?name="+encodeURIComponent((p.full_name||p.username||"R").slice(0,1))+"&background=075e54&color=fff"}
+function fmt(t){if(!t)return"";return new Date(t).toLocaleTimeString("bn-BD",{hour:"numeric",minute:"2-digit"})}
+async function init(){
+ const auth=await sb.auth.getUser();
+ if(auth.error||!auth.data.user){location.replace("login.html");return}
+ const me=auth.data.user.id;
+ const {data:rels,error:fe}=await sb.from("friendships").select("requester_id,addressee_id,status").or("requester_id.eq."+me+",addressee_id.eq."+me).eq("status","accepted");
+ if(fe){document.getElementById("list").innerHTML='<div class="state">Connect data load করা যায়নি<br><small>'+esc(fe.message)+'</small></div>';return}
+ if(!rels||!rels.length){document.getElementById("list").innerHTML='<div class="state">এখনও কোনো Chat নেই<br><br>✎ চাপ দিয়ে User খুঁজে Connect করুন।</div>';return}
+ const ids=rels.map(r=>r.requester_id===me?r.addressee_id:r.requester_id);
+ const {data:profiles,error:pe}=await sb.from("profiles").select("id,username,full_name,avatar_url").in("id",ids);
+ if(pe){document.getElementById("list").innerHTML='<div class="state">User load করা যায়নি<br><small>'+esc(pe.message)+'</small></div>';return}
+ const {data:members}=await sb.from("conversation_members").select("conversation_id,user_id").in("user_id",[me,...ids]);
+ const convIds=[...new Set((members||[]).map(x=>x.conversation_id))];
+ let msgs=[];
+ if(convIds.length){
+  const m=await sb.from("messages").select("conversation_id,content,created_at,sender_id").in("conversation_id",convIds).order("created_at",{ascending:false});
+  msgs=m.data||[];
+ }
+ const latest={};
+ msgs.forEach(m=>{if(!latest[m.conversation_id])latest[m.conversation_id]=m});
+ const map={};(members||[]).forEach(x=>{if(!map[x.conversation_id])map[x.conversation_id]=[];map[x.conversation_id].push(x.user_id)});
+ all=(profiles||[]).map(p=>{
+   const conv=Object.keys(map).find(cid=>map[cid].includes(me)&&map[cid].includes(p.id));
+   const msg=conv?latest[conv]:null;
+   return {p,conv:conv||"",msg};
+ }).sort((a,b)=>new Date(b.msg?.created_at||0)-new Date(a.msg?.created_at||0));
+ render();
+ document.getElementById("search").addEventListener("input",render);
+}
+function render(){
+ const q=document.getElementById("search").value.trim().toLowerCase();
+ const rows=all.filter(x=>(x.p.full_name||"").toLowerCase().includes(q)||(x.p.username||"").toLowerCase().includes(q));
+ if(!rows.length){document.getElementById("list").innerHTML='<div class="state">কোনো User পাওয়া যায়নি।</div>';return}
+ document.getElementById("list").innerHTML='<div class="section">Chats</div>'+rows.map(x=>'<div class="chat" onclick="openChat(\''+x.p.id+'\',\''+x.conv+'\')"><img class="avatar" src="'+esc(avatar(x.p))+'"><div class="info"><div class="row"><div class="name">'+esc(x.p.full_name||x.p.username||"RAZTARA User")+'</div><div class="time">'+fmt(x.msg?.created_at)+'</div></div><div class="preview">'+esc(x.msg?.content||"Start a conversation")+'</div></div></div>').join("");
+}
+function openChat(id,c){localStorage.setItem("raztara_last_chat_user_id",id);if(c)localStorage.setItem("raztara_last_conversation_id",c);location.href="chat.html?user="+encodeURIComponent(id)+(c?"&conversation="+encodeURIComponent(c):"")}
+init();
+</script></main></body></html>
