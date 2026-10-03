@@ -111,7 +111,6 @@ async function init(){
  if(!user||!conversationId){toast("Call information পাওয়া যায়নি");return}
  other=await profile(user);if(!other){toast("User profile পাওয়া যায়নি");return}
  setProfile(other);
- await setupPresence();
  await setupChannel();
  if(incoming){showIncoming();return}
  await startOutgoing();
@@ -191,7 +190,15 @@ async function createPeer(offerer){
   const offer=await pc.createOffer();await pc.setLocalDescription(offer);await send("offer",{offer});setState(otherOnline?"Ringing...":"Calling...");
  }
 }
+async function getOtherOnline(){
+ try{
+  const {data}=await sb.from("profiles").select("last_seen_at").eq("id",other.id).maybeSingle();
+  if(!data?.last_seen_at)return false;
+  return Date.now()-new Date(data.last_seen_at).getTime()<90000;
+ }catch(e){return false}
+}
 async function startOutgoing(){
+ otherOnline=await getOtherOnline();
  await ensureMedia();await createPeer(true);setState(otherOnline?"Ringing...":"Calling...");
  await send("ring",{to:other.id,from:me.id,type,call_id:callId});
 }
