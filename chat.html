@@ -2228,6 +2228,31 @@ function getSavedConversationId(){
 
 async function findConversation(){
 
+    /*
+     * আগে এই দুই User-এর জন্য localStorage-এ রাখা
+     * conversation ID ব্যবহার করি।
+     * conversation_members-এর RLS অন্য User-এর row
+     * না দেখালেও পুরোনো chat যেন হারিয়ে না যায়।
+     */
+    const savedId = getSavedConversationId();
+
+    if(savedId){
+
+        const {
+            data:savedMember,
+            error:savedError
+        } = await supabaseClient
+            .from("conversation_members")
+            .select("conversation_id")
+            .eq("conversation_id",savedId)
+            .eq("user_id",currentUser.id)
+            .maybeSingle();
+
+        if(!savedError && savedMember){
+            return savedId;
+        }
+    }
+
     const {
         data: memberships,
         error
