@@ -107,7 +107,7 @@ async function profile(id){
 async function init(){
  const au=await sb.auth.getUser();if(!au.data.user){location.href="login.html";return}
  me=au.data.user;
- const user=qs("user")||qs("user_id");conversationId=qs("conversation");type=qs("type")==="video"?"video":"audio";incoming=qs("incoming")==="1";callId=qs("call_id")||crypto.randomUUID();
+ const user=qs("user")||qs("user_id");conversationId=qs("conversation");type=((qs("type")||qs("call_type")||qs("mode")||"").toLowerCase()==="video")?"video":"audio";callMode=type;incoming=qs("incoming")==="1";callId=qs("call_id")||crypto.randomUUID();
  if(!user||!conversationId){toast("Call information পাওয়া যায়নি");return}
  other=await profile(user);if(!other){toast("User profile পাওয়া যায়নি");return}
  setProfile(other);
@@ -136,7 +136,7 @@ async function setupPresence(){
 async function setupChannel(){
  const topic="raztara-call-"+conversationId;
  channel=sb.channel(topic,{config:{private:true}});
- channel.on("broadcast",{event:"ring"},p=>{if(p.payload?.to===me.id&&p.payload?.call_id===callId){showIncoming()}})
+ channel.on("broadcast",{event:"ring"},p=>{if(p.payload?.to===me.id&&p.payload?.call_id===callId){type=p.payload?.type==="video"?"video":"audio";callMode=type;setProfile(other);showIncoming()}})
  .on("broadcast",{event:"accept"},async p=>{if(p.payload?.call_id!==callId)return;await startPeer(true)})
  .on("broadcast",{event:"offer"},async p=>{if(p.payload?.call_id!==callId||!incoming)return;await ensureMedia();await createPeer(false);await pc.setRemoteDescription(p.payload.offer);const ans=await pc.createAnswer();await pc.setLocalDescription(ans);await send("answer",{answer:ans})})
  .on("broadcast",{event:"answer"},async p=>{if(p.payload?.call_id!==callId||!pc)return;await pc.setRemoteDescription(p.payload.answer);setState("Connected")})
@@ -149,7 +149,14 @@ async function send(event,payload={}){
  if(!channel)return;
  await channel.send({type:"broadcast",event,payload:{...payload,call_id:callId}});
 }
-function showControls(){document.getElementById("controls").classList.remove("hidden")}
+function refreshControls(){
+ const isVideo=type==="video"&&callMode==="video"&&!!localStream?.getVideoTracks().length;
+ document.getElementById("controls").classList.remove("hidden");
+ document.getElementById("cameraBtn").classList.toggle("hidden",!isVideo);
+ document.getElementById("switchCameraBtn").classList.toggle("hidden",!isVideo);
+ document.getElementById("modeBtn").classList.toggle("hidden",!isVideo);
+}
+function showControls(){refreshControls()}
 function startDuration(){
  if(callStartedAt)return;
  callStartedAt=Date.now();
@@ -263,7 +270,7 @@ function showIncoming(){
 async function acceptCall(){
  document.getElementById("incoming").classList.remove("show");
  try{
-  await ensureMedia();await send("accept",{to:other.id});
+  await ensureMedia();await send("accept",{to:other.id,type,mode:callMode});showControls();
   setState("Connecting...");
  }catch(e){rejectCall()}
 }
