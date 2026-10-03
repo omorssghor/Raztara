@@ -39,6 +39,8 @@ button{font:inherit}
 .in-label{font-size:11px;color:#d0dcde;text-align:center;margin-top:8px}
 .toast{position:absolute;left:50%;bottom:calc(104px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#26383a;color:#fff;padding:9px 15px;border-radius:22px;font-size:12px;z-index:30;opacity:0;transition:.2s;pointer-events:none}
 .toast.show{opacity:1}
+.sound-unlock{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:40;display:none;min-width:220px;padding:14px 18px;border:0;border-radius:28px;background:#20a464;color:#fff;font-weight:700;box-shadow:0 8px 30px #0008}
+.sound-unlock.show{display:block}
 .hidden{display:none!important}
 @media(min-width:700px){.app{max-width:520px;margin:auto;box-shadow:0 0 50px #0008}.top{max-width:520px;left:50%;right:auto;width:520px;transform:translateX(-50%)}.controls{max-width:520px;left:50%;right:auto;width:520px;transform:translateX(-50%)}}
 </style>
@@ -81,7 +83,7 @@ button{font:inherit}
       <div><button class="in-btn accept" onclick="acceptCall()">☎</button><div class="in-label">Accept</div></div>
     </div>
   </section>
-  <div id="toast" class="toast"></div>
+  <button id="soundUnlock" class="sound-unlock" onclick="enableCallSound()">🔔 শব্দ চালু করুন</button>\n  <div id="toast" class="toast"></div>
 </main>
 
 <script>
@@ -90,18 +92,27 @@ let me=null,other=null,conversationId="",type="audio",incoming=false,channel=nul
 const qs=n=>new URLSearchParams(location.search).get(n)||"";
 const avatar=u=>u?.avatar_url||"https://ui-avatars.com/api/?name="+encodeURIComponent((u?.full_name||u?.username||"R").slice(0,1))+"&background=075e54&color=fff&bold=true";
 function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2300)}
-function unlockCallAudio(){
+async function unlockCallAudio(){
  try{
   const AC=window.AudioContext||window.webkitAudioContext;
-  if(!AC)return;
+  if(!AC)return false;
   if(!ringAudioCtx)ringAudioCtx=new AC();
-  if(ringAudioCtx.state==="suspended")ringAudioCtx.resume().catch(()=>{});
- }catch(e){}
+  if(ringAudioCtx.state==="suspended")await ringAudioCtx.resume();
+  return ringAudioCtx.state==="running";
+ }catch(e){return false}
+}
+async function enableCallSound(){
+ const ok=await unlockCallAudio();
+ if(ok){
+  document.getElementById("soundUnlock").classList.remove("show");
+  playRingTone(880);
+  setTimeout(()=>playRingTone(660),520);
+  if(ringTimer===null)startRinging();
+ }
 }
 function playRingTone(freq=880){
  try{
-  unlockCallAudio();
-  if(!ringAudioCtx||ringAudioCtx.state!=="running")return;
+  if(!ringAudioCtx||ringAudioCtx.state!=="running")return false;
   const now=ringAudioCtx.currentTime;
   const osc=ringAudioCtx.createOscillator(),gain=ringAudioCtx.createGain();
   osc.type="sine";osc.frequency.setValueAtTime(freq,now);
@@ -109,19 +120,21 @@ function playRingTone(freq=880){
   gain.gain.exponentialRampToValueAtTime(0.09,now+0.03);
   gain.gain.exponentialRampToValueAtTime(0.0001,now+0.48);
   osc.connect(gain);gain.connect(ringAudioCtx.destination);
-  osc.start(now);osc.stop(now+0.5);
- }catch(e){}
-}
+  osc.start(now);osc.stop(now+0.5);\n  return true;\n }catch(e){return false}\n}
 function stopRinging(){
  if(ringTimer){clearInterval(ringTimer);ringTimer=null}
 }
 function startRinging(){
  stopRinging();
  const ring=()=>{playRingTone(880);setTimeout(()=>playRingTone(660),520)};
+ if(!ringAudioCtx||ringAudioCtx.state!=="running"){
+  document.getElementById("soundUnlock").classList.add("show");
+  return;
+ }
  ring();
  ringTimer=setInterval(ring,2600);
 }
-["touchstart","pointerdown","click"].forEach(ev=>window.addEventListener(ev,unlockCallAudio,{once:true,passive:true}));
+["touchstart","pointerdown"].forEach(ev=>window.addEventListener(ev,()=>{if(document.getElementById("soundUnlock").classList.contains("show"))enableCallSound()},{passive:true}));
 function setState(t){document.getElementById("state").textContent=t}
 function setProfile(p){
  other=p;
@@ -191,6 +204,7 @@ function refreshControls(){
 function showControls(){refreshControls()}
 function startDuration(){
  stopRinging();
+ document.getElementById("soundUnlock").classList.remove("show");
  if(callStartedAt)return;
  callStartedAt=Date.now();
  document.getElementById("duration").classList.remove("hidden");
@@ -428,6 +442,7 @@ function toggleSpeaker(){
 async function leaveCall(){stopRinging();try{await send("hangup",{})}catch(e){}finish("Call ended")}
 function finish(msg){
  stopRinging();
+ document.getElementById("soundUnlock").classList.remove("show");
  if(pc){pc.close();pc=null}
  if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}
  if(channel){sb.removeChannel(channel);channel=null}
