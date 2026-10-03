@@ -792,6 +792,50 @@ input[type=file]{
     font-size:16px;
 }
 
+/* DELETE MESSAGE */
+.delete-message-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    z-index:5200;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+}
+.delete-message-overlay.show{display:flex;}
+.delete-message-box{
+    width:100%;
+    max-width:360px;
+    background:#fff;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 12px 40px rgba(0,0,0,.3);
+}
+.delete-message-title{
+    padding:18px 18px 10px;
+    font-size:18px;
+    font-weight:800;
+    color:#18352d;
+}
+.delete-message-subtitle{
+    padding:0 18px 10px;
+    color:#777;
+    font-size:13px;
+}
+.delete-message-actions{padding:6px 10px 12px;}
+.delete-message-actions button{
+    width:100%;
+    border:0;
+    background:#fff;
+    padding:14px 8px;
+    text-align:left;
+    font-size:15px;
+    border-bottom:1px solid #eee;
+}
+.delete-message-actions .danger{color:#d00000;font-weight:700;}
+.delete-message-actions .cancel{text-align:center;color:#087f5b;border-bottom:0;}
+
 /* =========================================================
    INCOMING CALL
 ========================================================= */
@@ -952,11 +996,10 @@ input[type=file]{
 <!-- COMPOSER -->
 <div class="composer">
 
-    <button id="voiceBtn"
-            class="media-btn"
-            onclick="toggleRecording()"
-            title="Voice">
-        🎙️
+    <button class="media-btn plus-btn"
+            onclick="openMediaPicker('plus')"
+            title="More">
+        +
     </button>
 
     <div class="input-wrap">
@@ -967,18 +1010,43 @@ input[type=file]{
                placeholder="Message...">
     </div>
 
+    <button id="voiceBtn"
+            class="media-btn"
+            onclick="toggleRecording()"
+            title="Voice">
+        🎙️
+    </button>
+
     <button id="sendBtn"
             class="send-btn"
-            onclick="sendText()">
+            onclick="sendText()"
+            title="Send">
         ➤
     </button>
 
-    <button class="media-btn plus-btn"
-            onclick="openMediaPicker('plus')"
-            title="More">
-        +
-    </button>
+</div>
 
+<div id="deleteMessageOverlay"
+     class="delete-message-overlay"
+     onclick="closeDeleteMessage(event)">
+    <div class="delete-message-box" onclick="event.stopPropagation()">
+        <div class="delete-message-title">Delete message</div>
+        <div id="deleteMessageSubtitle" class="delete-message-subtitle"></div>
+        <div id="deleteMessageActions" class="delete-message-actions"></div>
+    </div>
+</div>
+
+<div id="messageOptionsOverlay" class="message-options-overlay" onclick="closeMessageOptions(event)">
+    <div class="message-options-box" onclick="event.stopPropagation()">
+        <div id="messageOptionsPreview" class="message-options-preview"></div>
+        <div id="messageOptionsTitle" class="message-options-title">Message options</div>
+        <div class="message-options-buttons">
+            <button type="button" onclick="shareSelectedMessage()">↗ Share</button>
+            <button id="saveGalleryButton" type="button" onclick="saveSelectedMedia()">💾 Save</button>
+            <button id="messageDeleteButton" type="button" onclick="deleteSelectedMessage()">🗑️ Delete</button>
+            <button type="button" class="message-options-cancel" onclick="closeMessageOptions()">Cancel</button>
+        </div>
+    </div>
 </div>
 
 <!-- HIDDEN FILE INPUTS -->
@@ -1027,23 +1095,23 @@ input[type=file]{
         <div class="media-picker-buttons">
 
             <button class="media-picker-button"
-                    onclick="openPhotoCamera()">
-                📷 Camera
+                    onclick="openPhotoGallery()">
+                🖼️ ছবি
             </button>
 
             <button class="media-picker-button"
-                    onclick="openVideoCamera()">
-                📹 Video
+                    onclick="openVideoGallery()">
+                🎥 ভিডিও
             </button>
 
             <button class="media-picker-button"
                     onclick="openFilePicker()">
-                📎 File
+                📄 File
             </button>
 
             <button class="media-picker-button"
-                    onclick="openPhotoGallery()">
-                🖼️ Picture
+                    onclick="openAllPicker()">
+                📦 All
             </button>
 
             <button class="media-picker-button cancel"
@@ -1483,6 +1551,21 @@ function openFilePicker(){
     input.value = "";
     input.click();
 
+}
+
+
+function openVideoGallery(){
+    closeMediaPicker();
+    const input=document.getElementById("videoGalleryInput");
+    input.value="";
+    input.click();
+}
+
+function openAllPicker(){
+    closeMediaPicker();
+    const input=document.getElementById("fileInput");
+    input.value="";
+    input.click();
 }
 
 function handleSelectedInput(
@@ -2599,47 +2682,18 @@ function createMessageStatus(message){
 }
 
 function updateMessageStatusUI(message){
-
-    const row =
-        document.querySelector(
-            `[data-message-id="${message.id}"]`
-        );
-
-    if(!row){
-
+    const row=document.querySelector('[data-message-id="'+message.id+'"]');
+    if(!row) return;
+    if(message.deleted_for_everyone){
+        renderDeletedMessage(message);
         return;
     }
-
-    const time =
-        row.querySelector(
-            ".message-time"
-        );
-
-    if(!time){
-
-        return;
-    }
-
-    const oldStatus =
-        time.querySelector(
-            ".message-status"
-        );
-
-    if(oldStatus){
-
-        oldStatus.remove();
-    }
-
-    if(
-        message.sender_id ===
-        currentUser.id
-    ){
-
-        time.appendChild(
-            createMessageStatus(
-                message
-            )
-        );
+    const time=row.querySelector(".message-time");
+    if(!time) return;
+    const oldStatus=time.querySelector(".message-status");
+    if(oldStatus) oldStatus.remove();
+    if(message.sender_id===currentUser.id){
+        time.appendChild(createMessageStatus(message));
     }
 }
 
@@ -2892,7 +2946,26 @@ async function loadMessages(){
         return;
     }
 
-    if(!data?.length){
+    const messageIds = (data || []).map(message => message.id).filter(Boolean);
+    let deletedForMe = new Set();
+
+    if(messageIds.length){
+        const { data: deletedRows, error: deletedError } = await supabaseClient
+            .from("message_deletions")
+            .select("message_id")
+            .in("message_id", messageIds)
+            .eq("user_id", currentUser.id);
+
+        if(deletedError){
+            console.error("Delete-for-me load error:", deletedError);
+        }else{
+            deletedForMe = new Set((deletedRows || []).map(row => row.message_id));
+        }
+    }
+
+    const visibleMessages = (data || []).filter(message => !deletedForMe.has(message.id));
+
+    if(!visibleMessages.length){
 
         container.innerHTML = `
             <div class="empty-chat">
@@ -2910,13 +2983,9 @@ async function loadMessages(){
         return;
     }
 
-    data.forEach(
+    visibleMessages.forEach(
         message=>{
-
-            appendMessage(
-                message,
-                false
-            );
+            appendMessage(message,false);
         }
     );
 
@@ -4534,232 +4603,134 @@ function openTipping(){
 ========================================================= */
 
 async function openMessageOptions(message){
+    if(!message || blocked) return;
+    selectedMessage = message;
 
-    if(
-        !message ||
-        blocked
-    ){
+    const type = message.message_type || "text";
+    const overlay = document.getElementById("messageOptionsOverlay");
+    const preview = document.getElementById("messageOptionsPreview");
+    const title = document.getElementById("messageOptionsTitle");
+    const saveButton = document.getElementById("saveGalleryButton");
 
-        return;
-    }
-
-    selectedMessage =
-        message;
-
-    const overlay =
-        document.getElementById(
-            "messageOptionsOverlay"
-        );
-
-    const preview =
-        document.getElementById(
-            "messageOptionsPreview"
-        );
-
-    const title =
-        document.getElementById(
-            "messageOptionsTitle"
-        );
-
-    const saveButton =
-        document.getElementById(
-            "saveGalleryButton"
-        );
-
+    if(!overlay || !preview || !title) return;
     preview.innerHTML = "";
-
-    title.textContent =
-        t("messageOptions");
-
-    saveButton.style.display =
-        "none";
-
-    const type =
-        message.message_type ||
-        "text";
+    title.textContent = "Message options";
+    if(saveButton) saveButton.style.display = "none";
 
     if(type === "image"){
-
-        const img =
-            document.createElement(
-                "img"
-            );
-
-        img.alt =
-            "Image";
-
-        const url =
-            await getMediaUrl(
-                message.file_url
-            );
-
-        if(url){
-
-            img.src =
-                url;
-
-            preview.appendChild(
-                img
-            );
-
-            saveButton.style.display =
-                "block";
-        }
-
+        const img=document.createElement("img"); img.alt="Image";
+        const url=await getMediaUrl(message.file_url);
+        if(url){ img.src=url; preview.appendChild(img); if(saveButton) saveButton.style.display="block"; }
     }else if(type === "video"){
-
-        const video =
-            document.createElement(
-                "video"
-            );
-
-        video.controls =
-            true;
-
-        video.playsInline =
-            true;
-
-        const url =
-            await getMediaUrl(
-                message.file_url
-            );
-
-        if(url){
-
-            video.src =
-                url;
-
-            preview.appendChild(
-                video
-            );
-
-            saveButton.style.display =
-                "block";
-        }
-
+        const video=document.createElement("video"); video.controls=true; video.playsInline=true;
+        const url=await getMediaUrl(message.file_url);
+        if(url){ video.src=url; preview.appendChild(video); if(saveButton) saveButton.style.display="block"; }
     }else if(type === "audio"){
-
-        const audio =
-            document.createElement(
-                "audio"
-            );
-
-        audio.controls =
-            true;
-
-        const url =
-            await getMediaUrl(
-                message.file_url
-            );
-
-        if(url){
-
-            audio.src =
-                url;
-
-            preview.appendChild(
-                audio
-            );
-        }
-
+        const audio=document.createElement("audio"); audio.controls=true;
+        const url=await getMediaUrl(message.file_url);
+        if(url){ audio.src=url; preview.appendChild(audio); }
     }else if(type === "file"){
-
-        preview.innerHTML = `
-            <div class="message-options-file">
-                📎<br><br>
-                ${escapeHtml(
-                    message.content ||
-                    "File"
-                )}
-            </div>
-        `;
-
+        preview.innerHTML = '<div class="message-options-file">📎<br><br>'+escapeHtml(message.content || "File")+'</div>';
     }else{
-
-        preview.innerHTML = `
-            <div class="message-options-text">
-                ${escapeHtml(
-                    message.content ||
-                    ""
-                )}
-            </div>
-        `;
+        preview.innerHTML = '<div class="message-options-text">'+escapeHtml(message.content || "")+'</div>';
     }
 
-    overlay.classList.add(
-        "show"
-    );
+    const deleteButton=document.getElementById("messageDeleteButton");
+    if(deleteButton) deleteButton.style.display = "block";
+    overlay.classList.add("show");
 }
 
 function closeMessageOptions(event){
-
-    if(
-        event &&
-        event.target !==
-        document.getElementById(
-            "messageOptionsOverlay"
-        )
-    ){
-
-        return;
-    }
-
-    document
-        .getElementById(
-            "messageOptionsOverlay"
-        )
-        .classList.remove(
-            "show"
-        );
-
-    selectedMessage =
-        null;
+    const overlay=document.getElementById("messageOptionsOverlay");
+    if(event && event.target !== overlay) return;
+    if(overlay) overlay.classList.remove("show");
+    selectedMessage=null;
 }
 
 function shareSelectedMessage(){
-
-    if(!selectedMessage){
-
-        return;
-    }
-
-    const message =
-        selectedMessage;
-
+    if(!selectedMessage) return;
+    const message=selectedMessage;
     closeMessageOptions();
-
-    window.location.href =
-        "share.html?conversation_id=" +
-        encodeURIComponent(
-            message.conversation_id
-        ) +
-        "&message_id=" +
-        encodeURIComponent(
-            message.id
-        );
+    window.location.href="share.html?conversation_id="+encodeURIComponent(message.conversation_id)+"&message_id="+encodeURIComponent(message.id);
 }
 
 function deleteSelectedMessage(){
+    if(!selectedMessage) return;
+    const message=selectedMessage;
+    closeMessageOptions();
+    openDeleteMessage(message);
+}
 
-    if(!selectedMessage){
+async function openDeleteMessage(message){
+    selectedMessage=message;
+    const overlay=document.getElementById("deleteMessageOverlay");
+    const actions=document.getElementById("deleteMessageActions");
+    const subtitle=document.getElementById("deleteMessageSubtitle");
+    if(!overlay || !actions) return;
 
-        return;
+    const isMine=message.sender_id === currentUser.id;
+    subtitle.textContent = isMine ? "Choose how you want to delete this message." : "This message will be removed from your chat only.";
+    actions.innerHTML = "";
+
+    const onlyMe=document.createElement("button");
+    onlyMe.textContent="🗑️ Delete for me";
+    onlyMe.onclick=()=>deleteForMe(message);
+    actions.appendChild(onlyMe);
+
+    if(isMine && !message.deleted_for_everyone){
+        const everyone=document.createElement("button");
+        everyone.className="danger";
+        everyone.textContent="🗑️ Delete for everyone";
+        everyone.onclick=()=>deleteForEveryone(message);
+        actions.appendChild(everyone);
     }
 
-    const message =
-        selectedMessage;
+    const cancel=document.createElement("button");
+    cancel.className="cancel";
+    cancel.textContent="Cancel";
+    cancel.onclick=closeDeleteMessage;
+    actions.appendChild(cancel);
+    overlay.classList.add("show");
+}
 
-    closeMessageOptions();
+function closeDeleteMessage(event){
+    const overlay=document.getElementById("deleteMessageOverlay");
+    if(event && event.target !== overlay) return;
+    if(overlay) overlay.classList.remove("show");
+    selectedMessage=null;
+}
 
-    window.location.href =
-        "delete.html?conversation_id=" +
-        encodeURIComponent(
-            message.conversation_id
-        ) +
-        "&message_id=" +
-        encodeURIComponent(
-            message.id
-        );
+async function deleteForMe(message){
+    if(!currentUser || !message) return;
+    const {error}=await supabaseClient.from("message_deletions").upsert({message_id:message.id,user_id:currentUser.id},{onConflict:"message_id,user_id"});
+    if(error){ showToast(error.message); return; }
+    closeDeleteMessage();
+    const row=document.querySelector('[data-message-id="'+message.id+'"]');
+    if(row) row.remove();
+    showToast("Deleted for me");
+}
+
+async function deleteForEveryone(message){
+    if(!currentUser || !message || message.sender_id !== currentUser.id) return;
+    const {data,error}=await supabaseClient.from("messages")
+        .update({deleted_for_everyone:true,deleted_at:new Date().toISOString(),content:null,file_url:null})
+        .eq("id",message.id)
+        .eq("sender_id",currentUser.id)
+        .select("id,conversation_id,sender_id,content,message_type,file_url,created_at,is_read,delivered_at,read_at,deleted_for_everyone")
+        .maybeSingle();
+    if(error){ showToast(error.message); return; }
+    closeDeleteMessage();
+    if(data) renderDeletedMessage(data);
+}
+
+function renderDeletedMessage(message){
+    const row=document.querySelector('[data-message-id="'+message.id+'"]');
+    if(!row) return;
+    const box=row.querySelector(".message");
+    if(!box) return;
+    const time=box.querySelector(".message-time");
+    box.innerHTML='<i>This message was deleted</i>';
+    if(time) box.appendChild(time);
 }
 
 async function saveSelectedMedia(){
