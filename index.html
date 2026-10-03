@@ -1,6 +1,67 @@
-<!doctype html><html lang="bn"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#075e54"><title>RAZTARA — Chats</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#075e54">
+<title>RAZTARA — Chats</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
 *{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:#d9dbd5;color:#111b21}body{display:flex;justify-content:center}.app{width:100%;max-width:520px;height:100dvh;background:#fff;position:relative;overflow:hidden}.top{position:absolute;top:0;left:0;right:0;z-index:10;background:#075e54;color:white;padding:calc(12px + env(safe-area-inset-top)) 16px 0}.head{display:flex;align-items:center;justify-content:space-between}.brand{font-size:24px;font-weight:800;letter-spacing:.3px}.icons{display:flex;gap:18px}.icon{border:0;background:none;color:#fff;font-size:22px}.tabs{display:grid;grid-template-columns:repeat(3,1fr);margin-top:13px}.tab{padding:10px;text-align:center;color:#cfe6e3;font-weight:700;font-size:14px;position:relative}.tab.active{color:#fff}.tab.active:after{content:"";position:absolute;height:3px;left:15%;right:15%;bottom:0;background:#fff;border-radius:3px}.search{position:absolute;top:calc(98px + env(safe-area-inset-top));left:0;right:0;z-index:9;background:#f0f2f5;padding:9px 12px}.searchbox{height:40px;border-radius:22px;background:#fff;display:flex;align-items:center;padding:0 14px;gap:8px;color:#667781}.searchbox input{border:0;outline:0;width:100%;font-size:15px;background:transparent}.list{position:absolute;top:calc(157px + env(safe-area-inset-top));bottom:calc(64px + env(safe-area-inset-bottom));left:0;right:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;background:#fff}.section{padding:11px 16px 5px;color:#667781;font-size:12px;font-weight:700}.chat{height:76px;display:flex;align-items:center;gap:12px;padding:8px 14px;border-bottom:1px solid #e9edef}.chat:active{background:#f5f6f6}.avatar{width:56px;height:56px;flex:0 0 56px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:21px;font-weight:800;background:linear-gradient(135deg,#25a18e,#075e54);position:relative}.online{position:absolute;right:0;bottom:1px;width:11px;height:11px;border:2px solid white;background:#25d366;border-radius:50%}.info{flex:1;min-width:0}.row{display:flex;justify-content:space-between;gap:8px}.name{font-size:16px;font-weight:650}.time{font-size:11px;color:#667781}.preview{margin-top:4px;color:#667781;font-size:13px;display:flex;gap:5px;white-space:nowrap;overflow:hidden}.preview span:last-child{overflow:hidden;text-overflow:ellipsis}.badge{background:#25d366;color:#fff;min-width:20px;height:20px;border-radius:10px;padding:0 6px;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}.fab{position:absolute;right:18px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:12;width:56px;height:56px;border:0;border-radius:18px;background:#128c7e;color:#fff;font-size:27px;box-shadow:0 5px 18px #0003}.bottom{position:absolute;left:0;right:0;bottom:0;z-index:11;height:calc(64px + env(safe-area-inset-bottom));border-top:1px solid #e9edef;display:grid;grid-template-columns:repeat(4,1fr);padding-bottom:env(safe-area-inset-bottom);background:#fff}.nav{border:0;background:white;color:#667781;font-size:11px;font-weight:650;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}.nav b{font-size:20px}.nav.active{color:#075e54}.menu{display:none;position:absolute;right:8px;top:58px;background:white;border-radius:10px;box-shadow:0 7px 25px #0004;z-index:20;overflow:hidden}.menu button{display:block;width:170px;text-align:left;border:0;background:#fff;padding:13px 16px;font-size:14px}.toast{display:none;position:absolute;bottom:calc(82px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:#202c33;color:#fff;border-radius:18px;padding:9px 14px;font-size:12px;white-space:nowrap;z-index:30}
-</style></head><body><main class="app"><header class="top"><div class="head"><div class="brand">RAZTARA</div><div class="icons"><button class="icon" onclick="focusSearch()">⌕</button><button class="icon" onclick="toggleMenu()">⋮</button></div></div><div class="tabs"><div class="tab active">Chats</div><div class="tab" onclick="toast('Updates screen পরে যুক্ত হবে')">Updates</div><div class="tab" onclick="toast('Calls screen পরে যুক্ত হবে')">Calls</div></div></header><div id="menu" class="menu"><button onclick="toast('New group পরে যুক্ত হবে')">New group</button><button onclick="toast('Settings পরে যুক্ত হবে')">Settings</button><button onclick="toast('Profile পরে যুক্ত হবে')">Profile</button></div><div class="search"><div class="searchbox">⌕<input id="search" placeholder="Search" oninput="filter()"></div></div><section class="list" id="list"><div class="section">Pinned</div><div class="chat" data-name="Rahim" onclick="openChat('Rahim')"><div class="avatar">R<span class="online"></span></div><div class="info"><div class="row"><div class="name">Rahim</div><div class="time">10:25</div></div><div class="preview"><span>✓✓</span><span>আসসালামু আলাইকুম...</span></div></div></div><div class="section">Recent chats</div><div class="chat" data-name="Karim" onclick="openChat('Karim')"><div class="avatar">K</div><div class="info"><div class="row"><div class="name">Karim</div><div class="time">09:48</div></div><div class="preview"><span>কেমন আছেন?</span><span class="badge">2</span></div></div></div><div class="chat" data-name="Hasan" onclick="openChat('Hasan')"><div class="avatar">H<span class="online"></span></div><div class="info"><div class="row"><div class="name">Hasan</div><div class="time">09:12</div></div><div class="preview"><span>📷</span><span>Photo</span></div></div></div><div class="chat" data-name="Sakib" onclick="openChat('Sakib')"><div class="avatar">S</div><div class="info"><div class="row"><div class="name">Sakib</div><div class="time">08:45</div></div><div class="preview"><span>🎙️</span><span>Voice message</span></div></div></div><div class="chat" data-name="Raju" onclick="openChat('Raju')"><div class="avatar">R</div><div class="info"><div class="row"><div class="name">Raju</div><div class="time">গতকাল</div></div><div class="preview"><span>ঠিক আছে</span></div></div></div></section><button class="fab" onclick="toast('New chat screen পরে যুক্ত হবে')">✎</button><nav class="bottom"><button class="nav active"><b>⌂</b>Home</button><button class="nav" onclick="toast('Chats')"><b>💬</b>Chat</button><button class="nav" onclick="toast('Calls screen পরে যুক্ত হবে')"><b>☎</b>Calls</button><button class="nav" onclick="toast('Profile screen পরে যুক্ত হবে')"><b>◉</b>Profile</button></nav><div id="toast" class="toast"></div></main><script>
-const SUPABASE_URL="https://pqyicaqpmojijjskpzcp.supabase.co",SUPABASE_KEY="sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-function focusSearch(){document.getElementById("search").focus()}function toggleMenu(){const m=document.getElementById("menu");m.style.display=m.style.display==="block"?"none":"block"}function toast(x){const t=document.getElementById("toast");t.textContent=x;t.style.display="block";clearTimeout(window.tt);window.tt=setTimeout(()=>t.style.display="none",1800)}function filter(){const q=document.getElementById("search").value.toLowerCase();document.querySelectorAll(".chat").forEach(x=>x.style.display=x.dataset.name.toLowerCase().includes(q)?"flex":"none")}function openChat(name){toast(name+" chat পরে যুক্ত হবে")}document.addEventListener("click",e=>{if(!e.target.closest(".icons")&&!e.target.closest(".menu"))document.getElementById("menu").style.display="none"});
-</script></body></html>
+</style>
+</head>
+<body>
+<main class="app">
+<header class="top">
+<div class="head"><div class="brand">RAZTARA</div><div class="icons"><button class="icon" onclick="focusSearch()">⌕</button><button class="icon" onclick="toggleMenu()">⋮</button></div></div>
+<div class="tabs"><div class="tab active">Chats</div><div class="tab" onclick="toast('Updates screen পরে যুক্ত হবে')">Updates</div><div class="tab" onclick="toast('Calls screen পরে যুক্ত হবে')">Calls</div></div>
+</header>
+
+<div id="menu" class="menu">
+<button onclick="location.href='profile.html'">Profile</button>
+<button onclick="toast('New group পরে যুক্ত হবে')">New group</button>
+<button onclick="toast('Settings পরে যুক্ত হবে')">Settings</button>
+</div>
+
+<div class="search"><div class="searchbox">⌕<input id="search" placeholder="Search" oninput="filter()"></div></div>
+
+<section class="list" id="list">
+<div class="section">Pinned</div>
+<div class="chat" data-name="Rahim" onclick="openChat('Rahim')"><div class="avatar">R<span class="online"></span></div><div class="info"><div class="row"><div class="name">Rahim</div><div class="time">10:25</div></div><div class="preview"><span>✓✓</span><span>আসসালামু আলাইকুম...</span></div></div></div>
+<div class="section">Recent chats</div>
+<div class="chat" data-name="Karim" onclick="openChat('Karim')"><div class="avatar">K</div><div class="info"><div class="row"><div class="name">Karim</div><div class="time">09:48</div></div><div class="preview"><span>কেমন আছেন?</span><span class="badge">2</span></div></div></div>
+<div class="chat" data-name="Hasan" onclick="openChat('Hasan')"><div class="avatar">H<span class="online"></span></div><div class="info"><div class="row"><div class="name">Hasan</div><div class="time">09:12</div></div><div class="preview"><span>📷</span><span>Photo</span></div></div></div>
+<div class="chat" data-name="Sakib" onclick="openChat('Sakib')"><div class="avatar">S</div><div class="info"><div class="row"><div class="name">Sakib</div><div class="time">08:45</div></div><div class="preview"><span>🎙️</span><span>Voice message</span></div></div></div>
+<div class="chat" data-name="Raju" onclick="openChat('Raju')"><div class="avatar">R</div><div class="info"><div class="row"><div class="name">Raju</div><div class="time">গতকাল</div></div><div class="preview"><span>ঠিক আছে</span></div></div></div>
+</section>
+
+<button class="fab" onclick="toast('New chat screen পরে যুক্ত হবে')">✎</button>
+
+<nav class="bottom">
+<button class="nav active"><b>⌂</b>Home</button>
+<button class="nav" onclick="toast('Chat screen পরে যুক্ত হবে')"><b>💬</b>Chat</button>
+<button class="nav" onclick="toast('Calls screen পরে যুক্ত হবে')"><b>☎</b>Calls</button>
+<button class="nav" onclick="location.href='profile.html'"><b>◉</b>Profile</button>
+</nav>
+<div id="toast" class="toast"></div>
+</main>
+
+<script>
+const SUPABASE_URL="https://pqyicaqpmojijjskpzcp.supabase.co";
+const SUPABASE_KEY="sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+async function checkSession(){
+ const {data:{user}}=await supabaseClient.auth.getUser();
+ if(!user) location.replace("login.html");
+}
+function focusSearch(){document.getElementById("search").focus()}
+function toggleMenu(){const m=document.getElementById("menu");m.style.display=m.style.display==="block"?"none":"block"}
+function toast(x){const t=document.getElementById("toast");t.textContent=x;t.style.display="block";clearTimeout(window.tt);window.tt=setTimeout(()=>t.style.display="none",1800)}
+function filter(){const q=document.getElementById("search").value.toLowerCase();document.querySelectorAll(".chat").forEach(x=>x.style.display=x.dataset.name.toLowerCase().includes(q)?"flex":"none")}
+function openChat(name){toast(name+" chat screen পরে যুক্ত হবে")}
+document.addEventListener("click",e=>{if(!e.target.closest(".icons")&&!e.target.closest(".menu"))document.getElementById("menu").style.display="none"});
+checkSession();
+</script>
+</body>
+</html>
