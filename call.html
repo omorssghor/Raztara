@@ -261,31 +261,54 @@ function toggleCamera(){
 async function switchCamera(){
  if(!localStream||type!=="video"||callMode!=="video")return;
  const oldTrack=localStream.getVideoTracks()[0];
- if(!oldTrack){toast("এই user-এর camera নেই");return}
+ if(!oldTrack){toast("Camera পাওয়া যায়নি");return}
+ const nextMode=facingMode==="user"?"environment":"user";
  try{
-  const nextMode=facingMode==="user"?"environment":"user";
-  let s;
+  let newTrack=null;
+
+  // First try the camera facingMode directly. "exact" prevents Safari/iPhone
+  // from silently keeping the front camera.
   try{
-   s=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:nextMode}},audio:false});
+   const s=await navigator.mediaDevices.getUserMedia({
+    video:{facingMode:{exact:nextMode}},
+    audio:false
+   });
+   newTrack=s.getVideoTracks()[0];
   }catch(e){
+   // Fallback: find another physical camera by deviceId.
    const devices=await navigator.mediaDevices.enumerateDevices();
    const cams=devices.filter(d=>d.kind==="videoinput");
-   const next=cams.find(d=>d.deviceId!==oldTrack.getSettings().deviceId);
+   const oldId=oldTrack.getSettings().deviceId;
+   const next=cams.find(d=>d.deviceId&&d.deviceId!==oldId);
    if(!next)throw e;
-   s=await navigator.mediaDevices.getUserMedia({video:{deviceId:{exact:next.deviceId}},audio:false});
+
+   const s=await navigator.mediaDevices.getUserMedia({
+    video:{deviceId:{exact:next.deviceId}},
+    audio:false
+   });
+   newTrack=s.getVideoTracks()[0];
   }
-  const newTrack=s.getVideoTracks()[0];
+
+  if(!newTrack)throw new Error("No camera track");
+
   const sender=pc?.getSenders().find(x=>x.track&&x.track.kind==="video");
   if(sender)await sender.replaceTrack(newTrack);
+
   oldTrack.stop();
   localStream.removeTrack(oldTrack);
   localStream.addTrack(newTrack);
   facingMode=nextMode;
-  document.getElementById("localVideo").srcObject=localStream;
+
+  const lv=document.getElementById("localVideo");
+  lv.srcObject=localStream;
+  lv.muted=true;
+  await lv.play().catch(()=>{});
   newTrack.enabled=!cameraOff;
-  toast(facingMode==="environment"?"Back camera":"Front camera");
+
+  toast(facingMode==="environment"?"Back camera চালু হয়েছে":"Front camera চালু হয়েছে");
  }catch(e){
-  toast("Back camera নেই বা এই device-এ available নয়");
+  console.error("switchCamera",e);
+  toast(nextMode==="environment"?"Back camera পাওয়া যায়নি":"Front camera পাওয়া যায়নি");
  }
 }
 async function toggleCallMode(){
