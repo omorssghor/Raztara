@@ -2229,29 +2229,13 @@ function getSavedConversationId(){
 async function findConversation(){
 
     if(!currentUser || !otherUserId){
-
         return null;
     }
 
     /*
-     * একই User-এর chat আবার খুললে আগে সংরক্ষিত
-     * conversation ID ব্যবহার করব। এতে Back করে
-     * ফিরে এলে নতুন conversation তৈরি হবে না।
+     * LocalStorage-এর পুরোনো conversation ID একা বিশ্বাস করা যাবে না।
+     * আগে database থেকে এই দুই User-এর সব common conversation বের করি।
      */
-    const savedId = getSavedConversationId();
-
-    if(savedId){
-
-        /*
-         * Saved conversation ID আগে ব্যবহার করব।
-         * conversations SELECT RLS-এ সাময়িক সমস্যা হলেও
-         * পুরোনো chat যেন অন্য conversation-এ চলে না যায়।
-         * পরে loadMessages() যদি সত্যিই invalid হয়,
-         * তখনই fallback lookup হবে।
-         */
-        return savedId;
-    }
-
     const {
         data:myMembers,
         error:myError
@@ -2264,14 +2248,11 @@ async function findConversation(){
         );
 
     if(myError){
-
         console.error(myError);
-
         return null;
     }
 
     if(!myMembers?.length){
-
         return null;
     }
 
@@ -2296,58 +2277,73 @@ async function findConversation(){
         );
 
     if(otherError){
-
         console.error(otherError);
-
-        return null;
-    }
-
-    if(!otherMembers?.length){
-
         return null;
     }
 
     const commonIds =
-        otherMembers.map(
+        (otherMembers || [])
+        .map(
             x=>x.conversation_id
         );
 
-    const {
-        data:conversations,
-        error:conversationError
-    } = await supabaseClient
-        .from("conversations")
-        .select(
-            "id,is_group"
-        )
-        .in(
-            "id",
-            commonIds
-        )
-        .eq(
-            "is_group",
-            false
-        );
-
-    if(conversationError){
-
-        console.error(
-            conversationError
-        );
-
+    if(!commonIds.length){
         return null;
     }
 
-    const foundId =
-        conversations?.[0]?.id || null;
+    /*
+     * একই দুই User-এর একাধিক conversation থাকলে
+     * সর্বশেষ message যে conversation-এ আছে সেটিই ব্যবহার করব।
+     * এতে পুরোনো chat আবার খুললে message অন্য/খালি conversation-এ
+     * চলে যাওয়ার সমস্যা বন্ধ হবে।
+     */
+    const {
+        data:latestMessages,
+        error:latestMessageError
+    } =
+        await supabaseClient
+        .from("messages")
+        .select("conversation_id,created_at")
+        .in(
+            "conversation_id",
+            commonIds
+        )
+        .order(
+            "created_at",
+            {
+                ascending:false
+            }
+        )
+        .limit(1);
 
-    if(foundId){
-        saveConversationId(foundId);
+    if(
+        !latestMessageError &&
+        latestMessages &&
+        latestMessages.length
+    ){
+        const id =
+            latestMessages[0].conversation_id;
+
+        saveConversationId(id);
+
+        return id;
     }
 
-    return foundId;
-}
+    /*
+     * Message না থাকলে আগের saved ID থাকলে সেটি ব্যবহার করি।
+     */
+    const savedId =
+        getSavedConversationId();
 
+    if(
+        savedId &&
+        commonIds.includes(savedId)
+    ){
+        return savedId;
+    }
+
+    return commonIds[0] || null;
+}
 /* =========================================================
    CREATE CONVERSATION
 ========================================================= */
