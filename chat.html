@@ -93,7 +93,7 @@ let channel=null;
 let toastTimer=null;
 
 function qs(name){return new URLSearchParams(location.search).get(name)||""}
-function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&#92;",""":"&quot;","'":"&#039;"}[c]))}
+function esc(v){return String(v==null?"":v).replace(/[&<>"]/g,function(c){if(c==="&")return "&amp;";if(c==="<")return "&lt;";if(c===">")return "&gt;";return "&quot;";})}
 function avatar(u){
  return u?.avatar_url || "https://ui-avatars.com/api/?name="+encodeURIComponent((u?.full_name||u?.username||"R").slice(0,1))+"&background=075e54&color=fff&bold=true";
 }
