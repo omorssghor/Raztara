@@ -92,6 +92,7 @@ const sb=supabase.createClient(
 );
 
 let currentUser=null;
+let initialChatLoading=false;
 let otherUserId="";
 let otherProfile=null;
 let conversationId="";
@@ -340,6 +341,7 @@ async function loadMessages(){
  }
 
  box.innerHTML="";
+ initialChatLoading=true;
  let lastDate="";
  data.forEach(m=>renderMessage(m,lastDate));
  requestAnimationFrame(()=>{
@@ -351,6 +353,7 @@ async function loadMessages(){
    setTimeout(()=>{
      board.scrollTo({top:board.scrollHeight,behavior:"auto"});
    },500);
+   setTimeout(()=>{initialChatLoading=false},1200);
  });
 }
 
@@ -360,6 +363,12 @@ async function getSignedMedia(path){
  if(error){console.error("RAZTARA media URL error",error);return null}
  return data?.signedUrl||null;
 }
+function keepInitialChatAtBottom(){
+ const board=document.getElementById("board");
+ if(!initialChatLoading||!board)return;
+ board.scrollTop=board.scrollHeight;
+}
+
 function renderMessage(m){
  const box=document.getElementById("messages");
  if(m&&m.id&&document.querySelector('[data-message-id="'+m.id+'"]')) return;
