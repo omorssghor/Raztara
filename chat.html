@@ -26,7 +26,7 @@ button,input{font:inherit}
 .bubble{max-width:min(78%,420px);padding:8px 9px 5px;border-radius:8px;background:#fff;box-shadow:0 1px 1px #0002;word-break:break-word;font-size:15px;line-height:1.4}
 .me .bubble{background:#d9fdd3;border-top-right-radius:2px}
 .them .bubble{border-top-left-radius:2px}
-.time{font-size:9px;color:#718084;float:right;margin:5px 0 0 9px}.ticks{font-size:12px;margin-left:4px;letter-spacing:-2px}.ticks.read{color:#128c7e}
+.time{font-size:9px;color:#718084;float:right;margin:5px 0 0 9px}.chat-image{max-width:240px;max-height:320px;border-radius:10px;display:block}.chat-video{max-width:260px;max-height:320px;border-radius:10px;display:block}.chat-audio{width:230px}.chat-file{display:block;padding:8px;color:#075e54;text-decoration:none;font-weight:600}.media-loading{padding:8px}.ticks{font-size:12px;margin-left:4px;letter-spacing:-2px}.ticks.read{color:#128c7e}
 .empty{text-align:center;color:#667;padding:55px 20px}
 .loader{text-align:center;padding:50px;color:#667}
 .composer{position:fixed;left:0;right:0;bottom:0;height:calc(68px + env(safe-area-inset-bottom));padding:7px 9px calc(7px + env(safe-area-inset-bottom));background:#f0f2f5;display:flex;align-items:center;gap:7px;z-index:20}
@@ -62,18 +62,19 @@ button,input{font:inherit}
 </main>
 
 <div id="menu" class="menu">
-  <button onclick="pickPhoto()">📷 ছবি</button>
-  <button onclick="showToast('ভিডিও পরের ধাপে যুক্ত হবে');closeMenu()">🎥 ভিডিও</button>
-  <button onclick="showToast('File upload পরের ধাপে যুক্ত হবে');closeMenu()">📎 File</button>
-  <button onclick="showToast('All media পরের ধাপে যুক্ত হবে');closeMenu()">🗂 All</button>
+  <button onclick="pickFile('image/*')">📷 ছবি</button>
+  <button onclick="pickFile('video/*')">🎥 ভিডিও</button>
+  <button onclick="pickFile('*/*')">📎 File</button>
+  <button onclick="pickFile('image/*,video/*')">🗂 All</button>
 </div>
+<input id="mediaInput" type="file" hidden onchange="uploadSelectedFile(this.files[0])">
 
 <div class="composer">
   <button class="plus" onclick="toggleMenu()">＋</button>
   <div class="inputbox">
     <input id="messageInput" type="text" placeholder="Message..." autocomplete="off">
   </div>
-  <button class="voice" onclick="showToast('Voice message পরের ধাপে যুক্ত হবে')">🎤</button>
+  <button id="voiceBtn" class="voice" onclick="toggleRecording()">🎤</button>
   <button class="send" onclick="sendText()">➤</button>
 </div>
 
@@ -91,6 +92,9 @@ let otherProfile=null;
 let conversationId="";
 let channel=null;
 let toastTimer=null;
+let mediaRecorder=null;
+let voiceChunks=[];
+let recording=false;
 
 function qs(name){return new URLSearchParams(location.search).get(name)||""}
 function esc(v){return String(v==null?"":v).replace(/[&<>"]/g,function(c){if(c==="&")return "&amp;";if(c==="<")return "&lt;";if(c===">")return "&gt;";return "&quot;";})}
@@ -103,7 +107,55 @@ function showToast(msg){
 }
 function toggleMenu(){document.getElementById("menu").classList.toggle("show")}
 function closeMenu(){document.getElementById("menu").classList.remove("show")}
-function pickPhoto(){showToast("ছবি upload পরের ধাপে যুক্ত হবে");closeMenu()}
+function pickFile(accept){
+ const input=document.getElementById("mediaInput");
+ input.accept=accept; input.value=""; input.click(); closeMenu();
+}
+async function uploadSelectedFile(file){
+ if(!file||!conversationId)return;
+ if(file.size>25*1024*1024){showToast("ফাইল সর্বোচ্চ 25 MB হতে পারবে");return}
+ showToast("Upload হচ্ছে...");
+ const ext=(file.name.split(".").pop()||"bin").toLowerCase();
+ const path=currentUser.id+"/"+conversationId+"/"+crypto.randomUUID()+"."+ext;
+ const {error}=await sb.storage.from("raztara-media").upload(path,file,{contentType:file.type||"application/octet-stream",upsert:false});
+ if(error){showToast(error.message);return}
+ let type="file";
+ if(file.type.startsWith("image/"))type="image";
+ else if(file.type.startsWith("video/"))type="video";
+ const {data,error:me}=await sb.from("messages").insert({
+   conversation_id:conversationId,sender_id:currentUser.id,content:file.name,message_type:type,file_url:path
+ }).select().single();
+ if(me){showToast(me.message);return}
+ if(data&&!document.querySelector('[data-message-id="'+data.id+'"]'))renderMessage(data);
+}
+async function toggleRecording(){
+ if(recording){
+   mediaRecorder.stop(); return;
+ }
+ if(!navigator.mediaDevices?.getUserMedia){showToast("এই ফোনে Voice recording চালু করা যাচ্ছে না");return}
+ try{
+   const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+   voiceChunks=[]; mediaRecorder=new MediaRecorder(stream);
+   mediaRecorder.ondataavailable=e=>{if(e.data.size)voiceChunks.push(e.data)};
+   mediaRecorder.onstop=async()=>{
+     stream.getTracks().forEach(t=>t.stop()); recording=false;
+     document.getElementById("voiceBtn").textContent="🎤";
+     const blob=new Blob(voiceChunks,{type:mediaRecorder.mimeType||"audio/webm"});
+     if(blob.size>25*1024*1024){showToast("Voice file অনেক বড়");return}
+     const path=currentUser.id+"/"+conversationId+"/"+crypto.randomUUID()+".webm";
+     showToast("Voice upload হচ্ছে...");
+     const up=await sb.storage.from("raztara-media").upload(path,blob,{contentType:blob.type,upsert:false});
+     if(up.error){showToast(up.error.message);return}
+     const {data,error}=await sb.from("messages").insert({
+       conversation_id:conversationId,sender_id:currentUser.id,content:"Voice message",message_type:"voice",file_url:path
+     }).select().single();
+     if(error){showToast(error.message);return}
+     if(data&&!document.querySelector('[data-message-id="'+data.id+'"]'))renderMessage(data);
+   };
+   mediaRecorder.start(); recording=true; document.getElementById("voiceBtn").textContent="⏹️";
+   showToast("Recording চলছে... আবার চাপলে পাঠাবে");
+ }catch(e){showToast("Microphone permission দিন")}
+}
 
 async function init(){
  const auth=await sb.auth.getUser();
@@ -211,6 +263,10 @@ async function loadMessages(){
  });
 }
 
+async function getSignedMedia(path){
+ const {data,error}=await sb.storage.from("raztara-media").createSignedUrl(path,3600);
+ return error?null:data?.signedUrl||null;
+}
 function renderMessage(m){
  const box=document.getElementById("messages");
  if(m&&m.id&&document.querySelector('[data-message-id="'+m.id+'"]')) return;
@@ -221,7 +277,21 @@ function renderMessage(m){
  bubble.className="bubble";
 
  let text=m.deleted_for_everyone?"This message was deleted":(m.content||"");
- bubble.innerHTML=esc(text).replace(/\n/g,"<br>");
+ if(m.deleted_for_everyone){bubble.innerHTML=esc(text).replace(/\n/g,"<br>");}
+ else if(m.file_url){
+   if(m.message_type==="image") bubble.innerHTML='<div class="media-loading">ছবি খুলছে...</div>';
+   else if(m.message_type==="video") bubble.innerHTML='<div class="media-loading">ভিডিও খুলছে...</div>';
+   else if(m.message_type==="voice") bubble.innerHTML='<div class="media-loading">Voice খুলছে...</div>';
+   else bubble.innerHTML='<div class="media-loading">📎 '+esc(text)+'</div>';
+   getSignedMedia(m.file_url).then(url=>{
+     if(!url)return;
+     if(m.message_type==="image") bubble.innerHTML='<img class="chat-image" src="'+url+'" alt="">';
+     else if(m.message_type==="video") bubble.innerHTML='<video class="chat-video" controls playsinline src="'+url+'"></video>';
+     else if(m.message_type==="voice") bubble.innerHTML='<audio class="chat-audio" controls src="'+url+'"></audio>';
+     else bubble.innerHTML='<a class="chat-file" href="'+url+'" target="_blank" rel="noopener">📎 '+esc(text)+'</a>';
+     bubble.appendChild(time);
+   });
+ } else bubble.innerHTML=esc(text).replace(/\n/g,"<br>");
 
  const time=document.createElement("span");
  time.className="time";
