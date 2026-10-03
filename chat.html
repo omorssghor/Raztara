@@ -2263,6 +2263,18 @@ async function findConversation(){
 
 async function createConversation(){
 
+    /*
+     * আগে আবার existing conversation খুঁজে নিই।
+     * একই দুই User-এর জন্য duplicate conversation
+     * তৈরি হয়ে পুরোনো chat হারিয়ে যাওয়ার সমস্যা বন্ধ হবে।
+     */
+    const existing =
+        await findConversation();
+
+    if(existing){
+        return existing;
+    }
+
     const {
         data,
         error
@@ -4691,16 +4703,13 @@ async function saveSelectedMedia(){
 ========================================================= */
 
 function getChatBackgroundKey(){
-    const params = new URLSearchParams(window.location.search);
-    const conversation =
-        params.get("conversation_id") ||
-        params.get("conversation");
 
-    if(conversation){
-        return "raztara_chat_background_" + conversation;
-    }
-
+    /*
+     * Background সবসময় এই User-এর জন্য save হবে।
+     * Conversation ID বদলালেও background হারাবে না।
+     */
     const user =
+        otherUserId ||
         params.get("user") ||
         params.get("user_id") ||
         params.get("id") ||
@@ -4708,7 +4717,6 @@ function getChatBackgroundKey(){
 
     return "raztara_chat_background_user_" + user;
 }
-
 
 
 function handleChatBackground(input){
