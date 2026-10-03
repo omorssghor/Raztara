@@ -90,6 +90,7 @@ body{
 
 .user-status{
     font-size:11px;
+    min-height:13px;
     opacity:.9;
     margin-top:3px;
 }
@@ -1201,6 +1202,9 @@ let selectedMessage = null;
 
 let presenceTimer = null;
 let presenceBusy = false;
+let typingTimer = null;
+let otherTypingTimer = null;
+let isOtherTyping = false;
 
 /* =========================================================
    LANGUAGE
@@ -2109,6 +2113,81 @@ window.addEventListener(
         updateMyPresence();
     }
 );
+
+/* =========================================================
+   LAST SEEN / ONLINE
+========================================================= */
+
+function showTypingStatus(){
+    const status=document.getElementById("userStatus");
+    if(!status) return;
+    status.textContent = currentLanguage === "bn" ? "typing..." : "typing...";
+}
+
+function restoreOnlineStatus(){
+    if(otherProfile) updateOnlineStatus(otherProfile);
+}
+
+function handleTypingInput(){
+    if(!currentUser || !conversationId || blocked) return;
+
+    const input=document.getElementById("messageInput");
+    const hasText=!!(input && input.value.trim());
+
+    clearTimeout(typingTimer);
+
+    if(realtimeChannel){
+        realtimeChannel.send({
+            type:"broadcast",
+            event:"typing",
+            payload:{
+                user_id:currentUser.id,
+                typing:hasText
+            }
+        }).catch(error=>console.error("Typing broadcast:",error));
+    }
+
+    if(hasText){
+        typingTimer=setTimeout(()=>{
+            if(realtimeChannel){
+                realtimeChannel.send({
+                    type:"broadcast",
+                    event:"typing",
+                    payload:{user_id:currentUser.id,typing:false}
+                }).catch(()=>{});
+            }
+        },1800);
+    }
+}
+
+function stopTypingBroadcast(){
+    clearTimeout(typingTimer);
+    if(realtimeChannel && currentUser){
+        realtimeChannel.send({
+            type:"broadcast",
+            event:"typing",
+            payload:{user_id:currentUser.id,typing:false}
+        }).catch(()=>{});
+    }
+}
+
+function handleOtherTyping(payload){
+    if(!payload || payload.user_id !== otherUserId) return;
+
+    clearTimeout(otherTypingTimer);
+
+    if(payload.typing){
+        isOtherTyping=true;
+        showTypingStatus();
+        otherTypingTimer=setTimeout(()=>{
+            isOtherTyping=false;
+            restoreOnlineStatus();
+        },2500);
+    }else{
+        isOtherTyping=false;
+        restoreOnlineStatus();
+    }
+}
 
 /* =========================================================
    LAST SEEN / ONLINE
@@ -3559,6 +3638,7 @@ async function getMediaUrl(path){
 ========================================================= */
 
 async function sendText(){
+    stopTypingBroadcast();
 
     if(!currentUser){
         return;
@@ -4193,6 +4273,14 @@ function subscribeRealtime(){
             "-" +
             Date.now()
         );
+
+    channel.on(
+        "broadcast",
+        { event:"typing" },
+        payload=>{
+            handleOtherTyping(payload?.payload);
+        }
+    );
 
     ids.forEach(id=>{
 
@@ -5257,6 +5345,8 @@ document.addEventListener(
 ========================================================= */
 
 const messageInputElement = document.getElementById("messageInput");
+if(messageInputElement) messageInputElement.addEventListener("input",handleTypingInput);
+
 if(messageInputElement) messageInputElement.addEventListener(
         "keydown",
         function(event){
@@ -5436,6 +5526,8 @@ window.addEventListener(
     "pagehide",
     function(){
 
+        stopTypingBroadcast();
+        clearTimeout(otherTypingTimer);
         cleanupIncomingCall();
 
         if(profileRealtimeChannel){
