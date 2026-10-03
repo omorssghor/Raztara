@@ -67,6 +67,8 @@ button{font:inherit}
     <button id="speakerBtn" class="control" onclick="toggleSpeaker()">🔊</button>
     <button id="muteBtn" class="control" onclick="toggleMute()">🎤</button>
     <button id="cameraBtn" class="control hidden" onclick="toggleCamera()">📹</button>
+    <button id="switchCameraBtn" class="control hidden" onclick="switchCamera()">🔄</button>
+    <button id="modeBtn" class="control hidden" onclick="toggleCallMode()">🔊</button>
     <button class="end" onclick="leaveCall()">☎</button>
   </div>
 
@@ -84,7 +86,7 @@ button{font:inherit}
 
 <script>
 const sb=supabase.createClient("https://pqyicaqpmojijjskpzcp.supabase.co","sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho");
-let me=null,other=null,conversationId="",type="audio",incoming=false,channel=null,pc=null,localStream=null,muted=false,cameraOff=false,remoteReady=false,callId="",callStartedAt=0,durationTimer=null,callLogged=false;
+let me=null,other=null,conversationId="",type="audio",incoming=false,channel=null,pc=null,localStream=null,muted=false,cameraOff=false,remoteReady=false,callId="",callStartedAt=0,durationTimer=null,callLogged=false,facingMode="user",callMode="audio";
 const qs=n=>new URLSearchParams(location.search).get(n)||"";
 const avatar=u=>u?.avatar_url||"https://ui-avatars.com/api/?name="+encodeURIComponent((u?.full_name||u?.username||"R").slice(0,1))+"&background=075e54&color=fff&bold=true";
 function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2300)}
@@ -94,7 +96,8 @@ function setProfile(p){
  const a=avatar(p),n=p.full_name||p.username||"RAZTARA User";
  document.getElementById("bigAvatar").src=a;document.getElementById("incomingAvatar").src=a;
  document.getElementById("callerName").textContent=n;document.getElementById("incomingName").textContent=n;document.getElementById("topName").textContent=n;
- document.getElementById("topType").textContent=type==="video"?"Video call":"Audio call";
+ callMode=type;
+ document.getElementById("topType").textContent=callMode==="video"?"Video call":"Audio call";
  document.getElementById("incomingType").textContent="Incoming "+(type==="video"?"video":"audio")+" call";
 }
 async function profile(id){
@@ -120,6 +123,7 @@ async function setupChannel(){
  .on("broadcast",{event:"offer"},async p=>{if(p.payload?.call_id!==callId||!incoming)return;await ensureMedia();await createPeer(false);await pc.setRemoteDescription(p.payload.offer);const ans=await pc.createAnswer();await pc.setLocalDescription(ans);await send("answer",{answer:ans})})
  .on("broadcast",{event:"answer"},async p=>{if(p.payload?.call_id!==callId||!pc)return;await pc.setRemoteDescription(p.payload.answer);setState("Connected")})
  .on("broadcast",{event:"ice"},async p=>{if(p.payload?.call_id!==callId||!pc||!p.payload.candidate)return;try{await pc.addIceCandidate(p.payload.candidate)}catch(e){} })
+ .on("broadcast",{event:"mode"},p=>{if(p.payload?.call_id!==callId)return;applyRemoteMode(p.payload.mode)})
  .on("broadcast",{event:"hangup"},p=>{if(p.payload?.call_id===callId)finish("Call ended")});
  await new Promise((resolve,reject)=>channel.subscribe(s=>{if(s==="SUBSCRIBED")resolve();if(s==="CHANNEL_ERROR")reject(new Error("Call channel error"))}));
 }
@@ -143,16 +147,16 @@ async function logCall(){
  if(callLogged||!conversationId||!me)return; callLogged=true;
  const n=callStartedAt?Math.floor((Date.now()-callStartedAt)/1000):0;
  const m=String(Math.floor(n/60)).padStart(2,"0"),sec=String(n%60).padStart(2,"0");
- const label=type==="video"?"Video call":"Audio call";
+ const label=callMode==="video"?"Video call":"Audio call";
  await sb.from("messages").insert({conversation_id:conversationId,sender_id:me.id,content:"📞 "+label+" • "+m+":"+sec+" • Call ended",message_type:"call"});
 }
 async function ensureMedia(){
  if(localStream)return;
  try{
-  localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:type==="video"});
+  localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:type==="video"?{facingMode:{ideal:facingMode}}:false});
   const lv=document.getElementById("localVideo");lv.srcObject=localStream;
   showControls();
-  if(type==="video"){document.getElementById("localWrap").classList.remove("hidden");document.getElementById("cameraBtn").classList.remove("hidden")}
+  if(type==="video"){document.getElementById("localWrap").classList.remove("hidden");document.getElementById("cameraBtn").classList.remove("hidden");document.getElementById("switchCameraBtn").classList.remove("hidden");document.getElementById("modeBtn").classList.remove("hidden")}
  }catch(e){toast(e.name==="NotAllowedError"?"Microphone/Camera permission দিন":"Media চালু করা যায়নি");throw e}
 }
 async function createPeer(offerer){
@@ -164,8 +168,8 @@ async function createPeer(offerer){
  localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
  pc.ontrack=e=>{
   const v=document.getElementById("remoteVideo");v.srcObject=e.streams[0];
-  if(type==="video"){document.getElementById("remotePlaceholder").classList.add("hidden");v.classList.remove("hidden")}
-  else{document.getElementById("remotePlaceholder").classList.remove("hidden")}
+  if(callMode==="video"){document.getElementById("remotePlaceholder").classList.add("hidden");v.classList.remove("hidden")}
+  else{document.getElementById("remotePlaceholder").classList.remove("hidden");v.classList.add("hidden")}
   setState("Connected");remoteReady=true;startDuration();
  };
  pc.onicecandidate=e=>{if(e.candidate)send("ice",{candidate:e.candidate})};
@@ -198,9 +202,48 @@ function toggleMute(){
  document.getElementById("muteBtn").classList.toggle("on",muted);document.getElementById("muteBtn").textContent=muted?"🔇":"🎤";
 }
 function toggleCamera(){
- if(!localStream||type!=="video")return;cameraOff=!cameraOff;localStream.getVideoTracks().forEach(t=>t.enabled=!cameraOff);
+ if(!localStream||type!=="video"||callMode!=="video")return;
+ cameraOff=!cameraOff;localStream.getVideoTracks().forEach(t=>t.enabled=!cameraOff);
  document.getElementById("localOff").classList.toggle("hidden",!cameraOff);document.getElementById("localVideo").classList.toggle("hidden",cameraOff);
  document.getElementById("cameraBtn").textContent=cameraOff?"📷":"📹";
+}
+async function switchCamera(){
+ if(!localStream||type!=="video"||callMode!=="video")return;
+ const oldTrack=localStream.getVideoTracks()[0];
+ try{
+  const nextMode=facingMode==="user"?"environment":"user";
+  const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:{exact:nextMode}},audio:false});
+  const newTrack=s.getVideoTracks()[0];
+  const sender=pc?.getSenders().find(x=>x.track&&x.track.kind==="video");
+  if(sender)await sender.replaceTrack(newTrack);
+  if(oldTrack){oldTrack.stop();localStream.removeTrack(oldTrack)}
+  localStream.addTrack(newTrack);facingMode=nextMode;
+  document.getElementById("localVideo").srcObject=localStream;
+  newTrack.enabled=!cameraOff;
+  toast(facingMode==="environment"?"Back camera":"Front camera");
+ }catch(e){toast("Back camera চালু করা যায়নি")}
+}
+async function toggleCallMode(){
+ if(!localStream||!pc)return;
+ if(callMode==="video"){
+  callMode="audio";cameraOff=true;
+  localStream.getVideoTracks().forEach(t=>t.enabled=false);
+  document.getElementById("localWrap").classList.add("hidden");
+  document.getElementById("remoteVideo").classList.add("hidden");
+  document.getElementById("remotePlaceholder").classList.remove("hidden");
+  document.getElementById("cameraBtn").classList.add("hidden");
+  document.getElementById("switchCameraBtn").classList.add("hidden");
+  document.getElementById("modeBtn").textContent="📹";
+  document.getElementById("topType").textContent="Audio call";
+  setState("Connected");await send("mode",{mode:"audio"});toast("Audio call চালু হয়েছে");
+ }
+}
+function applyRemoteMode(mode){
+ callMode=mode==="video"?"video":"audio";
+ document.getElementById("topType").textContent=callMode==="video"?"Video call":"Audio call";
+ const v=document.getElementById("remoteVideo");
+ if(callMode==="audio"){v.classList.add("hidden");document.getElementById("remotePlaceholder").classList.remove("hidden");setState("Audio call")}
+ else{if(remoteReady){document.getElementById("remotePlaceholder").classList.add("hidden");v.classList.remove("hidden")}setState("Video call")}
 }
 function toggleSpeaker(){
  const v=document.getElementById("remoteVideo");v.muted=!v.muted;
