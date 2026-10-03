@@ -2641,9 +2641,23 @@ async function ensureConversation(){
     }
 
     try{
-        conversationId = await findConversation();
+
+        conversationId =
+            await findConversation();
+
+        if(!conversationId){
+
+            conversationId =
+                await createConversation();
+        }
+
     }catch(error){
-        console.error("Conversation find error:",error);
+
+        console.error(
+            "Conversation init error:",
+            error
+        );
+
         conversationId = null;
     }
 
@@ -3340,10 +3354,40 @@ async function getMediaUrl(path){
 
 async function sendText(){
 
-    if(
-        !currentUser ||
-        !conversationId
-    ){
+    if(!currentUser){
+        return;
+    }
+
+    if(!conversationId){
+
+        try{
+
+            conversationId =
+                await ensureConversation();
+
+        }catch(error){
+
+            console.error(
+                "Conversation init error:",
+                error
+            );
+
+            showToast(
+                error.message ||
+                "Chat চালু করা যায়নি"
+            );
+
+            return;
+        }
+    }
+
+    if(!conversationId){
+
+        showToast(
+            currentLanguage === "bn"
+                ? "Chat চালু করা যায়নি"
+                : "Could not start chat"
+        );
 
         return;
     }
