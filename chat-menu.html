@@ -65,11 +65,22 @@ async function init(){
 }
 function chatUrl(){return "chat.html?user="+encodeURIComponent(userId||"")}
 function goBack(){if(history.length>1)history.back();else location.href=chatUrl()}
-function openProfileDetails(){location.href="user-profile.html?user="+encodeURIComponent(userId||"")}
-function openGallery(){location.href="gallery.html?user="+encodeURIComponent(userId||"")}
-function openPrivacy(){location.href="privacy.html?from=chat&user="+encodeURIComponent(userId||"")}
+function openProfileDetails(){
+  if(!userId){alert("User ID পাওয়া যায়নি।");return;}
+  window.location.assign("user-profile.html?user="+encodeURIComponent(userId));
+}
+function openGallery(){
+  if(!userId){alert("User ID পাওয়া যায়নি।");return;}
+  window.location.assign("gallery.html?user="+encodeURIComponent(userId));
+}
+function openPrivacy(){window.location.assign("privacy.html?from=chat&user="+encodeURIComponent(userId||""));}
 function openSettings(){location.href="settings.html"}
-function openBackground(){document.getElementById("bgInput").click()}
+function openBackground(){
+  const input=document.getElementById("bgInput");
+  if(!input){alert("Background option পাওয়া যায়নি।");return;}
+  input.value="";
+  input.click();
+}
 function saveBackground(input){
  const file=input.files?.[0]; if(!file)return;
  const reader=new FileReader();
@@ -83,7 +94,7 @@ function saveBackground(input){
    localStorage.setItem("raztara_chat_background_user_"+userId,data);
    localStorage.setItem("raztara_chat_background_"+userId,data);
    input.value="";
-   location.href=chatUrl();
+   window.location.replace(chatUrl());
   };
   img.src=e.target.result;
  };
