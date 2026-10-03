@@ -2390,6 +2390,9 @@ async function createConversation(){
     const newConversationId =
         data.id;
 
+    conversationIdsForChat =
+        [newConversationId];
+
     saveConversationId(
         newConversationId
     );
@@ -4064,8 +4067,18 @@ async function sendVoiceBlob(
 
 function subscribeRealtime(){
 
-    if(!conversationId){
+    const ids = [
+        ...new Set(
+            (
+                conversationIdsForChat &&
+                conversationIdsForChat.length
+                    ? conversationIdsForChat
+                    : [conversationId]
+            ).filter(Boolean)
+        )
+    ];
 
+    if(!ids.length){
         return;
     }
 
@@ -4075,16 +4088,21 @@ function subscribeRealtime(){
             .removeChannel(
                 realtimeChannel
             );
+
+        realtimeChannel = null;
     }
 
-    realtimeChannel =
-        supabaseClient
-            .channel(
-                "chat-" +
-                conversationId +
-                "-" +
-                Date.now()
-            )
+    const channel =
+        supabaseClient.channel(
+            "chat-" +
+            ids.join("-") +
+            "-" +
+            Date.now()
+        );
+
+    ids.forEach(id=>{
+
+        channel
             .on(
                 "postgres_changes",
                 {
@@ -4093,12 +4111,14 @@ function subscribeRealtime(){
                     table:"messages",
                     filter:
                         "conversation_id=eq." +
-                        conversationId
+                        id
                 },
                 payload=>{
 
-                    if(blocked){
-
+                    if(
+                        blocked ||
+                        !payload?.new
+                    ){
                         return;
                     }
 
@@ -4116,14 +4136,13 @@ function subscribeRealtime(){
                     table:"messages",
                     filter:
                         "conversation_id=eq." +
-                        conversationId
+                        id
                 },
                 payload=>{
 
                     if(
                         !payload?.new
                     ){
-
                         return;
                     }
 
@@ -4131,16 +4150,27 @@ function subscribeRealtime(){
                         payload.new
                     );
                 }
-            )
-            .subscribe(
-                status=>{
-
-                    console.log(
-                        "Chat realtime:",
-                        status
-                    );
-                }
             );
+    });
+
+    realtimeChannel = channel;
+
+    channel.subscribe(
+        status=>{
+
+            console.log(
+                "Chat realtime:",
+                status
+            );
+
+            if(status === "CHANNEL_ERROR"){
+
+                console.error(
+                    "Chat realtime subscription failed"
+                );
+            }
+        }
+    );
 }
 
 /* =========================================================
