@@ -140,7 +140,74 @@ body{
 }
 
 .menu button:hover{
-    background:#f1f5f4;
+    background:#f1f8f5;
+}
+
+/* CHAT BACKGROUND SETTINGS */
+.chat-background-modal{
+    position:fixed;
+    inset:0;
+    background:rgba(255,255,255,.62);
+    backdrop-filter:blur(7px);
+    -webkit-backdrop-filter:blur(7px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:700;
+}
+
+.chat-background-modal.show{
+    display:flex;
+}
+
+.chat-background-box{
+    width:100%;
+    max-width:360px;
+    background:linear-gradient(145deg,#ffffff,#f1faf7);
+    border:1px solid rgba(8,127,91,.10);
+    border-radius:18px;
+    box-shadow:0 12px 40px rgba(8,127,91,.14);
+    padding:22px;
+}
+
+.chat-background-title{
+    color:#18352d;
+    font-size:18px;
+    font-weight:700;
+    text-align:center;
+    margin-bottom:16px;
+}
+
+.chat-background-option{
+    width:100%;
+    border:0;
+    border-bottom:1px solid rgba(8,127,91,.09);
+    background:transparent;
+    color:#25443b;
+    text-align:left;
+    padding:15px 4px;
+    font-size:15px;
+    cursor:pointer;
+}
+
+.chat-background-option:last-child{
+    border-bottom:0;
+}
+
+.chat-background-option:hover{
+    color:#087f5b;
+    background:rgba(8,127,91,.035);
+}
+
+.chat-background-close{
+    width:100%;
+    border:0;
+    background:transparent;
+    color:#087f5b;
+    padding:14px 4px 2px;
+    font-size:14px;
+    cursor:pointer;
 }
 
 /* CHAT */
@@ -826,10 +893,47 @@ input[type=file]{
         💰 <span id="tippingMenuText">Tipping</span>
     </button>
 
-    <button onclick="blockUser();closeMenu()">
-        🚫 <span id="blockMenuText">Block</span>
+    <button onclick="openChatBackground();closeMenu()">
+        <span id="chatBackgroundMenuText">Chat Background</span>
     </button>
 
+    <button onclick="blockUser();closeMenu()">
+        <span id="blockMenuText">Block</span>
+    </button>
+
+</div>
+
+<input
+    id="chatBackgroundInput"
+    type="file"
+    accept="image/*"
+    hidden
+    onchange="handleChatBackground(this)">
+
+<div id="chatBackgroundModal" class="chat-background-modal" onclick="closeChatBackground(event)">
+    <div class="chat-background-box" onclick="event.stopPropagation()">
+        <div class="chat-background-title">Chat Background</div>
+
+        <button class="chat-background-option" onclick="setWhiteChatBackground()">
+            Default White
+        </button>
+
+        <button class="chat-background-option" onclick="chooseChatBackgroundImage()">
+            Choose from Gallery
+        </button>
+
+        <button class="chat-background-option" onclick="takeChatBackgroundPhoto()">
+            Take a Photo
+        </button>
+
+        <button class="chat-background-option" onclick="removeChatBackground()">
+            Remove Background
+        </button>
+
+        <button class="chat-background-close" onclick="closeChatBackground()">
+            Cancel
+        </button>
+    </div>
 </div>
 
 <div id="chatBoard" class="chat-board">
@@ -4602,6 +4706,111 @@ async function saveSelectedMedia(){
    MENU
 ========================================================= */
 
+function getChatBackgroundKey(){
+    const params = new URLSearchParams(window.location.search);
+    const conversation =
+        params.get("conversation_id") ||
+        params.get("conversation") ||
+        "default";
+    return "raztara_chat_background_" + conversation;
+}
+
+function openChatBackground(){
+    document.getElementById("chatBackgroundModal").classList.add("show");
+}
+
+function closeChatBackground(event){
+    const modal = document.getElementById("chatBackgroundModal");
+    if(event && event.target !== modal) return;
+    modal.classList.remove("show");
+}
+
+function chooseChatBackgroundImage(){
+    closeChatBackground();
+    document.getElementById("chatBackgroundInput").removeAttribute("capture");
+    document.getElementById("chatBackgroundInput").click();
+}
+
+function takeChatBackgroundPhoto(){
+    closeChatBackground();
+    const input = document.getElementById("chatBackgroundInput");
+    input.setAttribute("capture","environment");
+    input.click();
+}
+
+function setWhiteChatBackground(){
+    localStorage.removeItem(getChatBackgroundKey());
+    applyChatBackground();
+    closeChatBackground();
+}
+
+function removeChatBackground(){
+    localStorage.removeItem(getChatBackgroundKey());
+    applyChatBackground();
+    closeChatBackground();
+}
+
+function handleChatBackground(input){
+    const file = input.files && input.files[0];
+    if(!file || !file.type.startsWith("image/")) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(event){
+        const img = new Image();
+
+        img.onload = function(){
+            const maxSize = 1600;
+            const scale = Math.min(
+                1,
+                maxSize / Math.max(img.naturalWidth, img.naturalHeight)
+            );
+
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+            canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            const dataUrl = canvas.toDataURL("image/jpeg",0.82);
+
+            try{
+                localStorage.setItem(getChatBackgroundKey(),dataUrl);
+                applyChatBackground();
+            }catch(error){
+                console.error("Chat background save failed:",error);
+            }
+
+            input.value = "";
+        };
+
+        img.src = event.target.result;
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function applyChatBackground(){
+    const board = document.getElementById("chatBoard");
+    if(!board) return;
+
+    const image = localStorage.getItem(getChatBackgroundKey());
+
+    if(image){
+        board.style.backgroundImage =
+            "linear-gradient(rgba(255,255,255,.74),rgba(255,255,255,.74)),url('" +
+            image.replace(/'/g,"%27") +
+            "')";
+        board.style.backgroundSize = "cover";
+        board.style.backgroundPosition = "center";
+        board.style.backgroundAttachment = "fixed";
+    }else{
+        board.style.backgroundImage = "none";
+        board.style.backgroundColor = "#ffffff";
+    }
+}
+
 function toggleMenu(){
 
     document
@@ -4958,6 +5167,8 @@ document
 ========================================================= */
 
 async function init(){
+
+    applyChatBackground();
 
     applyLanguage();
 
