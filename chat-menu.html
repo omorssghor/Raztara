@@ -35,7 +35,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
 <button class="option" onclick="openGallery()">Gallery<div class="small">এই দুই user-এর ছবি, ভিডিও, voice ও file</div></button>
 <button class="option" onclick="blockUser()" id="blockBtn">Block user<div class="small">Block করলে chat ও profile দেখা বন্ধ থাকবে</div></button>
 <button class="option" onclick="openPrivacy()">RAZTARA Privacy<div class="small">RAZTARA ব্যবহার ও privacy সম্পর্কে নির্দেশনা</div></button>
-<button class="option" onclick="openSettings()">Language / ভাষা<div class="small">Chat-এর ভাষা index.html → Settings থেকে পরিবর্তন করা যাবে</div></button>
 <button class="option" onclick="logout()" >Logout</button>
 </main>
 </div>
@@ -79,7 +78,7 @@ function saveBackground(input){
    const data=cv.toDataURL("image/jpeg",.82);
    localStorage.setItem("raztara_chat_background_user_"+userId,data);
    localStorage.setItem("raztara_chat_background_"+userId,data);
-   input.value="sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+   input.value="";
    location.href=chatUrl();
   };
   img.src=e.target.result;
@@ -89,13 +88,22 @@ function saveBackground(input){
 async function blockUser(){
  if(!currentUser||!userId)return;
  if(!confirm("আপনি কি এই User-কে Block করতে চান?"))return;
- const {error}=await supabaseClient.from("blocked_users").upsert({blocker_id:currentUser.id,blocked_id:userId},{onConflict:"blocker_id,blocked_id"});
+ const {error}=await supabaseClient.from("blocked_users").insert({blocker_id:currentUser.id,blocked_id:userId});
  if(error){alert(error.message);return}
  location.href="index.html";
 }
 async function logout(){
- await supabaseClient.auth.signOut();
- location.href="index.html";
+
+  const {error} =
+    await supabaseClient.auth.signOut();
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  location.replace("index.html");
+
 }
 init();
 </script>
