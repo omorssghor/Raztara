@@ -345,8 +345,10 @@ async function loadMessages(){
 }
 
 async function getSignedMedia(path){
+ if(!path)return null;
  const {data,error}=await sb.storage.from("raztara-media").createSignedUrl(path,3600);
- return error?null:data?.signedUrl||null;
+ if(error){console.error("RAZTARA media URL error",error);return null}
+ return data?.signedUrl||null;
 }
 function renderMessage(m){
  const box=document.getElementById("messages");
@@ -365,9 +367,15 @@ function renderMessage(m){
    else if(m.message_type==="voice"||m.message_type==="audio") bubble.innerHTML='<div class="media-loading">Voice খুলছে...</div>';
    else bubble.innerHTML='<div class="media-loading">📎 '+esc(text)+'</div>';
    getSignedMedia(m.file_url).then(url=>{
-     if(!url)return;
+     if(!url){
+       bubble.innerHTML='<div class="media-error">ভিডিও/মিডিয়া লোড হয়নি<br><button type="button" onclick="renderMessage('+JSON.stringify(m).replace(/</g,"\\u003c")+')">↻ আবার চেষ্টা</button></div>';
+       bubble.appendChild(time);
+       return;
+     }
      if(m.message_type==="image") bubble.innerHTML='<img class="chat-image" src="'+url+'" alt="">';
-     else if(m.message_type==="video") bubble.innerHTML='<video class="chat-video" controls playsinline src="'+url+'"></video>';
+     else if(m.message_type==="video") {
+ bubble.innerHTML='<div class="video-wrap"><video class="chat-video" controls playsinline webkit-playsinline preload="metadata" src="'+url+'"></video></div>';
+}
      else if(m.message_type==="voice"||m.message_type==="audio") bubble.innerHTML='<audio class="chat-audio" controls src="'+url+'"></audio>';
      else bubble.innerHTML='<a class="chat-file" href="'+url+'" target="_blank" rel="noopener">📎 '+esc(text)+'</a>';
      bubble.appendChild(time);
