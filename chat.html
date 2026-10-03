@@ -434,6 +434,95 @@ input[type=file]{
     display:none;
 }
 
+/* PENDING MEDIA PREVIEW */
+.plus-btn{
+    font-size:25px;
+    font-weight:400;
+}
+
+.pending-media-overlay{
+    position:fixed;
+    inset:0;
+    z-index:1600;
+    background:rgba(0,0,0,.55);
+    display:none;
+    align-items:flex-end;
+}
+
+.pending-media-overlay.show{
+    display:flex;
+}
+
+.pending-media-sheet{
+    width:100%;
+    max-height:88vh;
+    background:#fff;
+    border-radius:20px 20px 0 0;
+    padding:18px 15px calc(20px + env(safe-area-inset-bottom));
+}
+
+.pending-media-title{
+    text-align:center;
+    font-size:18px;
+    font-weight:800;
+    color:#18352d;
+    margin-bottom:14px;
+}
+
+.pending-media-preview{
+    min-height:110px;
+    max-height:55vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    background:#f3f7f5;
+    border-radius:14px;
+}
+
+.pending-media-preview img,
+.pending-media-preview video{
+    max-width:100%;
+    max-height:55vh;
+    object-fit:contain;
+}
+
+.pending-media-preview audio{
+    width:95%;
+}
+
+.pending-media-name{
+    margin-top:10px;
+    text-align:center;
+    color:#52655f;
+    font-size:13px;
+    word-break:break-word;
+}
+
+.pending-media-actions{
+    display:flex;
+    gap:10px;
+    margin-top:15px;
+}
+
+.pending-media-actions button{
+    flex:1;
+    height:48px;
+    border:0;
+    border-radius:13px;
+    font-weight:800;
+}
+
+.pending-cancel{
+    background:#edf2f0;
+    color:#52655f;
+}
+
+.pending-send{
+    background:#087f5b;
+    color:#fff;
+}
+
 /* MEDIA PICKER */
 .media-picker-overlay{
     position:fixed;
@@ -820,7 +909,7 @@ input[type=file]{
 
     <button class="back-btn" onclick="goBack()">‹</button>
 
-    <div class="user-area" onclick="openProfile()">
+    <div class="user-area" onclick="openChatUserMenu()">
 
         <img id="userAvatar"
              class="avatar"
@@ -894,24 +983,6 @@ input[type=file]{
 <!-- COMPOSER -->
 <div class="composer">
 
-    <button class="media-btn"
-            onclick="openMediaPicker('photo')"
-            title="Picture">
-        🖼️
-    </button>
-
-    <button class="media-btn"
-            onclick="openMediaPicker('video')"
-            title="Video">
-        🎥
-    </button>
-
-    <button class="media-btn"
-            onclick="openMediaPicker('file')"
-            title="File">
-        📎
-    </button>
-
     <button id="voiceBtn"
             class="media-btn"
             onclick="toggleRecording()"
@@ -920,19 +991,23 @@ input[type=file]{
     </button>
 
     <div class="input-wrap">
-
         <input id="messageInput"
                class="message-input"
                type="text"
                autocomplete="off"
                placeholder="Message...">
-
     </div>
 
     <button id="sendBtn"
             class="send-btn"
             onclick="sendText()">
         ➤
+    </button>
+
+    <button class="media-btn plus-btn"
+            onclick="openMediaPicker('plus')"
+            title="More">
+        +
     </button>
 
 </div>
@@ -980,14 +1055,7 @@ input[type=file]{
 
         <div class="media-picker-handle"></div>
 
-        <div id="mediaPickerTitle"
-             class="media-picker-title">
-            Select
-        </div>
-
-        <div id="photoPickerOptions"
-             class="media-picker-buttons"
-             style="display:none;">
+        <div class="media-picker-buttons">
 
             <button class="media-picker-button"
                     onclick="openPhotoCamera()">
@@ -995,55 +1063,23 @@ input[type=file]{
             </button>
 
             <button class="media-picker-button"
-                    onclick="openPhotoGallery()">
-                🖼️ Gallery
-            </button>
-
-            <button class="media-picker-button cancel"
-                    onclick="closeMediaPicker()">
-                ❌ Cancel
-            </button>
-
-        </div>
-
-        <div id="videoPickerOptions"
-             class="media-picker-buttons"
-             style="display:none;">
-
-            <button class="media-picker-button"
                     onclick="openVideoCamera()">
-                📹 Camera
+                📹 Video
             </button>
 
             <button class="media-picker-button"
-                    onclick="openVideoGallery()">
-                🎥 Gallery — শুধু Video
-            </button>
-
-            <button class="media-picker-button cancel"
-                    onclick="closeMediaPicker()">
-                ❌ Cancel
-            </button>
-
-        </div>
-
-        <div id="filePickerOptions"
-             class="media-picker-buttons"
-             style="display:none;">
-
-            <button class="media-picker-button"
-                    onclick="openPdfPicker()">
-                📄 PDF
-            </button>
-
-            <button class="media-picker-button"
-                    onclick="openGeneralFilePicker()">
+                    onclick="openFilePicker()">
                 📎 File
             </button>
 
+            <button class="media-picker-button"
+                    onclick="openPhotoGallery()">
+                🖼️ Picture
+            </button>
+
             <button class="media-picker-button cancel"
                     onclick="closeMediaPicker()">
-                ❌ Cancel
+                Cancel
             </button>
 
         </div>
@@ -1051,170 +1087,36 @@ input[type=file]{
     </div>
 </div>
 
-<div id="recordingBox" class="recording">
+<!-- PENDING MEDIA PREVIEW -->
+<div id="pendingMediaOverlay"
+     class="pending-media-overlay"
+     onclick="closePendingMedia(event)">
 
-    <div>
-        🎙️
-        <span id="recordingText">
-            Recording...
-        </span>
-    </div>
-
-    <button onclick="stopRecording()">
-        Send Voice
-    </button>
-
-</div>
-
-<div id="profileOverlay"
-     class="overlay"
-     onclick="closeProfile(event)">
-
-    <div class="sheet"
+    <div class="pending-media-sheet"
          onclick="event.stopPropagation()">
 
-        <div class="sheet-title">
-            Profile
-        </div>
+        <div class="pending-media-title">Preview</div>
 
-        <div class="profile-head">
+        <div id="pendingMediaPreview"
+             class="pending-media-preview"></div>
 
-            <img id="sheetAvatar"
-                 src="https://i.pravatar.cc/150?img=12">
+        <div id="pendingMediaName"
+             class="pending-media-name"></div>
 
-            <div>
-
-                <div id="sheetName"
-                     class="profile-name">
-                    RAZTARA User
-                </div>
-
-                <div id="sheetUsername"
-                     class="profile-username">
-                    @user
-                </div>
-
-            </div>
-
-        </div>
-
-        <div id="profileInfoRows"></div>
-
-        <button onclick="goUserProfile()"
-                style="
-                width:100%;
-                margin-top:15px;
-                border:0;
-                background:#087f5b;
-                color:#fff;
-                padding:12px;
-                border-radius:10px;
-                font-size:15px;">
-            View Profile
-        </button>
-
-        <button onclick="closeProfile()"
-                style="
-                width:100%;
-                margin-top:8px;
-                border:0;
-                background:#eee;
-                padding:12px;
-                border-radius:10px;
-                font-size:15px;">
-            Close
-        </button>
-
-    </div>
-</div>
-
-<div id="messageOptionsOverlay"
-     class="message-options-overlay"
-     onclick="closeMessageOptions(event)">
-
-    <div class="message-options-box"
-         onclick="event.stopPropagation()">
-
-        <div id="messageOptionsPreview"
-             class="message-options-preview">
-        </div>
-
-        <div id="messageOptionsTitle"
-             class="message-options-title">
-            Message Options
-        </div>
-
-        <div class="message-options-buttons">
-
-            <button onclick="shareSelectedMessage()">
-                📤 Share
+        <div class="pending-media-actions">
+            <button class="pending-cancel"
+                    onclick="cancelPendingMedia()">
+                Cancel
             </button>
 
-            <button onclick="deleteSelectedMessage()">
-                🗑️ Delete
+            <button class="pending-send"
+                    onclick="sendPendingMedia()">
+                Send
             </button>
-
-            <button id="saveGalleryButton"
-                    onclick="saveSelectedMedia()">
-                💾 Save to Gallery
-            </button>
-
-            <button class="message-options-cancel"
-                    onclick="closeMessageOptions()">
-                ❌ Cancel
-            </button>
-
         </div>
 
     </div>
 </div>
-
-<!-- =======================================================
-     INCOMING CALL OVERLAY
-======================================================= -->
-
-<div id="incomingCallOverlay"
-     class="incoming-call-overlay">
-
-    <div class="incoming-call-box">
-
-        <img id="incomingCallAvatar"
-             class="incoming-call-avatar"
-             src="https://i.pravatar.cc/150?img=12">
-
-        <div id="incomingCallTitle"
-             class="incoming-call-title">
-            Incoming Call
-        </div>
-
-        <div id="incomingCallName"
-             class="incoming-call-name">
-            RAZTARA User
-        </div>
-
-        <div id="incomingCallType"
-             class="incoming-call-type">
-            📞 Audio Call
-        </div>
-
-        <div class="incoming-call-buttons">
-
-            <button class="incoming-call-button incoming-call-reject"
-                    onclick="rejectIncomingCall()">
-                ❌ Reject
-            </button>
-
-            <button class="incoming-call-button incoming-call-accept"
-                    onclick="acceptIncomingCall()">
-                ✅ Accept
-            </button>
-
-        </div>
-
-    </div>
-</div>
-
-<div id="toast" class="toast"></div>
 
 <script>
 
@@ -1549,6 +1451,125 @@ function openGeneralFilePicker(){
    SELECTED FILE
 ========================================================= */
 
+let pendingMedia = null;
+
+function showPendingMedia(file,type){
+
+    if(!file){
+        return;
+    }
+
+    pendingMedia = {
+        file:file,
+        type:type,
+        url:URL.createObjectURL(file)
+    };
+
+    const preview =
+        document.getElementById("pendingMediaPreview");
+
+    const name =
+        document.getElementById("pendingMediaName");
+
+    if(!preview){
+        return;
+    }
+
+    preview.innerHTML = "";
+
+    if(type === "image"){
+        const img=document.createElement("img");
+        img.src=pendingMedia.url;
+        preview.appendChild(img);
+    }else if(type === "video"){
+        const video=document.createElement("video");
+        video.src=pendingMedia.url;
+        video.controls=true;
+        video.playsInline=true;
+        preview.appendChild(video);
+    }else if(type === "audio"){
+        const audio=document.createElement("audio");
+        audio.src=pendingMedia.url;
+        audio.controls=true;
+        preview.appendChild(audio);
+    }else{
+        const box=document.createElement("div");
+        box.textContent="📎 " + (file.name || "File");
+        box.style.fontWeight="700";
+        box.style.padding="30px";
+        preview.appendChild(box);
+    }
+
+    if(name){
+        name.textContent =
+            type === "audio"
+                ? "Voice message"
+                : (file.name || "");
+    }
+
+    document
+        .getElementById("pendingMediaOverlay")
+        .classList.add("show");
+}
+
+function closePendingMedia(event){
+
+    const overlay =
+        document.getElementById("pendingMediaOverlay");
+
+    if(event && event.target !== overlay){
+        return;
+    }
+
+    cancelPendingMedia();
+}
+
+function cancelPendingMedia(){
+
+    if(pendingMedia?.url){
+        URL.revokeObjectURL(pendingMedia.url);
+    }
+
+    pendingMedia = null;
+
+    const overlay =
+        document.getElementById("pendingMediaOverlay");
+
+    if(overlay){
+        overlay.classList.remove("show");
+    }
+}
+
+async function sendPendingMedia(){
+
+    if(!pendingMedia){
+        return;
+    }
+
+    const item = pendingMedia;
+
+    if(item.type === "audio"){
+        cancelPendingMedia();
+        await sendVoiceBlob(item.file);
+        return;
+    }
+
+    cancelPendingMedia();
+    await handleFile(item.file,item.type);
+}
+
+function openFilePicker(){
+
+    closeMediaPicker();
+
+    const input =
+        document.getElementById("fileInput");
+
+    input.value = "";
+    input.click();
+
+}
+
 function handleSelectedInput(
     input,
     type
@@ -1573,7 +1594,7 @@ function handleSelectedInput(
 
     input.value = "";
 
-    handleFile(
+    showPendingMedia(
         fileToSend,
         type
     );
@@ -3715,8 +3736,17 @@ async function toggleRecording(){
                         }
                     );
 
-                await sendVoiceBlob(
-                    blob
+                showPendingMedia(
+                    new File(
+                        [blob],
+                        "Voice message",
+                        {
+                            type:
+                                blob.type ||
+                                "audio/webm"
+                        }
+                    ),
+                    "audio"
                 );
 
                 if(recordingStream){
@@ -4654,9 +4684,19 @@ function getChatBackgroundKey(){
     const params = new URLSearchParams(window.location.search);
     const conversation =
         params.get("conversation_id") ||
-        params.get("conversation") ||
+        params.get("conversation");
+
+    if(conversation){
+        return "raztara_chat_background_" + conversation;
+    }
+
+    const user =
+        params.get("user") ||
+        params.get("user_id") ||
+        params.get("id") ||
         "default";
-    return "raztara_chat_background_" + conversation;
+
+    return "raztara_chat_background_user_" + user;
 }
 
 
@@ -4706,7 +4746,18 @@ function applyChatBackground(){
     const board = document.getElementById("chatBoard");
     if(!board) return;
 
-    const image = localStorage.getItem(getChatBackgroundKey());
+    let image =
+        localStorage.getItem(
+            getChatBackgroundKey()
+        );
+
+    if(!image && otherUserId){
+        image =
+            localStorage.getItem(
+                "raztara_chat_background_user_" +
+                otherUserId
+            );
+    }
 
     if(image){
         board.style.backgroundImage =
@@ -4745,6 +4796,18 @@ function focusMessage(){
 /* =========================================================
    BACK
 ========================================================= */
+
+function openChatUserMenu(){
+
+    if(!otherUserId){
+        return;
+    }
+
+    window.location.href =
+        "chat-menu.html?user=" +
+        encodeURIComponent(otherUserId);
+
+}
 
 function goBack(){
 
