@@ -1,2799 +1,2226 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#075e54">
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+
 <title>RAZTARA — Call</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{
-  box-sizing:border-box;
-  margin:0;
-  padding:0
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
 }
 
 html,body{
-  width:100%;
-  height:100%;
-  background:#101b20;
-  color:#fff;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-  overflow:hidden
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,
+                 "Segoe UI",Roboto,Arial,sans-serif;
+    background:#111b21;
+    color:#fff;
 }
 
 button{
-  font:inherit;
-  cursor:pointer
+    border:0;
+    outline:0;
+    cursor:pointer;
+    color:#fff;
 }
 
-.app{
-  position:relative;
-  width:100%;
-  height:100dvh;
-  overflow:hidden;
-  background:linear-gradient(180deg,#18343a,#071014)
+/* =========================
+   MAIN CALL SCREEN
+========================= */
+
+.call-screen{
+    position:fixed;
+    inset:0;
+    background:
+        radial-gradient(circle at 50% 25%,
+        rgba(30,120,90,.28),
+        transparent 38%),
+        linear-gradient(180deg,#17252b 0%,#071014 100%);
+    display:flex;
+    flex-direction:column;
 }
 
-.remote{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  background:#152328
+/* =========================
+   TOP BAR
+========================= */
+
+.topbar{
+    position:relative;
+    z-index:20;
+    width:100%;
+    min-height:72px;
+    padding:
+        max(12px,env(safe-area-inset-top))
+        16px
+        10px
+        16px;
+
+    display:flex;
+    align-items:center;
+    gap:13px;
+
+    background:rgba(0,0,0,.20);
+    backdrop-filter:blur(12px);
 }
 
-.remote.hidden{
-  display:none
+.back-btn{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:rgba(255,255,255,.10);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
 }
 
-.remote-placeholder{
-  position:absolute;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:14px;
-  background:radial-gradient(circle at 50% 38%,#28545a,#0a171b 58%);
-  z-index:1
+.profile{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    flex:1;
+    min-width:0;
 }
 
-.remote-placeholder.hidden{
-  display:none
+.profile-img{
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#26343a;
+    border:2px solid rgba(255,255,255,.18);
 }
 
-.avatar{
-  width:112px;
-  height:112px;
-  border-radius:50%;
-  object-fit:cover;
-  background:#075e54;
-  border:3px solid #ffffff30;
-  box-shadow:0 12px 35px #0006
+.profile-info{
+    min-width:0;
 }
 
-.caller-name{
-  font-size:24px;
-  font-weight:750;
-  max-width:85%;
-  text-align:center;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis
+.profile-name{
+    font-size:17px;
+    font-weight:600;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
 }
 
-.state{
-  font-size:14px;
-  color:#d7e5e2
+.call-status{
+    margin-top:3px;
+    color:#b8c4c8;
+    font-size:13px;
 }
 
-.top{
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  padding:calc(14px + env(safe-area-inset-top)) 16px 16px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  z-index:5;
-  background:linear-gradient(#0008,transparent)
+/* =========================
+   VIDEO AREA
+========================= */
+
+.video-area{
+    position:absolute;
+    inset:0;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
-.back{
-  width:40px;
-  height:40px;
-  border:0;
-  border-radius:50%;
-  background:#0005;
-  color:#fff;
-  font-size:28px
+.remote-video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    background:#111;
+    display:none;
 }
 
-.top-name{
-  font-size:16px;
-  font-weight:700;
-  flex:1
+.remote-video.active{
+    display:block;
 }
 
-.top-type{
-  font-size:11px;
-  opacity:.75
+.avatar-area{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
 }
 
-.local-wrap{
-  position:absolute;
-  right:14px;
-  top:calc(74px + env(safe-area-inset-top));
-  width:108px;
-  height:152px;
-  border-radius:14px;
-  overflow:hidden;
-  background:#1a2a2f;
-  border:1px solid #ffffff44;
-  box-shadow:0 6px 20px #0006;
-  z-index:6
+.big-avatar{
+    width:132px;
+    height:132px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#26343a;
+    border:4px solid rgba(255,255,255,.15);
+    box-shadow:0 12px 40px rgba(0,0,0,.4);
 }
 
-.local{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  transform:scaleX(-1)
+.big-name{
+    font-size:25px;
+    font-weight:500;
 }
 
-.local-off{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#9fb0b4;
-  font-size:12px;
-  background:#152328
+.connecting{
+    color:#c2cccf;
+    font-size:14px;
 }
 
-.controls{
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  padding:18px 18px calc(20px + env(safe-area-inset-bottom));
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:14px;
-  z-index:7;
-  background:linear-gradient(transparent,#000b 70%);
-  flex-wrap:wrap
+/* =========================
+   LOCAL VIDEO
+========================= */
+
+.local-video{
+    position:absolute;
+    z-index:10;
+    right:15px;
+    top:90px;
+
+    width:105px;
+    height:145px;
+
+    object-fit:cover;
+    background:#000;
+
+    border-radius:13px;
+    border:2px solid rgba(255,255,255,.5);
+
+    display:none;
+    box-shadow:0 7px 20px rgba(0,0,0,.45);
+}
+
+.local-video.active{
+    display:block;
+}
+
+/* =========================
+   CONTROLS
+========================= */
+
+.bottom-area{
+    position:absolute;
+    z-index:30;
+    left:0;
+    right:0;
+    bottom:0;
+
+    padding:
+        18px
+        18px
+        max(22px,env(safe-area-inset-bottom))
+        18px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+
+    background:linear-gradient(
+        to top,
+        rgba(0,0,0,.72),
+        rgba(0,0,0,0)
+    );
+}
+
+.control-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:16px;
+    flex-wrap:wrap;
 }
 
 .control{
-  width:58px;
-  height:58px;
-  border:0;
-  border-radius:50%;
-  background:#ffffff20;
-  color:#fff;
-  font-size:23px;
-  backdrop-filter:blur(10px)
+    width:58px;
+    height:58px;
+    border-radius:50%;
+    background:rgba(255,255,255,.16);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:24px;
+
+    backdrop-filter:blur(10px);
+    transition:.15s;
 }
 
-.control.on{
-  background:#fff;
-  color:#172126
+.control:active{
+    transform:scale(.91);
 }
 
-.end{
-  width:66px;
-  height:66px;
-  border:0;
-  border-radius:50%;
-  background:#e53935;
-  color:#fff;
-  font-size:27px;
-  box-shadow:0 5px 18px #0007
+.control.active{
+    background:#fff;
+    color:#111;
 }
 
-.incoming{
-  position:absolute;
-  inset:0;
-  display:none;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  z-index:20;
-  background:linear-gradient(180deg,#18343a,#071014)
+.end-call{
+    width:68px;
+    height:68px;
+    border-radius:50%;
+    background:#e53935;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:29px;
+    transform:rotate(135deg);
+
+    box-shadow:0 7px 25px rgba(229,57,53,.35);
 }
 
-.incoming.show{
-  display:flex
+.end-call:active{
+    transform:rotate(135deg) scale(.91);
 }
 
-.incoming .avatar{
-  width:126px;
-  height:126px;
-  margin-bottom:20px
+/* =========================
+   INCOMING CALL
+========================= */
+
+.incoming-overlay{
+    position:fixed;
+    inset:0;
+    z-index:100;
+
+    display:none;
+    flex-direction:column;
+    align-items:center;
+
+    padding:
+        max(40px,env(safe-area-inset-top))
+        25px
+        max(30px,env(safe-area-inset-bottom));
+
+    background:
+        linear-gradient(
+            180deg,
+            #182a30,
+            #081115
+        );
 }
 
-.incoming h1{
-  font-size:26px;
-  margin-bottom:7px
+.incoming-overlay.show{
+    display:flex;
 }
 
-.incoming p{
-  color:#c5d2d4;
-  font-size:14px
+.incoming-label{
+    margin-top:10px;
+    color:#aebabe;
+    font-size:15px;
+}
+
+.incoming-avatar{
+    width:125px;
+    height:125px;
+    border-radius:50%;
+    object-fit:cover;
+    margin-top:95px;
+
+    border:4px solid rgba(255,255,255,.15);
+}
+
+.incoming-name{
+    margin-top:20px;
+    font-size:27px;
+    font-weight:500;
+}
+
+.incoming-type{
+    margin-top:8px;
+    color:#b6c2c6;
 }
 
 .incoming-actions{
-  display:flex;
-  gap:58px;
-  margin-top:58px
+    margin-top:auto;
+    width:100%;
+
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
 }
 
-.in-btn{
-  width:66px;
-  height:66px;
-  border:0;
-  border-radius:50%;
-  color:#fff;
-  font-size:28px
+.incoming-action{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:9px;
+
+    background:none;
 }
 
-.accept{
-  background:#20a464
+.incoming-circle{
+    width:67px;
+    height:67px;
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:27px;
 }
 
-.decline{
-  background:#e53935
+.decline-circle{
+    background:#e53935;
+    transform:rotate(135deg);
 }
 
-.in-label{
-  font-size:11px;
-  color:#d0dcde;
-  text-align:center;
-  margin-top:8px
+.accept-circle{
+    background:#28c76f;
+    transform:rotate(135deg);
 }
 
-.toast{
-  position:absolute;
-  left:50%;
-  bottom:calc(104px + env(safe-area-inset-bottom));
-  transform:translateX(-50%);
-  background:#26383a;
-  color:#fff;
-  padding:9px 15px;
-  border-radius:22px;
-  font-size:12px;
-  z-index:30;
-  opacity:0;
-  transition:.2s;
-  pointer-events:none;
-  white-space:nowrap
+.incoming-action span{
+    font-size:13px;
+    color:#d4dcde;
 }
 
-.toast.show{
-  opacity:1
-}
+/* =========================
+   ERROR / MESSAGE
+========================= */
 
-.hidden{
-  display:none!important
-}
-
-@media(min-width:700px){
-  .app{
-    max-width:520px;
-    margin:auto;
-    box-shadow:0 0 50px #0008
-  }
-
-  .top{
-    max-width:520px;
+.message-box{
+    position:fixed;
+    z-index:200;
     left:50%;
-    right:auto;
-    width:520px;
-    transform:translateX(-50%)
-  }
+    bottom:120px;
 
-  .controls{
-    max-width:520px;
-    left:50%;
-    right:auto;
-    width:520px;
-    transform:translateX(-50%)
-  }
+    transform:translateX(-50%);
+
+    width:calc(100% - 35px);
+    max-width:420px;
+
+    padding:13px 16px;
+
+    border-radius:12px;
+
+    background:rgba(20,20,20,.92);
+    color:#fff;
+
+    text-align:center;
+    font-size:14px;
+
+    display:none;
+}
+
+.message-box.show{
+    display:block;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:500px){
+
+    .local-video{
+        width:92px;
+        height:125px;
+        top:82px;
+        right:10px;
+    }
+
+    .control-row{
+        gap:12px;
+    }
+
+    .control{
+        width:54px;
+        height:54px;
+        font-size:22px;
+    }
+
+    .end-call{
+        width:64px;
+        height:64px;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<main class="app">
+<div class="call-screen">
 
-  <video
-    id="remoteVideo"
-    class="remote hidden"
-    autoplay
-    playsinline
-    webkit-playsinline>
-  </video>
+    <!-- VIDEO -->
+    <div class="video-area">
 
-  <div id="remotePlaceholder" class="remote-placeholder">
+        <video
+            id="remoteVideo"
+            class="remote-video"
+            autoplay
+            playsinline>
+        </video>
 
-    <img id="bigAvatar" class="avatar" src="" alt="">
+        <div id="avatarArea" class="avatar-area">
 
-    <div id="callerName" class="caller-name">
-      RAZTARA User
+            <img
+                id="bigAvatar"
+                class="big-avatar"
+                src=""
+                alt="Profile">
+
+            <div id="bigName" class="big-name">
+                RAZTARA User
+            </div>
+
+            <div id="connectingText" class="connecting">
+                Calling…
+            </div>
+
+        </div>
+
+        <video
+            id="localVideo"
+            class="local-video"
+            autoplay
+            muted
+            playsinline>
+        </video>
+
     </div>
 
-    <div id="state" class="state">
-      Connecting...
+    <!-- TOP -->
+    <div class="topbar">
+
+        <button
+            class="back-btn"
+            onclick="goBack()">
+            ‹
+        </button>
+
+        <div class="profile">
+
+            <img
+                id="profileImg"
+                class="profile-img"
+                src=""
+                alt="">
+
+            <div class="profile-info">
+
+                <div
+                    id="profileName"
+                    class="profile-name">
+                    RAZTARA User
+                </div>
+
+                <div
+                    id="callStatus"
+                    class="call-status">
+                    Calling…
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <div id="duration" class="state hidden">
-      00:00
+    <!-- CONTROLS -->
+    <div class="bottom-area">
+
+        <div class="control-row">
+
+            <button
+                id="muteBtn"
+                class="control"
+                onclick="toggleMute()">
+                🎙️
+            </button>
+
+            <button
+                id="speakerBtn"
+                class="control"
+                onclick="toggleSpeaker()">
+                🔊
+            </button>
+
+            <button
+                id="cameraBtn"
+                class="control"
+                onclick="toggleCamera()">
+                📷
+            </button>
+
+            <button
+                id="switchBtn"
+                class="control"
+                onclick="switchCamera()">
+                🔄
+            </button>
+
+            <button
+                id="modeBtn"
+                class="control"
+                onclick="toggleCallMode()">
+                🎥
+            </button>
+
+        </div>
+
+        <button
+            class="end-call"
+            onclick="endCall()">
+            📞
+        </button>
+
     </div>
 
-  </div>
+</div>
 
-  <header class="top">
 
-    <button class="back" onclick="leaveCall()">
-      ‹
-    </button>
+<!-- INCOMING -->
+<div
+    id="incomingOverlay"
+    class="incoming-overlay">
 
-    <div class="top-name" id="topName">
-      RAZTARA User
+    <div class="incoming-label">
+        Incoming call
     </div>
 
-    <div class="top-type" id="topType">
-      Audio call
+    <img
+        id="incomingAvatar"
+        class="incoming-avatar"
+        src=""
+        alt="">
+
+    <div
+        id="incomingName"
+        class="incoming-name">
+        RAZTARA User
     </div>
 
-  </header>
-
-  <div id="localWrap" class="local-wrap hidden">
-
-    <video
-      id="localVideo"
-      class="local"
-      autoplay
-      muted
-      playsinline
-      webkit-playsinline>
-    </video>
-
-    <div id="localOff" class="local-off hidden">
-      Camera off
+    <div
+        id="incomingType"
+        class="incoming-type">
+        Incoming video call
     </div>
-
-  </div>
-
-  <div id="controls" class="controls hidden">
-
-    <button
-      id="speakerBtn"
-      class="control"
-      onclick="toggleSpeaker()">
-      🔊
-    </button>
-
-    <button
-      id="muteBtn"
-      class="control"
-      onclick="toggleMute()">
-      🎤
-    </button>
-
-    <button
-      id="cameraBtn"
-      class="control hidden"
-      onclick="toggleCamera()">
-      📹
-    </button>
-
-    <button
-      id="switchCameraBtn"
-      class="control hidden"
-      onclick="switchCamera()">
-      🔄
-    </button>
-
-    <button
-      id="modeBtn"
-      class="control hidden"
-      onclick="toggleCallMode()">
-      🔊
-    </button>
-
-    <button
-      class="end"
-      onclick="leaveCall()">
-      ☎
-    </button>
-
-  </div>
-
-  <section id="incoming" class="incoming">
-
-    <img id="incomingAvatar" class="avatar" src="" alt="">
-
-    <h1 id="incomingName">
-      RAZTARA User
-    </h1>
-
-    <p id="incomingType">
-      Incoming audio call
-    </p>
 
     <div class="incoming-actions">
 
-      <div>
         <button
-          class="in-btn decline"
-          onclick="rejectCall()">
-          ☎
+            class="incoming-action"
+            onclick="rejectIncoming()">
+
+            <div class="incoming-circle decline-circle">
+                📞
+            </div>
+
+            <span>Decline</span>
+
         </button>
 
-        <div class="in-label">
-          Decline
-        </div>
-      </div>
-
-      <div>
         <button
-          class="in-btn accept"
-          onclick="acceptCall()">
-          ☎
-        </button>
+            class="incoming-action"
+            onclick="acceptIncoming()">
 
-        <div class="in-label">
-          Accept
-        </div>
-      </div>
+            <div class="incoming-circle accept-circle">
+                📞
+            </div>
+
+            <span>Accept</span>
+
+        </button>
 
     </div>
 
-  </section>
+</div>
 
-  <div id="toast" class="toast"></div>
 
-</main>
+<div
+    id="messageBox"
+    class="message-box">
+</div>
+
 
 <script>
 
-/* =========================================================
-   RAZTARA REAL CALL SYSTEM
-   Supabase + WebRTC + Database Signalling
-========================================================= */
+/* =====================================================
+   SUPABASE
+===================================================== */
 
 const SUPABASE_URL =
-  "https://pqyicaqpmojijjskpzcp.supabase.co";
+    "https://pqyicaqpmojijjskpzcp.supabase.co";
 
-const SUPABASE_KEY =
-  "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+const SUPABASE_ANON_KEY =
+    "YOUR_SUPABASE_ANON_KEY";
 
-const sb =
-  supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
 
 
-/* =========================================================
+/* =====================================================
    STATE
-========================================================= */
+===================================================== */
 
-let me = null;
-let other = null;
+let currentUser = null;
 
-let conversationId = "";
-let callId = "";
+let callId = null;
+let conversationId = null;
 
-let type = "audio";
-let callMode = "audio";
+let callerId = null;
+let receiverId = null;
 
-let incoming = false;
-let accepted = false;
-let finished = false;
+let callType = "video";
 
 let pc = null;
+
 let localStream = null;
 
-let muted = false;
-let cameraOff = false;
-let speakerOn = true;
+let remoteStream = null;
 
-let remoteReady = false;
+let isMuted = false;
+let isSpeaker = true;
+let cameraEnabled = true;
 
-let callStartedAt = 0;
-let durationTimer = null;
+let isIncoming = false;
+let isConnected = false;
 
-let signalChannel = null;
-let pendingIce = [];
+let seconds = 0;
+let timer = null;
 
-let facingMode = "user";
+let channel = null;
 
-let incomingPoll = null;
-
-
-/* =========================================================
-   URL
-========================================================= */
-
-const qs = name =>
-  new URLSearchParams(location.search).get(name) || "";
+let activeCamera = "user";
 
 
-/* =========================================================
-   AVATAR
-========================================================= */
+/* =====================================================
+   DOM
+===================================================== */
 
-function avatar(u){
+const remoteVideo =
+    document.getElementById("remoteVideo");
 
-  if(u?.avatar_url){
-    return u.avatar_url;
-  }
+const localVideo =
+    document.getElementById("localVideo");
 
-  const n =
-    (
-      u?.full_name ||
-      u?.username ||
-      "R"
-    ).slice(0,1);
+const avatarArea =
+    document.getElementById("avatarArea");
 
-  return (
-    "https://ui-avatars.com/api/?name=" +
-    encodeURIComponent(n) +
-    "&background=075e54&color=fff&bold=true"
-  );
+const bigAvatar =
+    document.getElementById("bigAvatar");
+
+const bigName =
+    document.getElementById("bigName");
+
+const profileImg =
+    document.getElementById("profileImg");
+
+const profileName =
+    document.getElementById("profileName");
+
+const callStatus =
+    document.getElementById("callStatus");
+
+const connectingText =
+    document.getElementById("connectingText");
+
+const incomingOverlay =
+    document.getElementById("incomingOverlay");
+
+const incomingAvatar =
+    document.getElementById("incomingAvatar");
+
+const incomingName =
+    document.getElementById("incomingName");
+
+const incomingType =
+    document.getElementById("incomingType");
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+function showMessage(message){
+
+    const box =
+        document.getElementById("messageBox");
+
+    box.textContent = message;
+
+    box.classList.add("show");
+
+    setTimeout(()=>{
+        box.classList.remove("show");
+    },3000);
 }
 
 
-/* =========================================================
-   UI
-========================================================= */
+function setStatus(text){
 
-function toast(message){
-
-  const e =
-    document.getElementById("toast");
-
-  e.textContent = message;
-
-  e.classList.add("show");
-
-  clearTimeout(e._timer);
-
-  e._timer =
-    setTimeout(
-      () => e.classList.remove("show"),
-      2400
-    );
+    callStatus.textContent = text;
+    connectingText.textContent = text;
 }
 
 
-function setState(message){
+function setProfile(name, photo){
 
-  document.getElementById("state")
-    .textContent = message;
+    name =
+        name ||
+        "RAZTARA User";
+
+    photo =
+        photo ||
+        "https://via.placeholder.com/300";
+
+    profileName.textContent = name;
+    bigName.textContent = name;
+
+    profileImg.src = photo;
+    bigAvatar.src = photo;
+
+    incomingName.textContent = name;
+    incomingAvatar.src = photo;
 }
 
 
-function setProfile(p){
+/* =====================================================
+   GET URL
+===================================================== */
 
-  other = p;
+function getParams(){
 
-  const a = avatar(p);
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
 
-  const n =
-    p.full_name ||
-    p.username ||
-    "RAZTARA User";
+    callId =
+        params.get("call") ||
+        params.get("call_id");
 
-  document.getElementById("bigAvatar").src = a;
+    conversationId =
+        params.get("conversation") ||
+        params.get("conversation_id");
 
-  document.getElementById("incomingAvatar").src = a;
+    callType =
+        params.get("type") ||
+        "video";
 
-  document.getElementById("callerName").textContent = n;
+    isIncoming =
+        params.get("incoming") === "1";
 
-  document.getElementById("incomingName").textContent = n;
-
-  document.getElementById("topName").textContent = n;
-
-  document.getElementById("topType").textContent =
-    callMode === "video"
-      ? "Video call"
-      : "Audio call";
-
-  document.getElementById("incomingType").textContent =
-    "Incoming " +
-    (
-      type === "video"
-        ? "video"
-        : "audio"
-    ) +
-    " call";
 }
 
 
-function showControls(){
+/* =====================================================
+   USER
+===================================================== */
 
-  document
-    .getElementById("controls")
-    .classList.remove("hidden");
-}
+async function loadUser(){
 
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.getUser();
 
-/* =========================================================
-   PROFILE
-========================================================= */
+    if(error || !data.user){
 
-async function profile(id){
+        showMessage("Login required");
 
-  const {data,error} =
-    await sb
-      .from("profiles")
-      .select(
-        "id,username,full_name,avatar_url"
-      )
-      .eq("id",id)
-      .maybeSingle();
-
-  if(error){
-    console.error(error);
-    return null;
-  }
-
-  return data;
-}
-
-
-/* =========================================================
-   INIT
-========================================================= */
-
-async function init(){
-
-  const auth =
-    await sb.auth.getUser();
-
-  if(
-    auth.error ||
-    !auth.data.user
-  ){
-
-    location.href = "login.html";
-    return;
-  }
-
-  me = auth.data.user;
-
-  conversationId =
-    qs("conversation");
-
-  type =
-    qs("type") === "video"
-      ? "video"
-      : "audio";
-
-  callMode = type;
-
-  callId =
-    qs("call_id");
-
-  incoming =
-    qs("incoming") === "1";
-
-
-  /* -------------------------------------------------------
-     OUTGOING
-  ------------------------------------------------------- */
-
-  const userId =
-    qs("user") ||
-    qs("user_id");
-
-
-  /* -------------------------------------------------------
-     INCOMING WITH CALL ID
-  ------------------------------------------------------- */
-
-  if(incoming && callId){
-
-    await loadIncomingCall(callId);
-
-    return;
-  }
-
-
-  /* -------------------------------------------------------
-     INCOMING WITHOUT CALL ID
-     Try to find ringing call
-  ------------------------------------------------------- */
-
-  if(incoming){
-
-    const found =
-      await findPendingCall();
-
-    if(found){
-
-      await loadIncomingCall(found.id);
-
-      return;
+        return false;
     }
 
-    toast("কোনো incoming call পাওয়া যায়নি");
-
-    return;
-  }
-
-
-  /* -------------------------------------------------------
-     OUTGOING
-  ------------------------------------------------------- */
-
-  if(!userId || !conversationId){
-
-    toast("Call information পাওয়া যায়নি");
-
-    return;
-  }
-
-
-  other =
-    await profile(userId);
-
-  if(!other){
-
-    toast("User profile পাওয়া যায়নি");
-
-    return;
-  }
-
-
-  setProfile(other);
-
-  await setupSignalChannel();
-
-  await startOutgoing();
-
-}
-
-
-/* =========================================================
-   FIND PENDING CALL
-========================================================= */
-
-async function findPendingCall(){
-
-  const {data,error} =
-    await sb
-      .from("calls")
-      .select(
-        "id,conversation_id,caller_id,receiver_id,call_type,status"
-      )
-      .eq("receiver_id",me.id)
-      .eq("status","ringing")
-      .order("started_at",{ascending:false})
-      .limit(1)
-      .maybeSingle();
-
-  if(error){
-
-    console.error(
-      "pending call error",
-      error
-    );
-
-    return null;
-  }
-
-  return data;
-}
-
-
-/* =========================================================
-   LOAD INCOMING CALL
-========================================================= */
-
-async function loadIncomingCall(id){
-
-  const {data,error} =
-    await sb
-      .from("calls")
-      .select(
-        "id,conversation_id,caller_id,receiver_id,call_type,status"
-      )
-      .eq("id",id)
-      .maybeSingle();
-
-  if(error || !data){
-
-    toast("Call পাওয়া যায়নি");
-
-    return;
-  }
-
-
-  if(data.receiver_id !== me.id){
-
-    toast("এই Call আপনার জন্য নয়");
-
-    return;
-  }
-
-
-  if(
-    ![
-      "ringing",
-      "answered"
-    ].includes(data.status)
-  ){
-
-    toast("Call আর active নেই");
-
-    return;
-  }
-
-
-  callId =
-    data.id;
-
-  conversationId =
-    data.conversation_id;
-
-  type =
-    data.call_type === "video"
-      ? "video"
-      : "audio";
-
-  callMode =
-    type;
-
-
-  other =
-    await profile(data.caller_id);
-
-  if(!other){
-
-    toast("Caller profile পাওয়া যায়নি");
-
-    return;
-  }
-
-
-  setProfile(other);
-
-  await setupSignalChannel();
-
-  showIncoming();
-
-  /* -------------------------------------------------------
-     Existing offer already inserted before page opened
-  ------------------------------------------------------- */
-
-  setTimeout(
-    loadExistingSignals,
-    300
-  );
-}
-
-
-/* =========================================================
-   SETUP DATABASE REALTIME
-========================================================= */
-
-async function setupSignalChannel(){
-
-  if(signalChannel){
-
-    await sb.removeChannel(
-      signalChannel
-    );
-
-    signalChannel = null;
-  }
-
-
-  signalChannel =
-    sb
-      .channel(
-        "raztara-call-" +
-        conversationId +
-        "-" +
-        me.id
-      )
-      .on(
-        "postgres_changes",
-        {
-          event:"INSERT",
-          schema:"public",
-          table:"call_signals",
-          filter:
-            "conversation_id=eq." +
-            conversationId
-        },
-        async payload => {
-
-          await handleSignal(
-            payload.new
-          );
-
-        }
-      );
-
-
-  const status =
-    await new Promise(resolve => {
-
-      signalChannel.subscribe(
-        s => {
-
-          if(
-            s === "SUBSCRIBED"
-          ){
-
-            resolve(true);
-
-          }
-
-          if(
-            s === "CHANNEL_ERROR" ||
-            s === "TIMED_OUT"
-          ){
-
-            resolve(false);
-
-          }
-
-        }
-      );
-
-    });
-
-
-  if(!status){
-
-    toast("Call connection channel চালু হয়নি");
-
-    console.error(
-      "Realtime subscription failed"
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   SEND SIGNAL TO DATABASE
-========================================================= */
-
-async function sendSignal(
-  signalType,
-  payload={}
-){
-
-  if(
-    !me ||
-    !conversationId
-  ){
-
-    return null;
-  }
-
-
-  const row = {
-
-    conversation_id:
-      conversationId,
-
-    sender_id:
-      me.id,
-
-    signal_type:
-      signalType,
-
-    payload:
-      {
-        ...payload,
-        call_id:
-          callId
-      }
-
-  };
-
-
-  const {data,error} =
-    await sb
-      .from("call_signals")
-      .insert(row)
-      .select()
-      .maybeSingle();
-
-
-  if(error){
-
-    console.error(
-      "Signal insert error:",
-      error
-    );
-
-    toast(
-      "Call signal পাঠানো যায়নি"
-    );
-
-    return null;
-  }
-
-
-  return data;
-}
-
-
-/* =========================================================
-   HANDLE SIGNAL
-========================================================= */
-
-async function handleSignal(signal){
-
-  if(!signal){
-    return;
-  }
-
-
-  if(signal.sender_id === me.id){
-    return;
-  }
-
-
-  const p =
-    signal.payload || {};
-
-
-  if(
-    p.call_id &&
-    p.call_id !== callId
-  ){
-
-    return;
-  }
-
-
-  switch(signal.signal_type){
-
-    case "offer":
-
-      await receiveOffer(
-        p.offer
-      );
-
-      break;
-
-
-    case "answer":
-
-      await receiveAnswer(
-        p.answer
-      );
-
-      break;
-
-
-    case "ice":
-
-      await receiveIce(
-        p.candidate
-      );
-
-      break;
-
-
-    case "hangup":
-
-      finish(
-        p.reason ||
-        "Call ended",
-        false
-      );
-
-      break;
-
-
-    case "reject":
-
-      finish(
-        "Call declined",
-        false
-      );
-
-      break;
-
-  }
-
-}
-
-
-/* =========================================================
-   LOAD OLD SIGNALS
-========================================================= */
-
-async function loadExistingSignals(){
-
-  if(!callId){
-    return;
-  }
-
-
-  const {data,error} =
-    await sb
-      .from("call_signals")
-      .select(
-        "id,sender_id,signal_type,payload,created_at"
-      )
-      .eq(
-        "conversation_id",
-        conversationId
-      )
-      .order(
-        "created_at",
-        {
-          ascending:true
-        }
-      );
-
-
-  if(error){
-
-    console.error(
-      "signal load error",
-      error
-    );
-
-    return;
-  }
-
-
-  for(
-    const signal of data || []
-  ){
-
-    if(
-      signal.sender_id === me.id
-    ){
-
-      continue;
-    }
-
-
-    const p =
-      signal.payload || {};
-
-
-    if(
-      p.call_id !== callId
-    ){
-
-      continue;
-    }
-
-
-    await handleSignal(signal);
-
-  }
-
-}
-
-
-/* =========================================================
-   START OUTGOING
-========================================================= */
-
-async function startOutgoing(){
-
-  /* -------------------------------------------------------
-     Create actual call row
-  ------------------------------------------------------- */
-
-  const {data,error} =
-    await sb
-      .from("calls")
-      .insert({
-
-        conversation_id:
-          conversationId,
-
-        caller_id:
-          me.id,
-
-        receiver_id:
-          other.id,
-
-        call_type:
-          type,
-
-        status:
-          "ringing"
-
-      })
-      .select()
-      .single();
-
-
-  if(error){
-
-    console.error(
-      "Call create error:",
-      error
-    );
-
-    toast(
-      "Call শুরু করা যায়নি"
-    );
-
-    return;
-  }
-
-
-  callId =
-    data.id;
-
-
-  await ensureMedia();
-
-  await createPeer(true);
-
-  await sendSignal(
-    "offer",
-    {
-      offer:
-        pc.localDescription
-    }
-  );
-
-
-  setState("Ringing...");
-
-}
-
-
-/* =========================================================
-   MEDIA
-========================================================= */
-
-async function ensureMedia(){
-
-  if(localStream){
+    currentUser =
+        data.user;
 
     return true;
-  }
+}
 
 
-  try{
+/* =====================================================
+   PROFILE
+===================================================== */
 
-    localStream =
-      await navigator.mediaDevices
-        .getUserMedia({
+async function loadProfile(userId){
 
-          audio:true,
+    if(!userId) return;
 
-          video:
-            type === "video"
-              ? {
-                  facingMode:{
-                    ideal:
-                      facingMode
-                  }
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("id",userId)
+        .maybeSingle();
+
+    if(error || !data){
+
+        setProfile(
+            "RAZTARA User",
+            ""
+        );
+
+        return;
+    }
+
+    const name =
+        data.name ||
+        data.full_name ||
+        data.username ||
+        "RAZTARA User";
+
+    const photo =
+        data.avatar_url ||
+        data.profile_photo ||
+        data.photo_url ||
+        "";
+
+    setProfile(name,photo);
+}
+
+
+/* =====================================================
+   WEBRTC
+===================================================== */
+
+function createPeer(){
+
+    pc =
+        new RTCPeerConnection({
+
+            iceServers:[
+                {
+                    urls:[
+                        "stun:stun.l.google.com:19302",
+                        "stun:stun1.l.google.com:19302"
+                    ]
                 }
-              : false
+            ]
+        });
+
+
+    pc.ontrack = event => {
+
+        if(!remoteStream){
+
+            remoteStream =
+                new MediaStream();
+
+            remoteVideo.srcObject =
+                remoteStream;
+        }
+
+        event.streams[0]
+            .getTracks()
+            .forEach(track => {
+
+                if(
+                    !remoteStream
+                    .getTracks()
+                    .includes(track)
+                ){
+
+                    remoteStream.addTrack(track);
+                }
+
+            });
+
+
+        remoteVideo.classList.add("active");
+
+        avatarArea.style.display =
+            "none";
+    };
+
+
+    pc.onicecandidate =
+        async event => {
+
+            if(!event.candidate)
+                return;
+
+            await sendSignal(
+                "ice",
+                event.candidate
+            );
+        };
+
+
+    pc.onconnectionstatechange =
+        () => {
+
+            if(!pc)
+                return;
+
+            const state =
+                pc.connectionState;
+
+            if(state === "connected"){
+
+                isConnected = true;
+
+                setStatus("Connected");
+
+                startTimer();
+
+            }
+
+            if(
+                state === "failed" ||
+                state === "disconnected"
+            ){
+
+                setStatus(
+                    "Connection lost"
+                );
+            }
+
+        };
+
+
+    if(localStream){
+
+        localStream
+            .getTracks()
+            .forEach(track => {
+
+                pc.addTrack(
+                    track,
+                    localStream
+                );
+
+            });
+
+    }
+}
+
+
+/* =====================================================
+   MEDIA
+===================================================== */
+
+async function getMedia(){
+
+    try{
+
+        const constraints = {
+
+            audio:true,
+
+            video:
+                callType === "video"
+        };
+
+
+        localStream =
+            await navigator
+            .mediaDevices
+            .getUserMedia(
+                constraints
+            );
+
+
+        localVideo.srcObject =
+            localStream;
+
+
+        if(
+            callType === "video"
+        ){
+
+            localVideo.classList.add(
+                "active"
+            );
+
+        }else{
+
+            localVideo.classList.remove(
+                "active"
+            );
+        }
+
+
+    }catch(error){
+
+        console.error(error);
+
+        showMessage(
+            "Camera/Microphone permission দিন"
+        );
+
+        throw error;
+    }
+}
+
+
+/* =====================================================
+   SIGNALING
+===================================================== */
+
+async function sendSignal(
+    signalType,
+    payload
+){
+
+    if(
+        !conversationId ||
+        !currentUser
+    ){
+
+        return;
+    }
+
+
+    const { error } =
+        await supabaseClient
+        .from("call_signals")
+        .insert({
+
+            conversation_id:
+                conversationId,
+
+            sender_id:
+                currentUser.id,
+
+            signal_type:
+                signalType,
+
+            payload:
+                payload
 
         });
 
 
-    const localVideo =
-      document.getElementById(
-        "localVideo"
-      );
+    if(error){
+
+        console.error(
+            "Signal error:",
+            error
+        );
+    }
+}
 
 
-    localVideo.srcObject =
-      localStream;
+/* =====================================================
+   HANDLE SIGNAL
+===================================================== */
 
+async function handleSignal(row){
 
-    showControls();
+    if(!row)
+        return;
 
+    if(
+        row.sender_id ===
+        currentUser.id
+    ){
 
-    if(type === "video"){
-
-      document
-        .getElementById(
-          "localWrap"
-        )
-        .classList
-        .remove("hidden");
-
-
-      document
-        .getElementById(
-          "cameraBtn"
-        )
-        .classList
-        .remove("hidden");
-
-
-      document
-        .getElementById(
-          "switchCameraBtn"
-        )
-        .classList
-        .remove("hidden");
-
-
-      document
-        .getElementById(
-          "modeBtn"
-        )
-        .classList
-        .remove("hidden");
-
+        return;
     }
 
 
-    return true;
+    const type =
+        row.signal_type;
 
-  }catch(e){
-
-    console.error(e);
-
-
-    toast(
-      e.name === "NotAllowedError"
-        ? "Microphone/Camera permission দিন"
-        : "Microphone/Camera চালু করা যায়নি"
-    );
+    const payload =
+        row.payload;
 
 
-    throw e;
-  }
+    try{
 
-}
+        if(type === "offer"){
 
+            await handleOffer(
+                payload
+            );
 
-/* =========================================================
-   CREATE WEBRTC PEER
-========================================================= */
-
-async function createPeer(
-  offerer
-){
-
-  if(pc){
-
-    return;
-  }
-
-
-  pc =
-    new RTCPeerConnection({
-
-      iceServers:[
-
-        {
-          urls:
-            "stun:stun.l.google.com:19302"
-        },
-
-        {
-          urls:
-            "stun:stun1.l.google.com:19302"
-        },
-
-        {
-          urls:
-            "stun:stun2.l.google.com:19302"
         }
 
-      ]
+        else if(type === "answer"){
 
-    });
+            await handleAnswer(
+                payload
+            );
 
+        }
 
-  if(localStream){
+        else if(type === "ice"){
 
-    localStream
-      .getTracks()
-      .forEach(track => {
+            if(
+                pc &&
+                payload
+            ){
 
-        pc.addTrack(
-          track,
-          localStream
+                await pc.addIceCandidate(
+                    new RTCIceCandidate(
+                        payload
+                    )
+                );
+            }
+
+        }
+
+        else if(type === "hangup"){
+
+            finishCall(false);
+
+        }
+
+        else if(type === "reject"){
+
+            setStatus(
+                "Call declined"
+            );
+
+            setTimeout(
+                ()=>finishCall(false),
+                800
+            );
+
+        }
+
+        else if(type === "mode"){
+
+            callType =
+                payload.mode ||
+                callType;
+
+        }
+
+    }catch(error){
+
+        console.error(
+            "Signal handling error",
+            error
         );
 
-      });
-
-  }
-
-
-  pc.ontrack =
-    event => {
-
-      const stream =
-        event.streams[0];
-
-
-      const remoteVideo =
-        document.getElementById(
-          "remoteVideo"
-        );
-
-
-      remoteVideo.srcObject =
-        stream;
-
-
-      if(callMode === "video"){
-
-        document
-          .getElementById(
-            "remotePlaceholder"
-          )
-          .classList
-          .add("hidden");
-
-
-        remoteVideo
-          .classList
-          .remove("hidden");
-
-      }else{
-
-        remoteVideo
-          .classList
-          .add("hidden");
-
-
-        document
-          .getElementById(
-            "remotePlaceholder"
-          )
-          .classList
-          .remove("hidden");
-
-      }
-
-
-      remoteReady =
-        true;
-
-
-      setState(
-        "Connected"
-      );
-
-
-      startDuration();
-
-      updateCallAnswered();
-
-    };
-
-
-  pc.onicecandidate =
-    async event => {
-
-      if(
-        event.candidate
-      ){
-
-        await sendSignal(
-          "ice",
-          {
-            candidate:
-              event.candidate
-          }
-        );
-
-      }
-
-    };
-
-
-  pc.onconnectionstatechange =
-    async () => {
-
-      const state =
-        pc.connectionState;
-
-
-      if(state === "connected"){
-
-        setState(
-          "Connected"
-        );
-
-        startDuration();
-
-      }
-
-
-      if(
-        state === "connecting"
-      ){
-
-        setState(
-          "Connecting..."
-        );
-
-      }
-
-
-      if(
-        state === "failed"
-      ){
-
-        setState(
-          "Connection failed"
-        );
-
-        toast(
-          "Call connection failed"
-        );
-
-      }
-
-
-      if(
-        state === "disconnected"
-      ){
-
-        setState(
-          "Connection lost"
-        );
-
-      }
-
-    };
-
-
-  if(offerer){
-
-    const offer =
-      await pc.createOffer({
-
-        offerToReceiveAudio:true,
-
-        offerToReceiveVideo:
-          type === "video"
-
-      });
-
-
-    await pc.setLocalDescription(
-      offer
-    );
-
-  }
+    }
 
 }
 
 
-/* =========================================================
-   RECEIVE OFFER
-========================================================= */
+/* =====================================================
+   OFFER
+===================================================== */
 
-async function receiveOffer(
-  offer
+async function createOffer(){
+
+    const offer =
+        await pc.createOffer();
+
+    await pc.setLocalDescription(
+        offer
+    );
+
+    await sendSignal(
+        "offer",
+        offer
+    );
+
+}
+
+
+/* =====================================================
+   HANDLE OFFER
+===================================================== */
+
+async function handleOffer(
+    offer
 ){
-
-  if(!offer){
-    return;
-  }
-
-
-  if(!incoming && !accepted){
-
-    return;
-  }
-
-
-  try{
-
-    await ensureMedia();
-
 
     if(!pc){
 
-      await createPeer(false);
+        await getMedia();
 
-    }
-
-
-    if(
-      pc.signalingState !==
-      "stable"
-    ){
-
-      return;
+        createPeer();
     }
 
 
     await pc.setRemoteDescription(
-      new RTCSessionDescription(
-        offer
-      )
+        new RTCSessionDescription(
+            offer
+        )
     );
 
 
-    await flushIce();
-
-
     const answer =
-      await pc.createAnswer();
-
+        await pc.createAnswer();
 
     await pc.setLocalDescription(
-      answer
+        answer
     );
 
 
     await sendSignal(
-      "answer",
-      {
-        answer:
-          pc.localDescription
-      }
+        "answer",
+        answer
     );
-
-
-    await updateCallAnswered();
-
-
-    setState(
-      "Connecting..."
-    );
-
-
-  }catch(e){
-
-    console.error(
-      "offer error",
-      e
-    );
-
-    toast(
-      "Call connection error"
-    );
-
-  }
 
 }
 
 
-/* =========================================================
-   RECEIVE ANSWER
-========================================================= */
+/* =====================================================
+   HANDLE ANSWER
+===================================================== */
 
-async function receiveAnswer(
-  answer
+async function handleAnswer(
+    answer
 ){
 
-  if(!answer || !pc){
+    if(!pc)
+        return;
 
-    return;
-  }
-
-
-  try{
-
-    if(
-      pc.signalingState ===
-      "have-local-offer"
-    ){
-
-      await pc.setRemoteDescription(
+    await pc.setRemoteDescription(
         new RTCSessionDescription(
-          answer
+            answer
         )
-      );
-
-
-      await flushIce();
-
-      setState(
-        "Connected"
-      );
-
-    }
-
-  }catch(e){
-
-    console.error(
-      "answer error",
-      e
     );
-
-  }
 
 }
 
 
-/* =========================================================
-   ICE
-========================================================= */
+/* =====================================================
+   REALTIME
+===================================================== */
 
-async function receiveIce(
-  candidate
-){
+function subscribeSignals(){
 
-  if(!candidate){
-    return;
-  }
+    if(!conversationId)
+        return;
 
 
-  try{
+    channel =
+        supabaseClient
+        .channel(
+            "raztara-call-" +
+            conversationId +
+            "-" +
+            currentUser.id
+        );
+
+
+    channel
+    .on(
+        "postgres_changes",
+        {
+            event:"INSERT",
+            schema:"public",
+            table:"call_signals",
+            filter:
+                "conversation_id=eq." +
+                conversationId
+        },
+        payload => {
+
+            handleSignal(
+                payload.new
+            );
+
+        }
+    )
+    .subscribe(
+        status => {
+
+            console.log(
+                "Call channel:",
+                status
+            );
+
+        }
+    );
+}
+
+
+/* =====================================================
+   LOAD OLD SIGNALS
+===================================================== */
+
+async function loadSignals(){
 
     if(
-      pc &&
-      pc.remoteDescription
+        !conversationId ||
+        !currentUser
     ){
 
-      await pc.addIceCandidate(
-        new RTCIceCandidate(
-          candidate
-        )
-      );
-
-    }else{
-
-      pendingIce.push(
-        candidate
-      );
-
+        return;
     }
 
-  }catch(e){
 
-    console.warn(
-      "ICE error",
-      e
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+        .from("call_signals")
+        .select("*")
+        .eq(
+            "conversation_id",
+            conversationId
+        )
+        .order(
+            "created_at",
+            {
+                ascending:true
+            }
+        );
+
+
+    if(error){
+
+        console.error(error);
+
+        return;
+    }
+
+
+    for(
+        const row of data || []
+    ){
+
+        await handleSignal(row);
+
+    }
+}
+
+
+/* =====================================================
+   OUTGOING CALL
+===================================================== */
+
+async function startOutgoing(){
+
+    isIncoming = false;
+
+    setStatus("Calling…");
+
+
+    await getMedia();
+
+    createPeer();
+
+    subscribeSignals();
+
+
+    if(!callId){
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+            .from("calls")
+            .insert({
+
+                conversation_id:
+                    conversationId,
+
+                caller_id:
+                    currentUser.id,
+
+                receiver_id:
+                    receiverId,
+
+                call_type:
+                    callType,
+
+                status:
+                    "ringing"
+
+            })
+            .select()
+            .single();
+
+
+        if(error){
+
+            console.error(error);
+
+            showMessage(
+                "Call শুরু করা যায়নি"
+            );
+
+            return;
+        }
+
+
+        callId =
+            data.id;
+    }
+
+
+    await createOffer();
+
+}
+
+
+/* =====================================================
+   INCOMING CALL
+===================================================== */
+
+async function prepareIncoming(){
+
+    isIncoming = true;
+
+
+    if(!callId){
+
+        showMessage(
+            "Incoming call information পাওয়া যায়নি"
+        );
+
+        return;
+    }
+
+
+    const {
+        data:call,
+        error
+    } =
+        await supabaseClient
+        .from("calls")
+        .select("*")
+        .eq("id",callId)
+        .maybeSingle();
+
+
+    if(error || !call){
+
+        showMessage(
+            "Call পাওয়া যায়নি"
+        );
+
+        return;
+    }
+
+
+    callerId =
+        call.caller_id;
+
+    receiverId =
+        call.receiver_id;
+
+    conversationId =
+        call.conversation_id;
+
+    callType =
+        call.call_type ||
+        "video";
+
+
+    await loadProfile(
+        callerId
     );
 
-  }
+
+    incomingType.textContent =
+        callType === "video"
+        ? "Incoming video call"
+        : "Incoming audio call";
+
+
+    incomingOverlay.classList.add(
+        "show"
+    );
+
+
+    subscribeSignals();
 
 }
 
 
-async function flushIce(){
-
-  if(
-    !pc ||
-    !pc.remoteDescription
-  ){
-
-    return;
-  }
-
-
-  for(
-    const candidate
-    of pendingIce
-  ){
-
-    try{
-
-      await pc.addIceCandidate(
-        new RTCIceCandidate(
-          candidate
-        )
-      );
-
-    }catch(e){}
-
-  }
-
-
-  pendingIce = [];
-
-}
-
-
-/* =========================================================
-   INCOMING SCREEN
-========================================================= */
-
-function showIncoming(){
-
-  document
-    .getElementById(
-      "incoming"
-    )
-    .classList
-    .add("show");
-
-
-  document
-    .getElementById(
-      "controls"
-    )
-    .classList
-    .add("hidden");
-
-
-  document
-    .getElementById(
-      "remotePlaceholder"
-    )
-    .classList
-    .remove("hidden");
-
-
-  setState(
-    "Incoming " +
-    (
-      type === "video"
-        ? "video"
-        : "audio"
-    ) +
-    " call"
-  );
-
-}
-
-
-/* =========================================================
+/* =====================================================
    ACCEPT
-========================================================= */
+===================================================== */
 
-async function acceptCall(){
+async function acceptIncoming(){
 
-  if(accepted){
-    return;
-  }
-
-
-  accepted = true;
+    incomingOverlay.classList.remove(
+        "show"
+    );
 
 
-  document
-    .getElementById(
-      "incoming"
-    )
-    .classList
-    .remove("show");
+    setStatus("Connecting…");
 
 
-  try{
+    await getMedia();
 
-    await ensureMedia();
+    createPeer();
 
 
-    if(!pc){
+    if(callId){
 
-      await createPeer(false);
+        await supabaseClient
+        .from("calls")
+        .update({
+
+            status:"answered",
+
+            answered_at:
+                new Date().toISOString()
+
+        })
+        .eq(
+            "id",
+            callId
+        );
 
     }
 
 
-    await updateCallStatus(
-      "answered"
+    /*
+       Incoming page-এ offer আগে থেকেই
+       database-এ থাকলে এটি load করবে।
+    */
+
+    await loadSignals();
+
+}
+
+
+/* =====================================================
+   REJECT
+===================================================== */
+
+async function rejectIncoming(){
+
+    incomingOverlay.classList.remove(
+        "show"
     );
 
 
-    setState(
-      "Connecting..."
+    await sendSignal(
+        "reject",
+        {
+            reason:"declined"
+        }
+    );
+
+
+    if(callId){
+
+        await supabaseClient
+        .from("calls")
+        .update({
+            status:"rejected",
+            ended_at:
+                new Date().toISOString()
+        })
+        .eq(
+            "id",
+            callId
+        );
+
+    }
+
+
+    setTimeout(
+        ()=>goBack(),
+        500
+    );
+}
+
+
+/* =====================================================
+   MUTE
+===================================================== */
+
+function toggleMute(){
+
+    if(!localStream)
+        return;
+
+
+    const tracks =
+        localStream.getAudioTracks();
+
+
+    if(!tracks.length)
+        return;
+
+
+    isMuted =
+        !isMuted;
+
+
+    tracks.forEach(
+        track => {
+            track.enabled =
+                !isMuted;
+        }
+    );
+
+
+    const btn =
+        document.getElementById(
+            "muteBtn"
+        );
+
+
+    btn.classList.toggle(
+        "active",
+        isMuted
+    );
+
+
+    btn.textContent =
+        isMuted
+        ? "🔇"
+        : "🎙️";
+}
+
+
+/* =====================================================
+   SPEAKER
+===================================================== */
+
+async function toggleSpeaker(){
+
+    isSpeaker =
+        !isSpeaker;
+
+
+    const btn =
+        document.getElementById(
+            "speakerBtn"
+        );
+
+
+    btn.classList.toggle(
+        "active",
+        !isSpeaker
     );
 
 
     /*
-      Offer may already be in database.
-      Load it again after accepting.
+       Browser/iPhone-এ speaker routing
+       সবসময় JavaScript দিয়ে control করা যায় না।
+       এখানে remote audio mute/unmute রাখা হলো।
     */
 
-    await loadExistingSignals();
+    try{
 
+        if(
+            "setSinkId" in remoteVideo
+        ){
 
-  }catch(e){
+            await remoteVideo.setSinkId(
+                isSpeaker
+                ? "default"
+                : "default"
+            );
 
-    console.error(e);
+        }
 
-    accepted = false;
+    }catch(error){
 
-    await rejectCall();
+        console.log(error);
 
-  }
-
+    }
 }
 
 
-/* =========================================================
-   REJECT
-========================================================= */
-
-async function rejectCall(){
-
-  try{
-
-    await sendSignal(
-      "reject",
-      {
-        reason:
-          "rejected"
-      }
-    );
-
-
-    await updateCallStatus(
-      "rejected"
-    );
-
-  }catch(e){
-
-    console.error(e);
-
-  }
-
-
-  finish(
-    "Call declined",
-    false
-  );
-
-}
-
-
-/* =========================================================
-   CALL STATUS
-========================================================= */
-
-async function updateCallStatus(
-  status
-){
-
-  if(!callId){
-    return;
-  }
-
-
-  const update = {
-    status
-  };
-
-
-  if(status === "answered"){
-
-    update.answered_at =
-      new Date().toISOString();
-
-  }
-
-
-  if(
-    status === "ended" ||
-    status === "rejected" ||
-    status === "missed" ||
-    status === "failed"
-  ){
-
-    update.ended_at =
-      new Date().toISOString();
-
-  }
-
-
-  const {error} =
-    await sb
-      .from("calls")
-      .update(update)
-      .eq(
-        "id",
-        callId
-      );
-
-
-  if(error){
-
-    console.error(
-      "call status error",
-      error
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   ANSWERED
-========================================================= */
-
-async function updateCallAnswered(){
-
-  if(!callId){
-    return;
-  }
-
-
-  const {data} =
-    await sb
-      .from("calls")
-      .select(
-        "status,answered_at"
-      )
-      .eq(
-        "id",
-        callId
-      )
-      .maybeSingle();
-
-
-  if(
-    data &&
-    !data.answered_at
-  ){
-
-    await updateCallStatus(
-      "answered"
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   DURATION
-========================================================= */
-
-function startDuration(){
-
-  if(callStartedAt){
-    return;
-  }
-
-
-  callStartedAt =
-    Date.now();
-
-
-  document
-    .getElementById(
-      "duration"
-    )
-    .classList
-    .remove("hidden");
-
-
-  updateDuration();
-
-
-  durationTimer =
-    setInterval(
-      updateDuration,
-      1000
-    );
-
-}
-
-
-function updateDuration(){
-
-  if(!callStartedAt){
-    return;
-  }
-
-
-  const seconds =
-    Math.floor(
-      (
-        Date.now() -
-        callStartedAt
-      ) / 1000
-    );
-
-
-  const minutes =
-    String(
-      Math.floor(
-        seconds / 60
-      )
-    ).padStart(2,"0");
-
-
-  const sec =
-    String(
-      seconds % 60
-    ).padStart(2,"0");
-
-
-  document
-    .getElementById(
-      "duration"
-    )
-    .textContent =
-      minutes +
-      ":" +
-      sec;
-
-}
-
-
-/* =========================================================
-   CALL HISTORY
-========================================================= */
-
-async function logCall(){
-
-  if(
-    !conversationId ||
-    !me
-  ){
-
-    return;
-  }
-
-
-  const seconds =
-    callStartedAt
-      ? Math.floor(
-          (
-            Date.now() -
-            callStartedAt
-          ) / 1000
-        )
-      : 0;
-
-
-  const minutes =
-    String(
-      Math.floor(
-        seconds / 60
-      )
-    ).padStart(2,"0");
-
-
-  const sec =
-    String(
-      seconds % 60
-    ).padStart(2,"0");
-
-
-  const label =
-    callMode === "video"
-      ? "Video call"
-      : "Audio call";
-
-
-  const {error} =
-    await sb
-      .from("messages")
-      .insert({
-
-        conversation_id:
-          conversationId,
-
-        sender_id:
-          me.id,
-
-        content:
-          "📞 " +
-          label +
-          " • " +
-          minutes +
-          ":" +
-          sec +
-          " • Call ended",
-
-        message_type:
-          "call"
-
-      });
-
-
-  if(error){
-
-    console.error(
-      "call history error",
-      error
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   MUTE
-========================================================= */
-
-function toggleMute(){
-
-  if(!localStream){
-    return;
-  }
-
-
-  muted =
-    !muted;
-
-
-  localStream
-    .getAudioTracks()
-    .forEach(
-      track => {
-        track.enabled =
-          !muted;
-      }
-    );
-
-
-  const button =
-    document.getElementById(
-      "muteBtn"
-    );
-
-
-  button
-    .classList
-    .toggle(
-      "on",
-      muted
-    );
-
-
-  button.textContent =
-    muted
-      ? "🔇"
-      : "🎤";
-
-}
-
-
-/* =========================================================
+/* =====================================================
    CAMERA
-========================================================= */
+===================================================== */
 
 function toggleCamera(){
 
-  if(
-    !localStream ||
-    type !== "video"
-  ){
-
-    return;
-  }
+    if(!localStream)
+        return;
 
 
-  cameraOff =
-    !cameraOff;
+    const tracks =
+        localStream.getVideoTracks();
 
 
-  localStream
-    .getVideoTracks()
-    .forEach(
-      track => {
-        track.enabled =
-          !cameraOff;
-      }
+    if(!tracks.length)
+        return;
+
+
+    cameraEnabled =
+        !cameraEnabled;
+
+
+    tracks.forEach(
+        track => {
+            track.enabled =
+                cameraEnabled;
+        }
     );
 
 
-  document
-    .getElementById(
-      "localOff"
-    )
-    .classList
-    .toggle(
-      "hidden",
-      !cameraOff
+    const btn =
+        document.getElementById(
+            "cameraBtn"
+        );
+
+
+    btn.classList.toggle(
+        "active",
+        !cameraEnabled
     );
 
 
-  document
-    .getElementById(
-      "localVideo"
-    )
-    .classList
-    .toggle(
-      "hidden",
-      cameraOff
-    );
-
-
-  document
-    .getElementById(
-      "cameraBtn"
-    )
-    .textContent =
-      cameraOff
+    btn.textContent =
+        cameraEnabled
         ? "📷"
-        : "📹";
-
+        : "🚫";
 }
 
 
-/* =========================================================
+/* =====================================================
    SWITCH CAMERA
-========================================================= */
+===================================================== */
 
 async function switchCamera(){
 
-  if(
-    !localStream ||
-    type !== "video"
-  ){
-
-    return;
-  }
+    if(!localStream)
+        return;
 
 
-  const oldTrack =
-    localStream
-      .getVideoTracks()[0];
+    const videoTrack =
+        localStream.getVideoTracks()[0];
 
 
-  try{
+    if(!videoTrack)
+        return;
 
-    const nextMode =
-      facingMode === "user"
+
+    activeCamera =
+        activeCamera === "user"
         ? "environment"
         : "user";
 
 
-    const stream =
-      await navigator.mediaDevices
-        .getUserMedia({
+    try{
 
-          video:{
-            facingMode:{
-              exact:
-                nextMode
-            }
-          },
+        const newStream =
+            await navigator.mediaDevices
+            .getUserMedia({
 
-          audio:false
+                audio:false,
 
-        });
+                video:{
+                    facingMode:{
+                        exact:
+                            activeCamera
+                    }
+                }
 
-
-    const newTrack =
-      stream
-        .getVideoTracks()[0];
+            });
 
 
-    const sender =
-      pc?.getSenders()
-        .find(
-          s =>
-            s.track &&
-            s.track.kind ===
-              "video"
+        const newTrack =
+            newStream
+            .getVideoTracks()[0];
+
+
+        const sender =
+            pc
+            ?.getSenders()
+            .find(
+                s =>
+                s.track &&
+                s.track.kind === "video"
+            );
+
+
+        if(sender){
+
+            await sender.replaceTrack(
+                newTrack
+            );
+
+        }
+
+
+        videoTrack.stop();
+
+
+        localStream.removeTrack(
+            videoTrack
+        );
+
+        localStream.addTrack(
+            newTrack
         );
 
 
-    if(sender){
+        localVideo.srcObject =
+            localStream;
 
-      await sender.replaceTrack(
-        newTrack
-      );
 
+    }catch(error){
+
+        console.error(error);
+
+        showMessage(
+            "Camera switch করা যায়নি"
+        );
     }
-
-
-    if(oldTrack){
-
-      oldTrack.stop();
-
-      localStream.removeTrack(
-        oldTrack
-      );
-
-    }
-
-
-    localStream.addTrack(
-      newTrack
-    );
-
-
-    facingMode =
-      nextMode;
-
-
-    document
-      .getElementById(
-        "localVideo"
-      )
-      .srcObject =
-        localStream;
-
-
-    newTrack.enabled =
-      !cameraOff;
-
-
-    toast(
-      facingMode === "environment"
-        ? "Back camera"
-        : "Front camera"
-    );
-
-
-  }catch(e){
-
-    console.error(e);
-
-    toast(
-      "Back camera চালু করা যায়নি"
-    );
-
-  }
-
 }
 
 
-/* =========================================================
-   VIDEO → AUDIO
-========================================================= */
+/* =====================================================
+   VIDEO / AUDIO MODE
+===================================================== */
 
 async function toggleCallMode(){
 
-  if(
-    !localStream ||
-    !pc ||
-    type !== "video"
-  ){
+    if(!localStream)
+        return;
 
-    return;
-  }
 
+    const newMode =
+        callType === "video"
+        ? "audio"
+        : "video";
 
-  if(callMode === "video"){
 
-    callMode =
-      "audio";
+    callType =
+        newMode;
 
 
-    cameraOff =
-      true;
+    if(newMode === "audio"){
 
+        localStream
+        .getVideoTracks()
+        .forEach(
+            track => {
+                track.enabled = false;
+            }
+        );
 
-    localStream
-      .getVideoTracks()
-      .forEach(
-        track => {
-          track.enabled =
-            false;
-        }
-      );
 
+        localVideo.classList.remove(
+            "active"
+        );
 
-    document
-      .getElementById(
-        "localWrap"
-      )
-      .classList
-      .add("hidden");
 
+        remoteVideo.classList.remove(
+            "active"
+        );
 
-    document
-      .getElementById(
-        "remoteVideo"
-      )
-      .classList
-      .add("hidden");
 
+        avatarArea.style.display =
+            "flex";
 
-    document
-      .getElementById(
-        "remotePlaceholder"
-      )
-      .classList
-      .remove("hidden");
+    }else{
 
+        try{
 
-    document
-      .getElementById(
-        "cameraBtn"
-      )
-      .classList
-      .add("hidden");
+            const video =
+                await navigator
+                .mediaDevices
+                .getUserMedia({
+                    video:true
+                });
 
 
-    document
-      .getElementById(
-        "switchCameraBtn"
-      )
-      .classList
-      .add("hidden");
+            const track =
+                video.getVideoTracks()[0];
 
 
-    document
-      .getElementById(
-        "modeBtn"
-      )
-      .textContent =
-        "📹";
+            const sender =
+                pc
+                ?.getSenders()
+                .find(
+                    s =>
+                    s.track &&
+                    s.track.kind === "video"
+                );
 
 
-    document
-      .getElementById(
-        "topType"
-      )
-      .textContent =
-        "Audio call";
+            if(sender){
 
+                await sender.replaceTrack(
+                    track
+                );
 
-    setState(
-      "Connected"
-    );
-
-
-    await sendSignal(
-      "mode",
-      {
-        mode:"audio"
-      }
-    );
-
-
-    toast(
-      "Audio call চালু হয়েছে"
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   SPEAKER
-========================================================= */
-
-function toggleSpeaker(){
-
-  const remoteVideo =
-    document.getElementById(
-      "remoteVideo"
-    );
-
-
-  speakerOn =
-    !speakerOn;
-
-
-  remoteVideo.muted =
-    !speakerOn;
-
-
-  document
-    .getElementById(
-      "speakerBtn"
-    )
-    .classList
-    .toggle(
-      "on",
-      !speakerOn
-    );
-
-}
-
-
-/* =========================================================
-   END CALL
-========================================================= */
-
-async function leaveCall(){
-
-  if(finished){
-    return;
-  }
-
-
-  try{
-
-    await sendSignal(
-      "hangup",
-      {
-        reason:
-          "ended"
-      }
-    );
-
-  }catch(e){}
-
-
-  await finish(
-    "Call ended",
-    true
-  );
-
-}
-
-
-/* =========================================================
-   FINISH
-========================================================= */
-
-async function finish(
-  message,
-  writeHistory=true
-){
-
-  if(finished){
-    return;
-  }
-
-
-  finished =
-    true;
-
-
-  if(durationTimer){
-
-    clearInterval(
-      durationTimer
-    );
-
-    durationTimer =
-      null;
-
-  }
-
-
-  if(writeHistory){
-
-    await logCall();
-
-  }
-
-
-  if(callId){
-
-    await updateCallStatus(
-      "ended"
-    );
-
-  }
-
-
-  if(pc){
-
-    try{
-      pc.close();
-    }catch(e){}
-
-    pc = null;
-
-  }
-
-
-  if(localStream){
-
-    localStream
-      .getTracks()
-      .forEach(
-        track => {
-          try{
-            track.stop();
-          }catch(e){}
-        }
-      );
-
-    localStream =
-      null;
-
-  }
-
-
-  if(signalChannel){
-
-    try{
-
-      await sb.removeChannel(
-        signalChannel
-      );
-
-    }catch(e){}
-
-    signalChannel =
-      null;
-
-  }
-
-
-  if(incomingPoll){
-
-    clearInterval(
-      incomingPoll
-    );
-
-    incomingPoll =
-      null;
-
-  }
-
-
-  toast(message);
-
-
-  setTimeout(
-    () => {
-
-      if(
-        history.length > 1
-      ){
-
-        history.back();
-
-      }else{
-
-        location.href =
-          "index.html";
-
-      }
-
-    },
-    700
-  );
-
-}
-
-
-/* =========================================================
-   PAGE CLOSE
-========================================================= */
-
-window.addEventListener(
-  "pagehide",
-  async () => {
-
-    if(
-      !finished &&
-      callId
-    ){
-
-      try{
-
-        await sb
-          .from("call_signals")
-          .insert({
-
-            conversation_id:
-              conversationId,
-
-            sender_id:
-              me?.id,
-
-            signal_type:
-              "hangup",
-
-            payload:{
-              call_id:
-                callId,
-              reason:
-                "pagehide"
             }
 
-          });
 
-      }catch(e){}
+            localStream.addTrack(
+                track
+            );
+
+
+            localVideo.srcObject =
+                localStream;
+
+            localVideo.classList.add(
+                "active"
+            );
+
+
+        }catch(error){
+
+            showMessage(
+                "Camera চালু করা যায়নি"
+            );
+
+            return;
+        }
 
     }
 
-  }
-);
+
+    document
+    .getElementById("modeBtn")
+    .textContent =
+        newMode === "video"
+        ? "🎥"
+        : "📞";
 
 
-/* =========================================================
-   START
-========================================================= */
+    await sendSignal(
+        "mode",
+        {
+            mode:newMode
+        }
+    );
+}
+
+
+/* =====================================================
+   TIMER
+===================================================== */
+
+function startTimer(){
+
+    if(timer)
+        return;
+
+
+    seconds = 0;
+
+
+    timer =
+        setInterval(
+            ()=>{
+
+                seconds++;
+
+                const min =
+                    String(
+                        Math.floor(
+                            seconds / 60
+                        )
+                    ).padStart(2,"0");
+
+                const sec =
+                    String(
+                        seconds % 60
+                    ).padStart(2,"0");
+
+
+                callStatus.textContent =
+                    `${min}:${sec}`;
+
+            },
+            1000
+        );
+}
+
+
+/* =====================================================
+   END CALL
+===================================================== */
+
+async function endCall(){
+
+    try{
+
+        await sendSignal(
+            "hangup",
+            {
+                reason:"ended"
+            }
+        );
+
+
+        if(callId){
+
+            await supabaseClient
+            .from("calls")
+            .update({
+
+                status:"ended",
+
+                ended_at:
+                    new Date().toISOString()
+
+            })
+            .eq(
+                "id",
+                callId
+            );
+
+        }
+
+    }catch(error){
+
+        console.error(error);
+
+    }
+
+
+    finishCall(true);
+}
+
+
+/* =====================================================
+   FINISH
+===================================================== */
+
+function finishCall(goBackAfter){
+
+    if(timer){
+
+        clearInterval(timer);
+
+        timer = null;
+    }
+
+
+    if(localStream){
+
+        localStream
+        .getTracks()
+        .forEach(
+            track =>
+            track.stop()
+        );
+
+        localStream = null;
+    }
+
+
+    if(remoteStream){
+
+        remoteStream
+        .getTracks()
+        .forEach(
+            track =>
+            track.stop()
+        );
+
+        remoteStream = null;
+    }
+
+
+    if(pc){
+
+        pc.close();
+
+        pc = null;
+    }
+
+
+    if(channel){
+
+        supabaseClient
+        .removeChannel(channel);
+
+        channel = null;
+    }
+
+
+    if(goBackAfter){
+
+        goBack();
+
+    }
+}
+
+
+/* =====================================================
+   BACK
+===================================================== */
+
+function goBack(){
+
+    finishCall(false);
+
+    if(
+        document.referrer
+    ){
+
+        history.back();
+
+    }else{
+
+        window.location.href =
+            "chat.html";
+    }
+}
+
+
+/* =====================================================
+   INIT
+===================================================== */
+
+async function init(){
+
+    getParams();
+
+
+    const logged =
+        await loadUser();
+
+    if(!logged)
+        return;
+
+
+    /*
+       URL-এ incoming=1 থাকলে
+       Incoming screen দেখাবে।
+    */
+
+    if(isIncoming){
+
+        await prepareIncoming();
+
+        return;
+    }
+
+
+    /*
+       Outgoing call-এর receiver
+       আপনার chat page থেকে URL-এ
+       receiver parameter পাঠাতে হবে।
+    */
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    receiverId =
+        params.get("receiver") ||
+        params.get("receiver_id");
+
+
+    if(receiverId){
+
+        await loadProfile(
+            receiverId
+        );
+
+    }
+
+
+    await startOutgoing();
+}
+
 
 init();
 
