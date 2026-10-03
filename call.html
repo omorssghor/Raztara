@@ -17,7 +17,7 @@ button{font:inherit}
 .avatar{width:112px;height:112px;border-radius:50%;object-fit:cover;background:#075e54;border:3px solid #ffffff30;box-shadow:0 12px 35px #0006}
 .caller-name{font-size:24px;font-weight:750;max-width:85%;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .state{font-size:14px;color:#d7e5e2}
-.top{position:absolute;top:0;left:0;right:0;padding:calc(14px + env(safe-area-inset-top)) 16px 16px;display:flex;align-items:center;gap:12px;z-index:5;background:linear-gradient(#0008,transparent)}
+.top{position:absolute;top:0;left:0;right:0;padding:calc(14px + env(safe-area-inset-top)) 16px 16px;display:flex;align-items:center;gap:12px;z-index:60;background:linear-gradient(#0008,transparent)}
 .back{width:40px;height:40px;border:0;border-radius:50%;background:#0005;color:#fff;font-size:28px}
 .top-name{font-size:16px;font-weight:700;flex:1}
 .top-type{font-size:11px;opacity:.75}
@@ -28,7 +28,7 @@ button{font:inherit}
 .control{width:58px;height:58px;border:0;border-radius:50%;background:#ffffff20;color:#fff;font-size:23px;backdrop-filter:blur(10px)}
 .control.on{background:#fff;color:#172126}
 .end{width:66px;height:66px;border:0;border-radius:50%;background:#e53935;color:#fff;font-size:27px;box-shadow:0 5px 18px #0007}
-.incoming{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:20;background:linear-gradient(180deg,#18343a,#071014)}
+.incoming{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:50;background:linear-gradient(180deg,#18343a,#071014)}
 .incoming.show{display:flex}
 .incoming .avatar{width:126px;height:126px;margin-bottom:20px}
 .incoming h1{font-size:26px;margin-bottom:7px}
@@ -165,6 +165,7 @@ async function init(){
  await setupChannel();
  if(incoming)return;
  await startOutgoing();
+ showControls();
 }
 async function setupPresence(){
  try{
@@ -195,13 +196,18 @@ async function send(event,payload={}){
  await channel.send({type:"broadcast",event,payload:{...payload,call_id:callId}});
 }
 function refreshControls(){
- const isVideo=type==="video"&&callMode==="video"&&!!localStream?.getVideoTracks().length;
+ const isVideo=(type==="video"||callMode==="video")&&!!localStream?.getVideoTracks().length;
  document.getElementById("controls").classList.remove("hidden");
+ document.getElementById("speakerBtn").classList.remove("hidden");
+ document.getElementById("muteBtn").classList.remove("hidden");
  document.getElementById("cameraBtn").classList.toggle("hidden",!isVideo);
  document.getElementById("switchCameraBtn").classList.toggle("hidden",!isVideo);
  document.getElementById("modeBtn").classList.toggle("hidden",!isVideo);
 }
-function showControls(){refreshControls()}
+function showControls(){
+ refreshControls();
+ document.getElementById("controls").classList.remove("hidden");
+}
 function startDuration(){
  stopRinging();
  document.getElementById("soundUnlock").classList.remove("show");
@@ -439,7 +445,17 @@ function toggleSpeaker(){
  const v=document.getElementById("remoteVideo");v.muted=!v.muted;
  document.getElementById("speakerBtn").classList.toggle("on",v.muted);
 }
-async function leaveCall(){stopRinging();try{await send("hangup",{})}catch(e){}finish("Call ended")}
+async function leaveCall(){
+ stopRinging();
+ try{await send("hangup",{})}catch(e){}
+ finish("Call ended");
+ setTimeout(()=>{
+  if(document.visibilityState!=="hidden"){
+   const backUrl="chat.html"+(conversationId?"?conversation="+encodeURIComponent(conversationId):"");
+   if(history.length>1)history.back();else location.href=backUrl;
+  }
+ },550);
+}
 function finish(msg){
  stopRinging();
  document.getElementById("soundUnlock").classList.remove("show");
