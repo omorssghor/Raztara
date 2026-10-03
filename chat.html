@@ -2181,6 +2181,51 @@ function updateOnlineStatus(profile){
 }
 
 /* =========================================================
+   SAVED CONVERSATION
+========================================================= */
+
+function getConversationStorageKey(){
+
+    if(!currentUser || !otherUserId){
+        return "";
+    }
+
+    return "raztara_conversation_" +
+        String(currentUser.id) +
+        "_" +
+        String(otherUserId);
+}
+
+function saveConversationId(id){
+
+    if(!id){
+        return;
+    }
+
+    const key = getConversationStorageKey();
+
+    if(key){
+        localStorage.setItem(
+            key,
+            String(id)
+        );
+    }
+}
+
+function getSavedConversationId(){
+
+    const key = getConversationStorageKey();
+
+    if(!key){
+        return "";
+    }
+
+    return String(
+        localStorage.getItem(key) || ""
+    ).trim();
+}
+
+/* =========================================================
    FIND CONVERSATION
 ========================================================= */
 
@@ -2189,6 +2234,39 @@ async function findConversation(){
     if(!currentUser || !otherUserId){
 
         return null;
+    }
+
+    /*
+     * একই User-এর chat আবার খুললে আগে সংরক্ষিত
+     * conversation ID ব্যবহার করব। এতে Back করে
+     * ফিরে এলে নতুন conversation তৈরি হবে না।
+     */
+    const savedId = getSavedConversationId();
+
+    if(savedId){
+
+        const {
+            data:savedConversation,
+            error:savedError
+        } = await supabaseClient
+            .from("conversations")
+            .select("id,is_group")
+            .eq("id",savedId)
+            .eq("is_group",false)
+            .maybeSingle();
+
+        if(!savedError && savedConversation?.id){
+
+            return savedConversation.id;
+        }
+
+        /*
+         * Saved ID আর valid না হলে নিচের normal
+         * member search দিয়ে পুরোনো conversation খোঁজা হবে।
+         */
+        localStorage.removeItem(
+            getConversationStorageKey()
+        );
     }
 
     const {
@@ -2278,7 +2356,14 @@ async function findConversation(){
         return null;
     }
 
-    return conversations?.[0]?.id || null;
+    const foundId =
+        conversations?.[0]?.id || null;
+
+    if(foundId){
+        saveConversationId(foundId);
+    }
+
+    return foundId;
 }
 
 /* =========================================================
@@ -2320,6 +2405,10 @@ async function createConversation(){
 
     const newConversationId =
         data.id;
+
+    saveConversationId(
+        newConversationId
+    );
 
     const {
         error:memberError
@@ -5283,6 +5372,12 @@ async function init(){
 
             return;
         }
+    }
+
+    if(conversationId){
+        saveConversationId(
+            conversationId
+        );
     }
 
     try{
