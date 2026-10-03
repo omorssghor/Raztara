@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>RAZTARA — Chat</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--g:#075e54;--g2:#128c7e;--bg:#efe7de;--white:#fff;--text:#172b2f;--muted:#718084}
+html,body{height:100%;background:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--text);overflow:hidden}
+button,input{font:inherit}
+.header{position:fixed;top:0;left:0;right:0;height:calc(64px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);background:var(--g);color:#fff;display:flex;align-items:center;z-index:20;box-shadow:0 1px 5px #0003}
+.back{width:44px;height:44px;border:0;background:transparent;color:#fff;font-size:34px}
+.avatar{width:42px;height:42px;border-radius:50%;object-fit:cover;background:#d7e5e2;margin-right:10px}
+.headinfo{min-width:0;flex:1}
+.name{font-size:17px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.status{font-size:11px;opacity:.82;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.headaction{width:43px;height:43px;border:0;background:transparent;color:#fff;font-size:21px}
+.board{position:fixed;top:calc(64px + env(safe-area-inset-top));bottom:calc(72px + env(safe-area-inset-bottom));left:0;right:0;overflow-y:auto;padding:12px 10px 16px;-webkit-overflow-scrolling:touch;background-color:#efe7de;background-image:radial-gradient(#cdbfaf 1px,transparent 1px);background-size:20px 20px}
+.center{display:flex;justify-content:center;margin:4px 0 12px}
+.date{background:#fff9;border-radius:12px;padding:5px 10px;color:#667;font-size:11px;box-shadow:0 1px 2px #0001}
+.row{display:flex;margin:3px 0}
+.row.me{justify-content:flex-end}
+.bubble{max-width:min(78%,420px);padding:8px 9px 5px;border-radius:8px;background:#fff;box-shadow:0 1px 1px #0002;word-break:break-word;font-size:15px;line-height:1.4}
+.me .bubble{background:#d9fdd3;border-top-right-radius:2px}
+.them .bubble{border-top-left-radius:2px}
+.time{font-size:9px;color:#718084;float:right;margin:5px 0 0 9px}
+.empty{text-align:center;color:#667;padding:55px 20px}
+.loader{text-align:center;padding:50px;color:#667}
+.composer{position:fixed;left:0;right:0;bottom:0;height:calc(68px + env(safe-area-inset-bottom));padding:7px 9px calc(7px + env(safe-area-inset-bottom));background:#f0f2f5;display:flex;align-items:center;gap:7px;z-index:20}
+.plus{width:43px;height:43px;border:0;border-radius:50%;background:#fff;color:var(--g);font-size:27px;box-shadow:0 1px 3px #0002}
+.inputbox{flex:1;min-width:0;min-height:43px;background:#fff;border-radius:23px;display:flex;align-items:center;padding:0 13px;box-shadow:0 1px 3px #0002}
+.inputbox input{width:100%;border:0;outline:0;background:transparent;font-size:15px}
+.voice,.send{width:43px;height:43px;border:0;border-radius:50%;color:#fff;background:var(--g);font-size:19px;flex:none}
+.send{font-size:18px}
+.menu{position:fixed;left:10px;bottom:calc(72px + env(safe-area-inset-bottom));background:#fff;border-radius:14px;box-shadow:0 4px 18px #0003;padding:6px;width:145px;z-index:30;display:none}
+.menu.show{display:block}
+.menu button{width:100%;border:0;background:#fff;text-align:left;padding:11px;border-radius:9px}
+.menu button:active{background:#eef4f2}
+.toast{position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom));transform:translate(-50%,12px);background:#26383a;color:#fff;padding:9px 14px;border-radius:20px;font-size:12px;opacity:0;pointer-events:none;transition:.2s;z-index:40}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(min-width:700px){.board{max-width:720px;left:50%;right:auto;width:720px;transform:translateX(-50%)}.header,.composer{padding-left:max(9px,calc((100vw - 720px)/2 + 9px));padding-right:max(9px,calc((100vw - 720px)/2 + 9px))}}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <button class="back" onclick="history.back()">‹</button>
+  <img id="headAvatar" class="avatar" src="" alt="">
+  <div class="headinfo">
+    <div id="headName" class="name">Loading...</div>
+    <div id="headStatus" class="status">Connecting...</div>
+  </div>
+  <button class="headaction" onclick="showToast('Call system পরের ধাপে যুক্ত হবে')">☎</button>
+  <button class="headaction" onclick="showToast('Video call system পরের ধাপে যুক্ত হবে')">▣</button>
+</header>
+
+<main id="board" class="board">
+  <div id="messages"><div class="loader">Chat loading...</div></div>
+</main>
+
+<div id="menu" class="menu">
+  <button onclick="pickPhoto()">📷 ছবি</button>
+  <button onclick="showToast('ভিডিও পরের ধাপে যুক্ত হবে');closeMenu()">🎥 ভিডিও</button>
+  <button onclick="showToast('File upload পরের ধাপে যুক্ত হবে');closeMenu()">📎 File</button>
+  <button onclick="showToast('All media পরের ধাপে যুক্ত হবে');closeMenu()">🗂 All</button>
+</div>
+
+<div class="composer">
+  <button class="plus" onclick="toggleMenu()">＋</button>
+  <div class="inputbox">
+    <input id="messageInput" type="text" placeholder="Message..." autocomplete="off">
+  </div>
+  <button class="voice" onclick="showToast('Voice message পরের ধাপে যুক্ত হবে')">🎤</button>
+  <button class="send" onclick="sendText()">➤</button>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const sb=supabase.createClient(
+ "https://pqyicaqpmojijjskpzcp.supabase.co",
+ "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho"
+);
+
+let currentUser=null;
+let otherUserId="";
+let otherProfile=null;
+let conversationId="";
+let channel=null;
+let toastTimer=null;
+
+function qs(name){return new URLSearchParams(location.search).get(name)||""}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&#92;",""":"&quot;","'":"&#039;"}[c]))}
+function avatar(u){
+ return u?.avatar_url || "https://ui-avatars.com/api/?name="+encodeURIComponent((u?.full_name||u?.username||"R").slice(0,1))+"&background=075e54&color=fff&bold=true";
+}
+function showToast(msg){
+ const e=document.getElementById("toast");e.textContent=msg;e.classList.add("show");
+ clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.classList.remove("show"),2500);
+}
+function toggleMenu(){document.getElementById("menu").classList.toggle("show")}
+function closeMenu(){document.getElementById("menu").classList.remove("show")}
+function pickPhoto(){showToast("ছবি upload পরের ধাপে যুক্ত হবে");closeMenu()}
+
+async function init(){
+ const auth=await sb.auth.getUser();
+ if(auth.error||!auth.data.user){location.href="login.html";return}
+ currentUser=auth.data.user;
+
+ otherUserId=qs("user")||qs("user_id")||localStorage.getItem("raztara_last_chat_user_id")||"";
+ if(!otherUserId){
+   document.getElementById("messages").innerHTML='<div class="empty">কোনো User নির্বাচন করা হয়নি।<br><br>Connect page থেকে একজন User নির্বাচন করুন।</div>';
+   return;
+ }
+ localStorage.setItem("raztara_last_chat_user_id",otherUserId);
+
+ await loadOtherProfile();
+ if(!otherProfile)return;
+
+ await openConversation();
+ if(!conversationId)return;
+
+ await loadMessages();
+ subscribeRealtime();
+ updateStatus();
+}
+
+async function loadOtherProfile(){
+ const {data,error}=await sb.from("profiles")
+  .select("id,username,full_name,avatar_url,bio,last_seen_at")
+  .eq("id",otherUserId).maybeSingle();
+
+ if(error||!data){
+   document.getElementById("messages").innerHTML='<div class="empty">এই User-এর profile পাওয়া যায়নি।</div>';
+   showToast(error?.message||"User not found");
+   return;
+ }
+ otherProfile=data;
+ document.getElementById("headAvatar").src=avatar(data);
+ document.getElementById("headName").textContent=data.full_name||data.username||"RAZTARA User";
+ updateStatus();
+}
+
+function updateStatus(){
+ if(!otherProfile)return;
+ const last=otherProfile.last_seen_at?new Date(otherProfile.last_seen_at).getTime():0;
+ const online=last && Date.now()-last<90000;
+ document.getElementById("headStatus").textContent=online?"Online":(last?"Last seen "+formatLastSeen(last):"Offline");
+}
+function formatLastSeen(t){
+ const d=new Date(t);
+ return d.toLocaleDateString("bn-BD",{day:"numeric",month:"short"})+" "+d.toLocaleTimeString("bn-BD",{hour:"numeric",minute:"2-digit"});
+}
+
+async function openConversation(){
+ const saved=localStorage.getItem("raztara_last_conversation_id");
+ if(saved){
+   const check=await sb.from("conversation_members")
+    .select("conversation_id")
+    .eq("conversation_id",saved)
+    .in("user_id",[currentUser.id,otherUserId]);
+   const ids=(check.data||[]).map(x=>x.conversation_id);
+   if(ids.length===2){conversationId=saved;return}
+ }
+
+ const {data,error}=await sb.rpc("get_or_create_direct_conversation",{other_user_id:otherUserId});
+ if(error){
+   document.getElementById("messages").innerHTML='<div class="empty">Chat তৈরি করা যাচ্ছে না।<br><br>Connect accepted আছে কিনা দেখুন।</div>';
+   showToast(error.message);
+   return;
+ }
+ conversationId=typeof data==="string"?data:(data?.id||"");
+ if(conversationId)localStorage.setItem("raztara_last_conversation_id",conversationId);
+}
+
+async function loadMessages(){
+ const box=document.getElementById("messages");
+ const {data,error}=await sb.from("messages")
+   .select("id,sender_id,content,message_type,created_at,deleted_for_everyone")
+   .eq("conversation_id",conversationId)
+   .order("created_at",{ascending:true});
+
+ if(error){
+   box.innerHTML='<div class="empty">Message load করা যাচ্ছে না।</div>';
+   showToast(error.message);
+   return;
+ }
+
+ if(!data||!data.length){
+   box.innerHTML='<div class="empty">এখনও কোনো message নেই।<br><br>প্রথম message পাঠান 👋</div>';
+   return;
+ }
+
+ box.innerHTML="";
+ let lastDate="";
+ data.forEach(m=>renderMessage(m,lastDate));
+}
+
+function renderMessage(m){
+ const box=document.getElementById("messages");
+ const row=document.createElement("div");
+ row.className="row "+(m.sender_id===currentUser.id?"me":"them");
+ const bubble=document.createElement("div");
+ bubble.className="bubble";
+
+ let text=m.deleted_for_everyone?"This message was deleted":(m.content||"");
+ bubble.innerHTML=esc(text).replace(/\n/g,"<br>");
+
+ const time=document.createElement("span");
+ time.className="time";
+ time.textContent=new Date(m.created_at).toLocaleTimeString("bn-BD",{hour:"numeric",minute:"2-digit"});
+ bubble.appendChild(time);
+ row.appendChild(bubble);
+
+ const empty=document.getElementById("messages").querySelector(".empty");
+ if(empty)empty.remove();
+ box.appendChild(row);
+}
+
+function subscribeRealtime(){
+ if(!conversationId)return;
+ channel=sb.channel("raztara-chat-"+conversationId);
+ channel.on("postgres_changes",
+  {event:"INSERT",schema:"public",table:"messages",filter:"conversation_id=eq."+conversationId},
+  payload=>{
+    const m=payload.new;
+    if(!document.querySelector('[data-message-id="'+m.id+'"]')){
+      renderMessage(m);
+      const board=document.getElementById("board");
+      const rows=board.querySelectorAll(".row");
+      const row=rows[rows.length-1];
+      if(row)reveal(row);
+    }
+  }
+ ).subscribe();
+}
+
+function reveal(row){
+ const board=document.getElementById("board");
+ const r=row.getBoundingClientRect(),b=board.getBoundingClientRect();
+ if(r.bottom>b.bottom)board.scrollTop+=r.bottom-b.bottom+8;
+}
+
+async function sendText(){
+ const input=document.getElementById("messageInput");
+ const content=input.value.trim();
+ if(!content||!conversationId)return;
+
+ input.value="";
+ const {data,error}=await sb.from("messages").insert({
+   conversation_id:conversationId,
+   sender_id:currentUser.id,
+   content,
+   message_type:"text"
+ }).select().single();
+
+ if(error){input.value=content;showToast(error.message);return}
+ if(data)renderMessage(data);
+}
+
+document.getElementById("messageInput").addEventListener("keydown",e=>{
+ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendText()}
+});
+document.addEventListener("click",e=>{
+ if(!e.target.closest("#menu")&&!e.target.closest(".plus"))closeMenu();
+});
+
+window.addEventListener("pagehide",()=>{if(channel)sb.removeChannel(channel)});
+setInterval(updateStatus,30000);
+init();
+</script>
+</body>
+</html>
