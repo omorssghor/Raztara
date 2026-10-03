@@ -1066,6 +1066,8 @@ async function getExistingConversation(){
         .add(row.user_id);
     }
 
+    const candidateIds = [];
+
     for(
         const [id,members]
         of grouped.entries()
@@ -1076,11 +1078,50 @@ async function getExistingConversation(){
             members.has(targetUserId) &&
             members.size === 2
         ){
-            return id;
+            candidateIds.push(id);
         }
     }
 
-    return null;
+    if(!candidateIds.length){
+        return null;
+    }
+
+    /*
+     * একই দুই User-এর একাধিক পুরোনো conversation থাকলে
+     * শুধু প্রথম ID নেওয়া যাবে না।
+     * সর্বশেষ message যে conversation-এ আছে সেটিই আসল active chat।
+     */
+    const {
+        data:latestMessages,
+        error:latestMessageError
+    } =
+        await supabaseClient
+        .from("messages")
+        .select("conversation_id,created_at")
+        .in(
+            "conversation_id",
+            candidateIds
+        )
+        .order(
+            "created_at",
+            {
+                ascending:false
+            }
+        )
+        .limit(1);
+
+    if(
+        !latestMessageError &&
+        latestMessages &&
+        latestMessages.length
+    ){
+        return latestMessages[0].conversation_id;
+    }
+
+    /*
+     * কোনো message না থাকলে candidate-এর প্রথমটিই ব্যবহার হবে।
+     */
+    return candidateIds[0];
 }
 
 async function createConversation(){
