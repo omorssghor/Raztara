@@ -3364,7 +3364,7 @@ async function getMediaUrl(path){
    SEND TEXT
 ========================================================= */
 
-async function sendText(){
+async async function sendText(){
 
     if(!currentUser){
         return;
@@ -3497,6 +3497,21 @@ async function handleFile(
 
     if(!conversationId){
 
+        try{
+            conversationId = await ensureConversation();
+        }catch(error){
+            console.error("Conversation init error:",error);
+            showToast(error.message || "Chat চালু করা যায়নি");
+            return;
+        }
+    }
+
+    if(!conversationId){
+        showToast(
+            currentLanguage === "bn"
+                ? "Chat চালু করা যায়নি"
+                : "Could not start chat"
+        );
         return;
     }
 
