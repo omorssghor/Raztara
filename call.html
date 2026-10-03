@@ -86,10 +86,42 @@ button{font:inherit}
 
 <script>
 const sb=supabase.createClient("https://pqyicaqpmojijjskpzcp.supabase.co","sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho");
-let me=null,other=null,conversationId="",type="audio",incoming=false,channel=null,pc=null,localStream=null,muted=false,cameraOff=false,remoteReady=false,callId="",callStartedAt=0,durationTimer=null,callLogged=false,facingMode="user",callMode="audio",onlineChannel=null,otherOnline=false;
+let me=null,other=null,conversationId="",type="audio",incoming=false,channel=null,pc=null,localStream=null,muted=false,cameraOff=false,remoteReady=false,callId="",callStartedAt=0,durationTimer=null,callLogged=false,facingMode="user",callMode="audio",onlineChannel=null,otherOnline=false,ringAudioCtx=null,ringTimer=null;
 const qs=n=>new URLSearchParams(location.search).get(n)||"";
 const avatar=u=>u?.avatar_url||"https://ui-avatars.com/api/?name="+encodeURIComponent((u?.full_name||u?.username||"R").slice(0,1))+"&background=075e54&color=fff&bold=true";
 function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2300)}
+function unlockCallAudio(){
+ try{
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC)return;
+  if(!ringAudioCtx)ringAudioCtx=new AC();
+  if(ringAudioCtx.state==="suspended")ringAudioCtx.resume().catch(()=>{});
+ }catch(e){}
+}
+function playRingTone(freq=880){
+ try{
+  unlockCallAudio();
+  if(!ringAudioCtx||ringAudioCtx.state!=="running")return;
+  const now=ringAudioCtx.currentTime;
+  const osc=ringAudioCtx.createOscillator(),gain=ringAudioCtx.createGain();
+  osc.type="sine";osc.frequency.setValueAtTime(freq,now);
+  gain.gain.setValueAtTime(0.0001,now);
+  gain.gain.exponentialRampToValueAtTime(0.09,now+0.03);
+  gain.gain.exponentialRampToValueAtTime(0.0001,now+0.48);
+  osc.connect(gain);gain.connect(ringAudioCtx.destination);
+  osc.start(now);osc.stop(now+0.5);
+ }catch(e){}
+}
+function stopRinging(){
+ if(ringTimer){clearInterval(ringTimer);ringTimer=null}
+}
+function startRinging(){
+ stopRinging();
+ const ring=()=>{playRingTone(880);setTimeout(()=>playRingTone(660),520)};
+ ring();
+ ringTimer=setInterval(ring,2600);
+}
+["touchstart","pointerdown","click"].forEach(ev=>window.addEventListener(ev,unlockCallAudio,{once:true,passive:true}));
 function setState(t){document.getElementById("state").textContent=t}
 function setProfile(p){
  other=p;
@@ -158,6 +190,7 @@ function refreshControls(){
 }
 function showControls(){refreshControls()}
 function startDuration(){
+ stopRinging();
  if(callStartedAt)return;
  callStartedAt=Date.now();
  document.getElementById("duration").classList.remove("hidden");
@@ -257,17 +290,22 @@ async function getOtherOnline(){
 async function startOutgoing(){
  otherOnline=await getOtherOnline();
  setState(otherOnline?"Ringing...":"Calling...");
+ unlockCallAudio();
+ startRinging();
  await ensureMedia();
  await createPeer(true);
  await send("ring",{to:other.id,from:me.id,type,call_id:callId});
 }
 function showIncoming(){
+ unlockCallAudio();
+ startRinging();
  document.getElementById("incoming").classList.add("show");
  document.getElementById("controls").classList.add("hidden");
  document.getElementById("remotePlaceholder").classList.remove("hidden");
  setState("Incoming "+(type==="video"?"video":"audio")+" call");
 }
 async function acceptCall(){
+ stopRinging();
  document.getElementById("incoming").classList.remove("show");
  try{
   await ensureMedia();await send("accept",{to:other.id,type,mode:callMode});showControls();
@@ -275,7 +313,7 @@ async function acceptCall(){
  }catch(e){rejectCall()}
 }
 async function startPeer(offerer){await ensureMedia();await createPeer(offerer)}
-async function rejectCall(){await send("hangup",{reason:"rejected"});finish("Call declined")}
+async function rejectCall(){stopRinging();await send("hangup",{reason:"rejected"});finish("Call declined")}
 function toggleMute(){
  if(!localStream)return;muted=!muted;localStream.getAudioTracks().forEach(t=>t.enabled=!muted);
  document.getElementById("muteBtn").classList.toggle("on",muted);document.getElementById("muteBtn").textContent=muted?"🔇":"🎤";
@@ -387,8 +425,9 @@ function toggleSpeaker(){
  const v=document.getElementById("remoteVideo");v.muted=!v.muted;
  document.getElementById("speakerBtn").classList.toggle("on",v.muted);
 }
-async function leaveCall(){try{await send("hangup",{})}catch(e){}finish("Call ended")}
+async function leaveCall(){stopRinging();try{await send("hangup",{})}catch(e){}finish("Call ended")}
 function finish(msg){
+ stopRinging();
  if(pc){pc.close();pc=null}
  if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}
  if(channel){sb.removeChannel(channel);channel=null}
