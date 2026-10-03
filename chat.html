@@ -141,7 +141,7 @@ async function toggleRecording(){
    const stream=await navigator.mediaDevices.getUserMedia({
      audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}
    });
-   const types=["audio/mp4","audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus"];
+   const types=["audio/webm;codecs=opus","audio/mp4","audio/webm","audio/ogg;codecs=opus"];
    const mime=types.find(t=>window.MediaRecorder && MediaRecorder.isTypeSupported(t))||"";
    mediaRecorder=mime?new MediaRecorder(stream,{mimeType:mime}):new MediaRecorder(stream);
    voiceChunks=[];
@@ -175,15 +175,18 @@ async function toggleRecording(){
      if(error){showToast("Voice message save হয়নি: "+error.message);return}
      if(data&&!document.querySelector('[data-message-id="'+data.id+'"]'))renderMessage(data);
    };
-   mediaRecorder.start();
+   mediaRecorder.start(250);
    recording=true;
    document.getElementById("voiceBtn").textContent="⏹️";
    showToast("Recording চলছে... শেষ করতে আবার 🎤 চাপুন");
  }catch(e){
    recording=false;
    document.getElementById("voiceBtn").textContent="🎤";
+   console.error("RAZTARA voice error",e);
    if(e&&e.name==="NotAllowedError") showToast("Microphone permission Allow করুন");
-   else showToast("Microphone চালু করা যায়নি");
+   else if(e&&e.name==="NotFoundError") showToast("Microphone পাওয়া যায়নি");
+   else if(e&&e.name==="NotSupportedError") showToast("Voice recording এই browser-এ supported নয়");
+   else showToast("Microphone চালু করা যায়নি: "+(e?.message||"Unknown error"));
  }
 }
 
