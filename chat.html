@@ -3253,6 +3253,7 @@ function appendMessage(
                 type === "audio"
             ){
 
+                openMessageOptions(message);
                 return;
             }
 
@@ -3364,7 +3365,7 @@ async function getMediaUrl(path){
    SEND TEXT
 ========================================================= */
 
-async async function sendText(){
+async function sendText(){
 
     if(!currentUser){
         return;
