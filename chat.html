@@ -2375,8 +2375,8 @@ async function findConversation(){
                     {count:0,latest:0};
 
                 return (
-                    B.count - A.count ||
-                    B.latest - A.latest
+                    B.latest - A.latest ||
+                    B.count - A.count
                 );
             }
         );
