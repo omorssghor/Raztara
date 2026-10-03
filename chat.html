@@ -26,7 +26,7 @@ button,input{font:inherit}
 .bubble{max-width:min(78%,420px);padding:8px 9px 5px;border-radius:8px;background:#fff;box-shadow:0 1px 1px #0002;word-break:break-word;font-size:15px;line-height:1.4}
 .me .bubble{background:#d9fdd3;border-top-right-radius:2px}
 .them .bubble{border-top-left-radius:2px}
-.time{font-size:9px;color:#718084;float:right;margin:5px 0 0 9px}
+.time{font-size:9px;color:#718084;float:right;margin:5px 0 0 9px}.ticks{font-size:12px;margin-left:4px;letter-spacing:-2px}.ticks.read{color:#128c7e}
 .empty{text-align:center;color:#667;padding:55px 20px}
 .loader{text-align:center;padding:50px;color:#667}
 .composer{position:fixed;left:0;right:0;bottom:0;height:calc(68px + env(safe-area-inset-bottom));padding:7px 9px calc(7px + env(safe-area-inset-bottom));background:#f0f2f5;display:flex;align-items:center;gap:7px;z-index:20}
@@ -180,7 +180,7 @@ async function openConversation(){
 async function loadMessages(){
  const box=document.getElementById("messages");
  const {data,error}=await sb.from("messages")
-   .select("id,sender_id,content,message_type,created_at,deleted_for_everyone")
+   .select("id,sender_id,content,message_type,created_at,deleted_for_everyone,delivered_at,read_at")
    .eq("conversation_id",conversationId)
    .order("created_at",{ascending:true});
 
@@ -190,6 +190,12 @@ async function loadMessages(){
    return;
  }
 
+ if(data&&data.length){
+   const incoming=data.filter(m=>m.sender_id!==currentUser.id && !m.delivered_at).map(m=>m.id);
+   if(incoming.length) await sb.from("messages").update({delivered_at:new Date().toISOString()}).in("id",incoming);
+   const unread=data.filter(m=>m.sender_id!==currentUser.id && !m.read_at).map(m=>m.id);
+   if(unread.length) await sb.from("messages").update({read_at:new Date().toISOString(),is_read:true}).in("id",unread);
+ }
  if(!data||!data.length){
    box.innerHTML='<div class="empty">এখনও কোনো message নেই।<br><br>প্রথম message পাঠান 👋</div>';
    return;
@@ -202,7 +208,9 @@ async function loadMessages(){
 
 function renderMessage(m){
  const box=document.getElementById("messages");
+ if(m&&m.id&&document.querySelector('[data-message-id="'+m.id+'"]')) return;
  const row=document.createElement("div");
+ row.dataset.messageId=m.id||"";
  row.className="row "+(m.sender_id===currentUser.id?"me":"them");
  const bubble=document.createElement("div");
  bubble.className="bubble";
@@ -213,6 +221,12 @@ function renderMessage(m){
  const time=document.createElement("span");
  time.className="time";
  time.textContent=new Date(m.created_at).toLocaleTimeString("bn-BD",{hour:"numeric",minute:"2-digit"});
+ if(m.sender_id===currentUser.id){
+   const ticks=document.createElement("span");
+   ticks.className="ticks"+(m.read_at?" read":"");
+   ticks.textContent="✓✓";
+   time.appendChild(ticks);
+ }
  bubble.appendChild(time);
  row.appendChild(bubble);
 
@@ -259,7 +273,7 @@ async function sendText(){
  }).select().single();
 
  if(error){input.value=content;showToast(error.message);return}
- if(data)renderMessage(data);
+ if(data && !document.querySelector('[data-message-id="'+data.id+'"]'))renderMessage(data);
 }
 
 document.getElementById("messageInput").addEventListener("keydown",e=>{
