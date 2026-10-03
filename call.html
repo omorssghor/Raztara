@@ -17,14 +17,14 @@ button{font:inherit}
 .avatar{width:112px;height:112px;border-radius:50%;object-fit:cover;background:#075e54;border:3px solid #ffffff30;box-shadow:0 12px 35px #0006}
 .caller-name{font-size:24px;font-weight:750;max-width:85%;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .state{font-size:14px;color:#d7e5e2}
-.top{position:absolute;top:0;left:0;right:0;padding:calc(14px + env(safe-area-inset-top)) 16px 16px;display:flex;align-items:center;gap:12px;z-index:60;background:linear-gradient(#0008,transparent)}
+.top{position:fixed;top:0;left:0;right:0;padding:calc(14px + env(safe-area-inset-top)) 16px 16px;display:flex;align-items:center;gap:12px;z-index:1001;background:linear-gradient(#0008,transparent)}
 .back{width:40px;height:40px;border:0;border-radius:50%;background:#0005;color:#fff;font-size:28px}
 .top-name{font-size:16px;font-weight:700;flex:1}
 .top-type{font-size:11px;opacity:.75}
 .local-wrap{position:absolute;right:14px;top:calc(74px + env(safe-area-inset-top));width:108px;height:152px;border-radius:14px;overflow:hidden;background:#1a2a2f;border:1px solid #ffffff44;box-shadow:0 6px 20px #0006;z-index:6}
 .local{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
 .local-off{display:flex;align-items:center;justify-content:center;color:#9fb0b4;font-size:12px}
-.controls{position:absolute;left:0;right:0;bottom:0;padding:18px 18px calc(20px + env(safe-area-inset-bottom));display:flex;justify-content:center;align-items:center;gap:18px;z-index:7;background:linear-gradient(transparent,#000b 70%)}
+.controls{position:fixed;left:0;right:0;bottom:0;padding:18px 18px calc(20px + env(safe-area-inset-bottom));display:flex;justify-content:center;align-items:center;gap:18px;z-index:1000;background:linear-gradient(transparent,#000b 70%)}
 .control{width:58px;height:58px;border:0;border-radius:50%;background:#ffffff20;color:#fff;font-size:23px;backdrop-filter:blur(10px)}
 .control.on{background:#fff;color:#172126}
 .end{width:66px;height:66px;border:0;border-radius:50%;background:#e53935;color:#fff;font-size:27px;box-shadow:0 5px 18px #0007}
@@ -188,7 +188,7 @@ async function setupChannel(){
  .on("broadcast",{event:"answer"},async p=>{if(p.payload?.call_id!==callId||!pc)return;await pc.setRemoteDescription(p.payload.answer);setState("Connected")})
  .on("broadcast",{event:"ice"},async p=>{if(p.payload?.call_id!==callId||!pc||!p.payload.candidate)return;try{await pc.addIceCandidate(p.payload.candidate)}catch(e){} })
  .on("broadcast",{event:"mode"},p=>{if(p.payload?.call_id!==callId)return;applyRemoteMode(p.payload.mode)})
- .on("broadcast",{event:"hangup"},p=>{if(p.payload?.call_id===callId)finish("Call ended")});
+ .on("broadcast",{event:"hangup"},p=>{if(p.payload?.call_id===callId)cleanupCall();toast("Call ended")});
  await new Promise((resolve,reject)=>channel.subscribe(s=>{if(s==="SUBSCRIBED")resolve();if(s==="CHANNEL_ERROR")reject(new Error("Call channel error"))}));
 }
 async function send(event,payload={}){
@@ -196,17 +196,18 @@ async function send(event,payload={}){
  await channel.send({type:"broadcast",event,payload:{...payload,call_id:callId}});
 }
 function refreshControls(){
- const isVideo=(type==="video"||callMode==="video")&&!!localStream?.getVideoTracks().length;
- document.getElementById("controls").classList.remove("hidden");
+ const isVideo=(type==="video"||callMode==="video");
+ const controls=document.getElementById("controls");
+ controls.classList.remove("hidden");
+ controls.style.display="flex";
  document.getElementById("speakerBtn").classList.remove("hidden");
  document.getElementById("muteBtn").classList.remove("hidden");
- document.getElementById("cameraBtn").classList.toggle("hidden",!isVideo);
- document.getElementById("switchCameraBtn").classList.toggle("hidden",!isVideo);
- document.getElementById("modeBtn").classList.toggle("hidden",!isVideo);
+ document.getElementById("cameraBtn").classList.toggle("hidden",!(isVideo&&localStream?.getVideoTracks().length));
+ document.getElementById("switchCameraBtn").classList.toggle("hidden",!(isVideo&&localStream?.getVideoTracks().length));
+ document.getElementById("modeBtn").classList.toggle("hidden",!(isVideo&&localStream?.getVideoTracks().length));
 }
 function showControls(){
  refreshControls();
- document.getElementById("controls").classList.remove("hidden");
 }
 function startDuration(){
  stopRinging();
@@ -333,7 +334,7 @@ async function acceptCall(){
  }catch(e){rejectCall()}
 }
 async function startPeer(offerer){await ensureMedia();await createPeer(offerer)}
-async function rejectCall(){stopRinging();await send("hangup",{reason:"rejected"});finish("Call declined")}
+async function rejectCall(){stopRinging();await send("hangup",{reason:"rejected"});cleanupCall();toast("Call declined");goBackToChat()}
 function toggleMute(){
  if(!localStream)return;muted=!muted;localStream.getAudioTracks().forEach(t=>t.enabled=!muted);
  document.getElementById("muteBtn").classList.toggle("on",muted);document.getElementById("muteBtn").textContent=muted?"🔇":"🎤";
@@ -445,25 +446,23 @@ function toggleSpeaker(){
  const v=document.getElementById("remoteVideo");v.muted=!v.muted;
  document.getElementById("speakerBtn").classList.toggle("on",v.muted);
 }
+function goBackToChat(){
+ const backUrl="chat.html"+(conversationId?"?conversation="+encodeURIComponent(conversationId):"");
+ window.location.replace(backUrl);
+}
 async function leaveCall(){
  stopRinging();
  try{await send("hangup",{})}catch(e){}
- finish("Call ended");
- setTimeout(()=>{
-  if(document.visibilityState!=="hidden"){
-   const backUrl="chat.html"+(conversationId?"?conversation="+encodeURIComponent(conversationId):"");
-   if(history.length>1)history.back();else location.href=backUrl;
-  }
- },550);
+ cleanupCall();
+ goBackToChat();
 }
-function finish(msg){
+function cleanupCall(){
  stopRinging();
  document.getElementById("soundUnlock").classList.remove("show");
  if(pc){pc.close();pc=null}
  if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}
  if(channel){sb.removeChannel(channel);channel=null}
  if(onlineChannel){sb.removeChannel(onlineChannel);onlineChannel=null}
- toast(msg);setTimeout(()=>history.back(),500)
 }
 window.addEventListener("pagehide",()=>{if(channel)sb.removeChannel(channel)});
 init();
