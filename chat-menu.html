@@ -67,13 +67,13 @@ function chatUrl(){return "chat.html?user="+encodeURIComponent(userId||"")}
 function goBack(){if(history.length>1)history.back();else location.href=chatUrl()}
 function openProfileDetails(){
   if(!userId){alert("User ID পাওয়া যায়নি।");return;}
-  window.location.assign("user-profile.html?user="+encodeURIComponent(userId));
+  window.location.assign("user-profile.html?user="+encodeURIComponent(userId)+"&v=3");
 }
 function openGallery(){
   if(!userId){alert("User ID পাওয়া যায়নি।");return;}
-  window.location.assign("gallery.html?user="+encodeURIComponent(userId));
+  window.location.assign("gallery.html?user="+encodeURIComponent(userId)+"&v=3");
 }
-function openPrivacy(){window.location.assign("privacy.html?from=chat&user="+encodeURIComponent(userId||""));}
+function openPrivacy(){window.location.assign("privacy.html?from=chat&user="+encodeURIComponent(userId||"")+"&v=3");}
 function openSettings(){location.href="settings.html"}
 function openBackground(){
   const input=document.getElementById("bgInput");
