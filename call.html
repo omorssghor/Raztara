@@ -49,7 +49,7 @@ button{font:inherit}
   <div id="remotePlaceholder" class="remote-placeholder">
     <img id="bigAvatar" class="avatar" src="" alt="">
     <div id="callerName" class="caller-name">RAZTARA User</div>
-    <div id="state" class="state">Connecting...</div>
+    <div id="state" class="state">Connecting...</div><div id="duration" class="state hidden">00:00</div>
   </div>
 
   <header class="top">
@@ -84,7 +84,7 @@ button{font:inherit}
 
 <script>
 const sb=supabase.createClient("https://pqyicaqpmojijjskpzcp.supabase.co","sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho");
-let me=null,other=null,conversationId="",type="audio",incoming=false,channel=null,pc=null,localStream=null,muted=false,cameraOff=false,remoteReady=false,callId="";
+let me=null,other=null,conversationId="",type="audio",incoming=false,channel=null,pc=null,localStream=null,muted=false,cameraOff=false,remoteReady=false,callId="",callStartedAt=0,durationTimer=null,callLogged=false;
 const qs=n=>new URLSearchParams(location.search).get(n)||"";
 const avatar=u=>u?.avatar_url||"https://ui-avatars.com/api/?name="+encodeURIComponent((u?.full_name||u?.username||"R").slice(0,1))+"&background=075e54&color=fff&bold=true";
 function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2300)}
@@ -127,12 +127,31 @@ async function send(event,payload={}){
  if(!channel)return;
  await channel.send({type:"broadcast",event,payload:{...payload,call_id:callId}});
 }
+function showControls(){document.getElementById("controls").classList.remove("hidden")}
+function startDuration(){
+ if(callStartedAt)return;
+ callStartedAt=Date.now();
+ document.getElementById("duration").classList.remove("hidden");
+ updateDuration(); durationTimer=setInterval(updateDuration,1000);
+}
+function updateDuration(){
+ if(!callStartedAt)return;
+ const n=Math.floor((Date.now()-callStartedAt)/1000),m=String(Math.floor(n/60)).padStart(2,"0"),sec=String(n%60).padStart(2,"0");
+ document.getElementById("duration").textContent=m+":"+sec;
+}
+async function logCall(){
+ if(callLogged||!conversationId||!me)return; callLogged=true;
+ const n=callStartedAt?Math.floor((Date.now()-callStartedAt)/1000):0;
+ const m=String(Math.floor(n/60)).padStart(2,"0"),sec=String(n%60).padStart(2,"0");
+ const label=type==="video"?"Video call":"Audio call";
+ await sb.from("messages").insert({conversation_id:conversationId,sender_id:me.id,content:"📞 "+label+" • "+m+":"+sec+" • Call ended",message_type:"call"});
+}
 async function ensureMedia(){
  if(localStream)return;
  try{
   localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:type==="video"});
   const lv=document.getElementById("localVideo");lv.srcObject=localStream;
-  document.getElementById("controls").classList.remove("hidden");
+  showControls();
   if(type==="video"){document.getElementById("localWrap").classList.remove("hidden");document.getElementById("cameraBtn").classList.remove("hidden")}
  }catch(e){toast(e.name==="NotAllowedError"?"Microphone/Camera permission দিন":"Media চালু করা যায়নি");throw e}
 }
@@ -147,7 +166,7 @@ async function createPeer(offerer){
   const v=document.getElementById("remoteVideo");v.srcObject=e.streams[0];
   if(type==="video"){document.getElementById("remotePlaceholder").classList.add("hidden");v.classList.remove("hidden")}
   else{document.getElementById("remotePlaceholder").classList.remove("hidden")}
-  setState("Connected");remoteReady=true;
+  setState("Connected");remoteReady=true;startDuration();
  };
  pc.onicecandidate=e=>{if(e.candidate)send("ice",{candidate:e.candidate})};
  pc.onconnectionstatechange=()=>{if(["failed","disconnected"].includes(pc.connectionState))setState("Connection lost")};
