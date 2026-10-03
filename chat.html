@@ -383,7 +383,7 @@ function renderMessage(m){
    else if(m.message_type==="video") bubble.innerHTML='<div class="media-loading">ভিডিও খুলছে...</div>';
    else if(m.message_type==="voice"||m.message_type==="audio") bubble.innerHTML='<div class="media-loading">Voice খুলছে...</div>';
    else bubble.innerHTML='<div class="media-loading">📎 '+esc(text)+'</div>';
-   Promise.resolve(m._signedUrl).then(url=>{
+   (m._signedUrl?Promise.resolve(m._signedUrl):getSignedMedia(m.file_url)).then(url=>{
      if(!url){
        bubble.innerHTML='<div class="media-error">ভিডিও/মিডিয়া লোড হয়নি<br><button type="button" onclick="renderMessage('+JSON.stringify(m).replace(/</g,"\\u003c")+')">↻ আবার চেষ্টা</button></div>';
        bubble.appendChild(time);
