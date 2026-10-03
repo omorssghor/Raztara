@@ -19,7 +19,7 @@ html,body{
     width:100%;
     min-height:100%;
     font-family:Arial,sans-serif;
-    background:#f1faf7;
+    background:#f4fbf8;
     color:#222;
 }
 
@@ -48,7 +48,7 @@ body{
     height:42px;
     border:0;
     background:transparent;
-    color:#fff;
+    color:#087f5b;
     font-size:27px;
     cursor:pointer;
 }
@@ -62,10 +62,10 @@ body{
 
 .header-delete{
     border:0;
-    background:#fff;
+    background:transparent;
     color:#087f5b;
     padding:8px 11px;
-    border-radius:8px;
+    border-radius:0;
     font-size:13px;
     font-weight:700;
     cursor:pointer;
@@ -92,17 +92,18 @@ body{
 .top-bar button{
     flex:1;
     border:1px solid #087f5b;
-    background:#fff;
+    background:transparent;
     color:#087f5b;
     padding:10px 6px;
-    border-radius:9px;
-    font-size:13px;
+    border-radius:0;
+    font-size:14px;
+    font-weight:700;
     cursor:pointer;
 }
 
 .top-bar button.active{
-    background:#087f5b;
-    color:#fff;
+    background:transparent;
+    color:#087f5b;
 }
 
 /* INFO */
@@ -113,7 +114,8 @@ body{
     border-radius:0;
     padding:12px 0;
     color:#35584e;
-    font-size:13px;
+    font-size:14px;
+    font-weight:600;
     line-height:1.5;
     box-shadow:none;
 }
@@ -161,12 +163,14 @@ body{
 .sender-line{
     font-size:11px;
     color:#087f5b;
+    font-weight:700;
     margin-bottom:5px;
 }
 
 .content-text{
-    font-size:14px;
-    line-height:1.4;
+    font-size:15px;
+    font-weight:700;
+    line-height:1.5;
     word-break:break-word;
     color:#18352d;
 }
@@ -207,8 +211,9 @@ body{
 
 .message-time{
     margin-top:5px;
-    color:#6d8980;
-    font-size:10px;
+    color:#64847a;
+    font-size:11px;
+    font-weight:600;
 }
 
 .empty{
@@ -268,9 +273,7 @@ body{
  .modal{
     position:fixed;
     inset:0;
-    background:rgba(8,127,91,.10);
-    backdrop-filter:blur(7px);
-    -webkit-backdrop-filter:blur(7px);
+    background:rgba(244,251,248,.92);
     display:none;
     align-items:center;
     justify-content:center;
@@ -285,11 +288,11 @@ body{
 .modal-box{
     width:100%;
     max-width:380px;
-    background:#f4fbf8;
-    border:1px solid rgba(8,127,91,.10);
-    border-radius:18px;
+    background:transparent;
+    border:0;
+    border-radius:0;
     padding:22px;
-    box-shadow:0 12px 40px rgba(8,127,91,.14);
+    box-shadow:none;
 }
 
 .modal-title{
@@ -382,7 +385,7 @@ body{
         class="header-delete"
         onclick="deleteForMe()"
         disabled>
-        🗑️ Delete
+        Delete
     </button>
 
 </div>
@@ -427,7 +430,7 @@ body{
         class="delete-me"
         onclick="deleteForMe()"
         disabled>
-        🗑️ Delete for Me
+        Delete for Me
     </button>
 
     <button
@@ -435,7 +438,7 @@ body{
         class="delete-everyone"
         onclick="deleteForEveryone()"
         disabled>
-        🗑️ Delete for Everyone
+        Delete for Everyone
     </button>
 
 </div>
@@ -531,12 +534,12 @@ const translations = {
     bn:{
         title:"Delete",
         loading:"",
-        allMark:"☑️ All Mark",
-        unmarkAll:"⬜ Unmark All",
+        allMark:"All Mark",
+        unmarkAll:"Unmark All",
         info:"যেসব মেসেজ Delete করতে চান সেগুলো Mark করুন। তারপর Delete অপশন ব্যবহার করুন।",
-        delete:"🗑️ Delete",
-        deleteMe:"🗑️ Delete for Me",
-        deleteEveryone:"🗑️ Delete for Everyone",
+        delete:"Delete",
+        deleteMe:"Delete for Me",
+        deleteEveryone:"Delete for Everyone",
         noMessages:"কোনো মেসেজ পাওয়া যায়নি",
         loginRequired:"লগইন করুন",
         conversationMissing:"Conversation পাওয়া যায়নি",
@@ -560,9 +563,9 @@ const translations = {
         allMark:"☑️ All Mark",
         unmarkAll:"⬜ Unmark All",
         info:"Mark the messages you want to delete, then use a Delete option.",
-        delete:"🗑️ Delete",
-        deleteMe:"🗑️ Delete for Me",
-        deleteEveryone:"🗑️ Delete for Everyone",
+        delete:"Delete",
+        deleteMe:"Delete for Me",
+        deleteEveryone:"Delete for Everyone",
         noMessages:"No messages found",
         loginRequired:"Please login",
         conversationMissing:"Conversation not found",
