@@ -9,5 +9,13 @@
   "background_color": "#087f5b",
   "theme_color": "#087f5b",
   "lang": "bn",
-  "dir": "ltr"
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "./raztara-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }
