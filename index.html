@@ -2244,6 +2244,24 @@ function openCalls(){
    SETTINGS
 ===================================================== */
 
+function openChatMenuForLastUser(){
+
+    const userId =
+        localStorage.getItem(
+            "raztara_last_chat_user_id"
+        ) || "";
+
+    if(!userId){
+        alert("প্রথমে একটি Chat খুলুন।");
+        return;
+    }
+
+    window.location.assign(
+        "chat-menu.html?user=" +
+        encodeURIComponent(userId)
+    );
+}
+
 function openSettings(){
 
     closeMenu();
