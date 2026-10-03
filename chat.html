@@ -30,14 +30,14 @@ body{
 }
 
 /* HEADER */
-.header{
-    height:62px;
-    min-height:62px;
+ .header{
+    height:calc(62px + env(safe-area-inset-top));
+    min-height:calc(62px + env(safe-area-inset-top));
     background:#087f5b;
     color:#fff;
     display:flex;
     align-items:center;
-    padding:0 8px;
+    padding:env(safe-area-inset-top) 8px 0;
     position:fixed;
     top:0;
     left:0;
@@ -46,7 +46,7 @@ body{
     box-shadow:0 2px 7px rgba(0,0,0,.18);
 }
 
-.back-btn{
+ .back-btn{
     width:42px;
     height:42px;
     border:0;
@@ -111,9 +111,9 @@ body{
 }
 
 /* THREE DOT */
-.menu{
+ .menu{
     position:fixed;
-    top:57px;
+    top:calc(57px + env(safe-area-inset-top));
     right:7px;
     width:185px;
     background:#fff;
@@ -144,9 +144,9 @@ body{
 }
 
 /* CHAT */
-.chat-board{
+ .chat-board{
     position:fixed;
-    top:62px;
+    top:calc(62px + env(safe-area-inset-top));
     bottom:67px;
     left:0;
     right:0;
@@ -160,6 +160,10 @@ body{
     display:flex;
     flex-direction:column;
     gap:7px;
+}
+
+.chat-board.initializing{
+    visibility:hidden;
 }
 
 .empty-chat{
@@ -786,12 +790,6 @@ input[type=file]{
     </div>
 
     <div class="header-actions">
-
-        <button class="header-action"
-                onclick="focusMessage()"
-                title="Message">
-            💬
-        </button>
 
         <button class="header-action"
                 onclick="startCall('audio')"
@@ -2629,14 +2627,22 @@ async function loadMessages(){
             "messages"
         );
 
+    const board =
+        document.getElementById(
+            "chatBoard"
+        );
+
     lastRenderedMessageDate =
         null;
 
-    container.innerHTML = `
-        <div class="loading">
-            ${t("loading")}
-        </div>
-    `;
+    if(board){
+
+        board.classList.add(
+            "initializing"
+        );
+    }
+
+    container.innerHTML = "";
 
     if(!conversationId){
 
@@ -2645,6 +2651,13 @@ async function loadMessages(){
                 ${t("noMessages")}
             </div>
         `;
+
+        if(board){
+
+            board.classList.remove(
+                "initializing"
+            );
+        }
 
         return;
     }
@@ -2688,10 +2701,15 @@ async function loadMessages(){
             </div>
         `;
 
+        if(board){
+
+            board.classList.remove(
+                "initializing"
+            );
+        }
+
         return;
     }
-
-    container.innerHTML = "";
 
     if(!data?.length){
 
@@ -2700,6 +2718,13 @@ async function loadMessages(){
                 ${t("noMessages")}
             </div>
         `;
+
+        if(board){
+
+            board.classList.remove(
+                "initializing"
+            );
+        }
 
         return;
     }
@@ -2714,7 +2739,104 @@ async function loadMessages(){
         }
     );
 
+    /*
+     * ছবি/ভিডিও আগে লোড হতে দিচ্ছি।
+     * এতে chat মাঝখানে খুলে পরে media load হওয়ার
+     * কারণে কাঁপবে না এবং শুরুতেই সর্বশেষ message
+     * দেখা যাবে।
+     */
+    const media =
+        Array.from(
+            container.querySelectorAll(
+                "img,video"
+            )
+        );
+
+    if(media.length){
+
+        await Promise.race([
+            Promise.all(
+                media.map(
+                    element =>
+                        new Promise(resolve=>{
+
+                            if(
+                                element.tagName === "IMG" &&
+                                element.complete
+                            ){
+
+                                resolve();
+                                return;
+                            }
+
+                            if(
+                                element.tagName === "VIDEO" &&
+                                element.readyState >= 1
+                            ){
+
+                                resolve();
+                                return;
+                            }
+
+                            const done = ()=>{
+
+                                element.removeEventListener(
+                                    "load",
+                                    done
+                                );
+
+                                element.removeEventListener(
+                                    "loadedmetadata",
+                                    done
+                                );
+
+                                element.removeEventListener(
+                                    "error",
+                                    done
+                                );
+
+                                resolve();
+                            };
+
+                            element.addEventListener(
+                                "load",
+                                done
+                            );
+
+                            element.addEventListener(
+                                "loadedmetadata",
+                                done
+                            );
+
+                            element.addEventListener(
+                                "error",
+                                done
+                            );
+                        })
+                )
+            ),
+            new Promise(
+                resolve =>
+                    setTimeout(
+                        resolve,
+                        900
+                    )
+            )
+        ]);
+    }
+
     scrollToBottom();
+
+    if(board){
+
+        board.classList.remove(
+            "initializing"
+        );
+
+        requestAnimationFrame(
+            scrollToBottom
+        );
+    }
 
     await markIncomingMessagesRead();
 }
