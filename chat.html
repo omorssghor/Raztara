@@ -973,8 +973,6 @@ input[type=file]{
 
     <div id="messages" class="messages">
 
-        <div class="loading" id="loading">
-        </div>
 
     </div>
 
@@ -4935,16 +4933,6 @@ function applyLanguage(){
             t("message");
     }
 
-    const loading =
-        document.getElementById(
-            "loading"
-        );
-
-    if(loading){
-
-        loading.textContent =
-            t("loading");
-    }
 
     const recordingText =
         document.getElementById(
