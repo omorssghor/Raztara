@@ -156,14 +156,15 @@ function formatLastSeen(t){
 }
 
 async function openConversation(){
- const saved=localStorage.getItem("raztara_last_conversation_id");
+ const urlConversation=qs("conversation");
+ const saved=urlConversation||localStorage.getItem("raztara_last_conversation_id");
  if(saved){
    const check=await sb.from("conversation_members")
     .select("conversation_id")
     .eq("conversation_id",saved)
     .in("user_id",[currentUser.id,otherUserId]);
    const ids=(check.data||[]).map(x=>x.conversation_id);
-   if(ids.length===2){conversationId=saved;return}
+   if(ids.length===2){conversationId=saved;localStorage.setItem("raztara_last_conversation_id",conversationId);return}
  }
 
  const {data,error}=await sb.rpc("get_or_create_direct_conversation",{other_user_id:otherUserId});
@@ -184,7 +185,7 @@ async function loadMessages(){
    .order("created_at",{ascending:true});
 
  if(error){
-   box.innerHTML='<div class="empty">Message load করা যাচ্ছে না।</div>';
+   box.innerHTML='<div class="empty">Message load করা যাচ্ছে না।<br><small>'+esc(error.message)+'</small></div>';
    showToast(error.message);
    return;
  }
