@@ -917,6 +917,22 @@ a{
         <button
             class="menuItem"
             type="button"
+            onclick="openTippingFromMenu()"
+        >
+            💰 Tipping
+        </button>
+
+        <button
+            class="menuItem"
+            type="button"
+            onclick="blockLastChatUser()"
+        >
+            🚫 Block
+        </button>
+
+        <button
+            class="menuItem"
+            type="button"
             onclick="openSettings()"
         >
             ⚙️ Settings
@@ -1897,7 +1913,6 @@ function openChat(
             userId || ""
         ).trim();
 
-
     if(!targetUserId){
 
         alert(
@@ -1907,6 +1922,10 @@ function openChat(
         return;
     }
 
+    localStorage.setItem(
+        "raztara_last_chat_user_id",
+        targetUserId
+    );
 
     const chatUrl =
         "./chat.html?user=" +
@@ -1914,13 +1933,103 @@ function openChat(
             targetUserId
         );
 
-
     window.location.assign(
         chatUrl
     );
 
 }
 
+
+function getLastChatUserId(){
+
+    return String(
+        localStorage.getItem(
+            "raztara_last_chat_user_id"
+        ) || ""
+    ).trim();
+
+}
+
+function openTippingFromMenu(){
+
+    const userId =
+        getLastChatUserId();
+
+    if(!userId){
+
+        alert(
+            "প্রথমে একটি Chat খুলুন।"
+        );
+
+        return;
+    }
+
+    window.location.assign(
+        "./tipping.html?user=" +
+        encodeURIComponent(userId)
+    );
+
+}
+
+async function blockLastChatUser(){
+
+    const userId =
+        getLastChatUserId();
+
+    if(!userId){
+
+        alert(
+            "প্রথমে একটি Chat খুলুন।"
+        );
+
+        return;
+    }
+
+    if(!currentUser || !currentUser.id){
+
+        return;
+    }
+
+    if(
+        !confirm(
+            "আপনি কি এই ব্যক্তিকে Block করতে চান?"
+        )
+    ){
+
+        return;
+    }
+
+    const { error } =
+        await supabaseClient
+            .from("blocked_users")
+            .insert({
+                blocker_id:currentUser.id,
+                blocked_id:userId
+            });
+
+    if(error){
+
+        if(
+            String(error.message || "")
+                .toLowerCase()
+                .includes("duplicate")
+        ){
+
+            alert("ব্যক্তিটি ইতিমধ্যে Block করা আছে।");
+
+        }else{
+
+            console.error(error);
+            alert("Block করা যায়নি।");
+
+        }
+
+        return;
+    }
+
+    alert("ব্যক্তিকে Block করা হয়েছে।");
+
+}
 
 /* =====================================================
    SEARCH USERS
