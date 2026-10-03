@@ -5103,13 +5103,16 @@ document.addEventListener(
             );
 
         if(
+            menu &&
             !menu.contains(
                 event.target
             ) &&
             !button
         ){
 
-            closeMenu();
+            if(typeof closeMenu === "function"){
+                closeMenu();
+            }
         }
     }
 );
@@ -5118,11 +5121,8 @@ document.addEventListener(
    ENTER SEND
 ========================================================= */
 
-document
-    .getElementById(
-        "messageInput"
-    )
-    .addEventListener(
+const messageInputElement = document.getElementById("messageInput");
+if(messageInputElement) messageInputElement.addEventListener(
         "keydown",
         function(event){
 
@@ -5164,8 +5164,6 @@ async function init(){
      * তার জন্য calls table-এর incoming INSERT
      * realtime-এ ধরা যাবে।
      */
-    subscribeIncomingCalls();
-
     startPresence();
 
     otherUserId =
