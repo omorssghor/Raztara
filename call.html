@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#075e54">
+<title>RAZTARA — Call</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#101b20;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;overflow:hidden}
+button{font:inherit}
+.app{position:relative;width:100%;height:100dvh;overflow:hidden;background:linear-gradient(180deg,#18343a,#071014)}
+.remote{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#152328}
+.remote.audio{display:none}
+.remote-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(circle at 50% 38%,#28545a,#0a171b 58%);z-index:1}
+.avatar{width:112px;height:112px;border-radius:50%;object-fit:cover;background:#075e54;border:3px solid #ffffff30;box-shadow:0 12px 35px #0006}
+.caller-name{font-size:24px;font-weight:750;max-width:85%;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.state{font-size:14px;color:#d7e5e2}
+.top{position:absolute;top:0;left:0;right:0;padding:calc(14px + env(safe-area-inset-top)) 16px 16px;display:flex;align-items:center;gap:12px;z-index:5;background:linear-gradient(#0008,transparent)}
+.back{width:40px;height:40px;border:0;border-radius:50%;background:#0005;color:#fff;font-size:28px}
+.top-name{font-size:16px;font-weight:700;flex:1}
+.top-type{font-size:11px;opacity:.75}
+.local-wrap{position:absolute;right:14px;top:calc(74px + env(safe-area-inset-top));width:108px;height:152px;border-radius:14px;overflow:hidden;background:#1a2a2f;border:1px solid #ffffff44;box-shadow:0 6px 20px #0006;z-index:6}
+.local{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.local-off{display:flex;align-items:center;justify-content:center;color:#9fb0b4;font-size:12px}
+.controls{position:absolute;left:0;right:0;bottom:0;padding:18px 18px calc(20px + env(safe-area-inset-bottom));display:flex;justify-content:center;align-items:center;gap:18px;z-index:7;background:linear-gradient(transparent,#000b 70%)}
+.control{width:58px;height:58px;border:0;border-radius:50%;background:#ffffff20;color:#fff;font-size:23px;backdrop-filter:blur(10px)}
+.control.on{background:#fff;color:#172126}
+.end{width:66px;height:66px;border:0;border-radius:50%;background:#e53935;color:#fff;font-size:27px;box-shadow:0 5px 18px #0007}
+.incoming{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:20;background:linear-gradient(180deg,#18343a,#071014)}
+.incoming.show{display:flex}
+.incoming .avatar{width:126px;height:126px;margin-bottom:20px}
+.incoming h1{font-size:26px;margin-bottom:7px}
+.incoming p{color:#c5d2d4;font-size:14px}
+.incoming-actions{display:flex;gap:58px;margin-top:58px}
+.in-btn{width:66px;height:66px;border:0;border-radius:50%;color:#fff;font-size:28px}
+.accept{background:#20a464}.decline{background:#e53935}
+.in-label{font-size:11px;color:#d0dcde;text-align:center;margin-top:8px}
+.toast{position:absolute;left:50%;bottom:calc(104px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#26383a;color:#fff;padding:9px 15px;border-radius:22px;font-size:12px;z-index:30;opacity:0;transition:.2s;pointer-events:none}
+.toast.show{opacity:1}
+.hidden{display:none!important}
+@media(min-width:700px){.app{max-width:520px;margin:auto;box-shadow:0 0 50px #0008}.top{max-width:520px;left:50%;right:auto;width:520px;transform:translateX(-50%)}.controls{max-width:520px;left:50%;right:auto;width:520px;transform:translateX(-50%)}}
+</style>
+</head>
+<body>
+<main class="app">
+  <video id="remoteVideo" class="remote" autoplay playsinline webkit-playsinline></video>
+  <div id="remotePlaceholder" class="remote-placeholder">
+    <img id="bigAvatar" class="avatar" src="" alt="">
+    <div id="callerName" class="caller-name">RAZTARA User</div>
+    <div id="state" class="state">Connecting...</div>
+  </div>
+
+  <header class="top">
+    <button class="back" onclick="leaveCall()">‹</button>
+    <div class="top-name" id="topName">RAZTARA User</div>
+    <div class="top-type" id="topType">Audio call</div>
+  </header>
+
+  <div id="localWrap" class="local-wrap hidden">
+    <video id="localVideo" class="local" autoplay muted playsinline webkit-playsinline></video>
+    <div id="localOff" class="local-off hidden">Camera off</div>
+  </div>
+
+  <div id="controls" class="controls hidden">
+    <button id="speakerBtn" class="control" onclick="toggleSpeaker()">🔊</button>
+    <button id="muteBtn" class="control" onclick="toggleMute()">🎤</button>
+    <button id="cameraBtn" class="control hidden" onclick="toggleCamera()">📹</button>
+    <button class="end" onclick="leaveCall()">☎</button>
+  </div>
+
+  <section id="incoming" class="incoming">
+    <img id="incomingAvatar" class="avatar" src="" alt="">
+    <h1 id="incomingName">RAZTARA User</h1>
+    <p id="incomingType">Incoming audio call</p>
+    <div class="incoming-actions">
+      <div><button class="in-btn decline" onclick="rejectCall()">☎</button><div class="in-label">Decline</div></div>
+      <div><button class="in-btn accept" onclick="acceptCall()">☎</button><div class="in-label">Accept</div></div>
+    </div>
+  </section>
+  <div id="toast" class="toast"></div>
+</main>
+
+<script>
+const sb=supabase.createClient("https://pqyicaqpmojijjskpzcp.supabase.co","sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho");
+let me=null,other=null,conversationId="",type="audio",incoming=false,channel=null,pc=null,localStream=null,muted=false,cameraOff=false,remoteReady=false,callId="";
+const qs=n=>new URLSearchParams(location.search).get(n)||"";
+const avatar=u=>u?.avatar_url||"https://ui-avatars.com/api/?name="+encodeURIComponent((u?.full_name||u?.username||"R").slice(0,1))+"&background=075e54&color=fff&bold=true";
+function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2300)}
+function setState(t){document.getElementById("state").textContent=t}
+function setProfile(p){
+ other=p;
+ const a=avatar(p),n=p.full_name||p.username||"RAZTARA User";
+ document.getElementById("bigAvatar").src=a;document.getElementById("incomingAvatar").src=a;
+ document.getElementById("callerName").textContent=n;document.getElementById("incomingName").textContent=n;document.getElementById("topName").textContent=n;
+ document.getElementById("topType").textContent=type==="video"?"Video call":"Audio call";
+ document.getElementById("incomingType").textContent="Incoming "+(type==="video"?"video":"audio")+" call";
+}
+async function profile(id){
+ const {data}=await sb.from("profiles").select("id,username,full_name,avatar_url").eq("id",id).maybeSingle();
+ return data;
+}
+async function init(){
+ const au=await sb.auth.getUser();if(!au.data.user){location.href="login.html";return}
+ me=au.data.user;
+ const user=qs("user")||qs("user_id");conversationId=qs("conversation");type=qs("type")==="video"?"video":"audio";incoming=qs("incoming")==="1";callId=qs("call_id")||crypto.randomUUID();
+ if(!user||!conversationId){toast("Call information পাওয়া যায়নি");return}
+ other=await profile(user);if(!other){toast("User profile পাওয়া যায়নি");return}
+ setProfile(other);
+ await setupChannel();
+ if(incoming){showIncoming();return}
+ await startOutgoing();
+}
+async function setupChannel(){
+ const topic="raztara-call-"+conversationId;
+ channel=sb.channel(topic,{config:{private:true}});
+ channel.on("broadcast",{event:"ring"},p=>{if(p.payload?.to===me.id&&p.payload?.call_id===callId){showIncoming()}})
+ .on("broadcast",{event:"accept"},async p=>{if(p.payload?.call_id!==callId)return;await startPeer(true)})
+ .on("broadcast",{event:"offer"},async p=>{if(p.payload?.call_id!==callId||!incoming)return;await ensureMedia();await createPeer(false);await pc.setRemoteDescription(p.payload.offer);const ans=await pc.createAnswer();await pc.setLocalDescription(ans);await send("answer",{answer:ans})})
+ .on("broadcast",{event:"answer"},async p=>{if(p.payload?.call_id!==callId||!pc)return;await pc.setRemoteDescription(p.payload.answer);setState("Connected")})
+ .on("broadcast",{event:"ice"},async p=>{if(p.payload?.call_id!==callId||!pc||!p.payload.candidate)return;try{await pc.addIceCandidate(p.payload.candidate)}catch(e){} })
+ .on("broadcast",{event:"hangup"},p=>{if(p.payload?.call_id===callId)finish("Call ended")});
+ await new Promise((resolve,reject)=>channel.subscribe(s=>{if(s==="SUBSCRIBED")resolve();if(s==="CHANNEL_ERROR")reject(new Error("Call channel error"))}));
+}
+async function send(event,payload={}){
+ if(!channel)return;
+ await channel.send({type:"broadcast",event,payload:{...payload,call_id:callId}});
+}
+async function ensureMedia(){
+ if(localStream)return;
+ try{
+  localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:type==="video"});
+  const lv=document.getElementById("localVideo");lv.srcObject=localStream;
+  document.getElementById("controls").classList.remove("hidden");
+  if(type==="video"){document.getElementById("localWrap").classList.remove("hidden");document.getElementById("cameraBtn").classList.remove("hidden")}
+ }catch(e){toast(e.name==="NotAllowedError"?"Microphone/Camera permission দিন":"Media চালু করা যায়নি");throw e}
+}
+async function createPeer(offerer){
+ if(pc)return;
+ pc=new RTCPeerConnection({iceServers:[
+  {urls:"stun:stun.l.google.com:19302"},
+  {urls:"stun:stun1.l.google.com:19302"}
+ ]});
+ localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
+ pc.ontrack=e=>{
+  const v=document.getElementById("remoteVideo");v.srcObject=e.streams[0];
+  if(type==="video"){document.getElementById("remotePlaceholder").classList.add("hidden");v.classList.remove("hidden")}
+  else{document.getElementById("remotePlaceholder").classList.remove("hidden")}
+  setState("Connected");remoteReady=true;
+ };
+ pc.onicecandidate=e=>{if(e.candidate)send("ice",{candidate:e.candidate})};
+ pc.onconnectionstatechange=()=>{if(["failed","disconnected"].includes(pc.connectionState))setState("Connection lost")};
+ if(offerer){
+  const offer=await pc.createOffer();await pc.setLocalDescription(offer);await send("offer",{offer});setState("Calling...");
+ }
+}
+async function startOutgoing(){
+ await ensureMedia();await createPeer(true);setState("Calling...");
+ await send("ring",{to:other.id,from:me.id,type,call_id:callId});
+}
+function showIncoming(){
+ document.getElementById("incoming").classList.add("show");
+ document.getElementById("controls").classList.add("hidden");
+ document.getElementById("remotePlaceholder").classList.remove("hidden");
+ setState("Incoming "+(type==="video"?"video":"audio")+" call");
+}
+async function acceptCall(){
+ document.getElementById("incoming").classList.remove("show");
+ try{
+  await ensureMedia();await send("accept",{to:other.id});
+  setState("Connecting...");
+ }catch(e){rejectCall()}
+}
+async function startPeer(offerer){await ensureMedia();await createPeer(offerer)}
+async function rejectCall(){await send("hangup",{reason:"rejected"});finish("Call declined")}
+function toggleMute(){
+ if(!localStream)return;muted=!muted;localStream.getAudioTracks().forEach(t=>t.enabled=!muted);
+ document.getElementById("muteBtn").classList.toggle("on",muted);document.getElementById("muteBtn").textContent=muted?"🔇":"🎤";
+}
+function toggleCamera(){
+ if(!localStream||type!=="video")return;cameraOff=!cameraOff;localStream.getVideoTracks().forEach(t=>t.enabled=!cameraOff);
+ document.getElementById("localOff").classList.toggle("hidden",!cameraOff);document.getElementById("localVideo").classList.toggle("hidden",cameraOff);
+ document.getElementById("cameraBtn").textContent=cameraOff?"📷":"📹";
+}
+function toggleSpeaker(){
+ const v=document.getElementById("remoteVideo");v.muted=!v.muted;
+ document.getElementById("speakerBtn").classList.toggle("on",v.muted);
+}
+async function leaveCall(){try{await send("hangup",{})}catch(e){}finish("Call ended")}
+function finish(msg){
+ if(pc){pc.close();pc=null}
+ if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}
+ if(channel){sb.removeChannel(channel);channel=null}
+ toast(msg);setTimeout(()=>history.back(),500)
+}
+window.addEventListener("pagehide",()=>{if(channel)sb.removeChannel(channel)});
+init();
+</script>
+</body>
+</html>
