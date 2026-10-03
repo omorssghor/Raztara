@@ -2276,7 +2276,7 @@ async function findConversation(){
 
         if(
             members.has(currentUser.id) &&
-            members.has(targetUserId) &&
+            members.has(otherUserId) &&
             members.size === 2
         ){
             candidateIds.push(id);
