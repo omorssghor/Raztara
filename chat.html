@@ -115,7 +115,7 @@ const renderedMessageIds=new Set();
 let lastMessageCreatedAt="";
 let syncInterval=null;
 
-function isNearBottom(threshold=90){
+function isNearBottom(threshold=150){
  const b=document.getElementById("board");
  if(!b)return false;
  return (b.scrollHeight - b.scrollTop - b.clientHeight) <= threshold;
@@ -134,13 +134,34 @@ function scrollToBottom(smooth=false){
 const boardEl=document.getElementById("board");
 if(boardEl){
  boardEl.addEventListener("scroll",()=>{
-  if(isNearBottom(70)){
+  if(isNearBottom(150)){
    userHasScrolledUp=false;
   }else{
    userHasScrolledUp=true;
    initialChatLoading=false;
   }
  },{passive:true});
+}
+
+// Mobile viewport resize & keyboard handling without erratic jumps
+if(window.visualViewport){
+ window.visualViewport.addEventListener("resize",()=>{
+  if(!userHasScrolledUp || isNearBottom(150)){
+   requestAnimationFrame(()=>{
+    scrollToBottom(false);
+   });
+  }
+ });
+}
+const msgInputEl=document.getElementById("messageInput");
+if(msgInputEl){
+ msgInputEl.addEventListener("focus",()=>{
+  if(!userHasScrolledUp || isNearBottom(150)){
+   setTimeout(()=>{
+    scrollToBottom(true);
+   },300);
+  }
+ });
 }
 
 function qs(name){return new URLSearchParams(location.search).get(name)||""}
@@ -768,7 +789,7 @@ function renderMessage(m,shouldScroll=true){
        const img=mediaContainer.querySelector("img");
        if(img){
          img.onload=()=>{
-           if(initialChatLoading || (!userHasScrolledUp && isNearBottom(80))){
+           if(initialChatLoading || (!userHasScrolledUp && isNearBottom(150))){
              scrollToBottom(false);
            }
          };
@@ -826,10 +847,14 @@ function renderMessage(m,shouldScroll=true){
  if(shouldScroll){
    if(isMe){
      userHasScrolledUp=false;
-     scrollToBottom(true);
-   }else{
-     if(!userHasScrolledUp && isNearBottom(80)){
+     requestAnimationFrame(()=>{
        scrollToBottom(true);
+     });
+   }else{
+     if(!userHasScrolledUp && isNearBottom(150)){
+       requestAnimationFrame(()=>{
+         scrollToBottom(true);
+       });
      }
    }
  }

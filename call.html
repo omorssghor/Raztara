@@ -566,6 +566,18 @@ async function logCall(callStatus="ended"){
   }
 }
 
+let ensureMediaPromise=null;
+
+async function checkNativePermission(kind){
+  try{
+    if(navigator.permissions && navigator.permissions.query){
+      const res=await navigator.permissions.query({name:kind});
+      return res?.state || null;
+    }
+  }catch(_){}
+  return null;
+}
+
 async function ensureMedia(requestVideo=null){
   if(requestVideo===null) requestVideo=(type==="video"||callMode==="video");
   if(localStream){
@@ -593,58 +605,78 @@ async function ensureMedia(requestVideo=null){
     return localStream;
   }
 
-  try{
-    if(requestVideo){
-      try{
-        localStream=await navigator.mediaDevices.getUserMedia({
-          audio:true,
-          video:{facingMode:{ideal:facingMode}}
-        });
-      }catch(videoErr){
-        console.warn("Video stream failed, falling back to audio:",videoErr);
+  if(ensureMediaPromise){
+    return ensureMediaPromise;
+  }
+
+  ensureMediaPromise = (async ()=>{
+    try{
+      const micStatus=await checkNativePermission("microphone");
+      const camStatus=requestVideo ? await checkNativePermission("camera") : "granted";
+      const regStatus=localStorage.getItem("raztara_permissions_status");
+
+      if(regStatus==="denied" || micStatus==="denied" || (requestVideo && camStatus==="denied")){
+        toast("Microphone/Camera permission বন্ধ আছে। Settings থেকে Allow করুন।");
+        return null;
+      }
+
+      if(requestVideo){
+        try{
+          localStream=await navigator.mediaDevices.getUserMedia({
+            audio:true,
+            video:{facingMode:{ideal:facingMode}}
+          });
+        }catch(videoErr){
+          console.warn("Video stream failed, falling back to audio:",videoErr);
+          localStream=await navigator.mediaDevices.getUserMedia({
+            audio:true,
+            video:false
+          });
+          callMode="audio";
+          toast("Camera চালু করা যায়নি, Audio চালু হয়েছে");
+        }
+      }else{
         localStream=await navigator.mediaDevices.getUserMedia({
           audio:true,
           video:false
         });
-        callMode="audio";
-        toast("Camera চালু করা যায়নি, Audio চালু হয়েছে");
       }
-    }else{
-      localStream=await navigator.mediaDevices.getUserMedia({
-        audio:true,
-        video:false
-      });
+    }catch(e){
+      console.error("ensureMedia error:",e);
+      if(e.name==="NotAllowedError"||e.name==="PermissionDeniedError"){
+        localStorage.setItem("raztara_permissions_status","denied");
+        toast("Microphone/Camera permission Allow করুন");
+      }else if(e.name==="NotFoundError"){
+        toast("Microphone/Camera পাওয়া যায়নি");
+      }else{
+        toast("Media চালু করা যায়নি: "+(e.message||"Error"));
+      }
+      return null;
+    }finally{
+      ensureMediaPromise=null;
     }
-  }catch(e){
-    console.error("ensureMedia error:",e);
-    if(e.name==="NotAllowedError"||e.name==="PermissionDeniedError"){
-      toast("Microphone/Camera permission Allow করুন");
-    }else if(e.name==="NotFoundError"){
-      toast("Microphone/Camera পাওয়া যায়নি");
-    }else{
-      toast("Media চালু করা যায়নি: "+(e.message||"Error"));
+
+    if(localStream){
+      const lv=document.getElementById("localVideo");
+      if(lv){
+        lv.srcObject=localStream;
+        lv.muted=true;
+        lv.defaultMuted=true;
+        lv.setAttribute("playsinline","true");
+        lv.setAttribute("webkit-playsinline","true");
+        lv.play().catch(()=>{});
+      }
+      const isVid=(type==="video"||callMode==="video")&&localStream.getVideoTracks().length>0;
+      const lw=document.getElementById("localWrap");
+      if(lw){
+        lw.classList.toggle("hidden",!isVid);
+      }
+      refreshControls();
     }
-    throw e;
-  }
+    return localStream;
+  })();
 
-  const lv=document.getElementById("localVideo");
-  if(lv){
-    lv.srcObject=localStream;
-    lv.muted=true;
-    lv.defaultMuted=true;
-    lv.setAttribute("playsinline","true");
-    lv.setAttribute("webkit-playsinline","true");
-    lv.play().catch(()=>{});
-  }
-
-  const isVid=(type==="video"||callMode==="video")&&localStream.getVideoTracks().length>0;
-  const lw=document.getElementById("localWrap");
-  if(lw){
-    lw.classList.toggle("hidden",!isVid);
-  }
-
-  refreshControls();
-  return localStream;
+  return ensureMediaPromise;
 }
 
 function createPeer(isOfferer){
