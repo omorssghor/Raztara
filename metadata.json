@@ -1,0 +1,9 @@
+{
+  "name": "RAZTARA",
+  "description": "RAZTARA communication and messaging app",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

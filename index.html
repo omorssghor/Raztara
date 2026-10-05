@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#075e54"><title>RAZTARA — Chats</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="i18n.js"></script>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#f0f2f5;color:#172b2f}
+.app{height:100dvh;max-width:600px;margin:auto;background:#fff;position:relative;overflow:hidden}
+.top{position:absolute;top:0;left:0;right:0;background:#075e54;color:#fff;padding:calc(11px + env(safe-area-inset-top)) 14px 0;z-index:10}
+.head{height:43px;display:flex;align-items:center;justify-content:space-between}.brand{font-size:23px;font-weight:800}.icons{display:flex;gap:12px}.icon{border:0;background:none;color:#fff;font-size:23px;cursor:pointer;touch-action:manipulation}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);margin-top:8px;position:relative;z-index:12}
+.tab{text-align:center;padding:10px 4px 11px;color:#cfe6e3;font-weight:700;font-size:14px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none}
+.tab.active{color:#fff;border-bottom:3px solid #fff}
+.search{position:absolute;top:calc(102px + env(safe-area-inset-top));left:0;right:0;background:#f0f2f5;padding:9px 12px;z-index:5}.searchbox{height:42px;border-radius:23px;background:#fff;display:flex;align-items:center;padding:0 14px;gap:8px;color:#667781}.searchbox input{width:100%;border:0;outline:0;font-size:15px}
+.list{position:absolute;top:calc(159px + env(safe-area-inset-top));bottom:calc(65px + env(safe-area-inset-bottom));left:0;right:0;overflow:auto}.state{text-align:center;color:#718084;padding:55px 20px;font-size:14px}
+.section{padding:11px 15px 6px;color:#718084;font-size:12px;font-weight:750}.chat{height:76px;display:flex;align-items:center;gap:12px;padding:8px 14px;border-bottom:1px solid #e9edef;cursor:pointer;touch-action:manipulation}.chat:active{background:#f5f6f6}
+.avatar{width:56px;height:56px;border-radius:50%;object-fit:cover;background:#d8e7e4;flex:none}.info{flex:1;min-width:0}.row{display:flex;justify-content:space-between;gap:8px}.name{font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.time{font-size:11px;color:#718084}.preview{margin-top:5px;color:#667781;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{background:#25d366;color:#fff;border-radius:12px;padding:2px 7px;font-size:10px;font-weight:800}
+.fab{position:absolute;right:17px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:8;width:55px;height:55px;border:0;border-radius:18px;background:#128c7e;color:#fff;font-size:25px;box-shadow:0 5px 18px #0003;cursor:pointer;touch-action:manipulation}
+.bottom{position:absolute;left:0;right:0;bottom:0;height:calc(65px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:#fff;border-top:1px solid #e9edef;display:grid;grid-template-columns:repeat(4,1fr);z-index:9}
+.nav{border:0;background:#fff;color:#667781;font-size:11px;font-weight:650;cursor:pointer;touch-action:manipulation}.nav b{display:block;font-size:20px;margin-bottom:2px}.nav.active{color:#075e54}
+.toast{display:none;position:absolute;left:50%;bottom:85px;transform:translateX(-50%);background:#263238;color:#fff;padding:9px 14px;border-radius:20px;font-size:12px;z-index:30}
+</style>
+</head>
+<body><main class="app">
+<header class="top"><div class="head"><div class="brand">RAZTARA</div><div class="icons"><button class="icon" onclick="focusSearch()">⌕</button><button class="icon" onclick="navToSettings()">⚙</button><button class="icon" onclick="navToProfile()">◉</button></div></div><div class="tabs"><div class="tab active" id="tabChats" onclick="switchTab('chats')" data-i18n="chats">Chats</div><div class="tab" id="tabUpdates" onclick="switchTab('updates')" data-i18n="updates">Updates</div><div class="tab" id="tabCalls" onclick="switchTab('calls')" data-i18n="calls">Calls</div></div></header>
+<div class="search"><div class="searchbox">⌕<input id="search" placeholder="Search" data-i18n-placeholder="search_placeholder"></div></div>
+<section class="list" id="list"><div class="state" data-i18n="loading">Loading...</div></section>
+<button class="fab" onclick="navToConnect()">✎</button>
+<nav class="bottom"><button class="nav active" onclick="switchTab('chats')"><b>⌂</b><span data-i18n="home">Home</span></button><button class="nav" onclick="navToConnect()"><b>💬</b><span data-i18n="chat">Chat</span></button><button class="nav" onclick="navToCalls()"><b>☎</b><span data-i18n="calls">Calls</span></button><button class="nav" onclick="navToProfile()"><b>◉</b><span data-i18n="profile">Profile</span></button></nav>
+<div id="toast" class="toast"></div>
+<script>
+const sb=supabase.createClient("https://pqyicaqpmojijjskpzcp.supabase.co","sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho");
+let all=[];
+let currentTab="chats";
+let me="";
+
+async function logDeviceDebug(page){
+  try{
+    const { data: { session } } = await sb.auth.getSession();
+    const { data: { user } } = await sb.auth.getUser();
+    console.log("[DEVICE DEBUG] page=" + page);
+    console.log("[DEVICE DEBUG] device=" + (navigator.userAgent || "unknown"));
+    console.log("[DEVICE DEBUG] auth_user_id=" + (user?.id || "none"));
+    console.log("[DEVICE DEBUG] session_exists=" + (!!session));
+    console.log("[DEVICE DEBUG] access_token_exists=" + (!!session?.access_token));
+    if(user?.id){
+      try{
+        const { data: p } = await sb.from("profiles").select("id,username,full_name").eq("id", user.id).maybeSingle();
+        console.log("[DEVICE DEBUG] profile_id=" + (p?.id || "not_found"));
+        console.log("[DEVICE DEBUG] username=" + (p?.username || "none"));
+      }catch(_){}
+    }
+  }catch(e){
+    console.warn("[DEVICE DEBUG] error:", e);
+  }
+}
+
+async function updateMyPresence(){try{const u=await sb.auth.getUser();if(u.data.user)await sb.from("profiles").update({last_seen_at:new Date().toISOString()}).eq("id",u.data.user.id)}catch(e){console.warn("presence update",e)}}
+
+function esc(v){return String(v==null?"":v).replace(/[&<>"]/g,function(c){if(c==="&")return "&amp;";if(c==="<")return "&lt;";if(c===">")return "&gt;";return "&quot;";})}
+function focusSearch(){document.getElementById("search").focus()}
+function toast(x){const e=document.getElementById("toast");e.textContent=x;e.style.display="block";setTimeout(()=>e.style.display="none",2000)}
+
+function navToSettings(){
+  console.log("[BUTTON DEBUG] button=Settings clicked=true handler_started=true handler_finished=true");
+  console.log("[NAV DEBUG] from=index to=settings.html user_id="+me+" timestamp="+Date.now());
+  location.href='settings.html';
+}
+
+function navToProfile(){
+  console.log("[BUTTON DEBUG] button=Profile clicked=true handler_started=true handler_finished=true");
+  console.log("[NAV DEBUG] from=index to=profile.html user_id="+me+" timestamp="+Date.now());
+  location.href='profile.html';
+}
+
+function navToConnect(){
+  console.log("[BUTTON DEBUG] button=Connect clicked=true handler_started=true handler_finished=true");
+  console.log("[NAV DEBUG] from=index to=connect.html user_id="+me+" timestamp="+Date.now());
+  location.href='connect.html';
+}
+
+function navToCalls(){
+  console.log("[BUTTON DEBUG] button=Calls clicked=true handler_started=true handler_finished=true");
+  console.log("[NAV DEBUG] from=index to=connect.html user_id="+me+" timestamp="+Date.now());
+  location.href='connect.html';
+}
+
+function avatar(p){
+  if(p?.avatar_url){
+    if(p.avatar_url.startsWith("http://")||p.avatar_url.startsWith("https://")) return p.avatar_url;
+    try{
+      const {data}=sb.storage.from("avatars").getPublicUrl(p.avatar_url);
+      if(data?.publicUrl) return data.publicUrl;
+    }catch(_){}
+  }
+  return "https://ui-avatars.com/api/?name="+encodeURIComponent((p?.full_name||p?.username||"R").slice(0,1))+"&background=075e54&color=fff";
+}
+
+function switchTab(t){
+  console.log("[BUTTON DEBUG] button=" + t + " clicked=true handler_started=true");
+  if(t==="updates"){
+    console.log("[UPDATES DEBUG] clicked=true handler=switchTab current_user_id=" + me + " navigation=none");
+  }
+  currentTab=t;
+  document.getElementById("tabChats").classList.toggle("active",t==="chats");
+  document.getElementById("tabUpdates").classList.toggle("active",t==="updates");
+  document.getElementById("tabCalls").classList.toggle("active",t==="calls");
+  if(t==="updates"){
+    document.getElementById("list").innerHTML='<div class="state" style="padding:40px 20px"><div style="font-size:42px;margin-bottom:12px">📢</div><div style="font-size:16px;font-weight:700;color:#075e54;margin-bottom:6px">Updates &amp; Status</div><div style="color:#667">কোনো নতুন Status বা Update নেই।<br>আপনার বন্ধুদের মেসেজ পাঠান এবং কানেক্টেড থাকুন।</div></div>';
+  }else if(t==="calls"){
+    document.getElementById("list").innerHTML='<div class="state"><div style="font-size:42px;margin-bottom:12px">📞</div><div style="font-size:16px;font-weight:700;color:#075e54;margin-bottom:6px">Voice &amp; Video Calls</div>Call করতে <b>Chat</b> অথবা <b>Connect</b> পেজ থেকে ইউজার নির্বাচন করুন।<br><br><button onclick="navToConnect()" style="padding:10px 18px;border:0;border-radius:18px;background:#075e54;color:#fff;font-weight:700;cursor:pointer">Find Users</button></div>';
+  }else{
+    render();
+  }
+  console.log("[BUTTON DEBUG] button=" + t + " handler_finished=true");
+}
+function fmt(t){
+  if(!t)return"";
+  try{
+    const clean=String(t).replace(" ","T");
+    const d=new Date(clean);
+    if(isNaN(d.getTime()))return"";
+    return d.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
+  }catch(_){
+    return"";
+  }
+}
+async function init(){
+  logDeviceDebug("index.html").catch(()=>{});
+  const auth=await sb.auth.getUser();
+  if(auth.error||!auth.data.user){location.replace("login.html");return}
+  me=auth.data.user.id;
+
+  try{
+    const userCallTopic="raztara-user-call-"+me;
+    console.log("[CALL DEBUG] LISTENER START");
+    console.log("[CALL DEBUG] AUTH USER ID="+me);
+    console.log("[CALL DEBUG] LISTENING CHANNEL="+userCallTopic);
+    const userCallChannel=sb.channel(userCallTopic,{config:{broadcast:{self:false}}});
+    window._userCallChannel=userCallChannel;
+
+    userCallChannel.on("broadcast",{event:"incoming_call"},payload=>{
+      const p=(payload&&payload.payload)?payload.payload:payload;
+      if(p&&p.caller_id){
+        if(p.receiver_id&&p.receiver_id!==me) return;
+        console.log("[CALL DEBUG] AUTH USER ID="+me);
+        console.log("[CALL DEBUG] LISTENING CHANNEL="+userCallTopic);
+        console.log("[CALL DEBUG] SUBSCRIBE STATUS=SUBSCRIBED");
+        console.log("[CALL DEBUG] RING RECEIVED="+JSON.stringify(p));
+        console.log("[CALL DEBUG] RECEIVED PAYLOAD="+JSON.stringify(p));
+        console.log("[CALL DEBUG] CALLER ID="+p.caller_id);
+        console.log("[CALL DEBUG] CALLER NAME="+(p.caller_name||"RAZTARA User"));
+        console.log("[CALL DEBUG] CALLER PHOTO="+(p.caller_photo||"None"));
+        console.log("[CALL DEBUG] CALL TYPE="+(p.call_type||p.type||"audio"));
+        console.log("[CALL DEBUG] INCOMING UI OPEN=true");
+
+        const targetUrl="call.html?user="+encodeURIComponent(p.caller_id)+
+          "&conversation="+encodeURIComponent(p.conversation_id||"")+
+          "&type="+encodeURIComponent(p.call_type||p.type||"audio")+
+          "&incoming=1"+
+          "&call_id="+encodeURIComponent(p.call_id)+
+          "&caller_name="+encodeURIComponent(p.caller_name||"")+
+          "&caller_photo="+encodeURIComponent(p.caller_photo||"");
+        location.href=targetUrl;
+      }
+    }).subscribe((status,err)=>{
+      console.log("[CALL DEBUG] SUBSCRIBE STATUS="+status+" (channel="+userCallTopic+")", err||"");
+      if(status==="CHANNEL_ERROR"||status==="TIMED_OUT"||status==="CLOSED"){
+        setTimeout(()=>{
+          try{ userCallChannel.subscribe(); }catch(_){}
+        },2000);
+      }
+    });
+  }catch(e){
+    console.error("[CALL DEBUG] [INDEX] userCallChannel error:", e);
+  }
+
+ const {data:rels,error:fe}=await sb.from("friendships").select("requester_id,addressee_id,status").or("requester_id.eq."+me+",addressee_id.eq."+me).eq("status","accepted");
+ if(fe){document.getElementById("list").innerHTML='<div class="state">Connect data load করা যায়নি<br><small>'+esc(fe.message)+'</small></div>';return}
+ if(!rels||!rels.length){document.getElementById("list").innerHTML='<div class="state">এখনও কোনো Chat নেই<br><br>✎ চাপ দিয়ে User খুঁজে Connect করুন।</div>';return}
+ const ids=rels.map(r=>r.requester_id===me?r.addressee_id:r.requester_id);
+ const {data:profiles,error:pe}=await sb.from("profiles").select("id,username,full_name,avatar_url").in("id",ids);
+ if(pe){document.getElementById("list").innerHTML='<div class="state">User load করা যায়নি<br><small>'+esc(pe.message)+'</small></div>';return}
+ const {data:members}=await sb.from("conversation_members").select("conversation_id,user_id").in("user_id",[me,...ids]);
+ const convIds=[...new Set((members||[]).map(x=>x.conversation_id))];
+ let msgs=[];
+ if(convIds.length){
+  const m=await sb.from("messages").select("conversation_id,content,created_at,sender_id").in("conversation_id",convIds).order("created_at",{ascending:false});
+  msgs=m.data||[];
+ }
+ const latest={};
+ msgs.forEach(m=>{if(!latest[m.conversation_id])latest[m.conversation_id]=m});
+ const map={};(members||[]).forEach(x=>{if(!map[x.conversation_id])map[x.conversation_id]=[];map[x.conversation_id].push(x.user_id)});
+ all=(profiles||[]).map(p=>{
+   const conv=Object.keys(map).find(cid=>map[cid].includes(me)&&map[cid].includes(p.id));
+   const msg=conv?latest[conv]:null;
+   return {p,conv:conv||"",msg};
+ }).sort((a,b)=>new Date(b.msg?.created_at||0)-new Date(a.msg?.created_at||0));
+ if(window.RaztaraI18n){
+   window.RaztaraI18n.apply();
+   window.RaztaraI18n.syncUser(sb);
+ }
+ render();
+ updateMyPresence(); setInterval(updateMyPresence,30000);
+ document.getElementById("search").addEventListener("input",render);
+}
+function render(){
+ const q=document.getElementById("search").value.trim().toLowerCase();
+ const rows=all.filter(x=>(x.p.full_name||"").toLowerCase().includes(q)||(x.p.username||"").toLowerCase().includes(q));
+ if(!rows.length){document.getElementById("list").innerHTML='<div class="state">'+(window.RaztaraI18n?window.RaztaraI18n.t("no_chats"):"কোনো User পাওয়া যায়নি।")+'</div>';return}
+ const sectionTitle=window.RaztaraI18n?window.RaztaraI18n.t("chats"):"Chats";
+ document.getElementById("list").innerHTML='<div class="section">'+sectionTitle+'</div>'+rows.map(x=>'<div class="chat" onclick="openChat(\''+x.p.id+'\',\''+x.conv+'\')"><img class="avatar" src="'+esc(avatar(x.p))+'"><div class="info"><div class="row"><div class="name">'+esc(x.p.full_name||x.p.username||"RAZTARA User")+'</div><div class="time">'+fmt(x.msg?.created_at)+'</div></div><div class="preview">'+esc(x.msg?.content||"Start a conversation")+'</div></div></div>').join("");
+}
+function openChat(id,c){localStorage.setItem("raztara_last_chat_user_id",id);if(c)localStorage.setItem("raztara_last_conversation_id",c);location.href="chat.html?user="+encodeURIComponent(id)+(c?"&conversation="+encodeURIComponent(c):"")}
+init();
+</script></main></body></html>

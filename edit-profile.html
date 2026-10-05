@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#075e54">
+<title>RAZTARA — Edit Profile</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="i18n.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#f0f2f5;color:#111}
+.header{position:fixed;top:0;left:0;right:0;height:60px;padding-top:env(safe-area-inset-top);height:calc(60px + env(safe-area-inset-top));background:#075e54;color:#fff;display:flex;align-items:center;padding-left:8px;padding-right:10px;z-index:20;box-shadow:0 1px 2px #0002}
+.back,.menu{width:44px;height:44px;border:0;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;text-decoration:none;border-radius:50%}
+.back:active,.menu:active{background:#ffffff22}
+.title{font-size:20px;font-weight:700;flex:1;margin-left:4px}
+.page{position:fixed;top:calc(60px + env(safe-area-inset-top));bottom:calc(62px + env(safe-area-inset-bottom));left:0;right:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 14px 28px}
+.card{max-width:620px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 1px 4px #00000012;padding:20px 16px}
+.photo{text-align:center;padding:4px 0 22px}
+.avatar{width:116px;height:116px;border-radius:50%;object-fit:cover;border:4px solid #128c7e;background:#e8eeee}
+.photoLabel{display:block;width:max-content;margin:10px auto 0;padding:8px 14px;border-radius:20px;background:#e8f5f2;color:#075e54;font-weight:600;font-size:14px}
+#photoInput{display:none}
+.note{font-size:12px;color:#667781;margin-top:6px}
+.group{margin-bottom:17px}
+label{display:block;font-size:13px;font-weight:700;color:#667781;margin:0 0 7px 3px}
+input,textarea{width:100%;border:1px solid #d8dde0;border-radius:11px;background:#fff;padding:13px 14px;font-size:16px;outline:none;color:#111}
+input:focus,textarea:focus{border-color:#128c7e;box-shadow:0 0 0 2px #128c7e18}
+textarea{min-height:92px;resize:none}
+input:disabled{background:#f5f6f6;color:#667781}
+.section{font-size:13px;font-weight:800;color:#075e54;margin:7px 0 12px}
+.privacyRow{display:flex;align-items:center;justify-content:space-between;padding:14px 3px;border-top:1px solid #edf0f1}
+.privacyText strong{display:block;font-size:15px}
+.privacyText span{display:block;color:#667781;font-size:12px;margin-top:3px}
+select{border:1px solid #d8dde0;border-radius:9px;background:#fff;padding:9px 8px;font-size:14px;color:#075e54;font-weight:600}
+.status{text-align:center;min-height:22px;font-size:14px;margin:8px 0}
+.error{color:#d93025}.success{color:#075e54}
+.actions{display:flex;gap:10px;margin-top:18px}
+button.save,button.cancel{flex:1;border:0;border-radius:12px;padding:14px;font-size:16px;font-weight:700}
+.save{background:#128c7e;color:#fff}.cancel{background:#e9edef;color:#111}
+button:disabled{opacity:.65}
+.bottom{position:fixed;left:0;right:0;bottom:0;height:calc(62px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:#fff;border-top:1px solid #ddd;display:flex;z-index:20}
+.nav{flex:1;text-decoration:none;color:#667781;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;gap:3px}
+.nav .icon{font-size:22px;line-height:20px}.nav.active{color:#075e54;font-weight:700}
+.loading{padding:40px;text-align:center;color:#667781}
+.hidden{display:none!important}
+@media(min-width:700px){.page{padding-top:24px}.card{padding:24px}}
+</style>
+</head>
+<body>
+<header class="header">
+<a class="back" href="profile.html" aria-label="Back">‹</a>
+<div class="title" data-i18n="edit_profile">Edit Profile</div>
+<button class="menu" type="button" aria-label="Menu" onclick="location.href='profile.html'">⋮</button>
+</header>
+
+<main class="page">
+<section class="card">
+<div id="loading" class="loading" data-i18n="loading">Profile loading...</div>
+<form id="form" class="hidden">
+<div class="photo">
+<img id="avatar" class="avatar" alt="Profile Photo">
+<label for="photoInput" class="photoLabel">📷 <span data-i18n="change_photo">Change Photo</span></label>
+<input id="photoInput" type="file" accept="image/*">
+<div class="note" data-i18n="max_photo_size">সর্বোচ্চ 6 MB</div>
+</div>
+
+<div class="group"><label for="name" data-i18n="full_name">Full Name</label><input id="name" maxlength="100" autocomplete="name" placeholder="আপনার নাম"></div>
+<div class="group"><label for="username" data-i18n="username">Username</label><input id="username" maxlength="30" autocomplete="username" placeholder="username"><div class="note">3–30 characters: letters, numbers, _, -, .</div></div>
+<div class="group"><label for="email" data-i18n="email">Email</label><input id="email" type="email" disabled><div class="note">Login email এখান থেকে পরিবর্তন হবে না।</div></div>
+<div class="group"><label for="bio" data-i18n="bio">Bio</label><textarea id="bio" maxlength="1000" placeholder="আপনার সম্পর্কে কিছু লিখুন..."></textarea></div>
+
+<div class="section" data-i18n="contact_info">CONTACT INFORMATION</div>
+<div class="group"><label for="phone" data-i18n="phone">Phone</label><input id="phone" type="tel" maxlength="30" autocomplete="tel" placeholder="Phone number"></div>
+<div class="group"><label for="address" data-i18n="address">Address</label><textarea id="address" maxlength="500" autocomplete="street-address" placeholder="আপনার ঠিকানা"></textarea></div>
+
+<div class="section" data-i18n="privacy">PRIVACY</div>
+<div class="privacyRow">
+<div class="privacyText"><strong>Phone visibility</strong><span>আপনার ফোন কে দেখতে পারবে?</span></div>
+<select id="phoneVisibility"><option value="public">Everyone</option><option value="private">Only Me</option></select>
+</div>
+<div class="privacyRow">
+<div class="privacyText"><strong>Address visibility</strong><span>আপনার ঠিকানা কে দেখতে পারবে?</span></div>
+<select id="addressVisibility"><option value="public">Everyone</option><option value="private">Only Me</option></select>
+</div>
+
+<div id="status" class="status"></div>
+<div class="actions">
+<button id="save" class="save" type="submit" data-i18n="save_changes">SAVE CHANGES</button>
+<button id="cancel" class="cancel" type="button" data-i18n="cancel">Cancel</button>
+</div>
+</form>
+</section>
+</main>
+
+<nav class="bottom">
+<a class="nav" href="index.html"><span class="icon">🏠</span><span data-i18n="home">Home</span></a>
+<a class="nav" href="javascript:void(0)" onclick="navToChat()"><span class="icon">💬</span><span data-i18n="chat">Chat</span></a>
+<a class="nav" href="javascript:void(0)" onclick="navToCalls()"><span class="icon">📞</span><span data-i18n="calls">Calls</span></a>
+<a class="nav active" href="profile.html"><span class="icon">👤</span><span data-i18n="profile">Profile</span></a>
+</nav>
+
+<script>
+const SUPABASE_URL="https://pqyicaqpmojijjskpzcp.supabase.co";
+const SUPABASE_KEY="sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let user=null,profile=null,phoneRow=null,addressRow=null,photo=null;
+
+const $=id=>document.getElementById(id);
+const avatarFor=name=>"https://ui-avatars.com/api/?name="+encodeURIComponent((name||"U").charAt(0))+"&background=075e54&color=fff&size=256";
+
+function getAvatarUrl(url,name="U"){
+  if(url){
+    if(url.startsWith("http://")||url.startsWith("https://")) return url;
+    try{
+      const {data}=supabaseClient.storage.from("avatars").getPublicUrl(url);
+      if(data?.publicUrl) return data.publicUrl;
+    }catch(_){}
+  }
+  return avatarFor(name);
+}
+
+function navToChat(){
+  const lastUser=localStorage.getItem("raztara_last_chat_user_id");
+  if(lastUser) location.href="chat.html?user="+encodeURIComponent(lastUser);
+  else location.href="index.html";
+}
+
+function navToCalls(){
+  location.href="index.html";
+}
+
+function status(msg,type=""){ $("status").textContent=msg; $("status").className="status "+type; }
+
+async function load(){
+  try{
+    const {data,error}=await supabaseClient.auth.getUser();
+    if(error||!data.user){location.replace("login.html");return}
+    user=data.user;
+
+    const p=await supabaseClient.from("profiles").select("id,username,full_name,avatar_url,bio").eq("id",user.id).maybeSingle();
+    profile=p.data||{
+      id:user.id,
+      full_name:user.user_metadata?.full_name||user.email?.split("@")[0]||"",
+      username:user.user_metadata?.username||user.email?.split("@")[0]?.toLowerCase().replace(/[^a-z0-9_.-]/g,"")||"",
+      avatar_url:null,
+      bio:""
+    };
+
+    try{
+      const ph=await supabaseClient.from("profile_phone").select("phone,visibility").eq("user_id",user.id).maybeSingle();
+      phoneRow=ph.data||null;
+    }catch(_){}
+
+    try{
+      const ad=await supabaseClient.from("profile_address").select("address,visibility").eq("user_id",user.id).maybeSingle();
+      addressRow=ad.data||null;
+    }catch(_){}
+
+    const displayName=profile.full_name||profile.username||user.email?.split("@")[0]||"U";
+    const avatarEl=$("avatar");
+    avatarEl.src=getAvatarUrl(profile.avatar_url,displayName);
+    avatarEl.onerror=function(){this.src=avatarFor(displayName)};
+
+    $("name").value=profile.full_name||"";
+    $("username").value=profile.username||"";
+    $("email").value=user.email||"";
+    $("bio").value=profile.bio||"";
+    $("phone").value=phoneRow?.phone||"";
+    $("address").value=addressRow?.address||"";
+    $("phoneVisibility").value=phoneRow?.visibility==="private"?"private":"public";
+    $("addressVisibility").value=addressRow?.visibility==="private"?"private":"public";
+
+    if(window.RaztaraI18n){
+      window.RaztaraI18n.apply();
+      window.RaztaraI18n.syncUser(supabaseClient);
+    }
+
+    $("loading").classList.add("hidden");
+    $("form").classList.remove("hidden");
+  }catch(e){
+    $("loading").textContent=e.message||"Profile load করতে সমস্যা হয়েছে।";
+    $("loading").style.color="#d93025";
+  }
+}
+
+$("photoInput").addEventListener("change",e=>{
+  const f=e.target.files?.[0]; if(!f)return;
+  if(!f.type.startsWith("image/")){status("শুধু Image file নির্বাচন করুন।","error");e.target.value="";return}
+  if(f.size>6*1024*1024){status("ছবির size সর্বোচ্চ 6 MB হতে পারবে।","error");e.target.value="";return}
+  photo=f;
+  $("avatar").src=URL.createObjectURL(f);
+  status("নতুন photo নির্বাচন করা হয়েছে।","success");
+});
+
+$("form").addEventListener("submit",async e=>{
+  e.preventDefault();
+  $("save").disabled=true;$("cancel").disabled=true;status("Profile save হচ্ছে...");
+  let uploaded=null;
+  try{
+    const full_name=$("name").value.trim();
+    const username=$("username").value.trim().replace(/^@+/,"").toLowerCase();
+    const bio=$("bio").value.trim();
+    const phone=$("phone").value.trim();
+    const address=$("address").value.trim();
+    if(username && !/^[a-z0-9_.-]{3,30}$/i.test(username)) throw new Error("Username 3–30 characters হতে হবে।");
+
+    let avatar_url=profile.avatar_url||null;
+    if(photo){
+      const ext=(photo.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg";
+      uploaded=user.id+"/profile-"+Date.now()+"."+ext;
+      let up=await supabaseClient.storage.from("avatars").upload(uploaded,photo,{contentType:photo.type,cacheControl:"3600",upsert:true});
+      if(up.error){
+        // Fallback to raztara-media bucket if avatars is inaccessible
+        const altUp=await supabaseClient.storage.from("raztara-media").upload("avatars/"+uploaded,photo,{contentType:photo.type,cacheControl:"3600",upsert:true});
+        if(altUp.error) throw new Error("Profile photo upload করা যায়নি: "+up.error.message);
+        avatar_url=supabaseClient.storage.from("raztara-media").getPublicUrl("avatars/"+uploaded).data.publicUrl;
+      }else{
+        avatar_url=supabaseClient.storage.from("avatars").getPublicUrl(uploaded).data.publicUrl;
+      }
+    }
+
+    const pr=await supabaseClient.from("profiles").upsert({
+      id:user.id,
+      full_name:full_name||null,
+      username:username||null,
+      bio:bio||null,
+      avatar_url,
+      updated_at:new Date().toISOString()
+    },{onConflict:"id"});
+
+    if(pr.error){
+      if(pr.error.code==="23505") throw new Error("এই Username ইতিমধ্যে অন্য একজন ব্যবহার করছে।");
+      throw new Error("Profile save করতে সমস্যা হয়েছে: "+pr.error.message);
+    }
+
+    try{
+      await supabaseClient.from("profile_phone").upsert({
+        user_id:user.id,
+        phone:phone||null,
+        visibility:$("phoneVisibility").value,
+        updated_at:new Date().toISOString()
+      },{onConflict:"user_id"});
+    }catch(_){}
+
+    try{
+      await supabaseClient.from("profile_address").upsert({
+        user_id:user.id,
+        address:address||null,
+        visibility:$("addressVisibility").value,
+        updated_at:new Date().toISOString()
+      },{onConflict:"user_id"});
+    }catch(_){}
+
+    status("Profile সফলভাবে Save হয়েছে।","success");
+    setTimeout(()=>location.replace("profile.html?t="+Date.now()),500);
+  }catch(err){
+    status(err.message||"Profile save করতে সমস্যা হয়েছে।","error");
+  }finally{
+    $("save").disabled=false;$("cancel").disabled=false;
+  }
+});
+
+$("cancel").onclick=()=>location.replace("profile.html");
+load();
+</script>
+</body>
+</html>

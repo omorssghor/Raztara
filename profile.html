@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#075e54">
+<title>RAZTARA — Profile</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="i18n.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:#f0f2f5;color:#172321}
+body{overflow:hidden}.app{height:100dvh;max-width:520px;margin:auto;background:#f7f9f8;position:relative}
+.top{height:64px;background:#075e54;color:#fff;display:flex;align-items:center;padding:0 14px;gap:10px;position:fixed;top:0;left:50%;transform:translateX(-50%);width:min(520px,100%);z-index:10;box-shadow:0 2px 7px #0002}
+.back{width:42px;height:42px;border:0;background:transparent;color:#fff;font-size:29px}.title{font-size:19px;font-weight:800}.menu{margin-left:auto;width:42px;height:42px;border:0;background:transparent;color:#fff;font-size:24px}
+.main{position:absolute;top:64px;bottom:72px;left:0;right:0;overflow:auto;padding:18px 14px 28px;-webkit-overflow-scrolling:touch}
+.hero{background:#fff;border-radius:20px;padding:25px 18px 20px;text-align:center;box-shadow:0 2px 12px #0000000d}
+.avatar{width:108px;height:108px;border-radius:50%;object-fit:cover;background:#dfe9e6;border:4px solid #e8f4f1}
+.name{font-size:23px;font-weight:800;margin-top:12px}.username{font-size:14px;color:#71807c;margin-top:4px}.bio{font-size:14px;color:#52615d;line-height:1.5;margin:12px auto 0;max-width:390px;white-space:pre-wrap}
+.status{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12px;color:#087f5b;font-weight:700}.dot{width:8px;height:8px;border-radius:50%;background:#22c55e}
+.actions{display:flex;gap:10px;margin-top:17px}.action{flex:1;height:45px;border:1px solid #d7e1de;border-radius:12px;background:#fff;color:#075e54;font-weight:800}.action.primary{background:#075e54;color:#fff;border-color:#075e54}
+.section{background:#fff;border-radius:18px;margin-top:14px;padding:7px 16px;box-shadow:0 2px 12px #0000000d}.row{min-height:61px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #edf1ef}.row:last-child{border:0}.ico{width:36px;height:36px;border-radius:50%;background:#e8f3f0;display:flex;align-items:center;justify-content:center;font-size:17px}.info{min-width:0}.label{font-size:11px;color:#84908d}.value{font-size:14px;margin-top:3px;word-break:break-word}
+.nav{height:72px;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);background:#fff;border-top:1px solid #e2e8e5;display:flex;z-index:10;padding-bottom:env(safe-area-inset-bottom)}
+.nav button{flex:1;border:0;background:none;color:#6d7875;font-size:11px;font-weight:700}.nav button span{display:block;font-size:23px;margin-bottom:3px}.nav .active{color:#075e54}
+.loading{text-align:center;padding:60px 20px;color:#6d7875}.spin{width:30px;height:30px;border:3px solid #dce8e4;border-top-color:#075e54;border-radius:50%;margin:0 auto 12px;animation:s .7s linear infinite}@keyframes s{to{transform:rotate(360deg)}}
+.toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,15px);background:#202a27;color:#fff;padding:11px 16px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:30;max-width:90%;text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}.toast.error{background:#c62828}
+.profile-menu{position:fixed;top:54px;right:14px;background:#fff;border-radius:12px;box-shadow:0 6px 20px #0003;padding:6px;width:150px;z-index:100;display:none}
+.profile-menu.show{display:block}
+.profile-menu button{width:100%;border:0;background:#fff;text-align:left;padding:10px 12px;border-radius:8px;font-size:14px;color:#172321;cursor:pointer}
+.profile-menu button:active{background:#eef4f2}
+.profile-menu button.logout{color:#d32f2f;font-weight:700}
+@media(min-width:521px){body{padding:20px 0}.app{height:calc(100dvh - 40px);border-radius:20px;overflow:hidden;box-shadow:0 10px 35px #0002}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+<button class="back" onclick="history.length>1?history.back():location.href='index.html'">‹</button>
+<div class="title" id="pageTitle" data-i18n="profile">Profile</div><button class="menu" id="menuBtn" onclick="toggleMenu(event)">⋮</button>
+</header>
+<div id="profileMenu" class="profile-menu">
+<button onclick="openEdit()">✏️ <span data-i18n="edit_profile">Edit Profile</span></button>
+<button onclick="location.href='settings.html'">⚙️ <span data-i18n="settings">Settings</span></button>
+<button class="logout" onclick="logout()">🚪 <span data-i18n="logout">Logout</span></button>
+</div>
+<main class="main">
+<div id="loading" class="loading"><div class="spin"></div><span data-i18n="loading">Profile লোড হচ্ছে...</span></div>
+<div id="content" style="display:none">
+<section class="hero">
+<img id="avatar" class="avatar" alt="Profile">
+<div id="name" class="name">—</div>
+<div id="username" class="username">@—</div>
+<div id="bio" class="bio"></div>
+<div id="status" class="status"><span class="dot" id="statusDot"></span> <span id="statusText" data-i18n="status_online">Online</span></div>
+<div class="actions" id="actionOwn">
+<button class="action primary" onclick="openEdit()">✏️ <span data-i18n="edit_profile">Edit Profile</span></button>
+<button class="action" onclick="navToSettings()">⚙️ <span data-i18n="settings">Settings</span></button>
+<button class="action" onclick="logout()" style="color:#d32f2f;border-color:#fca5a5;background:#fff5f5">🚪 <span data-i18n="logout">Logout</span></button>
+</div>
+<div class="actions" id="actionOther" style="display:none">
+<button class="action primary" id="btnMessageOther">💬 <span data-i18n="chat">Message</span></button>
+<button class="action" id="btnCallOther">📞 <span data-i18n="calls">Call</span></button>
+</div>
+</section>
+<section class="section">
+<div class="row" id="langRow" onclick="location.href='settings.html'" style="cursor:pointer"><div class="ico">🌐</div><div class="info"><div class="label" data-i18n="language">Language</div><div class="value" id="currentLangLabel">🇧🇩 বাংলা</div></div></div>
+<div class="row"><div class="ico">📧</div><div class="info"><div class="label" data-i18n="email">Email</div><div id="email" class="value">Private</div></div></div>
+<div class="row"><div class="ico">📱</div><div class="info"><div class="label" data-i18n="phone">Phone</div><div id="phone" class="value">Private</div></div></div>
+<div class="row"><div class="ico">📍</div><div class="info"><div class="label" data-i18n="address">Address</div><div id="address" class="value">Private</div></div></div>
+<div class="row"><div class="ico">🕒</div><div class="info"><div class="label" data-i18n="last_seen">Last seen</div><div id="lastSeen" class="value">—</div></div></div>
+</section>
+</div>
+</main>
+<nav class="nav">
+<button onclick="location.href='index.html'"><span>⌂</span><span data-i18n="home">Home</span></button>
+<button onclick="navToChat()"><span>💬</span><span data-i18n="chat">Chat</span></button>
+<button onclick="navToCalls()"><span>📞</span><span data-i18n="calls">Calls</span></button>
+<button class="active"><span>👤</span><span data-i18n="profile">Profile</span></button>
+</nav>
+<div id="toast" class="toast"></div>
+</div>
+<script>
+const SUPABASE_URL="https://pqyicaqpmojijjskpzcp.supabase.co";
+const SUPABASE_KEY="sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=id=>document.getElementById(id);
+let profileUserId="";
+let currentUser=null;
+
+function toast(t,e=false){$("toast").textContent=t;$("toast").className="toast show"+(e?" error":"");setTimeout(()=>$("toast").className="toast",2800)}
+
+function getAvatarUrl(url,name="U"){
+  if(url){
+    if(url.startsWith("http://")||url.startsWith("https://")) return url;
+    try{
+      const {data}=sb.storage.from("avatars").getPublicUrl(url);
+      if(data?.publicUrl) return data.publicUrl;
+    }catch(_){}
+  }
+  return "https://ui-avatars.com/api/?name="+encodeURIComponent((name||"U").charAt(0))+"&background=075e54&color=fff&size=256";
+}
+
+function navToChat(){
+  const lastUser=localStorage.getItem("raztara_last_chat_user_id");
+  if(lastUser) location.href="chat.html?user="+encodeURIComponent(lastUser);
+  else location.href="index.html";
+}
+
+function navToCalls(){
+  location.href="index.html";
+}
+
+async function logDeviceDebug(page){
+  try{
+    const { data: { session } } = await sb.auth.getSession();
+    const { data: { user } } = await sb.auth.getUser();
+    console.log("[DEVICE DEBUG] page=" + page);
+    console.log("[DEVICE DEBUG] device=" + (navigator.userAgent || "unknown"));
+    console.log("[DEVICE DEBUG] auth_user_id=" + (user?.id || "none"));
+    console.log("[DEVICE DEBUG] session_exists=" + (!!session));
+    console.log("[DEVICE DEBUG] access_token_exists=" + (!!session?.access_token));
+    if(user?.id){
+      try{
+        const { data: p } = await sb.from("profiles").select("id,username,full_name").eq("id", user.id).maybeSingle();
+        console.log("[DEVICE DEBUG] profile_id=" + (p?.id || "not_found"));
+        console.log("[DEVICE DEBUG] username=" + (p?.username || "none"));
+      }catch(_){}
+    }
+  }catch(e){
+    console.warn("[DEVICE DEBUG] error:", e);
+  }
+}
+
+async function load(){
+ try{
+  await logDeviceDebug("profile.html");
+  const {data:{user},error:ue}=await sb.auth.getUser();
+  if(ue||!user){location.href="login.html";return}
+
+  const params = new URLSearchParams(location.search);
+  const targetUserId = params.get("user") || params.get("id");
+  const isOwn = (!targetUserId || targetUserId === user.id);
+  currentUser = user;
+  profileUserId = isOwn ? user.id : targetUserId;
+  try{
+    const userCallTopic="raztara-user-call-"+user.id;
+    console.log("[CALL DEBUG] LISTENER START");
+    console.log("[CALL DEBUG] AUTH USER ID="+user.id);
+    console.log("[CALL DEBUG] LISTENING CHANNEL="+userCallTopic);
+    const userCallChannel=sb.channel(userCallTopic,{config:{broadcast:{self:false}}});
+    userCallChannel.on("broadcast",{event:"incoming_call"},payload=>{
+      const p=(payload&&payload.payload)?payload.payload:payload;
+      if(p&&p.caller_id){
+        if(p.receiver_id&&p.receiver_id!==user.id) return;
+        console.log("[CALL DEBUG] AUTH USER ID="+user.id);
+        console.log("[CALL DEBUG] LISTENING CHANNEL="+userCallTopic);
+        console.log("[CALL DEBUG] SUBSCRIBE STATUS=SUBSCRIBED");
+        console.log("[CALL DEBUG] RING RECEIVED="+JSON.stringify(p));
+        console.log("[CALL DEBUG] RECEIVED PAYLOAD="+JSON.stringify(p));
+        console.log("[CALL DEBUG] CALLER ID="+p.caller_id);
+        console.log("[CALL DEBUG] CALLER NAME="+(p.caller_name||"RAZTARA User"));
+        console.log("[CALL DEBUG] CALLER PHOTO="+(p.caller_photo||"None"));
+        console.log("[CALL DEBUG] INCOMING UI OPEN=true");
+
+        location.href="call.html?user="+encodeURIComponent(p.caller_id)+
+          "&conversation="+encodeURIComponent(p.conversation_id||"")+
+          "&type="+encodeURIComponent(p.call_type||p.type||"audio")+
+          "&incoming=1"+
+          "&call_id="+encodeURIComponent(p.call_id)+
+          "&caller_name="+encodeURIComponent(p.caller_name||"")+
+          "&caller_photo="+encodeURIComponent(p.caller_photo||"");
+      }
+    }).subscribe((status,err)=>{
+      console.log("[CALL DEBUG] SUBSCRIBE STATUS="+status+" (channel="+userCallTopic+")", err||"");
+      if(status==="CHANNEL_ERROR"||status==="TIMED_OUT"||status==="CLOSED"){
+        setTimeout(()=>{try{userCallChannel.subscribe();}catch(_){}},2000);
+      }
+    });
+  }catch(_){}
+
+  let p=null;
+  const {data:existingP,error:pe}=await sb.from("profiles").select("id,username,full_name,avatar_url,bio,last_seen_at,online_visibility").eq("id",profileUserId).maybeSingle();
+  
+  if(existingP){
+    p=existingP;
+  }else if(isOwn){
+    const defaultName=user.user_metadata?.full_name||user.email?.split("@")[0]||"RAZTARA User";
+    const defaultUsername=user.user_metadata?.username||user.email?.split("@")[0]?.toLowerCase().replace(/[^a-z0-9_.-]/g,"")||"user_"+user.id.slice(0,6);
+    try{
+      const {data:createdP}=await sb.from("profiles").upsert({
+        id:user.id,
+        full_name:defaultName,
+        username:defaultUsername,
+        updated_at:new Date().toISOString()
+      },{onConflict:"id"}).select().maybeSingle();
+      p=createdP||{id:user.id,full_name:defaultName,username:defaultUsername};
+    }catch(_){
+      p={id:user.id,full_name:defaultName,username:defaultUsername};
+    }
+  }else{
+    p={id:profileUserId,full_name:"RAZTARA User",username:"user",avatar_url:null,bio:""};
+  }
+
+  let ph=null,ad=null;
+  try{
+    const resPh=await sb.from("profile_phone").select("phone,visibility").eq("user_id",profileUserId).maybeSingle();
+    ph=resPh.data;
+  }catch(_){}
+  try{
+    const resAd=await sb.from("profile_address").select("address,visibility").eq("user_id",profileUserId).maybeSingle();
+    ad=resAd.data;
+  }catch(_){}
+
+  const n=p.full_name||p.username||"RAZTARA User";
+  const avatarEl=$("avatar");
+  avatarEl.src=getAvatarUrl(p.avatar_url,n);
+  avatarEl.onerror=function(){this.src="https://ui-avatars.com/api/?name="+encodeURIComponent(n.charAt(0))+"&background=075e54&color=fff&size=256"};
+
+  $("name").textContent=n;
+  $("username").textContent=p.username?"@"+p.username:"@user";
+  $("bio").textContent=p.bio||"";
+
+  const t=(k,def)=>window.RaztaraI18n?window.RaztaraI18n.t(k):def;
+  const privateLabel=t("private","Private");
+
+  if(isOwn){
+    $("email").textContent=user.email||privateLabel;
+    $("phone").textContent=ph?.phone||privateLabel;
+    $("address").textContent=ad?.address||privateLabel;
+    $("actionOwn").style.display="flex";
+    $("actionOther").style.display="none";
+    $("menuBtn").style.display="flex";
+    $("langRow").style.display="flex";
+  }else{
+    $("email").textContent=privateLabel;
+    $("phone").textContent=(ph?.visibility==="public" && ph?.phone)?ph.phone:privateLabel;
+    $("address").textContent=(ad?.visibility==="public" && ad?.address)?ad.address:privateLabel;
+    $("actionOwn").style.display="none";
+    $("actionOther").style.display="flex";
+    $("menuBtn").style.display="none";
+    $("langRow").style.display="none";
+
+    $("btnMessageOther").onclick=()=>location.href="chat.html?user="+encodeURIComponent(profileUserId);
+    $("btnCallOther").onclick=()=>{
+      const callId = (window.crypto && typeof window.crypto.randomUUID === "function") ? window.crypto.randomUUID() : ("call-" + Date.now() + "-" + Math.random().toString(36).slice(2, 9));
+      const myName = currentUser?.user_metadata?.full_name || "RAZTARA User";
+      const myPhoto = currentUser?.user_metadata?.avatar_url || "";
+      console.log("[CALL DEBUG] CALL BUTTON");
+      console.log("[CALL DEBUG] AUTH USER ID=" + (currentUser?.id || ""));
+      console.log("[CALL DEBUG] RECEIVER USER ID=" + profileUserId);
+      console.log("[CALL DEBUG] CALL ID=" + callId);
+      console.log("[CALL DEBUG] CALLER NAME=" + myName);
+      console.log("[CALL DEBUG] CALLER PHOTO=" + (myPhoto || "None"));
+      console.log("[CALL DEBUG] CHANNEL=raztara-user-call-" + profileUserId);
+      console.log("[CALL DEBUG] SUBSCRIBE STATUS=SUBSCRIBING");
+      console.log("[CALL DEBUG] RING SENT=INITIATED");
+      location.href="call.html?user="+encodeURIComponent(profileUserId)+"&type=audio&call_id="+encodeURIComponent(callId)+"&caller_name="+encodeURIComponent(myName)+"&caller_photo="+encodeURIComponent(myPhoto);
+    };
+  }
+
+  const isOnline=p.last_seen_at&&(Date.now()-new Date(p.last_seen_at).getTime()<90000);
+  $("statusDot").style.background=isOnline?"#22c55e":"#94a3b8";
+  $("statusText").textContent=isOnline?t("status_online","Online"):t("status_offline","Offline");
+
+  $("lastSeen").textContent=p.last_seen_at?new Date(p.last_seen_at).toLocaleString("bn-BD",{dateStyle:"medium",timeStyle:"short"}):"—";
+
+  const curLang = window.RaztaraI18n ? window.RaztaraI18n.getLanguage() : "bn";
+  if ($("currentLangLabel")) $("currentLangLabel").textContent = curLang === "en" ? "🇬🇧 English" : "🇧🇩 বাংলা";
+  if (window.RaztaraI18n) {
+    window.RaztaraI18n.apply(curLang);
+    window.RaztaraI18n.syncUser(sb);
+  }
+
+  $("loading").style.display="none";
+  $("content").style.display="block";
+ }catch(e){
+  $("loading").innerHTML="<b>Profile load করতে সমস্যা হয়েছে</b><br><small>"+(e.message||"Unknown error")+"</small><br><button onclick='location.reload()' style='margin-top:14px;padding:9px 15px;border:0;border-radius:9px;background:#075e54;color:#fff;cursor:pointer'>আবার চেষ্টা করুন</button>";
+ }
+}
+function openEdit(){
+  console.log("[BUTTON DEBUG] button=Edit Profile clicked=true handler_started=true");
+  console.log("[NAV DEBUG] from=profile to=edit-profile.html user_id="+(profileUserId||"none")+" session=active timestamp="+Date.now());
+  console.log("[BUTTON DEBUG] button=Edit Profile handler_finished=true");
+  location.href="edit-profile.html";
+}
+function navToSettings(){
+  console.log("[BUTTON DEBUG] button=Settings clicked=true handler_started=true");
+  console.log("[NAV DEBUG] from=profile to=settings.html user_id="+(profileUserId||"none")+" session=active timestamp="+Date.now());
+  console.log("[BUTTON DEBUG] button=Settings handler_finished=true");
+  location.href="settings.html";
+}
+function toggleMenu(e){
+  if(e) e.stopPropagation();
+  console.log("[BUTTON DEBUG] button=menuBtn clicked=true");
+  const m=$("profileMenu");
+  if(m)m.classList.toggle("show");
+}
+document.addEventListener("click",()=>{
+  const m=$("profileMenu");
+  if(m)m.classList.remove("show");
+});
+async function logout(){
+  console.log("[BUTTON DEBUG] button=Logout clicked=true handler_started=true");
+  console.log("[NAV DEBUG] from=profile to=login.html timestamp="+Date.now());
+  try{await sb.auth.signOut()}catch(_){}
+  console.log("[BUTTON DEBUG] button=Logout handler_finished=true");
+  location.replace("login.html");
+}
+load();
+</script>
+</body>
+</html>

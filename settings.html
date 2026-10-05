@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#075e54">
+<title>RAZTARA — Settings</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="i18n.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:#f0f2f5;color:#172321}
+body{overflow:hidden}
+.app{height:100dvh;max-width:520px;margin:auto;background:#f7f9f8;position:relative}
+.top{height:64px;background:#075e54;color:#fff;display:flex;align-items:center;padding:0 14px;gap:12px;position:fixed;top:0;left:50%;transform:translateX(-50%);width:min(520px,100%);z-index:10;box-shadow:0 2px 7px #0002}
+.back{width:42px;height:42px;border:0;background:transparent;color:#fff;font-size:29px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.back:active{background:#ffffff22}
+.title{font-size:19px;font-weight:800}
+.main{position:absolute;top:64px;bottom:72px;left:0;right:0;overflow:auto;padding:16px 14px 28px;-webkit-overflow-scrolling:touch}
+.section-title{font-size:12px;font-weight:750;color:#667781;margin:16px 6px 8px;text-transform:uppercase;letter-spacing:.3px}
+.card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 2px 10px #0000000a}
+.option{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-bottom:1px solid #edf1ef;cursor:pointer;user-select:none;transition:background .15s}
+.option:last-child{border-bottom:0}
+.option:active{background:#f5f8f7}
+.opt-info{display:flex;align-items:center;gap:12px}
+.opt-flag{font-size:24px}
+.opt-text{display:flex;flex-direction:column}
+.opt-name{font-size:15px;font-weight:700;color:#172321}
+.opt-sub{font-size:12px;color:#71807c;margin-top:2px}
+.opt-check{width:22px;height:22px;border-radius:50%;border:2px solid #ccd5d2;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800;transition:.15s}
+.option.active .opt-check{background:#075e54;border-color:#075e54}
+.option.active .opt-check::after{content:"✓"}
+.nav-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #edf1ef;cursor:pointer;text-decoration:none;color:inherit}
+.nav-row:last-child{border-bottom:0}
+.nav-row:active{background:#f5f8f7}
+.nav-left{display:flex;align-items:center;gap:12px}
+.nav-icon{width:36px;height:36px;border-radius:50%;background:#e8f3f0;display:flex;align-items:center;justify-content:center;font-size:17px;color:#075e54}
+.nav-title{font-size:14px;font-weight:700}
+.nav-arrow{color:#9aa5aa;font-size:18px}
+.app-info{text-align:center;padding:26px 14px 10px;color:#8a9491;font-size:12px}
+.app-brand{font-size:17px;font-weight:800;color:#075e54;margin-bottom:4px}
+.nav{height:72px;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);background:#fff;border-top:1px solid #e2e8e5;display:flex;z-index:10;padding-bottom:env(safe-area-inset-bottom)}
+.nav button{flex:1;border:0;background:none;color:#6d7875;font-size:11px;font-weight:700;cursor:pointer}
+.nav button span{display:block;font-size:23px;margin-bottom:3px}
+.nav .active{color:#075e54}
+.toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,15px);background:#202a27;color:#fff;padding:11px 18px;border-radius:20px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:30;max-width:90%;text-align:center;box-shadow:0 4px 15px #0004}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(min-width:521px){body{padding:20px 0}.app{height:calc(100dvh - 40px);border-radius:20px;overflow:hidden;box-shadow:0 10px 35px #0002}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <button class="back" onclick="history.length>1?history.back():location.href='profile.html'" aria-label="Back">‹</button>
+    <div class="title" data-i18n="settings">Settings</div>
+  </header>
+
+  <main class="main">
+    <div class="section-title" data-i18n="language">Language / ভাষা</div>
+    <div class="card">
+      <div id="opt-bn" class="option" onclick="changeLanguage('bn')">
+        <div class="opt-info">
+          <div class="opt-flag">🇧🇩</div>
+          <div class="opt-text">
+            <div class="opt-name">বাংলা</div>
+            <div class="opt-sub">Bengali</div>
+          </div>
+        </div>
+        <div class="opt-check"></div>
+      </div>
+
+      <div id="opt-en" class="option" onclick="changeLanguage('en')">
+        <div class="opt-info">
+          <div class="opt-flag">🇬🇧</div>
+          <div class="opt-text">
+            <div class="opt-name">English</div>
+            <div class="opt-sub">ইংরেজি</div>
+          </div>
+        </div>
+        <div class="opt-check"></div>
+      </div>
+    </div>
+
+    <div class="section-title" data-i18n="account">Account</div>
+    <div class="card">
+      <div class="nav-row" onclick="location.href='profile.html'">
+        <div class="nav-left">
+          <div class="nav-icon">👤</div>
+          <div class="nav-title" data-i18n="profile">Profile</div>
+        </div>
+        <div class="nav-arrow">›</div>
+      </div>
+
+      <div class="nav-row" onclick="location.href='edit-profile.html'">
+        <div class="nav-left">
+          <div class="nav-icon">✏️</div>
+          <div class="nav-title" data-i18n="edit_profile">Edit Profile</div>
+        </div>
+        <div class="nav-arrow">›</div>
+      </div>
+
+      <div class="nav-row" onclick="location.href='edit-profile.html#privacy'">
+        <div class="nav-left">
+          <div class="nav-icon">🔒</div>
+          <div class="nav-title" data-i18n="privacy">Privacy</div>
+        </div>
+        <div class="nav-arrow">›</div>
+      </div>
+
+      <div class="nav-row" onclick="logout()" style="color:#d32f2f">
+        <div class="nav-left">
+          <div class="nav-icon" style="background:#fee2e2;color:#d32f2f">🚪</div>
+          <div class="nav-title" data-i18n="logout" style="color:#d32f2f;font-weight:700">Logout</div>
+        </div>
+        <div class="nav-arrow" style="color:#d32f2f">›</div>
+      </div>
+    </div>
+
+    <div class="app-info">
+      <div class="app-brand" data-i18n="app_name">RAZTARA</div>
+      <div data-i18n="version">Version 1.0.0</div>
+    </div>
+  </main>
+
+  <nav class="nav">
+    <button onclick="location.href='index.html'"><span>⌂</span><span data-i18n="home">Home</span></button>
+    <button onclick="navToChat()"><span>💬</span><span data-i18n="chat">Chat</span></button>
+    <button onclick="location.href='index.html'"><span>📞</span><span data-i18n="calls">Calls</span></button>
+    <button class="active" onclick="location.href='profile.html'"><span>👤</span><span data-i18n="profile">Profile</span></button>
+  </nav>
+
+  <div id="toast" class="toast"></div>
+</div>
+
+<script>
+const SUPABASE_URL="https://pqyicaqpmojijjskpzcp.supabase.co";
+const SUPABASE_KEY="sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+function showToast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2200);
+}
+
+function navToChat(){
+  const lastUser=localStorage.getItem("raztara_last_chat_user_id");
+  if(lastUser) location.href="chat.html?user="+encodeURIComponent(lastUser);
+  else location.href="connect.html";
+}
+
+function updateSelectionUI(lang){
+  document.getElementById("opt-bn").classList.toggle("active", lang==="bn");
+  document.getElementById("opt-en").classList.toggle("active", lang==="en");
+}
+
+async function changeLanguage(lang){
+  updateSelectionUI(lang);
+  await window.RaztaraI18n.setLanguage(lang, sb);
+  showToast(window.RaztaraI18n.t("lang_updated", lang));
+}
+
+async function init(){
+  const currentLang = window.RaztaraI18n.getLanguage();
+  updateSelectionUI(currentLang);
+  window.RaztaraI18n.apply(currentLang);
+  await window.RaztaraI18n.syncUser(sb);
+  try{
+    const {data:{user}} = await sb.auth.getUser();
+    if(user){
+      const userCallTopic="raztara-user-call-"+user.id;
+      const userCallChannel=sb.channel(userCallTopic,{config:{broadcast:{self:false}}});
+      userCallChannel.on("broadcast",{event:"incoming_call"},payload=>{
+        const p=(payload&&payload.payload)?payload.payload:payload;
+        if(p&&p.caller_id){
+          if(p.receiver_id&&p.receiver_id!==user.id) return;
+          location.href="call.html?user="+encodeURIComponent(p.caller_id)+
+            "&conversation="+encodeURIComponent(p.conversation_id||"")+
+            "&type="+encodeURIComponent(p.call_type||p.type||"audio")+
+            "&incoming=1"+
+            "&call_id="+encodeURIComponent(p.call_id)+
+            "&caller_name="+encodeURIComponent(p.caller_name||"")+
+            "&caller_photo="+encodeURIComponent(p.caller_photo||"");
+        }
+      }).subscribe();
+    }
+  }catch(_){}
+}
+
+async function logout(){
+  try{ await sb.auth.signOut(); }catch(_){}
+  location.replace("login.html");
+}
+
+init();
+</script>
+</body>
+</html>

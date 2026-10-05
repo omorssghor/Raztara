@@ -1,0 +1,953 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>RAZTARA — Chat</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="i18n.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--g:#075e54;--g2:#128c7e;--bg:#efe7de;--white:#fff;--text:#172b2f;--muted:#718084}
+html,body{height:100%;background:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--text);overflow:hidden}
+button,input{font:inherit}
+.header{position:fixed;top:0;left:0;right:0;height:calc(64px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top);background:var(--g);color:#fff;display:flex;align-items:center;z-index:20;box-shadow:0 1px 5px #0003}
+.back{width:44px;height:44px;border:0;background:transparent;color:#fff;font-size:34px;cursor:pointer}
+.avatar{width:42px;height:42px;border-radius:50%;object-fit:cover;background:#d7e5e2;margin-right:10px}
+.headinfo{min-width:0;flex:1}
+.name{font-size:17px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.status{font-size:11px;opacity:.82;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.headaction{width:43px;height:43px;border:0;background:transparent;color:#fff;font-size:21px;cursor:pointer}
+.board{overflow-anchor:auto;position:fixed;top:calc(64px + env(safe-area-inset-top));bottom:calc(72px + env(safe-area-inset-bottom));left:0;right:0;overflow-y:auto;padding:12px 10px 16px;-webkit-overflow-scrolling:touch;background-color:#efe7de;background-image:radial-gradient(#cdbfaf 1px,transparent 1px);background-size:20px 20px}
+.center{display:flex;justify-content:center;margin:4px 0 12px}
+.date{background:#fff9;border-radius:12px;padding:5px 10px;color:#667;font-size:11px;box-shadow:0 1px 2px #0001}
+.row{display:flex;margin:3px 0}
+.row.me{justify-content:flex-end}
+.bubble{max-width:min(78%,420px);padding:8px 9px 5px;border-radius:8px;background:#fff;box-shadow:0 1px 1px #0002;word-break:break-word;font-size:15px;line-height:1.4}
+.me .bubble{background:#d9fdd3;border-top-right-radius:2px}
+.them .bubble{border-top-left-radius:2px}
+.bubble.call{background:#edf7f5;border:1px solid #c2e2dc;color:#075e54;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.time{font-size:9px;color:#718084;float:right;margin:5px 0 0 9px}
+.chat-image{max-width:240px;max-height:320px;border-radius:10px;display:block;min-height:100px;object-fit:cover;background:#e5ddd5}
+.chat-video{max-width:260px;max-height:320px;border-radius:10px;display:block;min-height:140px;background:#000}
+.chat-audio{width:230px}
+.chat-file{display:block;padding:8px;color:#075e54;text-decoration:none;font-weight:600}
+.media-loading{padding:8px;color:#556;font-size:13px}
+.ticks{font-size:12px;margin-left:4px;letter-spacing:-2px}
+.ticks.read{color:#128c7e}
+.empty{text-align:center;color:#667;padding:55px 20px}
+.loader{text-align:center;padding:50px;color:#667}
+.composer{position:fixed;left:0;right:0;bottom:0;height:calc(68px + env(safe-area-inset-bottom));padding:7px 9px calc(7px + env(safe-area-inset-bottom));background:#f0f2f5;display:flex;align-items:center;gap:7px;z-index:20}
+.plus{width:43px;height:43px;border:0;border-radius:50%;background:#fff;color:var(--g);font-size:27px;box-shadow:0 1px 3px #0002}
+.inputbox{flex:1;min-width:0;min-height:43px;background:#fff;border-radius:23px;display:flex;align-items:center;padding:0 13px;box-shadow:0 1px 3px #0002}
+.inputbox input{width:100%;border:0;outline:0;background:transparent;font-size:15px}
+.voice,.send{width:43px;height:43px;border:0;border-radius:50%;color:#fff;background:var(--g);font-size:19px;flex:none;touch-action:none;user-select:none;-webkit-user-select:none}
+.voice.recording{background:#d93025;transform:scale(1.08)}
+.recording-bar{position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));height:46px;background:#fff;border-radius:15px;box-shadow:0 3px 15px #0003;display:none;align-items:center;padding:0 14px;z-index:35}
+.recording-bar.show{display:flex}.recording-dot{width:9px;height:9px;border-radius:50%;background:#d93025;margin-right:8px;animation:pulse 1s infinite}.recording-time{font-size:14px;font-weight:700}.recording-text{margin-left:10px;color:#667;font-size:12px}.recording-cancel{margin-left:auto;color:#d93025;font-size:12px}.composer{z-index:40}@keyframes pulse{50%{opacity:.35}}
+.send{font-size:18px}
+.menu{position:fixed;left:10px;bottom:calc(72px + env(safe-area-inset-bottom));background:#fff;border-radius:14px;box-shadow:0 4px 18px #0003;padding:6px;width:145px;z-index:30;display:none}
+.menu.show{display:block}
+.menu button{width:100%;border:0;background:#fff;text-align:left;padding:11px;border-radius:9px}
+.menu button:active{background:#eef4f2}
+.toast{position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom));transform:translate(-50%,12px);background:#26383a;color:#fff;padding:9px 14px;border-radius:20px;font-size:12px;opacity:0;pointer-events:none;transition:.2s;z-index:40}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(min-width:700px){.board{max-width:720px;left:50%;right:auto;width:720px;transform:translateX(-50%)}.header,.composer{padding-left:max(9px,calc((100vw - 720px)/2 + 9px));padding-right:max(9px,calc((100vw - 720px)/2 + 9px))}}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <button class="back" onclick="history.length>1?history.back():location.href='index.html'">‹</button>
+  <img id="headAvatar" class="avatar" src="" alt="" onclick="viewOtherProfile()" style="cursor:pointer;touch-action:manipulation;pointer-events:auto;">
+  <div class="headinfo" onclick="viewOtherProfile()" style="cursor:pointer;touch-action:manipulation;pointer-events:auto;">
+    <div id="headName" class="name">Loading...</div>
+    <div id="headStatus" class="status">Connecting...</div>
+  </div>
+  <button class="headaction" onclick="openCall('audio')">☎</button>
+  <button class="headaction" onclick="openCall('video')">▣</button>
+</header>
+
+<main id="board" class="board">
+  <div id="messages"><div class="loader">Chat loading...</div></div>
+</main>
+
+<div id="menu" class="menu">
+  <button onclick="pickFile('image/*')">📷 <span data-i18n="photo">ছবি</span></button>
+  <button onclick="pickFile('video/*')">🎥 <span data-i18n="video">ভিডিও</span></button>
+  <button onclick="pickFile('*/*')">📎 <span data-i18n="file">File</span></button>
+  <button onclick="pickFile('image/*,video/*')">🗂 <span data-i18n="all">All</span></button>
+</div>
+<input id="mediaInput" type="file" hidden onchange="uploadSelectedFile(this.files[0])">
+
+<div id="recordingBar" class="recording-bar"><span class="recording-dot"></span><span id="recordingTime" class="recording-time">0:00</span><span class="recording-text">ছেড়ে দিলে Send হবে</span><span class="recording-cancel">🎤</span></div>
+
+<div class="composer">
+  <button class="plus" onclick="toggleMenu()">＋</button>
+  <div class="inputbox">
+    <input id="messageInput" type="text" placeholder="Message..." data-i18n-placeholder="message_placeholder" autocomplete="off">
+  </div>
+  <button id="voiceBtn" class="voice" aria-label="Voice message">🎤</button>
+  <button class="send" onclick="sendText()">➤</button>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const sb=supabase.createClient(
+ "https://pqyicaqpmojijjskpzcp.supabase.co",
+ "sb_publishable_5hti2G5K2GLJIa24hClLww_dRL7i4ho"
+);
+
+let currentUser=null;
+let initialChatLoading=true;
+let otherUserId="";
+let otherProfile=null;
+let conversationId="";
+let channel=null;
+let toastTimer=null;
+let mediaRecorder=null;
+let voiceChunks=[];
+let recording=false;
+let userHasScrolledUp=false;
+const renderedMessageIds=new Set();
+let lastMessageCreatedAt="";
+let syncInterval=null;
+
+function isNearBottom(threshold=90){
+ const b=document.getElementById("board");
+ if(!b)return false;
+ return (b.scrollHeight - b.scrollTop - b.clientHeight) <= threshold;
+}
+
+function scrollToBottom(smooth=false){
+ const b=document.getElementById("board");
+ if(!b)return;
+ if(smooth){
+  b.scrollTo({top:b.scrollHeight,behavior:"smooth"});
+ }else{
+  b.scrollTop=b.scrollHeight;
+ }
+}
+
+const boardEl=document.getElementById("board");
+if(boardEl){
+ boardEl.addEventListener("scroll",()=>{
+  if(isNearBottom(70)){
+   userHasScrolledUp=false;
+  }else{
+   userHasScrolledUp=true;
+   initialChatLoading=false;
+  }
+ },{passive:true});
+}
+
+function qs(name){return new URLSearchParams(location.search).get(name)||""}
+function viewOtherProfile(){
+  console.log("[BUTTON DEBUG] button=Profile photo clicked=true handler_started=true");
+  const targetId = otherUserId || qs("user") || qs("user_id") || localStorage.getItem("raztara_last_chat_user_id");
+  console.log("[PROFILE DEBUG] clicked_user_id=" + (targetId || "none"));
+  console.log("[PROFILE DEBUG] current_user_id=" + (currentUser?.id || "none"));
+  if(targetId){
+    const profileUrl = "profile.html?user=" + encodeURIComponent(targetId);
+    console.log("[PROFILE DEBUG] profile_url=" + profileUrl);
+    console.log("[PROFILE DEBUG] navigation_started=true");
+    console.log("[NAV DEBUG] from=chat to=profile.html user_id=" + targetId + " session=active timestamp=" + Date.now());
+    console.log("[PROFILE DEBUG] navigation_completed=true");
+    console.log("[BUTTON DEBUG] button=Profile photo handler_finished=true");
+    location.href = profileUrl;
+  } else {
+    console.warn("[PROFILE DEBUG] targetId is empty!");
+  }
+}
+function openCall(type){
+  console.log("[CALL DEBUG] CALL BUTTON");
+  console.log("[BUTTON DEBUG] button=Call clicked=true handler_started=true");
+  const targetId = otherUserId || qs("user") || qs("user_id") || localStorage.getItem("raztara_last_chat_user_id");
+  if(!targetId||!conversationId){showToast("Call connection এখনও প্রস্তুত নয়");return}
+  const callId = (window.crypto && typeof window.crypto.randomUUID === "function") ? window.crypto.randomUUID() : ("call-" + Date.now() + "-" + Math.random().toString(36).slice(2, 9));
+  const myName = currentUser?.user_metadata?.full_name || "RAZTARA User";
+  const myPhoto = currentUser?.user_metadata?.avatar_url || "";
+  const channelName = "raztara-user-call-" + targetId;
+
+  console.log("[CALL DEBUG] AUTH USER ID=" + (currentUser?.id || ""));
+  console.log("[CALL DEBUG] RECEIVER USER ID=" + targetId);
+  console.log("[CALL DEBUG] CALL ID=" + callId);
+  console.log("[CALL DEBUG] CALLER NAME=" + myName);
+  console.log("[CALL DEBUG] CALLER PHOTO=" + (myPhoto || "None"));
+  console.log("[CALL DEBUG] CHANNEL=" + channelName);
+  console.log("[CALL DEBUG] SUBSCRIBE STATUS=SUBSCRIBING");
+  console.log("[CALL DEBUG] RING SENT=INITIATED");
+
+  const callUrl = "call.html?user="+encodeURIComponent(targetId)+
+    "&conversation="+encodeURIComponent(conversationId)+
+    "&type="+encodeURIComponent(type)+
+    "&call_id="+encodeURIComponent(callId)+
+    "&caller_name="+encodeURIComponent(myName)+
+    "&caller_photo="+encodeURIComponent(myPhoto);
+
+  console.log("[NAV DEBUG] from=chat to=call.html user_id=" + targetId + " session=active timestamp=" + Date.now());
+  console.log("[BUTTON DEBUG] button=Call handler_finished=true");
+  location.href=callUrl;
+}
+function esc(v){return String(v==null?"":v).replace(/[&<>"]/g,function(c){if(c==="&")return "&amp;";if(c==="<")return "&lt;";if(c===">")return "&gt;";return "&quot;";})}
+function avatar(u){
+  if(u?.avatar_url){
+    if(u.avatar_url.startsWith("http://")||u.avatar_url.startsWith("https://")) return u.avatar_url;
+    try{
+      const {data}=sb.storage.from("avatars").getPublicUrl(u.avatar_url);
+      if(data?.publicUrl) return data.publicUrl;
+    }catch(_){}
+  }
+  return "https://ui-avatars.com/api/?name="+encodeURIComponent((u?.full_name||u?.username||"R").slice(0,1))+"&background=075e54&color=fff&bold=true";
+}
+function showToast(msg){
+ const e=document.getElementById("toast");e.textContent=msg;e.classList.add("show");
+ clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.classList.remove("show"),2500);
+}
+function toggleMenu(){document.getElementById("menu").classList.toggle("show")}
+function closeMenu(){document.getElementById("menu").classList.remove("show")}
+function pickFile(accept){
+ const input=document.getElementById("mediaInput");
+ input.accept=accept; input.value=""; input.click(); closeMenu();
+}
+let mediaUploading=false;
+async function uploadSelectedFile(file){
+ if(!file||!conversationId)return;
+ if(mediaUploading)return;
+ mediaUploading=true;
+ if(file.size>25*1024*1024){mediaUploading=false;showToast("ফাইল সর্বোচ্চ 25 MB হতে পারবে");return}
+ showToast("Upload হচ্ছে...");
+ const ext=(file.name.split(".").pop()||"bin").toLowerCase();
+ const path=currentUser.id+"/"+conversationId+"/"+crypto.randomUUID()+"."+ext;
+ const {error:upErr}=await sb.storage.from("raztara-media").upload(path,file,{contentType:file.type||"application/octet-stream",upsert:true});
+ if(upErr){mediaUploading=false;showToast("Upload ব্যর্থ হয়েছে: "+upErr.message);return}
+ let type="file";
+ if(file.type.startsWith("image/"))type="image";
+ else if(file.type.startsWith("video/"))type="video";
+ const {data:inserted,error:me}=await sb.from("messages").insert({
+   conversation_id:conversationId,sender_id:currentUser.id,content:file.name,message_type:type,file_url:path
+ }).select();
+ if(me){mediaUploading=false;showToast("Message save ব্যর্থ: "+me.message);return}
+ const savedMsg=inserted&&inserted[0]?inserted[0]:null;
+ if(savedMsg&&!document.querySelector('[data-message-id="'+savedMsg.id+'"]')){
+   try{savedMsg._signedUrl=URL.createObjectURL(file);}catch(_){}
+   renderMessage(savedMsg,true);
+ }
+ const input=document.getElementById("mediaInput"); if(input) input.value="";
+ mediaUploading=false;
+}
+let voiceStream=null;
+let recordingStartedAt=0;
+let recordingTimer=null;
+let recordingCancelled=false;
+let voicePointerId=null;
+let releaseRequested=false;
+
+function updateRecordingTime(){
+ if(!recordingStartedAt)return;
+ const s=Math.floor((Date.now()-recordingStartedAt)/1000);
+ const m=Math.floor(s/60),sec=String(s%60).padStart(2,"0");
+ document.getElementById("recordingTime").textContent=m+":"+sec;
+}
+function showRecordingBar(show){
+ document.getElementById("recordingBar").classList.toggle("show",show);
+}
+function resetVoiceUI(){
+ clearInterval(recordingTimer);recordingTimer=null;
+ if(voiceStream)voiceStream.getTracks().forEach(t=>t.stop());
+ voiceStream=null;
+ recording=false;recordingStartedAt=0;voicePointerId=null;releaseRequested=false;
+ const b=document.getElementById("voiceBtn");
+ b.textContent="🎤";b.classList.remove("recording");
+ showRecordingBar(false);
+}
+async function startVoice(){
+ if(recording)return;
+ if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){
+   showToast("এই browser-এ voice recording support নেই");return;
+ }
+ try{
+   voiceStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+   const types=["audio/mp4","audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus"];
+   const mime=types.find(t=>MediaRecorder.isTypeSupported(t))||"";
+   mediaRecorder=mime?new MediaRecorder(voiceStream,{mimeType:mime}):new MediaRecorder(voiceStream);
+   voiceChunks=[];recordingCancelled=false;recording=true;recordingStartedAt=Date.now();
+   const b=document.getElementById("voiceBtn");b.textContent="●";b.classList.add("recording");
+   showRecordingBar(true);updateRecordingTime();
+   clearInterval(recordingTimer);recordingTimer=setInterval(updateRecordingTime,500);
+   mediaRecorder.ondataavailable=e=>{if(e.data&&e.data.size)voiceChunks.push(e.data)};
+   mediaRecorder.onerror=e=>{console.error("RAZTARA voice error",e);recordingCancelled=true;resetVoiceUI();showToast("Voice recording error")};
+   mediaRecorder.onstop=finishVoiceRecording;
+   mediaRecorder.start(250);
+   if(releaseRequested) stopVoice();
+ }catch(e){
+   resetVoiceUI();console.error("RAZTARA voice start error",e);
+   if(e?.name==="NotAllowedError")showToast("Microphone permission Allow করুন");
+   else if(e?.name==="NotFoundError")showToast("Microphone পাওয়া যায়নি");
+   else showToast("Microphone চালু করা যায়নি: "+(e?.message||"Unknown error"));
+ }
+}
+function stopVoice(){
+ if(!recording){releaseRequested=true;return}
+ releaseRequested=false;
+ if(mediaRecorder&&mediaRecorder.state!=="inactive")mediaRecorder.stop();
+}
+function cancelVoice(){
+ if(!recording)return;
+ recordingCancelled=true;
+ if(mediaRecorder&&mediaRecorder.state!=="inactive")mediaRecorder.stop();
+ else resetVoiceUI();
+}
+async function finishVoiceRecording(){
+ const cancelled=recordingCancelled;
+ const chunks=voiceChunks.slice();
+ const recorder=mediaRecorder;
+ resetVoiceUI();voiceChunks=[];
+ if(cancelled){showToast("Voice বাতিল হয়েছে");return}
+ if(!chunks.length){showToast("কোনো voice record হয়নি");return}
+ const actualType=recorder?.mimeType||"audio/mp4";
+ const blob=new Blob(chunks,{type:actualType});
+ if(!blob.size){showToast("Voice record হয়নি");return}
+ if(!conversationId){showToast("Chat connection নেই");return}
+ const ext=actualType.includes("mp4")?"m4a":actualType.includes("ogg")?"ogg":"webm";
+ const path=currentUser.id+"/"+conversationId+"/"+crypto.randomUUID()+"."+ext;
+ showToast("Voice upload হচ্ছে...");
+ const up=await sb.storage.from("raztara-media").upload(path,blob,{contentType:actualType,upsert:true});
+ if(up.error){showToast("Voice upload হয়নি: "+up.error.message);return}
+ const {data:inserted,error}=await sb.from("messages").insert({
+   conversation_id:conversationId,sender_id:currentUser.id,
+   content:"Voice message",message_type:"audio",file_url:path
+ }).select();
+ if(error){showToast("Voice message save হয়নি: "+error.message);return}
+ const savedMsg=inserted&&inserted[0]?inserted[0]:null;
+ if(savedMsg&&!document.querySelector('[data-message-id="'+savedMsg.id+'"]')){
+   try{savedMsg._signedUrl=URL.createObjectURL(blob);}catch(_){}
+   renderMessage(savedMsg,true);
+ }
+}
+const voiceBtn=document.getElementById("voiceBtn");
+voiceBtn.onclick=null;
+voiceBtn.addEventListener("pointerdown",e=>{
+ if(e.pointerType==="mouse"&&e.button!==0)return;
+ e.preventDefault();voicePointerId=e.pointerId;releaseRequested=false;
+ try{voiceBtn.setPointerCapture(e.pointerId)}catch(_){}
+ startVoice();
+});
+voiceBtn.addEventListener("pointerup",e=>{
+ if(e.pointerId!==voicePointerId)return;
+ e.preventDefault();
+ releaseRequested=false;stopVoice();
+});
+voiceBtn.addEventListener("pointercancel",e=>{
+ if(e.pointerId!==voicePointerId)return;
+ cancelVoice();
+});
+voiceBtn.addEventListener("contextmenu",e=>e.preventDefault());
+
+
+function safeFormatTime(t){
+  if(!t)return"";
+  try{
+    const clean=String(t).replace(" ","T");
+    const d=new Date(clean);
+    if(isNaN(d.getTime()))return"";
+    return d.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
+  }catch(_){
+    try{
+      const d=new Date(t);
+      return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+    }catch(__){return"";}
+  }
+}
+
+function safeFormatDate(t){
+  if(!t)return"";
+  try{
+    const clean=String(t).replace(" ","T");
+    const d=new Date(clean);
+    if(isNaN(d.getTime()))return"";
+    return d.toLocaleDateString([],{day:"numeric",month:"short"})+" "+safeFormatTime(t);
+  }catch(_){
+    return safeFormatTime(t);
+  }
+}
+
+let userCallChannel=null;
+
+function handleIncomingCallPayload(payload, source){
+  const p=(payload&&payload.payload)?payload.payload:payload;
+  if(!p||!p.caller_id||p.caller_id===currentUser.id) return;
+  if(p.receiver_id&&p.receiver_id!==currentUser.id) return;
+
+  console.log("[CALL DEBUG] AUTH USER ID="+currentUser.id);
+  console.log("[CALL DEBUG] LISTENING CHANNEL="+(source==="user"?("raztara-user-call-"+currentUser.id):("raztara-chat-"+conversationId)));
+  console.log("[CALL DEBUG] SUBSCRIPTION STATUS=SUBSCRIBED");
+  console.log("[CALL DEBUG] RING RECEIVED="+JSON.stringify(p));
+  console.log("[CALL DEBUG] RECEIVED PAYLOAD="+JSON.stringify(p));
+  console.log("[CALL DEBUG] CALLER ID="+p.caller_id);
+  console.log("[CALL DEBUG] CALLER NAME="+(p.caller_name||"RAZTARA User"));
+  console.log("[CALL DEBUG] CALLER PHOTO="+(p.caller_photo||"None"));
+  console.log("[CALL DEBUG] INCOMING UI OPEN=true");
+
+  const targetUrl="call.html?user="+encodeURIComponent(p.caller_id)+
+    "&conversation="+encodeURIComponent(p.conversation_id||conversationId)+
+    "&type="+encodeURIComponent(p.call_type||p.type||"audio")+
+    "&incoming=1"+
+    "&call_id="+encodeURIComponent(p.call_id)+
+    "&caller_name="+encodeURIComponent(p.caller_name||"")+
+    "&caller_photo="+encodeURIComponent(p.caller_photo||"");
+  location.href=targetUrl;
+}
+
+function listenForIncomingCalls(){
+  if(!currentUser||userCallChannel)return;
+  console.log("[CALL DEBUG] LISTENER START");
+  console.log("[CALL DEBUG] AUTH USER ID="+currentUser.id);
+  try{
+    const userTopic="raztara-user-call-"+currentUser.id;
+    console.log("[CALL DEBUG] LISTENING CHANNEL="+userTopic);
+    userCallChannel=sb.channel(userTopic,{config:{broadcast:{self:false}}});
+    window._userCallChannel=userCallChannel;
+
+    userCallChannel.on("broadcast",{event:"incoming_call"},payload=>{
+      handleIncomingCallPayload(payload, "user");
+    }).subscribe((status,err)=>{
+      console.log("[CALL DEBUG] SUBSCRIBE STATUS="+status+" (channel="+userTopic+")", err||"");
+      if(status==="CHANNEL_ERROR"||status==="TIMED_OUT"||status==="CLOSED"){
+        setTimeout(()=>{
+          try{ userCallChannel.subscribe(); }catch(_){}
+        },2000);
+      }
+    });
+  }catch(e){
+    console.error("[CALL DEBUG] [CHAT] userCallChannel error:", e);
+  }
+}
+
+async function logDeviceDebug(page){
+  try{
+    const { data: { session } } = await sb.auth.getSession();
+    const { data: { user } } = await sb.auth.getUser();
+    console.log("[DEVICE DEBUG] page=" + page);
+    console.log("[DEVICE DEBUG] device=" + (navigator.userAgent || "unknown"));
+    console.log("[DEVICE DEBUG] auth_user_id=" + (user?.id || "none"));
+    console.log("[DEVICE DEBUG] session_exists=" + (!!session));
+    console.log("[DEVICE DEBUG] access_token_exists=" + (!!session?.access_token));
+    if(user?.id){
+      try{
+        const { data: p } = await sb.from("profiles").select("id,username,full_name").eq("id", user.id).maybeSingle();
+        console.log("[DEVICE DEBUG] profile_id=" + (p?.id || "not_found"));
+        console.log("[DEVICE DEBUG] username=" + (p?.username || "none"));
+      }catch(_){}
+    }
+  }catch(e){
+    console.warn("[DEVICE DEBUG] error:", e);
+  }
+}
+
+async function init(){
+ try{
+   logDeviceDebug("chat.html").catch(()=>{});
+   const auth=await sb.auth.getUser();
+   if(auth.error||!auth.data.user){location.href="login.html";return}
+   currentUser=auth.data.user;
+
+   if(window.RaztaraI18n){
+     try{
+       window.RaztaraI18n.apply();
+       window.RaztaraI18n.syncUser(sb);
+     }catch(_){}
+   }
+
+   otherUserId=qs("user")||qs("user_id")||localStorage.getItem("raztara_last_chat_user_id")||"";
+   if(!otherUserId){
+     document.getElementById("messages").innerHTML='<div class="empty">কোনো User নির্বাচন করা হয়নি।<br><br>Connect page থেকে একজন User নির্বাচন করুন।</div>';
+     return;
+   }
+   localStorage.setItem("raztara_last_chat_user_id",otherUserId);
+
+   listenForIncomingCalls();
+
+   await loadOtherProfile();
+   if(!otherProfile)return;
+
+   await openConversation();
+   if(!conversationId)return;
+
+   await loadMessages();
+   subscribeRealtime();
+   updateStatus();
+ }catch(err){
+   console.error("Chat init error:",err);
+   const box=document.getElementById("messages");
+   if(box){
+     box.innerHTML='<div class="empty">Chat লোড হতে সমস্যা হয়েছে।<br><small>'+esc(err.message||"Connection error")+'</small><br><br><button onclick="location.reload()" style="padding:8px 16px;border:0;border-radius:14px;background:#075e54;color:#fff;cursor:pointer">↻ আবার চেষ্টা করুন</button></div>';
+   }
+ }
+}
+
+async function loadOtherProfile(){
+ const {data,error}=await sb.from("profiles")
+  .select("id,username,full_name,avatar_url,bio,last_seen_at")
+  .eq("id",otherUserId).maybeSingle();
+
+ if(error||!data){
+   document.getElementById("messages").innerHTML='<div class="empty">এই User-এর profile পাওয়া যায়নি।</div>';
+   showToast(error?.message||"User not found");
+   return;
+ }
+ otherProfile=data;
+ const ha=document.getElementById("headAvatar");
+ ha.src=avatar(data);
+ ha.onerror=function(){this.src="https://ui-avatars.com/api/?name="+encodeURIComponent((data.full_name||data.username||"R").slice(0,1))+"&background=075e54&color=fff&bold=true"};
+ document.getElementById("headName").textContent=data.full_name||data.username||"RAZTARA User";
+ updateStatus();
+}
+
+function updateStatus(){
+ if(!otherProfile)return;
+ const last=otherProfile.last_seen_at?new Date(String(otherProfile.last_seen_at).replace(" ","T")).getTime():0;
+ const online=last && Date.now()-last<90000;
+ document.getElementById("headStatus").textContent=online?"Online":(last?"Last seen "+safeFormatDate(last):"Offline");
+}
+
+async function openConversation(){
+ const urlConversation=qs("conversation");
+ const userConvKey="raztara_conv_for_"+otherUserId;
+ conversationId="";
+
+ if(urlConversation){
+   try{
+     const {data:check}=await sb.from("conversation_members")
+      .select("user_id")
+      .eq("conversation_id",urlConversation)
+      .in("user_id",[currentUser.id,otherUserId]);
+     const userIds=(check||[]).map(x=>x.user_id);
+     if(userIds.includes(currentUser.id)&&userIds.includes(otherUserId)){
+       conversationId=urlConversation;
+     }
+   }catch(_){}
+ }
+
+ if(!conversationId){
+   const savedForUser=localStorage.getItem(userConvKey);
+   if(savedForUser){
+     try{
+       const {data:check}=await sb.from("conversation_members")
+        .select("user_id")
+        .eq("conversation_id",savedForUser)
+        .in("user_id",[currentUser.id,otherUserId]);
+       const userIds=(check||[]).map(x=>x.user_id);
+       if(userIds.includes(currentUser.id)&&userIds.includes(otherUserId)){
+         conversationId=savedForUser;
+       }
+     }catch(_){}
+   }
+ }
+
+ if(!conversationId){
+   try{
+     const {data:myConvs}=await sb.from("conversation_members")
+       .select("conversation_id")
+       .eq("user_id",currentUser.id);
+     if(myConvs&&myConvs.length){
+       const cids=myConvs.map(x=>x.conversation_id);
+       const {data:common}=await sb.from("conversation_members")
+         .select("conversation_id")
+         .eq("user_id",otherUserId)
+         .in("conversation_id",cids)
+         .limit(1);
+       if(common&&common.length&&common[0].conversation_id){
+         conversationId=common[0].conversation_id;
+       }
+     }
+   }catch(_){}
+ }
+
+ if(!conversationId){
+   try{
+     const {data,error}=await sb.rpc("get_or_create_direct_conversation",{other_user_id:otherUserId});
+     if(!error&&data){
+       conversationId=typeof data==="string"?data:(data?.id||data?.conversation_id||"");
+     }
+   }catch(_){}
+ }
+
+ if(!conversationId){
+   try{
+     const {data:newConv}=await sb.from("conversations").insert({is_group:false}).select("id").single();
+     if(newConv?.id){
+       await sb.from("conversation_members").insert([
+         {conversation_id:newConv.id,user_id:currentUser.id},
+         {conversation_id:newConv.id,user_id:otherUserId}
+       ]);
+       conversationId=newConv.id;
+     }
+   }catch(_){}
+ }
+
+ if(!conversationId){
+   document.getElementById("messages").innerHTML='<div class="empty">Chat তৈরি করা যাচ্ছে না।<br><br>Connect accepted আছে কিনা দেখুন।</div>';
+   showToast("Chat connection প্রস্তুত করা যায়নি");
+   return;
+ }
+
+ localStorage.setItem(userConvKey,conversationId);
+ localStorage.setItem("raztara_last_conversation_id",conversationId);
+ try{
+   const curUrl=new URL(location.href);
+   curUrl.searchParams.set("user",otherUserId);
+   curUrl.searchParams.set("conversation",conversationId);
+   history.replaceState(null,"",curUrl.toString());
+ }catch(_){}
+}
+
+async function markMessagesRead(ids){
+  if(!ids||!ids.length)return;
+  try{
+    const nowIso=new Date().toISOString();
+    await sb.from("messages").update({delivered_at:nowIso,read_at:nowIso,is_read:true}).in("id",ids);
+  }catch(e){
+    console.warn("markMessagesRead notice:",e);
+  }
+}
+
+async function markSingleMessageRead(id){
+  if(!id)return;
+  try{
+    const nowIso=new Date().toISOString();
+    await sb.from("messages").update({delivered_at:nowIso,read_at:nowIso,is_read:true}).eq("id",id);
+  }catch(e){
+    console.warn("markSingleMessageRead notice:",e);
+  }
+}
+
+async function loadMessages(){
+ const box=document.getElementById("messages");
+ initialChatLoading=true;
+ userHasScrolledUp=false;
+
+ const {data,error}=await sb.from("messages")
+   .select("id,sender_id,content,message_type,file_url,created_at,deleted_for_everyone,delivered_at,read_at")
+   .eq("conversation_id",conversationId)
+   .order("created_at",{ascending:true});
+
+ if(error){
+   box.innerHTML='<div class="empty">Message load করা যাচ্ছে না।<br><small>'+esc(error.message)+'</small></div>';
+   showToast(error.message);
+   initialChatLoading=false;
+   return;
+ }
+
+ if(data&&data.length){
+   const incoming=data.filter(m=>m.sender_id!==currentUser.id&&(!m.read_at||!m.delivered_at)).map(m=>m.id);
+   if(incoming.length){
+     markMessagesRead(incoming);
+   }
+ }
+
+ box.innerHTML="";
+ renderedMessageIds.clear();
+
+ if(!data||!data.length){
+   box.innerHTML='<div class="empty">এখনও কোনো message নেই।<br><br>প্রথম message পাঠান 👋</div>';
+   initialChatLoading=false;
+   return;
+ }
+
+ data.forEach(m=>{
+   if(m.created_at && (!lastMessageCreatedAt || m.created_at > lastMessageCreatedAt)){
+     lastMessageCreatedAt=m.created_at;
+   }
+   try{
+     renderMessage(m,false);
+   }catch(err){
+     console.warn("Failed to render individual message:",err,m);
+   }
+ });
+
+ scrollToBottom(false);
+
+ requestAnimationFrame(()=>{
+   scrollToBottom(false);
+   setTimeout(()=>{
+     if(!userHasScrolledUp){
+       scrollToBottom(false);
+     }
+     initialChatLoading=false;
+   },150);
+ });
+}
+
+const mediaUrlCache=new Map();
+
+async function getMediaUrl(rawPath){
+ if(!rawPath)return "";
+ if(rawPath.startsWith("http://")||rawPath.startsWith("https://")||rawPath.startsWith("blob:")||rawPath.startsWith("data:")){
+   return rawPath;
+ }
+ const path=String(rawPath).replace(/^raztara-media\//,"").replace(/^\/+/,"");
+ if(mediaUrlCache.has(path)){
+   return mediaUrlCache.get(path);
+ }
+ let finalUrl="";
+ try{
+   const {data,error}=await sb.storage.from("raztara-media").createSignedUrl(path,3600);
+   if(!error&&data?.signedUrl){
+     finalUrl=data.signedUrl;
+   }
+ }catch(_){}
+ if(!finalUrl){
+   try{
+     const {data}=sb.storage.from("raztara-media").getPublicUrl(path);
+     if(data?.publicUrl){
+       finalUrl=data.publicUrl;
+     }
+   }catch(_){}
+ }
+ if(finalUrl){
+   mediaUrlCache.set(path,finalUrl);
+ }
+ return finalUrl;
+}
+
+function renderMessage(m,shouldScroll=true){
+ const box=document.getElementById("messages");
+ if(!m||!m.id)return;
+ if(renderedMessageIds.has(m.id)||document.querySelector('[data-message-id="'+m.id+'"]')) return;
+ renderedMessageIds.add(m.id);
+ if(m.created_at && (!lastMessageCreatedAt || m.created_at > lastMessageCreatedAt)){
+   lastMessageCreatedAt=m.created_at;
+ }
+
+ const empty=box.querySelector(".empty");
+ if(empty)empty.remove();
+ const loader=box.querySelector(".loader");
+ if(loader)loader.remove();
+
+ const isMe=m.sender_id===currentUser.id;
+ const row=document.createElement("div");
+ row.dataset.messageId=m.id;
+ row.className="row "+(isMe?"me":"them");
+
+ const bubble=document.createElement("div");
+ bubble.className="bubble";
+
+ let text=m.deleted_for_everyone?"This message was deleted":(m.content||"");
+
+ if(m.message_type==="call"){
+   bubble.className="bubble call";
+   bubble.innerHTML='<span style="font-size:16px;">📞</span><span>'+esc(text)+'</span>';
+ }else if(m.deleted_for_everyone){
+   bubble.innerHTML=esc(text).replace(/\n/g,"<br>");
+ }else if(m.file_url){
+   const mediaContainer=document.createElement("div");
+   mediaContainer.className="media-content";
+   const loadingText=m.message_type==="image"?"ছবি খুলছে...":
+     m.message_type==="video"?"ভিডিও খুলছে...":
+     (m.message_type==="voice"||m.message_type==="audio")?"Voice খুলছে...":
+     ("📎 "+esc(text));
+   mediaContainer.innerHTML='<div class="media-loading">'+loadingText+'</div>';
+   bubble.appendChild(mediaContainer);
+
+   const renderMedia=(url)=>{
+     if(!url){
+       mediaContainer.innerHTML='<div class="media-error" style="color:#d93025;font-size:12px;padding:4px 0">মিডিয়া লোড হয়নি<br><button type="button" class="retry-btn" style="border:0;background:#075e54;color:#fff;border-radius:4px;padding:2px 8px;font-size:11px;cursor:pointer;margin-top:4px">↻ আবার চেষ্টা</button></div>';
+       const rbtn=mediaContainer.querySelector(".retry-btn");
+       if(rbtn){
+         rbtn.onclick=()=>{
+           getMediaUrl(m.file_url).then(u=>{if(u){m._signedUrl=u;renderMedia(u);}});
+         };
+       }
+       return;
+     }
+     if(m.message_type==="image"){
+       mediaContainer.innerHTML='<img class="chat-image" src="'+url+'" alt="Photo" loading="lazy">';
+       const img=mediaContainer.querySelector("img");
+       if(img){
+         img.onload=()=>{
+           if(initialChatLoading || (!userHasScrolledUp && isNearBottom(80))){
+             scrollToBottom(false);
+           }
+         };
+         img.onerror=()=>{
+           const cleanPath=String(m.file_url).replace(/^raztara-media\//,"").replace(/^\/+/,"");
+           const pub=sb.storage.from("raztara-media").getPublicUrl(cleanPath)?.data?.publicUrl;
+           if(pub&&img.src!==pub){
+             img.src=pub;
+           }else{
+             mediaContainer.innerHTML='<div class="media-error" style="color:#d93025;font-size:12px;padding:4px 0">ছবি লোড হয়নি<br><button type="button" class="retry-btn" style="border:0;background:#075e54;color:#fff;border-radius:4px;padding:2px 8px;font-size:11px;cursor:pointer;margin-top:4px">↻ আবার চেষ্টা</button></div>';
+             const rbtn=mediaContainer.querySelector(".retry-btn");
+             if(rbtn){
+               rbtn.onclick=()=>{
+                 mediaUrlCache.delete(cleanPath);
+                 getMediaUrl(m.file_url).then(u=>{if(u){m._signedUrl=u;renderMedia(u);}});
+               };
+             }
+           }
+         };
+       }
+     }else if(m.message_type==="video"){
+       mediaContainer.innerHTML='<div class="video-wrap"><video class="chat-video" controls playsinline webkit-playsinline preload="metadata" src="'+url+'"></video></div>';
+     }else if(m.message_type==="voice"||m.message_type==="audio"){
+       mediaContainer.innerHTML='<audio class="chat-audio" controls src="'+url+'"></audio>';
+     }else{
+       mediaContainer.innerHTML='<a class="chat-file" href="'+url+'" target="_blank" rel="noopener">📎 '+esc(text)+'</a>';
+     }
+   };
+
+   if(m._signedUrl){
+     renderMedia(m._signedUrl);
+   }else{
+     getMediaUrl(m.file_url).then(url=>{
+       m._signedUrl=url;
+       renderMedia(url);
+     });
+   }
+ }else{
+   bubble.innerHTML=esc(text).replace(/\n/g,"<br>");
+ }
+
+ const time=document.createElement("span");
+ time.className="time";
+ time.textContent=safeFormatTime(m.created_at);
+ if(isMe){
+   const ticks=document.createElement("span");
+   ticks.className="ticks"+(m.read_at?" read":"");
+   ticks.textContent="✓✓";
+   time.appendChild(ticks);
+ }
+ bubble.appendChild(time);
+ row.appendChild(bubble);
+ box.appendChild(row);
+
+ if(shouldScroll){
+   if(isMe){
+     userHasScrolledUp=false;
+     scrollToBottom(true);
+   }else{
+     if(!userHasScrolledUp && isNearBottom(80)){
+       scrollToBottom(true);
+     }
+   }
+ }
+}
+
+function subscribeRealtime(){
+ if(!conversationId)return;
+ if(channel){
+   try{sb.removeChannel(channel)}catch(_){}
+ }
+ channel=sb.channel("raztara-chat-"+conversationId,{config:{broadcast:{self:false}}});
+ channel.on("broadcast",{event:"incoming_call"},payload=>{
+   handleIncomingCallPayload(payload, "chat");
+ }).on("postgres_changes",
+  {event:"INSERT",schema:"public",table:"messages",filter:"conversation_id=eq."+conversationId},
+  payload=>{
+    const m=payload.new;
+    if(m&&!renderedMessageIds.has(m.id)&&!document.querySelector('[data-message-id="'+m.id+'"]')){
+      renderMessage(m,true);
+      if(m.sender_id!==currentUser.id){
+        markSingleMessageRead(m.id);
+      }
+    }
+  }
+ ).on("postgres_changes",
+  {event:"UPDATE",schema:"public",table:"messages",filter:"conversation_id=eq."+conversationId},
+  payload=>{
+    const m=payload.new;
+    if(m&&m.id){
+      const row=document.querySelector('[data-message-id="'+m.id+'"]');
+      if(row&&m.read_at){
+        const ticks=row.querySelector(".ticks");
+        if(ticks)ticks.classList.add("read");
+      }
+    }
+  }
+ ).subscribe(status=>{
+   if(status==="SUBSCRIBED"){
+     syncNewMessages();
+   }else if(status==="TIMED_OUT"||status==="CHANNEL_ERROR"||status==="CLOSED"){
+     setTimeout(()=>{
+       if(conversationId) subscribeRealtime();
+     },3000);
+   }
+ });
+
+ clearInterval(syncInterval);
+ syncInterval=setInterval(syncNewMessages,3000);
+}
+
+async function syncNewMessages(){
+ if(!conversationId||!currentUser)return;
+ try{
+   let query=sb.from("messages")
+     .select("id,sender_id,content,message_type,file_url,created_at,deleted_for_everyone,delivered_at,read_at")
+     .eq("conversation_id",conversationId)
+     .order("created_at",{ascending:true});
+   if(lastMessageCreatedAt){
+     query=query.gt("created_at",lastMessageCreatedAt);
+   }
+   const {data,error}=await query;
+   if(!error&&data&&data.length){
+     data.forEach(m=>{
+       if(!renderedMessageIds.has(m.id)&&!document.querySelector('[data-message-id="'+m.id+'"]')){
+         renderMessage(m,true);
+         if(m.sender_id!==currentUser.id){
+           markSingleMessageRead(m.id);
+         }
+       }
+     });
+   }
+ }catch(_){}
+}
+
+document.addEventListener("visibilitychange",()=>{
+ if(document.visibilityState==="visible"){
+   syncNewMessages();
+   updateStatus();
+ }
+});
+
+async function sendText(){
+ const input=document.getElementById("messageInput");
+ const content=input.value.trim();
+ if(!content||!conversationId)return;
+
+ input.value="";
+ const {data:inserted,error}=await sb.from("messages").insert({
+   conversation_id:conversationId,
+   sender_id:currentUser.id,
+   content,
+   message_type:"text"
+ }).select();
+
+ if(error){
+   input.value=content;
+   showToast(error.message);
+   return;
+ }
+ const savedMsg=inserted&&inserted[0]?inserted[0]:null;
+ if(savedMsg&&!document.querySelector('[data-message-id="'+savedMsg.id+'"]')){
+   renderMessage(savedMsg,true);
+ }
+}
+
+document.getElementById("messageInput").addEventListener("keydown",e=>{
+ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendText()}
+});
+document.addEventListener("click",e=>{
+ if(!e.target.closest("#menu")&&!e.target.closest(".plus"))closeMenu();
+});
+
+window.addEventListener("pagehide",()=>{
+ clearInterval(syncInterval);
+ if(channel)sb.removeChannel(channel);
+});
+setInterval(updateStatus,30000);
+init();
+</script>
+</body>
+</html>
